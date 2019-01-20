@@ -88,7 +88,6 @@ cmake-build-release/
 out/
 *.iml
 *.xml
-*.html
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
