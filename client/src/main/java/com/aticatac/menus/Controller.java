@@ -1,4 +1,4 @@
-package menus;
+package com.aticatac.menus;
 
 import javafx.event.ActionEvent;
 
