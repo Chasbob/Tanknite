@@ -105,7 +105,6 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
-#/server/target/
 ### Maven template
 target/
 pom.xml.tag
