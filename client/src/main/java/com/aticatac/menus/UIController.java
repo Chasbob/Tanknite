@@ -23,7 +23,7 @@ public class UIController extends Application {
         stage = primaryStage;
 
         stage.setTitle("AticAtac");
-        stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/sample.fxml"))));
+        stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/MainMenuScene.fxml")),width,height));
         stage.show();
 
     }
@@ -37,7 +37,7 @@ public class UIController extends Application {
     public void LoadMainMenu(ActionEvent actionEvent)
     {
         try {
-            LoadScene(FXMLLoader.load(getClass().getResource("/sample.fxml")));
+            LoadScene(FXMLLoader.load(getClass().getResource("/MainMenuScene.fxml")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,6 +65,15 @@ public class UIController extends Application {
     {
         try {
             LoadScene(FXMLLoader.load(getClass().getResource("/SettingsScene.fxml")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void LoadHighScoreScene (ActionEvent actionEvent)
+    {
+        try {
+            LoadScene(FXMLLoader.load(getClass().getResource("/HighScoreScene.fxml")));
         } catch (IOException e) {
             e.printStackTrace();
         }

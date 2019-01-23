@@ -21,7 +21,7 @@
       </GridPane>
    </center>
    <top>
-      <Label prefHeight="300.0" style="-fx-font-family: ArcadeClassic; -fx-font-size: 100;" text="Settings Scene" textFill="#f2ea10" BorderPane.alignment="CENTER">
+      <Label prefHeight="300.0" style="-fx-font-family: ArcadeClassic; -fx-font-size: 100;" text="HighScore" textFill="#f2ea10" BorderPane.alignment="CENTER">
          <font>
             <Font size="48.0" />
          </font></Label>
