@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="285.0" prefWidth="288.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="menus.Controller">
+<BorderPane prefHeight="285.0" prefWidth="288.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aticatac.menus.Controller">
    <center>
-      <GridPane alignment="center" hgap="10" prefHeight="207.0" prefWidth="288.0" stylesheets="/menus/sample.css" vgap="20" BorderPane.alignment="CENTER">
+      <GridPane alignment="center" hgap="10" prefHeight="207.0" prefWidth="288.0" stylesheets="sample.css" vgap="20" BorderPane.alignment="CENTER">
           <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#loadSinglePlayer" text="Single Player" textFill="#f49302" />
          <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadMultiPlayer" text="Multiplayer" textFill="#f49302" GridPane.rowIndex="1">
             <GridPane.margin>
