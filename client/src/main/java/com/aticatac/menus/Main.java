@@ -1,10 +1,11 @@
 package com.aticatac.menus;
 
+import javafx.application.Application;
+
 public class Main {
 
     public static void main(String[] args) {
-        UIController UI = new UIController();
-
+        Application.launch(UIController.class, args);
     }
 
 }
