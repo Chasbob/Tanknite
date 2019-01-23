@@ -2,7 +2,7 @@ package com.aticatac.menus;
 
 import javafx.event.ActionEvent;
 
-public class Controller {
+public class MainMenuController {
 
     public void loadSinglePlayer(ActionEvent actionEvent) {
         //TODO start single player game
