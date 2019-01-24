@@ -28,12 +28,6 @@ public class UIController extends Application {
 
     }
 
-    private void LoadScene (Parent scene)
-    {
-        stage.setScene(new Scene (scene,width,height));
-    }
-
-
     public void LoadMainMenu(ActionEvent actionEvent)
     {
         try {
@@ -78,5 +72,8 @@ public class UIController extends Application {
             e.printStackTrace();
         }
     }
+
+    //helper functions
+    private void LoadScene (Parent scene) { stage.setScene(new Scene (scene,width,height)); }
 }
 
