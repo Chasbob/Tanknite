@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="435.0" prefWidth="558.0" stylesheets="@SceneStyler.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aticatac.menus.UIController">
+   <top>
+      <Label prefHeight="15.0" prefWidth="404.0" text="local network" BorderPane.alignment="CENTER" />
+   </top>
+   <bottom>
+      <Button mnemonicParsing="false" onAction="#loadMainMenu" prefHeight="30.0" prefWidth="74.0" text="back" BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <GridPane prefHeight="318.0" prefWidth="558.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#hostGame" text="host" textAlignment="CENTER" GridPane.halignment="CENTER" />
+            <Button mnemonicParsing="false" onAction="#joinGame" text="join" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+         </children>
+      </GridPane>
+   </center>
+</BorderPane>

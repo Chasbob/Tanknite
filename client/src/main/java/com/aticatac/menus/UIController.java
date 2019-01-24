@@ -13,7 +13,7 @@ import java.io.IOException;
 public class UIController extends Application {
 
     private static final int width = 1000;
-    private static final int height = 1000;
+    private static final int height = 700;
 
     private static Stage stage;
 
@@ -28,7 +28,8 @@ public class UIController extends Application {
 
     }
 
-    public void LoadMainMenu(ActionEvent actionEvent)
+    //scene functions
+    public void loadMainMenu(ActionEvent actionEvent)
     {
         try {
             LoadScene(FXMLLoader.load(getClass().getResource("/MainMenuScene.fxml")));
@@ -39,6 +40,7 @@ public class UIController extends Application {
 
     public void loadSinglePlayerScene (ActionEvent actionEvent)
     {
+        //TODO set up server even though single player?
         try {
             LoadScene(FXMLLoader.load(getClass().getResource("/GameScene.fxml")));
         } catch (IOException e) {
@@ -49,13 +51,13 @@ public class UIController extends Application {
     public void loadMultiPlayerScene (ActionEvent actionEvent)
     {
         try {
-            LoadScene(FXMLLoader.load(getClass().getResource("/GameScene.fxml")));
+            LoadScene(FXMLLoader.load(getClass().getResource("/MultiplayerScene.fxml")));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void LoadSettingsScene (ActionEvent actionEvent)
+    public void loadSettingsScene(ActionEvent actionEvent)
     {
         try {
             LoadScene(FXMLLoader.load(getClass().getResource("/SettingsScene.fxml")));
@@ -64,13 +66,35 @@ public class UIController extends Application {
         }
     }
 
-    public void LoadHighScoreScene (ActionEvent actionEvent)
+    public void loadScoreScene(ActionEvent actionEvent)
     {
         try {
-            LoadScene(FXMLLoader.load(getClass().getResource("/HighScoreScene.fxml")));
+            LoadScene(FXMLLoader.load(getClass().getResource("/ScoreScene.fxml")));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //multiplayer functions
+    public void hostGame(ActionEvent actionEvent){
+        //TODO set up server for hosting
+        System.out.println("hosting game");
+    }
+
+    public void joinGame(ActionEvent actionEvent){
+        //TODO set up server for hosting
+        System.out.println("joining game");
+    }
+
+    //toggle functions
+    public void toggleSound(ActionEvent actionEvent){
+        //TODO toggle sound setting of game....setting needs to be saved after clicking or atleast for that session.
+        System.out.println("sound toggled.");
+    }
+
+    public void toggleClearScores(ActionEvent actionEvent){
+        //TODO toggle clear scores setting of game...setting needs to be reset after clicking
+        System.out.println("cleared scores.");
     }
 
     //helper functions

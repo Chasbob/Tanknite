@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="466.0" prefWidth="450.0" stylesheets="@SceneStyler.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aticatac.menus.UIController">
+   <top>
+      <Label text="Scores" BorderPane.alignment="CENTER" />
+   </top>
+   <bottom>
+      <Button mnemonicParsing="false" onAction="#loadMainMenu" text="back" BorderPane.alignment="CENTER" />
+   </bottom>
+</BorderPane>
