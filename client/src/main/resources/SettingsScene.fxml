@@ -34,6 +34,19 @@
       </GridPane>
    </center>
    <bottom>
-      <Button mnemonicParsing="false" onAction="#loadMainMenu" text="Back" BorderPane.alignment="CENTER" />
+      <GridPane alignment="CENTER" prefHeight="68.0" prefWidth="257.0" BorderPane.alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="106.0" minWidth="10.0" prefWidth="92.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="122.0" minWidth="10.0" prefWidth="99.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="104.0" minWidth="10.0" prefWidth="94.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="68.0" minHeight="10.0" prefHeight="68.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="26.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#loadMainMenu" text="Back" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+         </children>
+      </GridPane>
    </bottom>
 </BorderPane>
