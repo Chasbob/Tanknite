@@ -12,7 +12,7 @@
 <BorderPane prefHeight="437.0" prefWidth="313.0" stylesheets="@SceneStyler.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aticatac.menus.UIController">
    <center>
       <GridPane alignment="center" hgap="10" prefHeight="207.0" prefWidth="288.0" stylesheets="SceneStyler.css" vgap="20" BorderPane.alignment="CENTER">
-         <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#loadGameScene" text="Single Player" textFill="#f49302" />
+         <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#singlePlayer" text="Single Player" textFill="#f49302" />
          <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadMultiPlayerScene" text="Multiplayer" textFill="#f49302" GridPane.rowIndex="1">
             <GridPane.margin>
                <Insets />
