@@ -38,9 +38,8 @@ public class UIController extends Application {
         }
     }
 
-    public void loadSinglePlayerScene (ActionEvent actionEvent)
+    public void loadGameScene(ActionEvent actionEvent)
     {
-        //TODO set up server even though single player?
         try {
             LoadScene(FXMLLoader.load(getClass().getResource("/GameScene.fxml")));
         } catch (IOException e) {
@@ -75,15 +74,23 @@ public class UIController extends Application {
         }
     }
 
+    //singleplayer functions
+    public void singlePlayer(ActionEvent actionEvent){
+        //TODO set up single player game may involve invoking server
+        loadGameScene(actionEvent);
+    }
+
     //multiplayer functions
     public void hostGame(ActionEvent actionEvent){
         //TODO set up server for hosting
         System.out.println("hosting game");
+        loadGameScene(actionEvent);
     }
 
     public void joinGame(ActionEvent actionEvent){
-        //TODO set up server for hosting
+        //TODO join a server
         System.out.println("joining game");
+        loadGameScene(actionEvent);
     }
 
     //toggle functions

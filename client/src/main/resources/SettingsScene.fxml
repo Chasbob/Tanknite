@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="285.0" prefWidth="288.0" style="-fx-background-color: black;" styleClass="root" stylesheets="@SceneStyler.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aticatac.menus.UIController">
+<BorderPane prefHeight="406.0" prefWidth="288.0" stylesheets="@SceneStyler.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aticatac.menus.UIController">
    <top>
       <Label prefHeight="51.0" prefWidth="264.0" text="Settings" textFill="#f2ea10" BorderPane.alignment="CENTER">
          <font>
