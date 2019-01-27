@@ -1,5 +1,12 @@
 package com.aticatac.model;
 
-public class Map implements java.io.Serializable{
-
+/**
+ * The type Map.
+ */
+public class Map implements java.io.Serializable {
+    /**
+     * Instantiates a new Map.
+     */
+    public Map() {
+    }
 }
