@@ -1,41 +1,54 @@
 package com.aticatac.menus;
 
-import javafx.geometry.Rectangle2D;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 public class Sprite
 {
+    //TODO physics/intersection part of class
+
+    private Image baseImage;
     private Image image;
-    private double positionX;
-    private double positionY;
-    private double velocityX;
-    private double velocityY;
-    private double width;
-    private double height;
-
-    // ...
-    // methods omitted for brevity
-    // ...
-
-    public void update(double time)
-    {
-        positionX += velocityX * time;
-        positionY += velocityY * time;
-    }
+    private double X =0;
+    private double Y =0;
+    private double rotation = 0;
 
     public void render(GraphicsContext gc)
     {
-        gc.drawImage( image, positionX, positionY );
+        gc.drawImage( image, X, Y);
     }
 
-    public Rectangle2D getBoundary()
-    {
-        return new Rectangle2D(positionX,positionY,width,height);
+    public void Transform(double x, double y){
+        SetTransform(X+x,Y+y);
     }
 
-    public boolean intersects(Sprite s)
+    public void SetTransform(double x, double y)
+    {X = x;Y = y;}
+
+    public void SetRotation(double r)
     {
-        return s.getBoundary().intersects( this.getBoundary() );
+        rotation = r;
+
+        SnapshotParameters params = new SnapshotParameters();
+        params.setFill(Color.TRANSPARENT);
+
+        ImageView iv = new ImageView(baseImage);
+        iv.setRotate(rotation);
+
+        image = iv.snapshot(params, null);
     }
+
+    public void Rotate(double r){
+        rotation = rotation + r;
+        SetRotation(rotation);
+    }
+
+    public double GetRotation(){return rotation;}
+
+    void SetImage(Image i){baseImage = i;image = baseImage;}
+
+    public Image getImage(){return image;}
 }

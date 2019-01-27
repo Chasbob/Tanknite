@@ -65,22 +65,10 @@ public class UIController extends Application {
 
             Image tank = new Image( "/73749645-pixel-military-tank-top.png" );
 
-            SnapshotParameters params = new SnapshotParameters();
-            params.setFill(Color.TRANSPARENT);
+            Tank player = new Tank();
+            player.SetImage(tank);
 
-            ImageView iv = new ImageView(tank);
-            iv.setRotate(90);
-            Image tankRight = iv.snapshot(params, null);
-
-            ImageView iv2 = new ImageView(tank);
-            iv2.setRotate(-90);
-            Image tankLeft = iv2.snapshot(params, null);
-
-            ImageView iv3 = new ImageView(tank);
-            iv3.setRotate(180);
-            Image tankDOWN = iv3.snapshot(params, null);
-
-            ArrayList<String> input = new ArrayList<String>();
+            ArrayList<String> input = new ArrayList<>();
 
             Scene.setOnKeyPressed(
                     e -> {
@@ -103,10 +91,6 @@ public class UIController extends Application {
 
             new AnimationTimer()
             {
-                double x = width/2, y = height/2;
-
-                Image TankRot = tankRight;
-
                 public void handle(long currentNanoTime)
                 {
                     gc.clearRect(0, 0, width,height);
@@ -116,22 +100,22 @@ public class UIController extends Application {
                     double t = (currentNanoTime - startNanoTime) / 1000000000.0;
 
                     if (input.contains("LEFT")) {
-                        x = x - 2;
-                        TankRot = tankLeft;
+                        player.Transform(-2,0);
+                        player.SetRotation(-90);
                     } else if (input.contains("RIGHT")) {
-                        x = x + 2;
-                        TankRot = tankRight;
+                        player.Transform(2,0);
+                        player.SetRotation(90);
                     }
                     else if (input.contains("UP")) {
-                        y = y - 2;
-                        TankRot = tank;
+                        player.Transform(0,-2);
+                        player.SetRotation(0);
                     }
                     else if (input.contains("DOWN")) {
-                        y = y + 2;
-                        TankRot = tankDOWN;
+                        player.Transform(0,2);
+                        player.SetRotation(180);
                     }
 
-                    gc.drawImage(TankRot, x, y);
+                    player.render(gc);
                 }
             }.start();
 
