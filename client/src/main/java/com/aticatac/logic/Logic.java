@@ -1,18 +1,22 @@
 package com.aticatac.logic;
 public class Logic {
+
+
+    // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
     public static void createNewTank(){
 // determine whether ai, put behavioural trees from ai if so
     }
 
-    public static void moveForward(){
+    public static void moveForward(char currentDirection, int currentXCoord, int currentYCoord){
         // Talk to physics, it will return whether can move, if can then tell renderer it moves and where
-    }
-
-    public static void turnLeft() {
 
     }
 
-    public static void turnRight() {
+    public static void turnLeft(char currentDirection) {
+
+    }
+
+    public static void turnRight(char currentDirection) {
 
     }
 
