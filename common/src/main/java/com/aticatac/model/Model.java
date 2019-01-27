@@ -9,6 +9,7 @@ package com.aticatac.model;
  * @author Charles de Freitas
  */
 public class Model implements java.io.Serializable {
+    final long serialVersionUID = 42L;
     /**
      * Used by the server as a unique identifier
      * as to which client it is intended for.
