@@ -1,13 +1,24 @@
 package com.aticatac.menus;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class UIController extends Application {
@@ -41,8 +52,72 @@ public class UIController extends Application {
     public void loadGameScene(ActionEvent actionEvent)
     {
         try {
-            LoadScene(FXMLLoader.load(getClass().getResource("/GameScene.fxml")));
-        } catch (IOException e) {
+
+            Group root = new Group();
+
+            Scene Scene = new Scene( root,width,height );
+            stage.setScene(Scene);
+
+            Canvas canvas = new Canvas(width, height);
+            root.getChildren().add( canvas );
+
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+
+            Image tank = new Image( "/73749645-pixel-military-tank-top.png" );
+            ImageView iv = new ImageView(tank);
+            iv.setRotate(90);
+            SnapshotParameters params = new SnapshotParameters();
+            params.setFill(Color.TRANSPARENT);
+            Image rotatedImage = iv.snapshot(params, null);
+
+            ArrayList<String> input = new ArrayList<String>();
+
+            Scene.setOnKeyPressed(
+                    e -> {
+                        String code = e.getCode().toString();
+
+                        // only add once... prevent duplicates
+                        if ( !input.contains(code) )
+                            input.add( code );
+                    });
+
+            Scene.setOnKeyReleased(
+                    e -> {
+                        String code = e.getCode().toString();
+                        input.remove( code );
+                    });
+
+
+
+            final long startNanoTime = System.nanoTime();
+
+            new AnimationTimer()
+            {
+                double x = 0;
+
+                public void handle(long currentNanoTime)
+                {
+                    gc.clearRect(0, 0, width,height);
+                    gc.setFill(Color.web("#000000"));
+                    gc.fillRect(0,0,width,height);
+
+                    double t = (currentNanoTime - startNanoTime) / 1000000000.0;
+
+                    if (input.contains("LEFT")) {
+                        x = x - 1;
+                    } else if (input.contains("RIGHT")) {
+                        x = x + 1;
+                    }
+                    gc.drawImage(rotatedImage, x, height / 2);
+                }
+            }.start();
+
+            //root.getChildren().add(FXMLLoader.load(getClass().getResource("/GameScene.fxml")));
+
+            stage.show();
+
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
