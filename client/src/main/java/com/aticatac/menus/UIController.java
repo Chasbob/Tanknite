@@ -64,11 +64,21 @@ public class UIController extends Application {
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
             Image tank = new Image( "/73749645-pixel-military-tank-top.png" );
-            ImageView iv = new ImageView(tank);
-            iv.setRotate(90);
+
             SnapshotParameters params = new SnapshotParameters();
             params.setFill(Color.TRANSPARENT);
-            Image rotatedImage = iv.snapshot(params, null);
+
+            ImageView iv = new ImageView(tank);
+            iv.setRotate(90);
+            Image tankRight = iv.snapshot(params, null);
+
+            ImageView iv2 = new ImageView(tank);
+            iv2.setRotate(-90);
+            Image tankLeft = iv2.snapshot(params, null);
+
+            ImageView iv3 = new ImageView(tank);
+            iv3.setRotate(180);
+            Image tankDOWN = iv3.snapshot(params, null);
 
             ArrayList<String> input = new ArrayList<String>();
 
@@ -93,7 +103,9 @@ public class UIController extends Application {
 
             new AnimationTimer()
             {
-                double x = 0;
+                double x = width/2, y = height/2;
+
+                Image TankRot = tankRight;
 
                 public void handle(long currentNanoTime)
                 {
@@ -104,11 +116,22 @@ public class UIController extends Application {
                     double t = (currentNanoTime - startNanoTime) / 1000000000.0;
 
                     if (input.contains("LEFT")) {
-                        x = x - 1;
+                        x = x - 2;
+                        TankRot = tankLeft;
                     } else if (input.contains("RIGHT")) {
-                        x = x + 1;
+                        x = x + 2;
+                        TankRot = tankRight;
                     }
-                    gc.drawImage(rotatedImage, x, height / 2);
+                    else if (input.contains("UP")) {
+                        y = y - 2;
+                        TankRot = tank;
+                    }
+                    else if (input.contains("DOWN")) {
+                        y = y + 2;
+                        TankRot = tankDOWN;
+                    }
+
+                    gc.drawImage(TankRot, x, y);
                 }
             }.start();
 
