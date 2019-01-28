@@ -1,25 +1,55 @@
 package com.aticatac.logic;
+
+import com.aticatac.tank.Tank;
+
+import java.util.HashMap;
+
 public class Logic {
 
+    private static HashMap<String, Tank> tanks = new HashMap<>();
 
     // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
-    public static void createNewTank(){
+    // how to get name from user
+    public static void createNewTank(String name){
+        tanks.put(name, new Tank());
 // determine whether ai, put behavioural trees from ai if so
     }
 
+    // call method when up arrow pressed
     public static void moveForward(char currentDirection, int currentXCoord, int currentYCoord){
         // Talk to physics, it will return whether can move, if can then tell renderer it moves and where
 
     }
 
-    public static void turnLeft(char currentDirection) {
-
+    //get name of tank somehoooooow
+    // call method when left arrow pressed
+    //Logic.turnLeft(name);
+    public static void turnLeft(String name) {
+        switch(tanks.get(name).getCurrentDirection()){
+            case 'N' : tanks.get(name).setCurrentDirection('W');
+                break;
+            case 'E' : tanks.get(name).setCurrentDirection('N');
+                break;
+            case 'S' : tanks.get(name).setCurrentDirection('E');
+                break;
+            case 'W' : tanks.get(name).setCurrentDirection('S');
+        }
     }
 
-    public static void turnRight(char currentDirection) {
-
+    // call method when right arrow pressed
+    public static void turnRight(String name) {
+        switch(tanks.get(name).getCurrentDirection()){
+            case 'N' : tanks.get(name).setCurrentDirection('E');
+                break;
+            case 'E' : tanks.get(name).setCurrentDirection('S');
+                break;
+            case 'S' : tanks.get(name).setCurrentDirection('W');
+                break;
+            case 'W' : tanks.get(name).setCurrentDirection('N');
+        }
     }
 
+    // call method when space bar pressed
     public static void shoot() {
 // create bullet object
     }
@@ -50,7 +80,6 @@ public class Logic {
 
 /*Potential:
 PickUpItem
-Reload
 getAmmo()
  */
 }

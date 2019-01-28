@@ -1,11 +1,14 @@
-package com.aticatac.tank;
+package com.aticatac.bullet;
 
-public class Tank {
+public class Bullet {
     private int currentXCoord;
     private int currentYCoord;
     private char currentDirection;
-
-    public Tank (){
+    private int damage;
+    // bullet speed?
+    // or different bullets for each gun/powerup?
+    public Bullet (int bulletDamage){
+        bulletDamage = damage;
     }
 
     public void setCurrentXCoord (int xCoord){
