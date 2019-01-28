@@ -65,6 +65,8 @@ public class UIController extends Application {
 
             Image tank = new Image( "/73749645-pixel-military-tank-top.png" );
 
+            Image bullet = new Image( "/bullet.png" );
+
             Tank player = new Tank();
             player.SetImage(tank);
 
@@ -85,12 +87,14 @@ public class UIController extends Application {
                         input.remove( code );
                     });
 
-
+            ArrayList<Missile> mL = new ArrayList<>();
 
             final long startNanoTime = System.nanoTime();
 
             new AnimationTimer()
             {
+                boolean onSpacePressed = false;
+
                 public void handle(long currentNanoTime)
                 {
                     gc.clearRect(0, 0, width,height);
@@ -113,8 +117,24 @@ public class UIController extends Application {
                     else if (input.contains("DOWN")) {
                         player.Transform(0,2);
                         player.SetRotation(180);
+                    }else if (input.contains("SPACE") && !onSpacePressed) {
+                        onSpacePressed = true;
+
+                        Missile m = new Missile();
+                        m.SetImage(bullet);
+                        m.SetTransform(player.GetX(),player.GetY());
+                        m.SetRotation(player.GetRotation());
+                        mL.add(m);
                     }
 
+                    if(!input.contains("SPACE"))
+                    {
+                        onSpacePressed = false;
+                    }
+                    for (Missile m: mL) {
+                        m.Forward(10);
+                        m.render(gc);
+                    }
                     player.render(gc);
                 }
             }.start();

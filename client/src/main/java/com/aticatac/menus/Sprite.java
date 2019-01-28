@@ -28,6 +28,16 @@ public class Sprite
     public void SetTransform(double x, double y)
     {X = x;Y = y;}
 
+    public void Forward(double v)
+    {
+        double xFactor = Math.sin(Math.toRadians(GetRotation()));
+        double yFactor = -Math.cos(Math.toRadians(GetRotation()));
+        Transform(v*xFactor,v*yFactor);
+    }
+
+    public double GetX(){return X;}
+    public double GetY(){return Y;}
+
     public void SetRotation(double r)
     {
         rotation = r;
