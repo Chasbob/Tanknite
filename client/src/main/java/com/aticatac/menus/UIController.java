@@ -3,22 +3,20 @@ package com.aticatac.menus;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.aticatac.common.models.*;
 
 
 public class UIController extends Application {
@@ -34,6 +32,7 @@ public class UIController extends Application {
         stage = primaryStage;
 
         stage.setTitle("AticAtac");
+        stage.setResizable(false);
         stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/MainMenuScene.fxml")),width,height));
         stage.show();
 
@@ -63,13 +62,6 @@ public class UIController extends Application {
 
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
-            Image tank = new Image( "/73749645-pixel-military-tank-top.png" );
-
-            Image bullet = new Image( "/bullet.png" );
-
-            Tank player = new Tank();
-            player.SetImage(tank);
-
             ArrayList<String> input = new ArrayList<>();
 
             Scene.setOnKeyPressed(
@@ -87,13 +79,11 @@ public class UIController extends Application {
                         input.remove( code );
                     });
 
-            ArrayList<Missile> mL = new ArrayList<>();
 
             final long startNanoTime = System.nanoTime();
 
             new AnimationTimer()
             {
-                boolean onSpacePressed = false;
 
                 public void handle(long currentNanoTime)
                 {
@@ -104,38 +94,23 @@ public class UIController extends Application {
                     double t = (currentNanoTime - startNanoTime) / 1000000000.0;
 
                     if (input.contains("LEFT")) {
-                        player.Transform(-2,0);
-                        player.SetRotation(-90);
+                        //TODO Send server LEFT COMMAND
                     } else if (input.contains("RIGHT")) {
-                        player.Transform(2,0);
-                        player.SetRotation(90);
+                        //TODO Send server RIGHT COMMAND
                     }
                     else if (input.contains("UP")) {
-                        player.Transform(0,-2);
-                        player.SetRotation(0);
+                        //TODO Send server UP COMMAND
                     }
                     else if (input.contains("DOWN")) {
-                        player.Transform(0,2);
-                        player.SetRotation(180);
-                    }else if (input.contains("SPACE") && !onSpacePressed) {
-                        onSpacePressed = true;
-
-                        Missile m = new Missile();
-                        m.SetImage(bullet);
-                        m.SetTransform(player.GetX(),player.GetY());
-                        m.SetRotation(player.GetRotation());
-                        mL.add(m);
+                        //TODO Send server DOWN COMMAND
                     }
 
-                    if(!input.contains("SPACE"))
-                    {
-                        onSpacePressed = false;
+                    if (input.contains("SPACE")) {
+                        //TODO Send server SPACE COMMAND
                     }
-                    for (Missile m: mL) {
-                        m.Forward(10);
-                        m.render(gc);
-                    }
-                    player.render(gc);
+
+
+
                 }
             }.start();
 
