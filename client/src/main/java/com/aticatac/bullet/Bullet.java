@@ -7,8 +7,12 @@ public class Bullet {
     private int damage;
     // bullet speed?
     // or different bullets for each gun/powerup?
-    public Bullet (int bulletDamage){
-        bulletDamage = damage;
+    public Bullet (int bulletDamage, int xCoord, int yCoord, char direction){
+        damage = bulletDamage;
+        currentXCoord = xCoord;
+        currentYCoord = yCoord;
+        currentDirection = direction;
+
     }
 
     public void setCurrentXCoord (int xCoord){

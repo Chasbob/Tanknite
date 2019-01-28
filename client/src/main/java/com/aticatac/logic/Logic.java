@@ -5,7 +5,7 @@ import com.aticatac.tank.Tank;
 import java.util.HashMap;
 
 public class Logic {
-
+// change to server side, have key presses on client side
     private static HashMap<String, Tank> tanks = new HashMap<>();
 
     // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
@@ -15,8 +15,14 @@ public class Logic {
 // determine whether ai, put behavioural trees from ai if so
     }
 
-    // call method when up arrow pressed
-    public static void moveForward(char currentDirection, int currentXCoord, int currentYCoord){
+    /**
+     * call method when up arrow pressed
+     * @
+     */
+    public static void moveForward(String name){
+        currentDirection = tanks.get(name).getCurrentDirection();
+        currentXCoord = tanks.get(name).getCurrentXCoord();
+        currentYCoord = tanks.get(name).getCurrentYCoord();
         // Talk to physics, it will return whether can move, if can then tell renderer it moves and where
 
     }
@@ -24,6 +30,11 @@ public class Logic {
     //get name of tank somehoooooow
     // call method when left arrow pressed
     //Logic.turnLeft(name);
+
+    /**
+     *
+     * @param name the
+     */
     public static void turnLeft(String name) {
         switch(tanks.get(name).getCurrentDirection()){
             case 'N' : tanks.get(name).setCurrentDirection('W');
@@ -50,8 +61,15 @@ public class Logic {
     }
 
     // call method when space bar pressed
-    public static void shoot() {
-// create bullet object
+    public static void shoot(String name, int damage) {
+        currentDirection = tanks.get(name).getCurrentDirection();
+        currentXCoord = tanks.get(name).getCurrentXCoord();
+        currentYCoord = tanks.get(name).getCurrentYCoord();
+        Bullet bullet = new Bullet(damage, currentXCoord, currentYCoord, currentDirection);
+
+
+// create bullet object current co ordinatesn where shooting tank is, and move
+        //
     }
 
     public static void isShot() {
