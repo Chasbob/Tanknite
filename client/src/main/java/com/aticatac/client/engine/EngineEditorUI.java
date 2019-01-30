@@ -1,4 +1,4 @@
-package com.aticatac.engine;
+package com.aticatac.client.engine;
 
 import com.aticatac.common.components.Component;
 import javafx.application.Application;

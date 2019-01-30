@@ -1,4 +1,4 @@
-package com.aticatac.component;
+package com.aticatac.client.component;
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Transform;

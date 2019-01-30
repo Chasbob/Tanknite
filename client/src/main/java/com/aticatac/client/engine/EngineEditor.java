@@ -1,6 +1,5 @@
-package com.aticatac.engine;
+package com.aticatac.client.engine;
 
-import com.aticatac.menus.UIController;
 import javafx.application.Application;
 
 import java.io.IOException;
