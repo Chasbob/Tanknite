@@ -3,7 +3,7 @@ plugins {
 }
 
 
-sourceCompatibility = 1.9
+sourceCompatibility = 11.0
 
 repositories {
     mavenCentral()

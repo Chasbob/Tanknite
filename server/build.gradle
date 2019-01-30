@@ -9,21 +9,21 @@ buildscript {
 plugins {
     id 'java'
     id 'application'
-//    id 'docker'
+    id 'docker'
 }
 application {
     mainClassName = "com.aticatac.server.Main"
 }
 apply plugin: 'docker'
 
-//docker {
-//    baseImage "openjdk:11-jre-slim"
-//    maintainer 'Charles de Freitas "ypph279@gmail.com"'
-//}
+docker {
+    baseImage "openjdk:11-jre-slim"
+    maintainer 'Charles de Freitas "ypph279@gmail.com"'
+}
 
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11.0
+targetCompatibility = 11.0
 
 repositories {
     mavenCentral()
