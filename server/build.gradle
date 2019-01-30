@@ -1,9 +1,29 @@
-plugins {
-    id 'java'
+
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
 }
 
+plugins {
+    id 'java'
+    id 'application'
+//    id 'docker'
+}
+application {
+    mainClassName = "com.aticatac.server.Main"
+}
+apply plugin: 'docker'
 
-sourceCompatibility = 1.9
+//docker {
+//    baseImage "openjdk:11-jre-slim"
+//    maintainer 'Charles de Freitas "ypph279@gmail.com"'
+//}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -11,4 +31,10 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    // https://mvnrepository.com/artifact/log4j/log4j
+    implementation group: 'log4j', name: 'log4j', version: '1.2.17'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+
+    compile project(':common')
 }
