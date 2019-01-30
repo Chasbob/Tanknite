@@ -1,4 +1,4 @@
-package com.aticatac.menus;
+package com.aticatac.client.menus;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
