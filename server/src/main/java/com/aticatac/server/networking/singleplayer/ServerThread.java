@@ -53,9 +53,11 @@ public class ServerThread extends Thread {
                 if (model.getCommand() != previous) logger.info(model.getCommand().toString());
                 previous = model.getCommand();
                 if (!placeHolder(model.getCommand())) {
-                    model.setCommand(Command.UPDATE);
+                    model.setCommand(Command.SHOOT);
                 }
-                sendModel(model, receivePacket);
+                if (placeHolder(model.getCommand(), model.getId())) {
+                    sendModel(model, receivePacket);
+                }
             } catch (IOException | ClassNotFoundException e) {
                 logger.error(e.getMessage());
                 System.exit(1);
@@ -63,8 +65,9 @@ public class ServerThread extends Thread {
         }
     }
 
-    private Boolean placeHolder(Command command) {
+    private boolean placeHolder(Command command, String id) {
         //TODO implement with logic
+//       return checkLogic(command);
         return true;
     }
 
