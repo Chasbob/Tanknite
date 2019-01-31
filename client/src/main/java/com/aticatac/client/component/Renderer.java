@@ -27,8 +27,8 @@ public class Renderer extends Component {
 
     public void render(GraphicsContext gc)
     {
-        //Position p = (componentParent.getComponent(Transform.class)).GetPosition();
-        //gc.drawImage( image, p.x, p.y);
+        Position p = (componentParent.getComponent(Transform.class)).GetPosition();
+        gc.drawImage( image, p.x, p.y);
     }
 
     public void SetRotation(double r)

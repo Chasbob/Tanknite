@@ -91,8 +91,8 @@ public class UIController extends Application {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             Image tank = new Image("/73749645-pixel-military-tank-top.png");
             Image bullet = new Image("/bullet.png");
-            Tank player = new Tank();
-            player.SetImage(tank);
+//            Tank player = new Tank();
+//            player.SetImage(tank);
             ArrayList<String> input = new ArrayList<>();
             Scene.setOnKeyPressed(
                     e -> {
@@ -106,7 +106,7 @@ public class UIController extends Application {
                         String code = e.getCode().toString();
                         input.remove(code);
                     });
-            ArrayList<Missile> mL = new ArrayList<>();
+//            ArrayList<Missile> mL = new ArrayList<>();
             final long startNanoTime = System.nanoTime();
             new AnimationTimer() {
                 boolean onSpacePressed = false;
@@ -137,11 +137,11 @@ public class UIController extends Application {
                     if (!input.contains("SPACE")) {
                         onSpacePressed = false;
                     }
-                    for (Missile m : mL) {
-                        m.Forward(10);
-                        m.render(gc);
-                    }
-                    player.render(gc);
+//                    for (Missile m : mL) {
+//                        m.Forward(10);
+//                        m.render(gc);
+//                    }
+//                    player.render(gc);
                 }
             }.start();
             //root.getChildren().add(FXMLLoader.load(getClass().getResource("/GameScene.fxml")));

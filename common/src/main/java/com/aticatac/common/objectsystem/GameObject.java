@@ -15,15 +15,28 @@ public class GameObject {
 
     public HashMap<Class<?>,Component> Components;
 
-    public GameObject(GameObject parent){
-        Constructor(parent);
+    public GameObject(GameObject parent,String name){
+        Constructor(parent,name);
     }
 
-    public GameObject(GameObject parent, ArrayList<Class<? extends Component>> components){
-        Constructor(parent);
+    public GameObject(GameObject parent,String name, ArrayList<Class<? extends Component>> components){
+        Constructor(parent,name);
 
         addComponents(components);
     }
+
+    public GameObject findObject(String name){
+        if (name.equals(Name)) return this;
+        GameObject p = parent.findObject(name);
+        if(p!=null) return p;
+        for (GameObject o:children) {
+            GameObject c = o.findObject(name);
+            if(c!=null) return c;
+        }
+        return null;
+    }
+
+
 
     public void addComponents(List<Class<? extends Component>> components) {
         for (Class<? extends Component> c:components) {
@@ -31,7 +44,8 @@ public class GameObject {
         }
     }
 
-    private void Constructor(GameObject parent) {
+    private void Constructor(GameObject parent,String name) {
+        this.Name = name;
         this.parent = parent;
         if (parent!=null) this.parent.children.add(this);
 
@@ -51,6 +65,7 @@ public class GameObject {
         if (ComponentExists(type)) return null;
         try {
             T t = type.getConstructor(GameObject.class).newInstance(this);
+            t.start();
             Components.put(type,t);
             return t;
         } catch (Exception e) {
@@ -60,6 +75,7 @@ public class GameObject {
     }
 
     public <T extends Component> void removeComponent(Class<T> type) {
+        Components.get(type).interrupt();
         Components.remove(type);
     }
 
