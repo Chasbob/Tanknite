@@ -120,31 +120,16 @@ public class UIController extends Application {
                     if (input.contains("LEFT")) {
                         client.setCommand(Command.LEFT);
                         logger.info(Command.LEFT);
-//                            player.Transform(-2, 0);
-//                            player.SetRotation(-90);
                     } else if (input.contains("RIGHT")) {
                         client.setCommand(Command.RIGHT);
                         logger.info(Command.RIGHT);
-//                        player.Transform(2, 0);
-//                        player.SetRotation(90);
                     } else if (input.contains("UP")) {
                         client.setCommand(Command.UP);
                         logger.info(Command.UP);
-//                        player.Transform(0, -2);
-//                        player.SetRotation(0);
                     } else if (input.contains("DOWN")) {
                         client.setCommand(Command.DOWN);
                         logger.info(Command.DOWN);
-//                        player.Transform(0, 2);
-//                        player.SetRotation(180);
                     } else if (input.contains("SPACE") && !onSpacePressed) {
-//                        onSpacePressed = true;
-//
-//                        Missile m = new Missile();
-//                        m.SetImage(bullet);
-//                        m.SetTransform(player.GetX(), player.GetY());
-//                        m.SetRotation(player.GetRotation());
-//                        mL.add(m);
                         client.setCommand(Command.SHOOT);
                         client.interrupt();
                         logger.info(Command.SHOOT);
