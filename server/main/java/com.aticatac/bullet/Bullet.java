@@ -5,7 +5,7 @@ public class Bullet {
     private int currentYCoord;
     private char currentDirection;
     private int damage;
-    // bullet speed?
+
     public Bullet (int bulletDamage, int xCoord, int yCoord, char direction){
         damage = bulletDamage;
         currentXCoord = xCoord;
@@ -15,6 +15,9 @@ public class Bullet {
 
     }
 
+    public static void  moveForwards (){
+
+    }
     public void setCurrentXCoord (int xCoord){
         currentXCoord = xCoord;
     }
