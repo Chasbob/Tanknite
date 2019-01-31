@@ -37,7 +37,7 @@ public class ServerThread extends Thread {
 
     private void listen() {
         // For tracking a change in commands, for more useful logging.
-        Command previous = Command.UPDATE;
+        Command previous = Command.UP;
         while (!this.isInterrupted()) {
             byte[] packetBytes = new byte[8000];
             DatagramPacket receivePacket = new DatagramPacket(packetBytes, packetBytes.length);
@@ -52,7 +52,7 @@ public class ServerThread extends Thread {
                 Model model = (Model) oos.readObject();
                 if (model.getCommand() != previous) logger.info(model.getCommand().toString());
                 previous = model.getCommand();
-                if (!placeHolder(model.getCommand())) {
+                if (!placeHolder(model.getCommand(), model.getId())) {
                     model.setCommand(Command.SHOOT);
                 }
                 if (placeHolder(model.getCommand(), model.getId())) {

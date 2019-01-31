@@ -1,8 +1,5 @@
 package com.aticatac.common.model;
 
-import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.prefabs.Test;
-
 /**
  * The Class Model is designed to be a consistent model
  * to allow communication between client and server.
@@ -32,13 +29,23 @@ public class Model implements java.io.Serializable {
      */
     public Model(String id) {
         this.id = id;
-        this.command = Command.UPDATE;
+        this.command = Command.UP;
     }
 
+    /**
+     * Gets command.
+     *
+     * @return the command
+     */
     public Command getCommand() {
         return command;
     }
 
+    /**
+     * Sets command.
+     *
+     * @param command the command
+     */
     public void setCommand(Command command) {
         this.command = command;
     }
