@@ -30,7 +30,7 @@ Destroy(<GameObject object>);
 To Find a GameObject simply just call.
 
 ```Java
-FindObject(<String name>)
+tank.findObject(<String name>)
 ```
 
 ### What Are Prefabs?

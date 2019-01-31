@@ -36,8 +36,6 @@ public class GameObject {
         return null;
     }
 
-
-
     public void addComponents(List<Class<? extends Component>> components) {
         for (Class<? extends Component> c:components) {
             addComponent(c);
