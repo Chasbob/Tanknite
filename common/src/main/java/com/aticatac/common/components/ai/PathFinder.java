@@ -1,6 +1,7 @@
 package com.aticatac.common.components.ai;
 
 import com.aticatac.common.model.Command;
+import com.aticatac.common.components.transform.Position;
 import java.util.LinkedList;
 import java.util.Queue;
 

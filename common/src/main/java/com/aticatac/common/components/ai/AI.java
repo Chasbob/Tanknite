@@ -1,6 +1,7 @@
 package com.aticatac.common.components.ai;
 
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.model.Command;
 import java.util.Queue;
