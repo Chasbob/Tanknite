@@ -8,9 +8,13 @@ import java.util.HashMap;
 public class Tank {
     private int currentXCoord;
     private int currentYCoord;
+    private int currentAmmo;
     private char currentDirection;
 
-    public Tank (){
+    public Tank (int xCoord, int yCoord){
+        currentXCoord = xCoord;
+        currentYCoord = yCoord;
+        currentAmmo = 30;
     }
 
 // determine whether ai, put behavioural trees from ai if so
@@ -23,10 +27,11 @@ public class Tank {
      * @
      */
     //update to account for move to Tank class
-    public static boolean moveForwards() {
+    public boolean moveForwards() {
         int [] movement = physicsManager.forwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
+        currentDirection = 'N';
         if (movement[0] == 0) return false;
         else return true;
         // physics returns an array of the boolean, and then 2 co ordinates it moves to
@@ -35,28 +40,31 @@ public class Tank {
     }
 
     // when right arrow/d pressed
-    public static boolean moveRight (){
+    public boolean moveRight (){
         int [] movement = physicsManager.right(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
+        currentDirection = 'E';
         if (movement[0] == 0) return false;
         else return true;
     }
 
     // when left arrow/a pressed
-    public static boolean moveLeft (){
+    public boolean moveLeft (){
         int [] movement = physicsManager.left(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
+        currentDirection = 'W';
         if (movement[0] == 0) return false;
         else return true;
     }
 
     // when down arrow/s pressed
-    public static boolean moveBackwards (){
+    public boolean moveBackwards (){
         int [] movement = physicsManager.backwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
+        currentDirection = 'S';
         if (movement[0] == 0) return false;
         else return true;
     }
@@ -91,11 +99,12 @@ public class Tank {
     */
 
     // call method when space bar pressed
-    public static void shoot(String name, int damage) {
-        char currentDirection = tanks.get(name).getCurrentDirection();
-        int currentXCoord = tanks.get(name).getCurrentXCoord();
-        int currentYCoord = tanks.get(name).getCurrentYCoord();
-        Bullet bullet = new Bullet(damage, currentXCoord, currentYCoord, currentDirection);
+    public boolean shoot(String name) {
+        // talk to physics?
+        if (currentAmmo == 0) return false;
+        Bullet bullet = new Bullet(currentXCoord, currentYCoord, currentDirection);
+        currentAmmo--;
+        return true;
 
 // create bullet object current co ordinatesn where shooting tank is, and move
         //

@@ -6,13 +6,10 @@ public class Bullet {
     private char currentDirection;
     private int damage;
 
-    public Bullet (int bulletDamage, int xCoord, int yCoord, char direction){
-        damage = bulletDamage;
+    public Bullet (int xCoord, int yCoord, char direction){
         currentXCoord = xCoord;
         currentYCoord = yCoord;
         currentDirection = direction;
-        // bullet movement
-
     }
 
     public static void  moveForwards (){

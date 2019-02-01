@@ -14,7 +14,7 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
     // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
     // how to get name from user
     public static void createNewTank(String name) {
-        tanks.put(name, new Tank());
+        tanks.put(name, new Tank(physicsManager.getStartingXCoordinate, physicaManager.getStartingYCoordinate));
     }
     public static boolean runCommand (Command command, String name){
         switch(command){
@@ -45,7 +45,7 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
 
     }
 
-
+// Method so that if all tanks out of ammo, ammo spawn more likely
     public static void gameFinish () {
 // only one tank left
     }
