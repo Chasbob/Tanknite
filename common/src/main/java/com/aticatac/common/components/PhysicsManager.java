@@ -4,6 +4,8 @@ import com.aticatac.common.objectsystem.GameObject;
 
 public class PhysicsManager extends Component {
 
+    //
+
     public PhysicsManager(GameObject parent) {
         super(parent);
     }
