@@ -1,4 +1,4 @@
-package com.aticatac.logic;
+package com.aticatac.server.logic;
 
 /**
  * The type Round logic.

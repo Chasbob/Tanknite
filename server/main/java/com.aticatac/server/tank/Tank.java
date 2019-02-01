@@ -1,7 +1,7 @@
-package com.aticatac.tank;
+package com.aticatac.server.tank;
 
-import com.aticatac.bullet.Bullet;
-import com.aticatac.logic.LogicInterface;
+import com.aticatac.server.bullet.Bullet;
+import com.aticatac.server.logic.LogicInterface;
 
 /**
  * The type Tank.

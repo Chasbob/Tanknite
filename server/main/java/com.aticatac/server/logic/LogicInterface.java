@@ -1,6 +1,6 @@
-package com.aticatac.logic;
+package com.aticatac.server.logic;
 
-import com.aticatac.tank.Tank;
+import com.aticatac.server.tank.Tank;
 
 import java.util.HashMap;
 
