@@ -118,6 +118,7 @@ public class AI extends Component {
         else {
             //Queue<Direction> path = pf.getPathToLocation(tank.getLocation(), targetedEnemy);
             //executePath(path);
+            return Command.UP;
         }
     }
 
