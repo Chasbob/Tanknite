@@ -12,14 +12,9 @@ public class Tank {
 
     public Tank (){
     }
-    private static HashMap<String, Tank> tanks = new HashMap<>();
 
-    // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
-    // how to get name from user
-    public static void createNewTank(String name){
-        tanks.put(name, new Tank());
 // determine whether ai, put behavioural trees from ai if so
-    }
+
 
 
     //when sound plays check all tanks in that area and play noise to all those players
@@ -27,36 +22,43 @@ public class Tank {
      * call method when up arrow/w pressed
      * @
      */
-    public static void moveForwards(String name){
-        int currentXCoord = tanks.get(name).getCurrentXCoord();
-        int currentYCoord = tanks.get(name).getCurrentYCoord();
+    //update to account for move to Tank class
+    public static boolean moveForwards() {
+        int [] movement = physicsManager.forwards(int currentXCoord, int currentYCoord);
+        currentXCoord = movement[1];
+        currentYCoord = movement[2];
+        if (movement[0] == 0) return false;
+        else return true;
+        // physics returns an array of the boolean, and then 2 co ordinates it moves to
         // Talk to physics, it will return whether can move, if can then tell renderer it moves and where
-
-
+        // co ordinates can be changed in physics
     }
 
-    // call method when left arrow pressed
-    //Logic.turnLeft(name);
-
     // when right arrow/d pressed
-    public static void moveRight (String name){
-        int currentXCoord = tanks.get(name).getCurrentXCoord();
-        int currentYCoord = tanks.get(name).getCurrentYCoord();
-
+    public static boolean moveRight (){
+        int [] movement = physicsManager.right(int currentXCoord, int currentYCoord);
+        currentXCoord = movement[1];
+        currentYCoord = movement[2];
+        if (movement[0] == 0) return false;
+        else return true;
     }
 
     // when left arrow/a pressed
-    public static void moveLeft (String name){
-        int currentXCoord = tanks.get(name).getCurrentXCoord();
-        int currentYCoord = tanks.get(name).getCurrentYCoord();
-
+    public static boolean moveLeft (){
+        int [] movement = physicsManager.left(int currentXCoord, int currentYCoord);
+        currentXCoord = movement[1];
+        currentYCoord = movement[2];
+        if (movement[0] == 0) return false;
+        else return true;
     }
 
     // when down arrow/s pressed
-    public static void moveBackwards (String name){
-        int currentXCoord = tanks.get(name).getCurrentXCoord();
-        int currentYCoord = tanks.get(name).getCurrentYCoord();
-
+    public static boolean moveBackwards (){
+        int [] movement = physicsManager.backwards(int currentXCoord, int currentYCoord);
+        currentXCoord = movement[1];
+        currentYCoord = movement[2];
+        if (movement[0] == 0) return false;
+        else return true;
     }
 
     /*
@@ -141,3 +143,7 @@ getAmmo()
         return currentDirection;
     }
 }
+
+
+/* Method takes command (check branch) and returns boolean of whether possible
+ */
