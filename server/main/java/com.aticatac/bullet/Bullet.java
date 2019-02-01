@@ -22,7 +22,7 @@ public class Bullet {
         currentDirection = direction;
     }
 
-    //physics in charge of moving and collisions
+    //physics in charge of moving and collisions for bullet and tank
 
     /**
      * Move forwards.

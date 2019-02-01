@@ -3,8 +3,6 @@ package com.aticatac.tank;
 import com.aticatac.bullet.Bullet;
 import com.aticatac.logic.LogicInterface;
 
-import java.util.HashMap;
-
 /**
  * The type Tank.
  */
@@ -102,11 +100,10 @@ public class Tank {
     /**
      * Shoot boolean.
      *
-     * @param name the name
      * @return the boolean
      */
 // call method when space bar pressed
-    public boolean shoot(String name) {
+    public boolean shoot() {
         // talk to physics?
         if (currentAmmo == 0) return false;
         Bullet bullet = new Bullet(currentXCoord, currentYCoord, currentDirection);
@@ -132,6 +129,7 @@ public class Tank {
         // drops ammo box
         if (LogicInterface.numberOfAliveTanks() == 1){ // in other logic class?
             LogicInterface.gameFinish();
+            // start numberoftanks at 10 and subtract one for each death
         }
     }
 

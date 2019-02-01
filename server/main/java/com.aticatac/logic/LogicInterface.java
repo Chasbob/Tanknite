@@ -55,15 +55,15 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
 // single player
     public static boolean runCommand (Command command){
         switch(command){
-            case UP : moveForwards();
+            case UP : return moveForwards();
                 break;
-            case LEFT : moveLeft();
+            case LEFT : return moveLeft();
                 break;
-            case RIGHT : moveRight();
+            case RIGHT : return moveRight();
                 break;
-            case DOWN : moveDown();
+            case DOWN : return moveDown();
                 break;
-            case SHOOT : shoot();
+            case SHOOT : return shoot();
         }
     }
 
