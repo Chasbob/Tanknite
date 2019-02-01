@@ -36,11 +36,11 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
         switch(command){
             case UP : return tanks.get(name).moveForwards();
                 break;
-            case LEFT : return tanks.get(name).moveRight();
+            case LEFT : return tanks.get(name).moveLeft();
                 break;
-            case RIGHT : return tanks.get(name).moveBackwards();
+            case RIGHT : return tanks.get(name).moveRight();
                 break;
-            case DOWN : return tanks.get(name).moveLeft();
+            case DOWN : return tanks.get(name).moveBackwards();
                 break;
             case SHOOT : return tanks.get(name).shoot();
         }
@@ -55,17 +55,16 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
 // single player
     public static boolean runCommand (Command command){
         switch(command){
-            case UP : tanks.get(name).setCurrentDirection('E');
+            case UP : moveForwards();
                 break;
-            case LEFT : tanks.get(name).setCurrentDirection('S');
+            case LEFT : moveLeft();
                 break;
-            case RIGHT : tanks.get(name).setCurrentDirection('W');
+            case RIGHT : moveRight();
                 break;
-            case DOWN : tanks.get(name).setCurrentDirection('N');
+            case DOWN : moveDown();
                 break;
-            case SHOOT : tanks.get(name).shoot();
+            case SHOOT : shoot();
         }
-
     }
 
     /**

@@ -13,6 +13,8 @@ public class Tank {
     private int currentYCoord;
     private int currentAmmo;
     private char currentDirection;
+    private int maxHealth = 100;
+    private int currentHealth;
 
     /**
      * Instantiates a new Tank.
@@ -24,8 +26,9 @@ public class Tank {
         currentXCoord = xCoord;
         currentYCoord = yCoord;
         currentAmmo = 30;
+        currentHealth = 100;
     }
-
+// have ammo as component and get health component, and transform and position etc
 // determine whether ai, put behavioural trees from ai if so
 
 
@@ -96,35 +99,6 @@ public class Tank {
         else return true;
     }
 
-    /*
-    public static void turnLeft(String name) {
-        switch(tanks.get(name).getCurrentDirection()){
-            case 'N' : tanks.get(name).setCurrentDirection('W');
-                break;
-            case 'E' : tanks.get(name).setCurrentDirection('N');
-                break;
-            case 'S' : tanks.get(name).setCurrentDirection('E');
-                break;
-            case 'W' : tanks.get(name).setCurrentDirection('S');
-        }
-    }
-    */
-
-    /*
-    // call method when right arrow pressed
-    public static void turnRight(String name) {
-        switch(tanks.get(name).getCurrentDirection()){
-            case 'N' : tanks.get(name).setCurrentDirection('E');
-                break;
-            case 'E' : tanks.get(name).setCurrentDirection('S');
-                break;
-            case 'S' : tanks.get(name).setCurrentDirection('W');
-                break;
-            case 'W' : tanks.get(name).setCurrentDirection('N');
-        }
-    }
-    */
-
     /**
      * Shoot boolean.
      *
@@ -154,20 +128,38 @@ public class Tank {
     /**
      * Die.
      */
-    public static void die () {
+    public void die () {
+        // drops ammo box
         if (LogicInterface.numberOfAliveTanks() == 1){ // in other logic class?
             LogicInterface.gameFinish();
         }
     }
-    /*Potential:
-PickUpItem
-getAmmo()
- */
 
+
+    public void pickUpHealth () {
+        currentHealth += 10;
+        if (currentHealth > maxHealth){
+            currentHealth = maxHealth;
+        }
+        // only gain health up to maximum
+    }
+
+    public void pickUpAmmo () {
+        currentAmmo += 10;
+    }
+
+    public void pickUpSpeed () {
+
+    }
+
+    public void pickUpDamage () {
+
+    }
     /**
      * Gets health.
      */
     public static void getHealth () {
+
 
     }
 
