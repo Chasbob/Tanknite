@@ -2,6 +2,8 @@ package com.aticatac.common.components.ai;
 
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.components.Component;
+import com.aticatac.common.components.Health;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.model.Command;
 import java.util.Queue;
@@ -21,9 +23,14 @@ public class AI extends Component {
     private GameObject tank;
 
     public AI(GameObject parent) {
+        super(parent);
         this.state = State.searching;
         this.tank = parent;
-        super(parent);
+    }
+
+    public Command getCommand() {
+        checkStateChange();
+        return performStateAction();
     }
 
     private void checkStateChange() {
@@ -32,22 +39,8 @@ public class AI extends Component {
         int fleeingUtility = getFleeingUtility();
         int obtainingUtility = getObtainingUtility();
 
-        int max = Math.max(searchingUtility, attackingUtility, fleeingUtility, obtainingUtility);
 
-        switch (max) {
-            case searchingUtility:
-                state = State.searching;
-                break;
-            case attackingUtility:
-                state = State.attacking;
-                break;
-            case fleeingUtility:
-                state = State.fleeing;
-                break;
-            case obtainingUtility:
-                state = State.obtaining;
-                break;
-        }
+
     }
 
     private int getSearchingUtility() {
@@ -92,35 +85,35 @@ public class AI extends Component {
         switch (state) {
             case searching:
                 return performSearchingAction();
-                break;
             case attacking:
                 return performAttackingAction();
-                break;
             case fleeing:
                 return performFleeingAction();
-                break;
             case obtaining:
                 return performObtainingAction();
-                break;
         }
+        return Command.DOWN;
     }
 
     private Command performSearchingAction() {
         Queue<Command> path = pf.getRandomPath();
-        return path[0];
+        return Command.DOWN;
     }
 
     private Command performAttackingAction() {
+        /*
         GameObject enemy;
         if (checkLineOfSightToEnemy(enemy)) {
             // orient turret in right position then
             return Command.SHOOT;
         }
         else {
-            //Queue<Direction> path = pf.getPathToLocation(tank.getLocation(), targetedEnemy);
+            //Queue<Command> path = pf.getPathToLocation(tank.getLocation(), targetedEnemy);
             //executePath(path);
-            return Command.UP;
+            return Command.DOWN;
         }
+        */
+        return Command.DOWN;
     }
 
     private Command performFleeingAction() {
@@ -134,8 +127,8 @@ public class AI extends Component {
     }
 
     private boolean checkLineOfSightToEnemy(GameObject enemy) {
-        Position tankPos = tank.getComponent(Transform.class).getPosition();
-        Position enemyPos = enemy.getComponent(Transform.class).getPosition();
+        Position tankPos = tank.getComponent(Transform.class).GetPosition();
+        Position enemyPos = enemy.getComponent(Transform.class).GetPosition();
 
         // can a direct line be drawn from tankPos to enemyPos?
 
