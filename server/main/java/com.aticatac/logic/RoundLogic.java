@@ -1,5 +1,8 @@
 package com.aticatac.logic;
 
+/**
+ * The type Round logic.
+ */
 public class RoundLogic {
     // starts round and calls methods from LogicInterface.java
 

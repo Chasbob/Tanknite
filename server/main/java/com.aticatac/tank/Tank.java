@@ -5,12 +5,21 @@ import com.aticatac.logic.LogicInterface;
 
 import java.util.HashMap;
 
+/**
+ * The type Tank.
+ */
 public class Tank {
     private int currentXCoord;
     private int currentYCoord;
     private int currentAmmo;
     private char currentDirection;
 
+    /**
+     * Instantiates a new Tank.
+     *
+     * @param xCoord the x coord
+     * @param yCoord the y coord
+     */
     public Tank (int xCoord, int yCoord){
         currentXCoord = xCoord;
         currentYCoord = yCoord;
@@ -22,11 +31,14 @@ public class Tank {
 
 
     //when sound plays check all tanks in that area and play noise to all those players
+
     /**
      * call method when up arrow/w pressed
+     *
+     * @return the boolean
      * @
      */
-    //update to account for move to Tank class
+//update to account for move to Tank class
     public boolean moveForwards() {
         int [] movement = physicsManager.forwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
@@ -39,7 +51,12 @@ public class Tank {
         // co ordinates can be changed in physics
     }
 
-    // when right arrow/d pressed
+    /**
+     * Move right boolean.
+     *
+     * @return the boolean
+     */
+// when right arrow/d pressed
     public boolean moveRight (){
         int [] movement = physicsManager.right(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
@@ -49,7 +66,12 @@ public class Tank {
         else return true;
     }
 
-    // when left arrow/a pressed
+    /**
+     * Move left boolean.
+     *
+     * @return the boolean
+     */
+// when left arrow/a pressed
     public boolean moveLeft (){
         int [] movement = physicsManager.left(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
@@ -59,7 +81,12 @@ public class Tank {
         else return true;
     }
 
-    // when down arrow/s pressed
+    /**
+     * Move backwards boolean.
+     *
+     * @return the boolean
+     */
+// when down arrow/s pressed
     public boolean moveBackwards (){
         int [] movement = physicsManager.backwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
@@ -98,7 +125,13 @@ public class Tank {
     }
     */
 
-    // call method when space bar pressed
+    /**
+     * Shoot boolean.
+     *
+     * @param name the name
+     * @return the boolean
+     */
+// call method when space bar pressed
     public boolean shoot(String name) {
         // talk to physics?
         if (currentAmmo == 0) return false;
@@ -110,11 +143,17 @@ public class Tank {
         //
     }
 
+    /**
+     * Is shot.
+     */
     public static void isShot() {
 // part of colliding? Physics calls this method?
         //if new health = 0 then die()
     }
 
+    /**
+     * Die.
+     */
     public static void die () {
         if (LogicInterface.numberOfAliveTanks() == 1){ // in other logic class?
             LogicInterface.gameFinish();
@@ -125,29 +164,63 @@ PickUpItem
 getAmmo()
  */
 
+    /**
+     * Gets health.
+     */
     public static void getHealth () {
 
     }
+
+    /**
+     * Set current x coord.
+     *
+     * @param xCoord the x coord
+     */
     public void setCurrentXCoord (int xCoord){
         currentXCoord = xCoord;
     }
 
+    /**
+     * Set current y coord.
+     *
+     * @param yCoord the y coord
+     */
     public void setCurrentYCoord (int yCoord){
         currentYCoord = yCoord;
     }
 
+    /**
+     * Set current direction.
+     *
+     * @param direction the direction
+     */
     public void setCurrentDirection (char direction){
         currentDirection = direction;
     }
 
+    /**
+     * Get current x coord int.
+     *
+     * @return the int
+     */
     public int getCurrentXCoord (){
         return currentXCoord;
     }
 
+    /**
+     * Gets current y coord.
+     *
+     * @return the current y coord
+     */
     public int getCurrentYCoord () {
         return currentYCoord;
     }
 
+    /**
+     * Gets current direction.
+     *
+     * @return the current direction
+     */
     public char getCurrentDirection () {
         return currentDirection;
     }
