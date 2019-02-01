@@ -9,3 +9,14 @@ public class Server extends Component {
     public Server(GameObject parent) {
         super(parent);
     }
+
+    //map will be array in another component
+
+    int[][] map = {};
+
+    //then this part will store the various data about that we need to access
+
+    //will need to know the location of all tanks
+
+    //will need to know the health, ammo, if it has a power up, direction
+}
