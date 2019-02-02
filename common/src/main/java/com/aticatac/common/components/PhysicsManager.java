@@ -4,7 +4,11 @@ import com.aticatac.common.objectsystem.GameObject;
 
 public class PhysicsManager extends Component {
 
-    //
+    private int tankMass = 10;
+    private int thrust = 10;
+    private int gravity = 10;
+    private int frictionCoefficient = 10;
+    private int acceleration;
 
     public PhysicsManager(GameObject parent) {
         super(parent);
@@ -29,18 +33,24 @@ public class PhysicsManager extends Component {
         return movement;
     }
 
-    //TODO Tank Acceleration
-    //this method will be
-
     //TODO Bullet interactions
 
-    //array of whether it can move or not and then the two coordinates
-
-    //Tank.getComponent() tank.findObject("tank")
-    //where tank is the name of the thing we are looking for.
-    //
     
+    private void setAcceleration(){
 
+        if(Tank.getComponent(SpeedPowerUp.class) == null){
+
+            acceleration = (gravity*(frictionCoefficient + tankMass) + thrust)/ tankMass;
+
+        }
+
+        else{
+
+            acceleration = (gravity*(Tank.getComponent(SpeedPowerUp.class).getFrictionCoefficient() + tankMass) + thrust)/ tankMass;
+
+        }
+
+    }
 
 
 }
