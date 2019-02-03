@@ -1,6 +1,7 @@
 package com.aticatac.common.components;
 
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.common.components.transform.*;
 
 public class PhysicsManager extends Component {
 
@@ -14,28 +15,44 @@ public class PhysicsManager extends Component {
         super(parent);
     }
 
+    /**
+     * Checks if the object can move and returns if it can and the new/current position.
+     * @return
+     */
+    public Position move(){
 
-    //TODO Tank move/check collision
-    public int[] move(){
+        //the position for this tank.
+        Position position = Tank.getComponent(Transform.class).getPosition();
+        //Positions of everything
+        Position[] occupiedCoordinates = tank.findObject("String").getComponent(Server.class).getOccupiedCoordinates;
 
-        //Must do nulls for getting positions etc.
-        //Tank.getTransform();
-        // Transform.getPosition(x);
-        //Don't need to set the new position only get them, logic will set them
+        //TODO figure out the new positions.
+        Position newPosition;
 
-        //Will be getting the positions of everything from a components off something at the top of the tree.
+        //checks for collisions
+        for(int i=0; i<occupiedCoordinates.length; i++){
 
-        //false return 0, XCOORD, YCOORD
-        int[] movement = {0};
-        //true return 1, xccord, ycoord
-        //int[] movement = {1,x,y};
+            //Checks if new position is already occupied
+            //Checks the occupied coordinate isnt the current position (TODO is this needed)
+            if(newPosition == occupiedCoordinates[i] && occupiedCoordinates[i] != position){
 
-        return movement;
+                //meaning it has collided with something.
+                return position;
+            }
+
+        }
+
+        //No collision occurred
+        return newPosition;
     }
 
+    
     //TODO Bullet interactions
 
-    
+
+    /**
+     * Sets acceleration.
+     */
     private void setAcceleration(){
 
         if(Tank.getComponent(SpeedPowerUp.class) == null){
