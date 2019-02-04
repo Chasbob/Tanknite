@@ -9,3 +9,4 @@ public class Server extends Component {
     public Server(GameObject parent) {
         super(parent);
     }
+}
