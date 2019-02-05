@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClassName = "com.aticatac.server.networking.singleplayer.Main"
+    mainClassName = "com.aticatac.server.networking.Main"
 }
 
 repositories {

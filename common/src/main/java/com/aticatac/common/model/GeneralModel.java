@@ -1,14 +1,14 @@
 package com.aticatac.common.model;
 
 /**
- * The Class Model is designed to be a consistent model
+ * The Class GeneralModel is designed to be a consistent model
  * to allow communication between client and server.
  * <p>
  * It is made serializable to allow transmission over a socket.
  *
  * @author Charles de Freitas
  */
-public class Model implements java.io.Serializable {
+public class GeneralModel extends Model{
     /**
      * The Serial version uid.
      */
@@ -22,12 +22,13 @@ public class Model implements java.io.Serializable {
     private Command command;
 
     /**
-     * Construct a new Model for a client to send to the server
+     * Construct a new GeneralModel for a client to send to the server
      * when initiating communication
      *
      * @param id Used to differentiate models on the server-side
      */
-    public Model(String id) {
+    public GeneralModel(String id) {
+        super(id);
         this.id = id;
         this.command = Command.UP;
     }

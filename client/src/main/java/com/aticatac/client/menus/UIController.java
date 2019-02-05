@@ -2,6 +2,8 @@ package com.aticatac.client.menus;
 
 import com.aticatac.client.networking.singleplayer.Client;
 import com.aticatac.common.model.Command;
+import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.common.objectsystem.RootObject;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -11,7 +13,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
@@ -37,7 +38,7 @@ public class UIController extends Application {
     }
 
     //scene functions
-    public void loadMainMenu(ActionEvent actionEvent) {
+    public void loadMainMenu() {
         try {
             LoadScene(FXMLLoader.load(getClass().getResource("/MainMenuScene.fxml")));
         } catch (IOException e) {
@@ -89,10 +90,8 @@ public class UIController extends Application {
             Canvas canvas = new Canvas(width, height);
             root.getChildren().add(canvas);
             GraphicsContext gc = canvas.getGraphicsContext2D();
-            Image tank = new Image("/73749645-pixel-military-tank-top.png");
-            Image bullet = new Image("/bullet.png");
-//            Tank player = new Tank();
-//            player.SetImage(tank);
+            RootObject o = new RootObject("Root");
+            GameObject g = new GameObject("Test", o);
             ArrayList<String> input = new ArrayList<>();
             Scene.setOnKeyPressed(
                     e -> {

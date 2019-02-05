@@ -1,18 +1,15 @@
 package com.aticatac.client.networking.singleplayer;
 
 import com.aticatac.common.model.Command;
-import com.aticatac.common.model.Model;
-import org.apache.commons.lang3.ArrayUtils;
+import com.aticatac.common.model.GeneralModel;
+import com.aticatac.common.model.ModelReader;
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.*;
-import java.nio.ByteBuffer;
 
 /**
- * The type Client.
+ * The type ClientModel.
  */
 public class Client extends Thread {
     private final String id;
@@ -20,10 +17,10 @@ public class Client extends Thread {
     private final DatagramSocket socket;
     private final int port;
     private final InetAddress address;
-    private Model model;
+    private GeneralModel generalModel;
 
     /**
-     * Instantiates a new Client.
+     * Instantiates a new ClientModel.
      *
      * @param id      the id
      * @param address the address
@@ -34,7 +31,7 @@ public class Client extends Thread {
      */
     public Client(String id, String address, int port) throws UnknownHostException, SocketException {
         this.id = id;
-        this.model = new Model(id);
+        this.generalModel = new GeneralModel(id);
         this.logger = Logger.getLogger(getClass());
         logger.info("Starting");
         this.socket = new DatagramSocket();
@@ -43,12 +40,12 @@ public class Client extends Thread {
     }
 
     /**
-     * Gets model.
+     * Gets generalModel.
      *
-     * @return the model
+     * @return the generalModel
      */
-    public Model getModel() {
-        return model;
+    public GeneralModel getGeneralModel() {
+        return generalModel;
     }
 
     /**
@@ -67,7 +64,7 @@ public class Client extends Thread {
      */
     public void setCommand(Command command) {
         logger.info("Setting command to: " + command.toString());
-        this.model.setCommand(command);
+        this.generalModel.setCommand(command);
     }
 
     @Override
@@ -78,13 +75,7 @@ public class Client extends Thread {
     private void sendModel() {
         while (!this.isInterrupted()) {
             try {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
-                oos.writeObject(this.model);
-                oos.flush();
-                byte[] buf = baos.toByteArray();
-                byte[] len = ByteBuffer.allocate(4).putInt(buf.length).array();
-                byte[] out = ArrayUtils.addAll(len, buf);
+                byte[] out = ModelReader.getByteArray(this.generalModel);
                 DatagramPacket packetSize = new DatagramPacket(out, out.length, this.address, this.port);
                 this.socket.send(packetSize);
                 //TODO handel IOException for DatagramPacket
