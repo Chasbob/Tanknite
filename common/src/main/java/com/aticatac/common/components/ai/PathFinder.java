@@ -6,10 +6,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * A PathFinder constructs a path from a start node to a goal node using A* search
+ *
+ * @author Dylan
+ */
 public class PathFinder {
-
     /*
-        Uses A* search to construct a path from one start node to a goal node.
         Adapted from: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
 
         g score = the cost of the path from the start node to the current node
@@ -18,6 +21,7 @@ public class PathFinder {
 
     /**
      * Uses A* search to find a path from one node to another.
+     *
      * @param start The node to start from
      * @param goal The node to end at
      * @return A queue of search nodes that define a path from the start node to the goal node
@@ -70,6 +74,7 @@ public class PathFinder {
 
     /**
      * Reconstructs the final path when the goal node is reached.
+     *
      * @param cameFrom A mapping from node to node, defining for a node which node was previous
      * @param current The current node
      * @return The final path from the start to goal node
@@ -86,6 +91,8 @@ public class PathFinder {
     }
 
     /**
+     * Returns the node in the open set with the lowest f score
+     *
      * @param openSet The set of open nodes
      * @param f A mapping from search nodes to f score
      * @return The node with the lowest f score from the set of open nodes
@@ -105,6 +112,7 @@ public class PathFinder {
     /**
      * Calculates a cost estimate for travelling from one node to another using euclidean distance.
      * Used as a heuristic for A* search.
+     *
      * @param from Node to start from
      * @param to Node to end on
      * @return An estimate for the cost of travelling from one node to another
