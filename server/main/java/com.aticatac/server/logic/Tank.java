@@ -1,4 +1,4 @@
-package com.aticatac.server.tank;
+package com.aticatac.server.logic.tank;
 
 import com.aticatac.server.bullet.Bullet;
 import com.aticatac.server.logic.LogicInterface;
@@ -36,8 +36,7 @@ public class Tank {
     /**
      * call method when up arrow/w pressed
      *
-     * @return the boolean
-     * @
+     * @return the boolean @
      */
 //update to account for move to Tank class
     public boolean moveForwards() {
@@ -134,6 +133,9 @@ public class Tank {
     }
 
 
+    /**
+     * Pick up health.
+     */
     public void pickUpHealth () {
         currentHealth += 10;
         if (currentHealth > maxHealth){
@@ -142,17 +144,27 @@ public class Tank {
         // only gain health up to maximum
     }
 
+    /**
+     * Pick up ammo.
+     */
     public void pickUpAmmo () {
         currentAmmo += 10;
     }
 
+    /**
+     * Pick up speed.
+     */
     public void pickUpSpeed () {
 
     }
 
+    /**
+     * Pick up damage.
+     */
     public void pickUpDamage () {
 
     }
+
     /**
      * Gets health.
      */

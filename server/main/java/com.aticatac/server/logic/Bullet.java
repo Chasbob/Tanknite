@@ -1,4 +1,4 @@
-package com.aticatac.server.bullet;
+package com.aticatac.server.logic.bullet;
 
 /**
  * The type Bullet.
