@@ -16,7 +16,6 @@ public class PhysicsManager extends Component {
     public PhysicsManager(GameObject parent) {
         super(parent);
     }
-
     /**
      * Checks if the object can move and returns if it can and the new/current position.
      * @return
