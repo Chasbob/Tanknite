@@ -6,25 +6,22 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
-
 public class PathFinder {
 
     /*
         Uses A* search to construct a path from one start node to a goal node.
-        Reference used: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
+        Adapted from: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
+
+        g score = the cost of the path from the start node to the current node
+        f score = g + an estimate of the cost from the current node to the goal node
      */
 
-    private Queue<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
-        LinkedList<SearchNode> totalPath = new LinkedList<SearchNode>();
-        totalPath.add(current);
-
-        while (cameFrom.containsKey(current)) {
-            current = cameFrom.get(current);
-            totalPath.add(current);
-        }
-        return totalPath;
-    }
-
+    /**
+     * Uses A* search to find a path from one node to another.
+     * @param start The node to start from
+     * @param goal The node to end at
+     * @return A queue of search nodes that define a path from the start node to the goal node
+     */
     public Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
 
         LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
@@ -71,6 +68,28 @@ public class PathFinder {
         return null;
     }
 
+    /**
+     * Reconstructs the final path when the goal node is reached.
+     * @param cameFrom A mapping from node to node, defining for a node which node was previous
+     * @param current The current node
+     * @return The final path from the start to goal node
+     */
+    private Queue<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
+        LinkedList<SearchNode> totalPath = new LinkedList<SearchNode>();
+        totalPath.add(current);
+
+        while (cameFrom.containsKey(current)) {
+            current = cameFrom.get(current);
+            totalPath.add(current);
+        }
+        return totalPath;
+    }
+
+    /**
+     * @param openSet The set of open nodes
+     * @param f A mapping from search nodes to f score
+     * @return The node with the lowest f score from the set of open nodes
+     */
     private SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Double> f) {
         double lowestScore = Double.MAX_VALUE;
         SearchNode lowestScoreNode = openSet.get(0);
@@ -83,6 +102,13 @@ public class PathFinder {
         return lowestScoreNode;
     }
 
+    /**
+     * Calculates a cost estimate for travelling from one node to another using euclidean distance.
+     * Used as a heuristic for A* search.
+     * @param from Node to start from
+     * @param to Node to end on
+     * @return An estimate for the cost of travelling from one node to another
+     */
     private double costEstimate(SearchNode from, SearchNode to) {
         return Math.sqrt(Math.pow(from.getPosition().y - to.getPosition().y, 2) + Math.pow(from.getPosition().x - to.getPosition().x, 2));
     }
@@ -90,7 +116,7 @@ public class PathFinder {
     public Queue<Command> getRandomPath() {
         Queue<Command> path = new LinkedList<Command>();
 
-
+        // hmmm
 
         return path;
     }
