@@ -37,21 +37,22 @@ public class PhysicsManager extends Component {
      * Checks if the object can move and returns if it can and the new/current position.
      * @return Position of the object
      */
-    public Position move(){
+   /* public Position move(){
 
+        //ToDo resolve tank
         //the position for this tank.
         Position position = Tank.getComponent(Transform.class).getPosition();
         //Positions of everything
         Position[] occupiedCoordinates = tank.findObject("String").getComponent(Server.class).getOccupiedCoordinates;
 
         //TODO figure out the new positions.
-        Position newPosition;
+        Position newPosition = new Position();
 
         //checks for collisions
         for(int i=0; i<occupiedCoordinates.length; i++){
 
             //Checks if new position is already occupied
-            //Checks the occupied coordinate isnt the current position (TODO is this needed)
+            //Checks the occupied coordinate isn't the current position (TODO is this needed)
             if(newPosition == occupiedCoordinates[i] && occupiedCoordinates[i] != position){
 
                 //meaning it has collided with something.
@@ -63,7 +64,7 @@ public class PhysicsManager extends Component {
         //No collision occurred
         return newPosition;
     }
-
+    */
     
     //TODO Bullet interactions
 
@@ -71,7 +72,7 @@ public class PhysicsManager extends Component {
     /**
      * Sets acceleration for the object.
      */
-    private void setAcceleration(){
+   /* private void setAcceleration(){
 
         if(Tank.getComponent(SpeedPowerUp.class) == null){
 
@@ -86,6 +87,6 @@ public class PhysicsManager extends Component {
         }
 
     }
-
+    */
 
 }

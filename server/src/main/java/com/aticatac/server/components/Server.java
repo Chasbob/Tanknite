@@ -16,7 +16,7 @@ public class Server extends Component {
 
     //TODO provide the identifier that will be needed so server knows what info
     /**ArrayList of the currently occupied coordinates*/
-    private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>;
+    private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>();
 
     /**HashMap to store the health and the object the health relates to*/
     private HashMap<String, Integer> health = new HashMap<>();
@@ -49,9 +49,9 @@ public class Server extends Component {
      * @param oldCoords The old coordinates that were occupied.
      * @param newCoords The new coordinates that are now occupied.
      */
-    public void setOccupiedCoordinates( Position oldCoords, Position newCoords){
+   // public void setOccupiedCoordinates( Position oldCoords, Position newCoords){
 
-        //looks for the old ones and replaces with new
 
-    }
+
+   // }
 }
