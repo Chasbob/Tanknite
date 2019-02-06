@@ -5,7 +5,6 @@ import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.components.transform.Position;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.HashMap<>;
 
 public class Server extends Component {
 
@@ -15,7 +14,7 @@ public class Server extends Component {
     //TODO provide the identifier that will be needed so server knows what info
     //currently just needs to know the occupied coordinates not by what
     //Make this an array list
-    private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>;
+    private ArrayList<Position> occupiedCoordinates = new ArrayList<>();
 
     //TODO Use test to check if these are good for sending
     //could just have array of the objects? Get data from components using getters?
