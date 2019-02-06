@@ -2,4 +2,6 @@ rootProject.name = 'aticatac'
 include 'common'
 include 'server'
 include 'client'
+//include 'core'
+include 'desktop'
 

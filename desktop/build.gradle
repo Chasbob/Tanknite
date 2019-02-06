@@ -1,0 +1,10 @@
+dependencies {
+    compile project(":client")
+    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+}
+apply plugin: 'application'
+
+application {
+    mainClassName = "com.aticatac.desktop.DesktopLauncher"
+}
