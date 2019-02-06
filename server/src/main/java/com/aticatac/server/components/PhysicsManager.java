@@ -5,21 +5,37 @@ import com.aticatac.common.components.SpeedPowerUp;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.components.transform.*;
 
+/**
+ * PhysicsManager component will control the physics for the objects in the game.
+ * It will consider the new positions of objects and alter any physics values (e.g. velocity) for the object.
+ * The positions of the object are kept in Transform and will be altered by the logic, not this component.
+ * */
+
 public class PhysicsManager extends Component {
 
-    private int tankMass = 10;
+    /**The gravity acting for all objects*/
+    private static int gravity = 10;
+
+    /**The mass of this object*/
+    private int objectMass = 10;
+    /**The thrust for this tank*/
     private int thrust = 10;
-    private int gravity = 10;
+    /**The frictionCoefficient for this tank*/
     private int frictionCoefficient = 10;
+    /**The acceleration for this tank*/
     private int acceleration;
 
+    /**
+     * Creates a new PhysicsManager with a parent.
+     * @param parent The parent of the PhysicsManager
+     */
     public PhysicsManager(GameObject parent) {
         super(parent);
     }
 
     /**
      * Checks if the object can move and returns if it can and the new/current position.
-     * @return
+     * @return Position of the object
      */
     public Position move(){
 
@@ -53,19 +69,19 @@ public class PhysicsManager extends Component {
 
 
     /**
-     * Sets acceleration.
+     * Sets acceleration for the object.
      */
     private void setAcceleration(){
 
         if(Tank.getComponent(SpeedPowerUp.class) == null){
 
-            acceleration = (gravity*(frictionCoefficient + tankMass) + thrust)/ tankMass;
+            acceleration = (gravity*(frictionCoefficient + objectMass) + thrust)/ objectMass;
 
         }
 
         else{
 
-            acceleration = (gravity*(Tank.getComponent(SpeedPowerUp.class).getFrictionCoefficient() + tankMass) + thrust)/ tankMass;
+            acceleration = (gravity*(Tank.getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust)/ objectMass;
 
         }
 

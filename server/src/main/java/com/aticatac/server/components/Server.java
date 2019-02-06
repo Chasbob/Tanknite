@@ -5,29 +5,32 @@ import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.components.transform.Position;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.HashMap<>;
+
+/**
+ * The server component will be used to store data that needs to be seen by the server and potentially passed to the client.
+ * It will be the up to date synchronised data from all the GameObjects.
+ * It will be stored in this component so the server does not need to check all the components for all objects each time.
+ */
 
 public class Server extends Component {
 
-    //server will have all of the updated and synchronised data
-    //Whenever a game object is created, position changed, or any of below changed, must also update this.
-
     //TODO provide the identifier that will be needed so server knows what info
-    //currently just needs to know the occupied coordinates not by what
-    //Make this an array list
+    /**ArrayList of the currently occupied coordinates*/
     private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>;
 
-    //TODO Use test to check if these are good for sending
-    //could just have array of the objects? Get data from components using getters?
+    /**HashMap to store the health and the object the health relates to*/
     private HashMap<String, Integer> health = new HashMap<>();
+    /**HashMap to store the ammo and the object the ammo relates to*/
     private HashMap<String, Integer> ammo = new HashMap<>();
+    /**HashMap to store the powerups and the object the powerups relate to*/
     private HashMap<String, String> powerUp = new HashMap<>();
     //What data type will direction be?
+    /**HashMap to store the direction and the object the direction relates to*/
     private HashMap<String, Integer> direction = new HashMap<>();
 
     /**
-     * Constructor for component: Server
-     * @param parent
+     * Creates a new Server Component with a parent.
+     * @param parent The parent of the Server.
      */
     public Server(GameObject parent) {
         super(parent);
@@ -35,7 +38,7 @@ public class Server extends Component {
 
     /**
      * Gets the currently occupied coordinates
-     * @return
+     * @return The occupied coordinates.
      */
     public ArrayList<Position> getOccupiedCoordinates() {
         return occupiedCoordinates;
@@ -43,8 +46,8 @@ public class Server extends Component {
 
     /**
      * Sets the currently occupied coordinates
-     * @param oldCoords
-     * @param newCoords
+     * @param oldCoords The old coordinates that were occupied.
+     * @param newCoords The new coordinates that are now occupied.
      */
     public void setOccupiedCoordinates( Position oldCoords, Position newCoords){
 
