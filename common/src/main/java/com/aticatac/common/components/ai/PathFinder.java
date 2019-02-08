@@ -21,10 +21,10 @@ public class PathFinder {
         f score = g + an estimate of the cost from the current node to the goal node
      */
 
-    private int seperation;
+    private int separation;
 
-    public PathFinder(int seperation) {
-        this.seperation = seperation;
+    public PathFinder(int separation) {
+        this.separation = separation;
     }
 
     /**
@@ -93,16 +93,16 @@ public class PathFinder {
             Position to = path.get(i).getPosition();
 
             // THESE MIGHT BE WRONG
-            if ((from.x - to.x) == seperation) {
+            if ((from.x - to.x) == separation) {
                 steps.add(Command.RIGHT);
             }
-            else if ((from.x - to.x) == -seperation) {
+            else if ((from.x - to.x) == -separation) {
                 steps.add(Command.LEFT);
             }
-            else if ((from.y - to.y) == seperation) {
+            else if ((from.y - to.y) == separation) {
                 steps.add(Command.UP);
             }
-            else if ((from.y - to.y) == -seperation) {
+            else if ((from.y - to.y) == -separation) {
                 steps.add(Command.DOWN);
             }
         }

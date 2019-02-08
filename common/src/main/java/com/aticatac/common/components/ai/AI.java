@@ -27,12 +27,12 @@ public class AI extends Component {
     private Graph graph;
     private ArrayList<GameObject> enemiesInRange;
 
-    public AI(GameObject parent, Graph graph, int seperation) {
+    public AI(GameObject parent, Graph graph, int separation) {
         super(parent);
         this.state = State.searching;
         this.tank = parent;
         this.graph = graph;
-        this.pf = new PathFinder(seperation);
+        this.pf = new PathFinder(separation);
     }
 
     public Command getCommand() {
@@ -178,16 +178,20 @@ public class AI extends Component {
                 return Command.RIGHT;
             }
         }
-        else {
 
-        }
 
         // Alternatively pick a position in range of the agent that is clear of enemies
         // actually this is probably the way to go
 
         /*
-
+        SearchNode goal = getClearLocation()
+        Queue<Command> path = pf.getPathToLocation(graph.getNearestNode(tank.getComponent(Transform.class).GetPosition()), goal);
+        if (path.isEmpty()) {
+            return Command.DOWN;
+        }
+        return path.poll();
          */
+
         return Command.DOWN;
     }
 
