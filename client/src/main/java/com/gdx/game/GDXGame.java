@@ -34,6 +34,8 @@ public class GDXGame extends com.badlogic.gdx.Game {
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = buttonFont;
 
+        //load menu screen
+        //TODO load in splash screen instead
         setScreen(new MainMenuScreen(this, titleStyle, buttonStyle));
     }
 
