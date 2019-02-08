@@ -1,27 +1,22 @@
 plugins {
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.5'
     id "org.sglahn.gradle-dockerfile-plugin" version "0.4"
 }
 application {
     mainClassName = "com.aticatac.client.networking.singleplayer.Main"
 }
 
-repositories {
-    mavenCentral()
-}
-
-javafx {
-    modules = ['javafx.graphics', 'javafx.fxml', 'javafx.controls']
-}
-javafx {
-    version = "11.0.+"
-}
-
 dependencies {
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     implementation 'org.reflections:reflections:0.9.11'
+    compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile project(':common')
+}
+
+task execClient(type: JavaExec) {
+    main = "com.aticatac.client.menus.Main"
+    classpath = sourceSets.main.runtimeClasspath
 }
 
 dockerBuild.dependsOn(distTar)
