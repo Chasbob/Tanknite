@@ -18,11 +18,12 @@ public class Server extends Component {
     /**ArrayList of the currently occupied coordinates*/
     private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>();
 
+    //Where the string is the name of the gameObject the value refers to
     /**HashMap to store the health and the object the health relates to*/
     private HashMap<String, Integer> health = new HashMap<>();
     /**HashMap to store the ammo and the object the ammo relates to*/
     private HashMap<String, Integer> ammo = new HashMap<>();
-    /**HashMap to store the powerups and the object the powerups relate to*/
+    /**HashMap to store the power ups and the object the power ups relate to*/
     private HashMap<String, String> powerUp = new HashMap<>();
     //What data type will direction be?
     /**HashMap to store the direction and the object the direction relates to*/
@@ -49,9 +50,87 @@ public class Server extends Component {
      * @param oldCoords The old coordinates that were occupied.
      * @param newCoords The new coordinates that are now occupied.
      */
-   // public void setOccupiedCoordinates( Position oldCoords, Position newCoords){
-
-
+   // public void setOccupiedCoordinates(Position oldCoords, Position newCoords){
 
    // }
+
+
+    //TODO get health
+
+    /**
+     * Gets the health for a game object
+     * @return Health of the object
+     */
+    public int getHealth(){
+
+
+    }
+
+    //TODO set health
+
+    /**
+     * Sets the health of the game object
+     */
+    public void setHealth(String name, int health){
+
+    }
+
+    //TODO get ammo
+
+    /**
+     * Gets the ammo for a game object
+     * @return Ammo for the object
+     */
+    public int getAmmo(){
+
+    }
+
+    //TODO set ammo
+
+    /**
+     * Sets the ammo for a game object
+     */
+    public void setAmmo(){
+
+    }
+
+    //TODO get power up
+
+    /**
+     * Get the powerups for a game object
+     * @return Powerups for a game object
+     */
+    public String getPowerUp(){
+
+    }
+
+    //TODO set power up
+
+    /**
+     * Set the power up for an object
+     */
+    public void setPowerUp(){
+
+    }
+
+    //TODO get direction
+
+    /**
+     * Get the direction of a game object
+     * @return Direction of an object
+     */
+    public int getDirection(){
+
+
+    }
+
+    //TODO set direction
+
+    /**
+     * Sets the direction of a game object
+     */
+    public void setDirection(){
+
+    }
+
 }
