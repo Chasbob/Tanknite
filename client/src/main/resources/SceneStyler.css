@@ -1,0 +1,23 @@
+@font-face {
+    src: url("ARCADECLASSIC.TTF");
+}
+.root{
+    -fx-background-color: black;
+}
+.label{
+    -fx-font-family: ArcadeClassic;
+    -fx-font-size: 60;
+    -fx-text-fill: #f2ea10;
+}
+.button{
+    -fx-background-color: black;
+    -fx-border-color:orange;
+    -fx-font-family: ArcadeClassic;
+    -fx-font-size: 20;
+    -fx-text-fill: #f49302;
+}
+.check-box{
+    -fx-font-family: ArcadeClassic;
+    -fx-font-size: 20;
+    -fx-text-fill: #f49302;
+}
