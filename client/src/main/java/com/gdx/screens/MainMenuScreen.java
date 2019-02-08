@@ -2,12 +2,14 @@ package com.gdx.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.gdx.game.GDXGame;
@@ -25,11 +27,14 @@ public class MainMenuScreen implements Screen {
     @Override
     public void show() {
 
-        //load in font
+        //load in font for menu
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/ARCADECLASSIC.TTF"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 12;
-        BitmapFont menuFont = generator.generateFont(parameter);
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter12 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter50 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter12.size = 12;
+        parameter50.size = 50;
+        BitmapFont buttonFont = generator.generateFont(parameter12);
+        BitmapFont titleFont = generator.generateFont(parameter50);
         generator.dispose();
 
         //create new stage
@@ -40,18 +45,25 @@ public class MainMenuScreen implements Screen {
         Table rootTable = new Table();
         rootTable.setFillParent(true);
         stage.addActor(rootTable);
-        rootTable.debugTable();
+
+        //add label to root, creating styling for it as well
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = titleFont;
+        Color titleColour = new Color(0, 255, 0, 1);
+        labelStyle.fontColor = titleColour;
+        Label screenTitle = new Label("Main Menu", labelStyle);
+        screenTitle.setFillParent(true);
+        rootTable.add(screenTitle).padTop(50).top();
 
         //create table to store all buttons
         Table buttonTable = new Table();
         buttonTable.setFillParent(true);
         rootTable.addActor(buttonTable);
-        buttonTable.debugTable();
-        buttonTable.defaults().pad(10).width(100);
+        buttonTable.defaults().pad(10).width(100).center();
 
         //create a style for buttons
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = menuFont;
+        buttonStyle.font = buttonFont;
 
         //create button for single player
         TextButton singlePlayerButton = new TextButton("Single Player", buttonStyle);
