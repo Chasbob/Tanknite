@@ -3,6 +3,7 @@ package com.aticatac.common.components.ai;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -19,6 +20,12 @@ public class PathFinder {
         g score = the cost of the path from the start node to the current node
         f score = g + an estimate of the cost from the current node to the goal node
      */
+
+    private int seperation;
+
+    public PathFinder(int seperation) {
+        this.seperation = seperation;
+    }
 
     /**
      * Uses A* search to find a path from one node to another.
@@ -86,16 +93,16 @@ public class PathFinder {
             Position to = path.get(i).getPosition();
 
             // THESE MIGHT BE WRONG
-            if ((from.x - to.x) == 1) {
+            if ((from.x - to.x) == seperation) {
                 steps.add(Command.RIGHT);
             }
-            else if ((from.x - to.x) == -1) {
+            else if ((from.x - to.x) == -seperation) {
                 steps.add(Command.LEFT);
             }
-            else if ((from.y - to.y) == 1) {
+            else if ((from.y - to.y) == seperation) {
                 steps.add(Command.UP);
             }
-            else if ((from.y - to.y) == -1) {
+            else if ((from.y - to.y) == -seperation) {
                 steps.add(Command.DOWN);
             }
         }

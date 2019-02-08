@@ -19,7 +19,7 @@ public class AI extends Component {
         obtaining
     }
 
-    private static final PathFinder pf = new PathFinder();
+    private PathFinder pf;
 
     private State state;
     private GameObject tank;
@@ -27,10 +27,12 @@ public class AI extends Component {
     private Graph graph;
     private ArrayList<GameObject> enemiesInRange;
 
-    public AI(GameObject parent, Graph graph) {
+    public AI(GameObject parent, Graph graph, int seperation) {
         super(parent);
         this.state = State.searching;
         this.tank = parent;
+        this.graph = graph;
+        this.pf = new PathFinder(seperation);
     }
 
     public Command getCommand() {
@@ -40,6 +42,7 @@ public class AI extends Component {
     }
 
     private ArrayList<GameObject> getEnemiesInRange() {
+        //TODO: get enemies in range
         return null;
     }
 
@@ -84,31 +87,27 @@ public class AI extends Component {
     }
 
     private int getAttackingUtility() {
-        /*
-        if (enemy in range) {
+        if (!enemiesInRange.isEmpty()) {
             return 80;
         }
-        */
         return 0;
     }
 
     private int getFleeingUtility() {
         int health = tank.getComponent(Health.class).getHealth();
 
-        if (health <= 20) {
-            return 100;
-        }
-        /*
-        if (no enemies in range){
+        if (enemiesInRange.isEmpty()){
             return 0;
         }
-        if (health <= 30 && nearestEnemyHealth > health){
+
+        int closestEnemyHealth = getClosestEnemy().getComponent(Health.class).getHealth();
+        if (health <= 30 && closestEnemyHealth > health){
             return 100;
         }
-        if (health <= 30 && nearestEnemyHealth < health){
+        if (health <= 30 && closestEnemyHealth < health){
             return 10;
         }
-        */
+
         return 0;
     }
 
@@ -209,7 +208,7 @@ public class AI extends Component {
 
     private boolean checkLineOfSightToPosition(Position from, Position to) {
 
-        // can a direct line be drawn from from to to?
+        // can a direct line be drawn?
 
         return 1 > 2;
     }

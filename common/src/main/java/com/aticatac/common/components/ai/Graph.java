@@ -4,10 +4,15 @@ import com.aticatac.common.components.transform.Position;
 import java.util.ArrayList;
 
 public class Graph {
+
     private ArrayList<SearchNode> nodes;
 
     public Graph(int seperation, int width, int height) {
         constructGraph(seperation, width, height);
+    }
+
+    public ArrayList<SearchNode> getNodes() {
+        return nodes;
     }
 
     public void constructGraph(int seperation, int numberHorizontal, int numberVertical) {
@@ -21,6 +26,7 @@ public class Graph {
             }
         }
         // Add connections
+        // TODO: don't make connections if connection is invalid (the node thing might be enough though)
         for (SearchNode node : nodes) {
             for (SearchNode otherNode : nodes) {
                 if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == seperation) {
