@@ -29,11 +29,11 @@ public class MainMenuScreen implements Screen {
 
         //load in font for menu
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/ARCADECLASSIC.TTF"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter12 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter50 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter12.size = 12;
+        parameter15.size = 15;
         parameter50.size = 50;
-        BitmapFont buttonFont = generator.generateFont(parameter12);
+        BitmapFont buttonFont = generator.generateFont(parameter15);
         BitmapFont titleFont = generator.generateFont(parameter50);
         generator.dispose();
 
@@ -46,12 +46,12 @@ public class MainMenuScreen implements Screen {
         rootTable.setFillParent(true);
         stage.addActor(rootTable);
 
-        //add label to root, creating styling for it as well
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = titleFont;
+        //add main menu label to root, creating styling for it as well
+        Label.LabelStyle titleStyle = new Label.LabelStyle();
+        titleStyle.font = titleFont;
         Color titleColour = new Color(0, 255, 0, 1);
-        labelStyle.fontColor = titleColour;
-        Label screenTitle = new Label("Main Menu", labelStyle);
+        titleStyle.fontColor = titleColour;
+        Label screenTitle = new Label("Main Menu", titleStyle);
         screenTitle.setFillParent(true);
         rootTable.add(screenTitle).padTop(50).top();
 
@@ -81,7 +81,7 @@ public class MainMenuScreen implements Screen {
         TextButton multiPlayerButton = new TextButton("Multi Player", buttonStyle);
         multiPlayerButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                game.setScreen(new MatchmakerScreen(game));
+                game.setScreen(new MultiplayerScreen(game, titleStyle, buttonStyle));
                 return false;
             }
         });
@@ -144,7 +144,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
 
 }
