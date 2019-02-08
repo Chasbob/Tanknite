@@ -30,10 +30,10 @@ public class Server extends Component {
 
     /**
      * Creates a new Server Component with a parent.
-     * @param parent The parent of the Server.
+     * @param componentParent The parent of the Server.
      */
-    public Server(GameObject parent) {
-        super(parent);
+    public Server(GameObject componentParent) {
+        super(componentParent);
     }
 
     /**

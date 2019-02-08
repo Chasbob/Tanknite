@@ -14,10 +14,10 @@ public class SpeedPowerUp extends Component {
 
     /**
      * Creates a new SpeedPowerUp with a parent.
-     * @param parent The parent of the SpeedPowerUp.
+     * @param componentParent The parent of the SpeedPowerUp.
      */
-    public SpeedPowerUp (GameObject parent) {
-        super(parent);
+    public SpeedPowerUp (GameObject componentParent) {
+        super(componentParent);
     }
 
     /**

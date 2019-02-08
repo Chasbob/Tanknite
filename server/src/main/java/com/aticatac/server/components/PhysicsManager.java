@@ -5,6 +5,8 @@ import com.aticatac.common.components.SpeedPowerUp;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.components.transform.*;
 
+import java.util.ArrayList;
+
 /**
  * PhysicsManager component will control the physics for the objects in the game.
  * It will consider the new positions of objects and alter any physics values (e.g. velocity) for the object.
@@ -27,33 +29,33 @@ public class PhysicsManager extends Component {
 
     /**
      * Creates a new PhysicsManager with a parent.
-     * @param parent The parent of the PhysicsManager
+     * @param componentParent The parent of the PhysicsManager
      */
-    public PhysicsManager(GameObject parent) {
-        super(parent);
+    public PhysicsManager(GameObject componentParent){
+        super(componentParent);
     }
 
     /**
      * Checks if the object can move and returns if it can and the new/current position.
      * @return Position of the object
      */
-   /* public Position move(){
+    public Position move(){
 
-        //ToDo resolve tank
         //the position for this tank.
-        Position position = Tank.getComponent(Transform.class).getPosition();
+        Position position = componentParent.getComponent(Transform.class).GetPosition();
         //Positions of everything
-        Position[] occupiedCoordinates = tank.findObject("String").getComponent(Server.class).getOccupiedCoordinates;
+        //TODO make this get the server component from a different object not this one
+        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
 
         //TODO figure out the new positions.
         Position newPosition = new Position();
 
         //checks for collisions
-        for(int i=0; i<occupiedCoordinates.length; i++){
+        for(int i=0; i<occupiedCoordinates.size(); i++){
 
             //Checks if new position is already occupied
             //Checks the occupied coordinate isn't the current position (TODO is this needed)
-            if(newPosition == occupiedCoordinates[i] && occupiedCoordinates[i] != position){
+            if(newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != position){
 
                 //meaning it has collided with something.
                 return position;
@@ -64,7 +66,7 @@ public class PhysicsManager extends Component {
         //No collision occurred
         return newPosition;
     }
-    */
+
     
     //TODO Bullet interactions
 
@@ -72,9 +74,9 @@ public class PhysicsManager extends Component {
     /**
      * Sets acceleration for the object.
      */
-   /* private void setAcceleration(){
+    private void setAcceleration(){
 
-        if(Tank.getComponent(SpeedPowerUp.class) == null){
+        if(componentParent.getComponent(SpeedPowerUp.class) == null){
 
             acceleration = (gravity*(frictionCoefficient + objectMass) + thrust)/ objectMass;
 
@@ -82,11 +84,11 @@ public class PhysicsManager extends Component {
 
         else{
 
-            acceleration = (gravity*(Tank.getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust)/ objectMass;
+            acceleration = (gravity*(componentParent.getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust)/ objectMass;
 
         }
 
     }
-    */
+
 
 }
