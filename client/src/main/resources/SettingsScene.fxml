@@ -3,13 +3,10 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-<BorderPane prefHeight="406.0" prefWidth="288.0" stylesheets="@SceneStyler.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aticatac.menus.UIController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="406.0" prefWidth="288.0" stylesheets="@SceneStyler.css"
+            xmlns="http://javafx.com/javafx/8.0.172-ea" fx:controller="com.aticatac.client.menus.UIController">
    <top>
       <Label prefHeight="51.0" prefWidth="264.0" text="Settings" textFill="#f2ea10" BorderPane.alignment="CENTER">
          <font>
