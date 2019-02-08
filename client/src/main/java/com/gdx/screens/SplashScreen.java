@@ -34,9 +34,9 @@ public class SplashScreen implements Screen {
         //spriteBatch.draw(splsh, 0, 0);
         //spriteBatch.end();
 
-        if (Gdx.input.justTouched()) {
-            game.setScreen(new MainMenuScreen(game));
-        }
+//        if (Gdx.input.justTouched()) {
+//            game.setScreen(new MainMenuScreen(game,));
+//        }
 
     }
 
