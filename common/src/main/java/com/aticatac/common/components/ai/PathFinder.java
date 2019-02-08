@@ -1,5 +1,6 @@
 package com.aticatac.common.components.ai;
 
+import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 
 import java.util.HashMap;
@@ -24,9 +25,9 @@ public class PathFinder {
      *
      * @param start The node to start from
      * @param goal The node to end at
-     * @return A queue of search nodes that define a path from the start node to the goal node
+     * @return A queue of commands that define a path from the start node to the goal node
      */
-    public Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
+    public Queue<Command> getPathToLocation(SearchNode start, SearchNode goal) {
 
         LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
 
@@ -44,7 +45,7 @@ public class PathFinder {
         while (!openSet.isEmpty()) {
             SearchNode current = getLowestFScoreNode(openSet, f);
             if (current.equals(goal)) {
-                return reconstructPath(cameFrom, current);
+                return convertToCommands(reconstructPath(cameFrom, current));
             }
 
             openSet.remove(current);
@@ -73,13 +74,42 @@ public class PathFinder {
     }
 
     /**
+     * Converts a path of SearchNodes to a queue of Commands that execute the path
+     *
+     * @param path The path to convert
+     * @return A queue of Commands
+     */
+    private Queue<Command> convertToCommands(LinkedList<SearchNode> path) {
+        LinkedList<Command> steps = new LinkedList<Command>();
+        for (int i = 1; i < path.size(); i++) {
+            Position from = path.get(i - 1).getPosition();
+            Position to = path.get(i).getPosition();
+
+            // THESE MIGHT BE WRONG
+            if ((from.x - to.x) == 1) {
+                steps.add(Command.RIGHT);
+            }
+            else if ((from.x - to.x) == -1) {
+                steps.add(Command.LEFT);
+            }
+            else if ((from.y - to.y) == 1) {
+                steps.add(Command.UP);
+            }
+            else if ((from.y - to.y) == -1) {
+                steps.add(Command.DOWN);
+            }
+        }
+        return steps;
+    }
+
+    /**
      * Reconstructs the final path when the goal node is reached.
      *
      * @param cameFrom A mapping from node to node, defining for a node which node was previous
      * @param current The current node
      * @return The final path from the start to goal node
      */
-    private Queue<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
+    private LinkedList<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
         LinkedList<SearchNode> totalPath = new LinkedList<SearchNode>();
         totalPath.add(current);
 
