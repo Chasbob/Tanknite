@@ -6,13 +6,22 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+/**
+ * The type Abstract screen.
+ */
 public abstract class AbstractScreen extends Stage implements Screen {
 
+    /**
+     * Instantiates a new Abstract screen.
+     */
     AbstractScreen() {
         super(new StretchViewport(640, 640));
     }
 
-    // Subclasses must load actors in this method
+    /**
+     * Build stage.
+     */
+// Subclasses must load actors in this method
     public abstract void buildStage();
 
     @Override

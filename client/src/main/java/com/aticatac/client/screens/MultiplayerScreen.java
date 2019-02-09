@@ -6,8 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.UIFactory;
 
+/**
+ * The type Multiplayer screen.
+ */
 public class MultiplayerScreen extends AbstractScreen {
 
+    /**
+     * Instantiates a new Multiplayer screen.
+     */
     public MultiplayerScreen() {
         super();
     }

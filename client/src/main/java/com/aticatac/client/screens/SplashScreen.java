@@ -1,7 +1,13 @@
 package com.aticatac.client.screens;
 
+/**
+ * The type Splash screen.
+ */
 public class SplashScreen extends AbstractScreen {
 
+    /**
+     * Instantiates a new Splash screen.
+     */
     public SplashScreen() {
         super();
     }

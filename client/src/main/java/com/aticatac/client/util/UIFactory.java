@@ -9,11 +9,17 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
+/**
+ * The type Ui factory.
+ */
 public class UIFactory {
 
     private Label.LabelStyle titleStyle;
     private TextButton.TextButtonStyle buttonStyle;
 
+    /**
+     * Instantiates a new Ui factory.
+     */
     public UIFactory() {
         this.loadStyles();
     }
@@ -42,14 +48,33 @@ public class UIFactory {
 
     }
 
+    /**
+     * Create label label.
+     *
+     * @param text the text
+     * @return the label
+     */
     public Label createLabel(String text) {
         return new Label(text, titleStyle);
     }
 
+    /**
+     * Create button text button.
+     *
+     * @param text the text
+     * @return the text button
+     */
     public TextButton createButton(String text) {
         return new TextButton(text, buttonStyle);
     }
 
+    /**
+     * Create listener input listener.
+     *
+     * @param dstScreen the dst screen
+     * @param params    the params
+     * @return the input listener
+     */
     public InputListener createListener(final ScreenEnum dstScreen, final Object... params) {
         return
                 new InputListener() {

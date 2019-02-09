@@ -5,12 +5,18 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+/**
+ * The type Game screen.
+ */
 public class GameScreen extends AbstractScreen {
 
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
 
+    /**
+     * Instantiates a new Game screen.
+     */
     public GameScreen() {
         super();
         cam = new OrthographicCamera(640, 640);

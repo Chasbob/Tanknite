@@ -6,8 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.UIFactory;
 
+/**
+ * The type Main menu screen.
+ */
 public class MainMenuScreen extends AbstractScreen {
 
+    /**
+     * Instantiates a new Main menu screen.
+     */
     public MainMenuScreen() {
         super();
     }

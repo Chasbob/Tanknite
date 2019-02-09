@@ -3,6 +3,9 @@ package com.aticatac.client.game;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.ScreenManager;
 
+/**
+ * The type Gdx game.
+ */
 public class GDXGame extends com.badlogic.gdx.Game {
 
     @Override
