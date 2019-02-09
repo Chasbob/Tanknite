@@ -1,4 +1,4 @@
-package com.gdx.util;
+package com.aticatac.client.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;

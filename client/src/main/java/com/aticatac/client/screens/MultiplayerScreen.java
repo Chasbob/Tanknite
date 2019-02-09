@@ -1,10 +1,10 @@
-package com.gdx.screens;
+package com.aticatac.client.screens;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.gdx.util.ScreenEnum;
-import com.gdx.util.UIFactory;
+import com.aticatac.client.util.ScreenEnum;
+import com.aticatac.client.util.UIFactory;
 
 public class MultiplayerScreen extends AbstractScreen {
 

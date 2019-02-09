@@ -1,7 +1,7 @@
-package com.gdx.game;
+package com.aticatac.client.game;
 
-import com.gdx.util.ScreenEnum;
-import com.gdx.util.ScreenManager;
+import com.aticatac.client.util.ScreenEnum;
+import com.aticatac.client.util.ScreenManager;
 
 public class GDXGame extends com.badlogic.gdx.Game {
 

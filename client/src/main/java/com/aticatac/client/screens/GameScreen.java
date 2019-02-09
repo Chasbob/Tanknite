@@ -1,4 +1,4 @@
-package com.gdx.screens;
+package com.aticatac.client.screens;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;

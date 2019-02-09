@@ -1,8 +1,8 @@
-package com.gdx.screens;
+package com.aticatac.client.screens;
 
-public class LeaderBoardScreen extends AbstractScreen {
+public class SplashScreen extends AbstractScreen {
 
-    public LeaderBoardScreen() {
+    public SplashScreen() {
         super();
     }
 

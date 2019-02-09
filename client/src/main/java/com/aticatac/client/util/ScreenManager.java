@@ -1,8 +1,8 @@
-package com.gdx.util;
+package com.aticatac.client.util;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.gdx.screens.AbstractScreen;
+import com.aticatac.client.screens.AbstractScreen;
 
 public class ScreenManager {
 

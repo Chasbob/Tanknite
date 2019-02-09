@@ -1,8 +1,8 @@
-package com.gdx.screens;
+package com.aticatac.client.screens;
 
-public class UsernameScreen extends AbstractScreen {
+public class SettingsScreen extends AbstractScreen {
 
-    public UsernameScreen() {
+    public SettingsScreen() {
         super();
     }
 

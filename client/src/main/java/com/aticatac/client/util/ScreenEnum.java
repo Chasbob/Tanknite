@@ -1,6 +1,6 @@
-package com.gdx.util;
+package com.aticatac.client.util;
 
-import com.gdx.screens.*;
+import com.aticatac.client.screens.*;
 
 public enum ScreenEnum {
 
