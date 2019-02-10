@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 /**
  * The type Ui factory.
@@ -16,6 +17,7 @@ public class UIFactory {
 
     private Label.LabelStyle titleStyle;
     private TextButton.TextButtonStyle buttonStyle;
+    private TextField.TextFieldStyle textFieldStyle;
 
     /**
      * Instantiates a new Ui factory.
@@ -42,6 +44,11 @@ public class UIFactory {
         Color titleColour = new Color(0, 255, 0, 1);
         titleStyle.fontColor = titleColour;
 
+        //create text field style
+        textFieldStyle = new TextField.TextFieldStyle();
+        textFieldStyle.font = buttonFont;
+        textFieldStyle.fontColor = Color.WHITE;
+
         //create a style for buttons
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = buttonFont;
@@ -49,13 +56,23 @@ public class UIFactory {
     }
 
     /**
-     * Create label label.
+     * Create title label label.
      *
      * @param text the text
      * @return the label
      */
-    public Label createLabel(String text) {
+    public Label createTitleLabel(String text) {
         return new Label(text, titleStyle);
+    }
+
+    /**
+     * Create text field text field.
+     *
+     * @param text the text
+     * @return the text field
+     */
+    public TextField createTextField(String text) {
+        return new TextField(text, textFieldStyle);
     }
 
     /**

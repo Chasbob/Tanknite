@@ -30,7 +30,7 @@ public class MultiplayerScreen extends AbstractScreen {
         addActor(rootTable);
 
         //add multiplayer label to root
-        Label screenTitle = ui.createLabel("Multi Player");
+        Label screenTitle = ui.createTitleLabel("Multi Player");
         screenTitle.setFillParent(true);
         rootTable.add(screenTitle).padTop(50).top();
 

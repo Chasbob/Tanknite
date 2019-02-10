@@ -32,7 +32,7 @@ public class MainMenuScreen extends AbstractScreen {
         rootTable.setFillParent(true);
         addActor(rootTable);
 
-        Label screenTitle = ui.createLabel("Main Menu");
+        Label screenTitle = ui.createTitleLabel("Main Menu");
         screenTitle.setFillParent(true);
         rootTable.add(screenTitle).padTop(50).top();
 
@@ -44,7 +44,7 @@ public class MainMenuScreen extends AbstractScreen {
 
         //create button for single player
         TextButton singlePlayerButton = ui.createButton("single player");
-        singlePlayerButton.addListener(ui.createListener(ScreenEnum.GAME));
+        singlePlayerButton.addListener(ui.createListener(ScreenEnum.USERNAME));
         buttonTable.add(singlePlayerButton);
         buttonTable.row();
 
