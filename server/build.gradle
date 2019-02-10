@@ -11,7 +11,7 @@ dependencies {
     compile project(':common')
 }
 task execServer(type: JavaExec) {
-    main = "com.aticatac.server.networking.singleplayer.Main"
+    main = "com.aticatac.server.networking.Main"
     classpath = sourceSets.main.runtimeClasspath
 }
 

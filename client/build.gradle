@@ -3,7 +3,7 @@ plugins {
     id "org.sglahn.gradle-dockerfile-plugin" version "0.4"
 }
 application {
-    mainClassName = "com.aticatac.client.networking.singleplayer.Main"
+    mainClassName = "com.aticatac.client.networking.Main"
 }
 
 dependencies {
@@ -15,7 +15,7 @@ dependencies {
 }
 
 task execClient(type: JavaExec) {
-    main = "com.aticatac.client.menus.Main"
+    main = "com.aticatac.client.networking.Main"
     classpath = sourceSets.main.runtimeClasspath
 }
 
