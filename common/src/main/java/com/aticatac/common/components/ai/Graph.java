@@ -1,27 +1,38 @@
 package com.aticatac.common.components.ai;
 
 import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.model.Command;
+
 import java.util.ArrayList;
+import java.util.Queue;
 
+/**
+ * A graph is a collection of connected SearchNodes.
+ * Each node in the graph represents a point on the game map that a
+ * computer controlled tank can move to.
+ *
+ * @author Dylan
+ */
 public class Graph {
-
+    /** A pathfinder that can generate a path in the graph */
+    private static final PathFinder pf = new PathFinder();
+    /** The nodes that make up the graph */
     private ArrayList<SearchNode> nodes;
 
-    public Graph(int seperation, int width, int height) {
-        constructGraph(seperation, width, height);
-    }
-
-    public ArrayList<SearchNode> getNodes() {
-        return nodes;
-    }
-
-    public void constructGraph(int seperation, int numberHorizontal, int numberVertical) {
+    /**
+     * Creates a new graph by placing and connecting valid nodes.
+     *
+     * @param separation The distance between two connected nodes
+     * @param width The number of nodes wide
+     * @param height The number of nodes high
+     */
+    public Graph(int separation, int width, int height) {
         nodes = new ArrayList<SearchNode>();
 
         // Add nodes
         // TODO: don't place a node if position is invalid
-        for (int i = 0; i < numberHorizontal*seperation; i += seperation) {
-            for (int j = 0; j < numberVertical*seperation; j += seperation) {
+        for (int i = 0; i < width*separation; i += separation) {
+            for (int j = 0; j < height*separation; j += separation) {
                 nodes.add(new SearchNode(i, j));
             }
         }
@@ -29,14 +40,31 @@ public class Graph {
         // TODO: don't make connections if connection is invalid (the node thing might be enough though)
         for (SearchNode node : nodes) {
             for (SearchNode otherNode : nodes) {
-                if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == seperation) {
+                if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == separation) {
                     node.addConnection(otherNode);
                 }
             }
         }
     }
 
-    public SearchNode getNearestNode(Position position) {
+    /**
+     * Uses the pathfinder to generate queue of commands that define a path from one location to another.
+     *
+     * @param from Start position
+     * @param to Goal position
+     * @return A queue of Commands that execute the path
+     */
+    public Queue<Command> getPathToLocation(Position from, Position to) {
+        return pf.getPathToLocation(getNearestNode(from), getNearestNode(to));
+    }
+
+    /**
+     * Gets the node in the graph that has the nearest position to a given position.
+     *
+     * @param position The position to get nearest node from
+     * @return The nearest node to the given position
+     */
+    private SearchNode getNearestNode(Position position) {
         SearchNode nearestNode = null;
         double distanceToNearestNode = Double.MAX_VALUE;
         for (SearchNode node : nodes) {

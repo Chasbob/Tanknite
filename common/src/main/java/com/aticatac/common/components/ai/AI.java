@@ -1,5 +1,6 @@
 package com.aticatac.common.components.ai;
 
+import com.aticatac.common.components.Ammo;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.Component;
@@ -19,20 +20,17 @@ public class AI extends Component {
         obtaining
     }
 
-    private PathFinder pf;
+    private GameObject tank;
+    private Graph graph;
 
     private State state;
-    private GameObject tank;
-
-    private Graph graph;
     private ArrayList<GameObject> enemiesInRange;
 
-    public AI(GameObject parent, Graph graph, int separation) {
+    public AI(GameObject parent, Graph graph) {
         super(parent);
         this.state = State.searching;
         this.tank = parent;
         this.graph = graph;
-        this.pf = new PathFinder(separation);
     }
 
     public Command getCommand() {
@@ -43,7 +41,7 @@ public class AI extends Component {
 
     private ArrayList<GameObject> getEnemiesInRange() {
         //TODO: get enemies in range
-        return null;
+        return new ArrayList<GameObject>();
     }
 
     private GameObject getClosestEnemy() {
@@ -87,6 +85,9 @@ public class AI extends Component {
     }
 
     private int getAttackingUtility() {
+        if (tank.getComponent(Ammo.class).getAmmo() == 0) {
+            return 0;
+        }
         if (!enemiesInRange.isEmpty()) {
             return 80;
         }
@@ -94,12 +95,14 @@ public class AI extends Component {
     }
 
     private int getFleeingUtility() {
-        int health = tank.getComponent(Health.class).getHealth();
-
         if (enemiesInRange.isEmpty()){
             return 0;
         }
+        if (tank.getComponent(Ammo.class).getAmmo() == 0) {
+            return 90;
+        }
 
+        int health = tank.getComponent(Health.class).getHealth();
         int closestEnemyHealth = getClosestEnemy().getComponent(Health.class).getHealth();
         if (health <= 30 && closestEnemyHealth > health){
             return 100;
@@ -113,9 +116,16 @@ public class AI extends Component {
 
     private int getObtainingUtility() {
         /*
-        if (power-up is near or something){
-            return 70
+        if (tank.getComponent(Ammo.class).getAmmo() <= 5 && ammo power up near){
+            return 100
         }
+        if (tank.getComponent(Health.class).getHealth() <= 30 && health power up near){
+            return 100
+        }
+        if (other power up near + some other condition idk)
+            return 80
+        if (ANY power up near)
+            return 60
         */
         return 0;
     }
@@ -135,20 +145,17 @@ public class AI extends Component {
     }
 
     private Command performSearchingAction() {
-        Queue<Command> path = pf.getRandomPath();
-        if (path.isEmpty()) {
-            return Command.DOWN;
-        }
-        return path.poll();
+        //TODO do some random path but avoid going back on self
+        return Command.DOWN;
     }
 
     private Command performAttackingAction() {
         if (checkLineOfSightToPosition(tank.getComponent(Transform.class).GetPosition(), getClosestEnemy().getComponent(Transform.class).GetPosition())) {
-            // orient turret in right position then
+            // TODO aim
             return Command.SHOOT;
         }
         else {
-            Queue<Command> path = pf.getPathToLocation(graph.getNearestNode(tank.getComponent(Transform.class).GetPosition()), graph.getNearestNode(getClosestEnemy().getComponent(Transform.class).GetPosition()));
+            Queue<Command> path = graph.getPathToLocation(tank.getComponent(Transform.class).GetPosition(), getClosestEnemy().getComponent(Transform.class).GetPosition());
             if (path.isEmpty()) {
                 return Command.DOWN;
             }
