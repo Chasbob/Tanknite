@@ -1,5 +1,8 @@
 package com.aticatac.client.screens;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -62,6 +65,18 @@ public class MainMenuScreen extends AbstractScreen {
         settingsButton.addListener(ui.createListener(ScreenEnum.SETTINGS));
         buttonTable.add(settingsButton);
         buttonTable.row();
+
+        //create button to close game
+        TextButton exitButton = ui.createButton("Quit");
+        exitButton.addListener(
+                new InputListener() {
+                    @Override
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        Gdx.app.exit();
+                        return false;
+                    }
+                });
+        buttonTable.add(exitButton);
 
     }
 
