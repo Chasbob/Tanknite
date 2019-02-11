@@ -8,6 +8,7 @@ public class Bullet {
     private int currentYCoord;
     private char currentDirection;
     private int damage;
+    private boolean collided = false;
 
     /**
      * Instantiates a new Bullet.
@@ -27,8 +28,27 @@ public class Bullet {
     /**
      * Move forwards.
      */
-    public static void  moveForwards (){
-
+    public void moveForwards() {
+        while (!collided) {
+            switch (currentDirection) {
+                case 'N':
+                    if (physicsManager.up) {
+                        setCurrentYCoord(currentYCoord + 1);
+                    } else collided();
+                case 'S':
+                    if (physicsManager.down) {
+                        setCurrentYCoord(currentYCoord - 1);
+                    } else collided();
+                case 'E':
+                    if (physicsManager.right) {
+                        setCurrentXCoord(currentXCoord + 1);
+                    } else collided();
+                case 'W':
+                    if (physicsManager.left) {
+                        setCurrentXCoord(currentXCoord - 1);
+                    } else collided();
+            }
+        }
     }
 
     /**
@@ -37,6 +57,7 @@ public class Bullet {
      * @param xCoord the x coord
      */
     public void setCurrentXCoord (int xCoord){
+
         currentXCoord = xCoord;
     }
 
@@ -46,6 +67,7 @@ public class Bullet {
      * @param yCoord the y coord
      */
     public void setCurrentYCoord (int yCoord){
+
         currentYCoord = yCoord;
     }
 
@@ -55,6 +77,7 @@ public class Bullet {
      * @param direction the direction
      */
     public void setCurrentDirection (char direction){
+
         currentDirection = direction;
     }
 
@@ -64,6 +87,7 @@ public class Bullet {
      * @return the int
      */
     public int getCurrentXCoord (){
+
         return currentXCoord;
     }
 
@@ -73,6 +97,7 @@ public class Bullet {
      * @return the current y coord
      */
     public int getCurrentYCoord () {
+
         return currentYCoord;
     }
 
@@ -82,6 +107,16 @@ public class Bullet {
      * @return the current direction
      */
     public char getCurrentDirection () {
+
         return currentDirection;
     }
+
+    public boolean getCurrentCollided () {
+        return collided;
+    }
+
+    public boolean collided () {
+        collided = true;
+    }
+
 }

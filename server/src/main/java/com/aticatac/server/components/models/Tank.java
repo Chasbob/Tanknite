@@ -106,6 +106,7 @@ public class Tank {
         // talk to physics?
         if (currentAmmo == 0) return false;
         Bullet bullet = new Bullet(currentXCoord, currentYCoord, currentDirection);
+        bullet.moveForwards();
         currentAmmo--;
         return true;
 
