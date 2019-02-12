@@ -13,7 +13,7 @@ public class Tank {
     private int currentAmmo;
     private char currentDirection;
     private int maxHealth = 100;
-    private static int currentHealth;
+    private int currentHealth;
 
     /**
      * Instantiates a new Tank.
@@ -64,7 +64,8 @@ public class Tank {
         currentYCoord = movement[2];
         currentDirection = 'E';
         if (movement[0] == 0) return false;
-        //physics tells what type of collision
+        //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
+        //bullet disappears, other collisions have no effect, just stop the current move from happening
         else return true;
     }
 
@@ -122,7 +123,7 @@ public class Tank {
     public void isShot() {
         currentHealth = currentHealth - 10;
         if (currentHealth > 0 && currentHealth <=10){
-            panic();
+            dying();
         }
         else if (currentHealth <= 0){
             die();
@@ -130,9 +131,11 @@ public class Tank {
 // part of colliding? Physics calls this method?
     }
 
-    public void panic(){
+    public void dying(){
         // tell physics/renderer etc
         // can no longer move and will die in 20 seconds
+        //delay
+        die();
 
     }
 
@@ -142,6 +145,7 @@ public class Tank {
      */
 
     // wheree to have collision with pick up, physics?
+    // change from logic interface calling methods to map calling?
     public void die () {
         new AmmoPickUp(currentXCoord, currentYCoord);
         if (LogicInterface.numberOfAliveTanks() == 1){ // in other logic class?
