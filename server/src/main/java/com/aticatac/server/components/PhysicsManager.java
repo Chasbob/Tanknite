@@ -35,11 +35,13 @@ public class PhysicsManager extends Component {
         super(componentParent);
     }
 
+
+
     /**
-     * Checks if the object can move and returns if it can and the new/current position.
+     * Checks if the object can move in a direction and returns if it can and the new/current position.
      * @return Position of the object
      */
-    public Position move(){
+    private Position move(String direction){
 
         //the position for this tank.
         Position position = componentParent.getComponent(Transform.class).GetPosition();
@@ -47,8 +49,16 @@ public class PhysicsManager extends Component {
         //TODO make this get the server component from a different object not this one
         ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
 
+        //old positions
+        double oldX = position.getX();
+        double oldY = position.getY();
+
         //TODO figure out the new positions.
-        Position newPosition = new Position();
+
+        //new proposed positions
+        double newX = 0;
+        double newY = 0;
+        Position newPosition = new Position(newX, newY);
 
         //checks for collisions
         for(int i=0; i<occupiedCoordinates.size(); i++){
@@ -57,7 +67,6 @@ public class PhysicsManager extends Component {
             //Checks the occupied coordinate isn't the current position (TODO is this needed)
             if(newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != position){
 
-                //meaning it has collided with something.
                 return position;
             }
 
@@ -65,6 +74,46 @@ public class PhysicsManager extends Component {
 
         //No collision occurred
         return newPosition;
+    }
+
+    /**
+     * Checks if object can move forwards and returns new position
+     * @return Position of the object
+     */
+    public Position moveForwards(){
+
+        return move("forwards");
+
+    }
+
+    /**
+     * Checks if object can move backwards and returns new position
+     * @return Position of the object
+     */
+    public Position moveBackwards(){
+
+        return move("backwards");
+
+    }
+
+    /**
+     * Checks if object can move left and returns new position
+     * @return Position of the object
+     */
+    public Position moveLeft(){
+
+        return move("left");
+
+    }
+
+    /**
+     * Checks if object can more right and returns new position
+     * @return Position of the object
+     */
+    public Position moveRight(){
+
+        return move("right");
+
     }
 
     

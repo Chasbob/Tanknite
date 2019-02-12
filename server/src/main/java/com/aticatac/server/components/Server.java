@@ -103,7 +103,7 @@ public class Server extends Component {
      * Sets the health of the game object
      */
     public void setHealth(String name, int health){
-        
+
         health.replace(name, health);
 
     }
@@ -149,7 +149,6 @@ public class Server extends Component {
         direction.replace(name, direction);
 
     }
-
 
 
     //TODO get power up
