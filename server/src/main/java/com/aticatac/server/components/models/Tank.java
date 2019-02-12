@@ -8,6 +8,7 @@ import com.aticatac.server.components.models.powerups.AmmoPickUp;
  * The type Tank.
  */
 public class Tank {
+    // change these variables to components when updated
     private int currentXCoord;
     private int currentYCoord;
     private int currentAmmo;
@@ -39,7 +40,8 @@ public class Tank {
      *
      * @return the boolean @
      */
-
+    //physics manager now returns transform, so if new transform = old transform collision has happened,
+    //else set position to new transform
     public boolean moveForwards() {
         int [] movement = physicsManager.forwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
