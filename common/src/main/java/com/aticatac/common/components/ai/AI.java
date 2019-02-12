@@ -21,6 +21,8 @@ public class AI extends Component {
         obtaining
     }
 
+    private final int viewRange = 8; // some value equivalent to the actual view range that a player would have
+
     private GameObject tank;
     private Graph graph;
 
@@ -188,7 +190,7 @@ public class AI extends Component {
 
     private Position getClearPosition() {
         Position tankPos = tank.getComponent(Transform.class).GetPosition();
-        int viewRange = 8;
+
         for (double i = tankPos.x - viewRange; i<tankPos.x + viewRange; i++) {
             for (double j = tankPos.y - viewRange; j<tankPos.y + viewRange; j++) {
                 Position openPos = new Position(i, j);
