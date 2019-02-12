@@ -6,6 +6,13 @@ application {
     mainClassName = "com.aticatac.client.networking.singleplayer.Main"
 }
 
+javafx {
+    modules = ['javafx.graphics', 'javafx.fxml', 'javafx.controls']
+}
+javafx {
+    version = "11.0.+"
+}
+
 dependencies {
     implementation 'org.reflections:reflections:0.9.11'
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
