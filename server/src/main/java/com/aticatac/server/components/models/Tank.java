@@ -2,6 +2,7 @@ package com.aticatac.server.components.models;
 
 import com.aticatac.server.components.models.Bullet;
 import com.aticatac.server.components.model.LogicInterface;
+import com.aticatac.server.components.models.powerups.AmmoPickUp;
 // components for server side make in server or copy from common?
 /**
  * The type Tank.
@@ -12,7 +13,7 @@ public class Tank {
     private int currentAmmo;
     private char currentDirection;
     private int maxHealth = 100;
-    private int currentHealth;
+    private static int currentHealth;
 
     /**
      * Instantiates a new Tank.
@@ -38,7 +39,7 @@ public class Tank {
      *
      * @return the boolean @
      */
-//update to account for move to Tank class
+
     public boolean moveForwards() {
         int [] movement = physicsManager.forwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
@@ -63,6 +64,7 @@ public class Tank {
         currentYCoord = movement[2];
         currentDirection = 'E';
         if (movement[0] == 0) return false;
+        //physics tells what type of collision
         else return true;
     }
 
@@ -117,16 +119,31 @@ public class Tank {
     /**
      * Is shot.
      */
-    public static void isShot() {
+    public void isShot() {
+        currentHealth = currentHealth - 10;
+        if (currentHealth > 0 && currentHealth <=10){
+            panic();
+        }
+        else if (currentHealth <= 0){
+            die();
+        }
 // part of colliding? Physics calls this method?
-        //if new health = 0 then die()
     }
+
+    public void panic(){
+        // tell physics/renderer etc
+        // can no longer move and will die in 20 seconds
+
+    }
+
 
     /**
      * Die.
      */
+
+    // wheree to have collision with pick up, physics?
     public void die () {
-        // drops ammo box
+        new AmmoPickUp(currentXCoord, currentYCoord);
         if (LogicInterface.numberOfAliveTanks() == 1){ // in other logic class?
             LogicInterface.gameFinish();
             // start numberoftanks at 10 and subtract one for each death

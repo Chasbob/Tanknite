@@ -32,25 +32,25 @@ public class Bullet {
         while (!collided) {
             switch (currentDirection) {
                 case 'N':
-                    if (physicsManager.up) {
+                    if (physicsManager.up()) {
                         setCurrentYCoord(currentYCoord + 1);
                     } else collided();
                 case 'S':
-                    if (physicsManager.down) {
+                    if (physicsManager.down()) {
                         setCurrentYCoord(currentYCoord - 1);
                     } else collided();
                 case 'E':
-                    if (physicsManager.right) {
+                    if (physicsManager.right()) {
                         setCurrentXCoord(currentXCoord + 1);
                     } else collided();
                 case 'W':
-                    if (physicsManager.left) {
+                    if (physicsManager.left()) {
                         setCurrentXCoord(currentXCoord - 1);
                     } else collided();
             }
         }
     }
-
+    // physics handles bullet collision
     /**
      * Set current x coord.
      *
@@ -115,7 +115,7 @@ public class Bullet {
         return collided;
     }
 
-    public boolean collided () {
+    public void collided () {
         collided = true;
     }
 

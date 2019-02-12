@@ -1,5 +1,6 @@
 package com.aticatac.server.components.model;
 
+import com.aticatac.common.model.Command;
 import com.aticatac.server.components.models.Tank;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
 // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
     // how to get name from user
     public static void createNewTank(String name) {
-        tanks.put(name, new Tank(physicsManager.getStartingXCoordinate, physicaManager.getStartingYCoordinate));
+        tanks.put(name, new Tank(physicsManager.getStartingXCoordinate(), physicaManager.getStartingYCoordinate()));
     }
 
     /**
@@ -35,15 +36,12 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
     public static boolean runCommand (Command command, String name){
         switch(command){
             case UP : return tanks.get(name).moveForwards();
-                break;
             case LEFT : return tanks.get(name).moveLeft();
-                break;
             case RIGHT : return tanks.get(name).moveRight();
-               break;
             case DOWN : return tanks.get(name).moveBackwards();
-                break;
             case SHOOT : return tanks.get(name).shoot();
         }
+        return false;
     }
 
     /**
@@ -52,19 +50,17 @@ private static HashMap<String, Tank> tanks = new HashMap<>();
      * @param command the command
      * @return the boolean
      */
+    // work out name for single player/ or use different class with same methods
 // single player
     public static boolean runCommand (Command command){
         switch(command){
             case UP : return moveForwards();
-                break;
             case LEFT : return moveLeft();
-                break;
             case RIGHT : return moveRight();
-                break;
             case DOWN : return moveDown();
-                break;
             case SHOOT : return shoot();
         }
+        return false;
     }
 
     /**

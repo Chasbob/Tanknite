@@ -9,16 +9,17 @@ import java.util.HashMap;
  * The type Logic interface.
  */
 public class Map{
-    public Map(){
+    private static HashMap<String, Tank> tanks = new HashMap<>();
 
+    public Map(){
     }
+
+    // have methods for what happens with collisions here?
+
     // change to server side, have key presses on client side
 // This will probably be in the Map class, takes command from networking and runs method in Tank, returning boolean of
 // whether that action ius possible
     // multiplayer
-    private static void createTankHashmap() {
-        private static HashMap<String, Tank> tanks = new HashMap<>();
-    }
 
     /**
      * Create new tank.
