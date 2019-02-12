@@ -1,5 +1,6 @@
 package com.aticatac.server.components.model;
 
+import com.aticatac.common.model.Command;
 import com.aticatac.server.components.models.Tank;
 
 import java.util.HashMap;
@@ -8,11 +9,16 @@ import java.util.HashMap;
  * The type Logic interface.
  */
 public class Map{
+    public Map(){
+
+    }
     // change to server side, have key presses on client side
 // This will probably be in the Map class, takes command from networking and runs method in Tank, returning boolean of
 // whether that action ius possible
     // multiplayer
-    private static HashMap<String, Tank> tanks = new HashMap<>();
+    private static void createTankHashmap() {
+        private static HashMap<String, Tank> tanks = new HashMap<>();
+    }
 
     /**
      * Create new tank.
@@ -36,15 +42,12 @@ public class Map{
     public static boolean runCommand (Command command, String name){
         switch(command){
             case UP : return tanks.get(name).moveForwards();
-            break;
             case LEFT : return tanks.get(name).moveLeft();
-            break;
             case RIGHT : return tanks.get(name).moveRight();
-            break;
             case DOWN : return tanks.get(name).moveBackwards();
-            break;
             case SHOOT : return tanks.get(name).shoot();
         }
+        return false;
     }
 
     /**
@@ -54,18 +57,17 @@ public class Map{
      * @return the boolean
      */
 // single player
+
+    // Need to know name of tank in single player
     public static boolean runCommand (Command command){
         switch(command){
             case UP : return moveForwards();
-            break;
             case LEFT : return moveLeft();
-            break;
             case RIGHT : return moveRight();
-            break;
             case DOWN : return moveDown();
-            break;
             case SHOOT : return shoot();
         }
+        return false;
     }
 
     /**

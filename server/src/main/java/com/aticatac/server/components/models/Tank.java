@@ -2,7 +2,7 @@ package com.aticatac.server.components.models;
 
 import com.aticatac.server.components.models.Bullet;
 import com.aticatac.server.components.model.LogicInterface;
-
+// components for server side make in server or copy from common?
 /**
  * The type Tank.
  */
