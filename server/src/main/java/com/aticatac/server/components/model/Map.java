@@ -10,8 +10,9 @@ import java.util.HashMap;
  */
 public class Map{
     private static HashMap<String, Tank> tanks = new HashMap<>();
-
+    private int numberOfAliveTanks;
     public Map(){
+        numberOfAliveTanks = 10;
     }
 
     // have methods for what happens with collisions here?
@@ -84,9 +85,12 @@ public class Map{
      *
      * @return the int
      */
-    public static int numberOfAliveTanks () {
-        int numberOfTanks = 0;
-        return numberOfTanks;
+    public int getNumberOfAliveTanks () {
+        return numberOfAliveTanks;
+    }
+
+    public void setNumberOfAliveTanks (int numberOfTanks) {
+        numberOfAliveTanks = numberOfTanks;
     }
 
 

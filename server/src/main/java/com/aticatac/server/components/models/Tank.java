@@ -148,6 +148,15 @@ public class Tank {
     // change from logic interface calling methods to map calling?
     public void die () {
         new AmmoPickUp(currentXCoord, currentYCoord);
+        /*
+        if (map.getNumberOfAliveTanks() == 1){
+            map.gameFinish();
+           }
+        else map.setNumberOfAliveTanks(map.getNumberOfAliveTanks - 1);
+
+
+
+            */
         if (LogicInterface.numberOfAliveTanks() == 1){ // in other logic class?
             LogicInterface.gameFinish();
             // start numberoftanks at 10 and subtract one for each death
