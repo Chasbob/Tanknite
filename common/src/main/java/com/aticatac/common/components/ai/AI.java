@@ -10,10 +10,11 @@ import com.aticatac.common.model.Command;
 
 import java.util.ArrayList;
 import java.util.Queue;
+import java.util.Random;
 
 public class AI extends Component {
 
-    private enum State {
+     private enum State {
         searching,
         attacking,
         fleeing,
@@ -34,13 +35,14 @@ public class AI extends Component {
     }
 
     public Command getCommand() {
-        enemiesInRange = getEnemiesInRange();
+        enemiesInRange = getEnemiesInRange(tank.getComponent(Transform.class).GetPosition());
         checkStateChange();
+
         return performStateAction();
     }
 
-    private ArrayList<GameObject> getEnemiesInRange() {
-        //TODO: get enemies in range
+    // Could be moved
+    private ArrayList<GameObject> getEnemiesInRange(Position position) {
         return new ArrayList<GameObject>();
     }
 
@@ -145,8 +147,8 @@ public class AI extends Component {
     }
 
     private Command performSearchingAction() {
-        //TODO do some random path but avoid going back on self
-        return Command.DOWN;
+        Random rand = new Random();
+        return Command.values()[rand.nextInt(3)];
     }
 
     private Command performAttackingAction() {
@@ -164,47 +166,38 @@ public class AI extends Component {
     }
 
     private Command performFleeingAction() {
-        // prioritize removing line of sight to any enemies when running away
-
         Position tankPos = tank.getComponent(Transform.class).GetPosition();
-        if (visibleToEnemy(tankPos)) {
-            Position upPos = new Position(tankPos.x, tankPos.y + 1);  // amount?
-            if (!visibleToEnemy(upPos)) {
-                return Command.UP;
-            }
-            Position downPos = new Position(tankPos.x, tankPos.y - 1);  // amount?
-            if (!visibleToEnemy(downPos)) {
+
+        // Pick a position in range of the agent that is clear of enemies
+
+        Position goal = getClearPosition();
+        if (!(goal == null)) {
+            Queue<Command> path = graph.getPathToLocation(tankPos, goal);
+            if (path.isEmpty()) {
                 return Command.DOWN;
             }
-            Position leftPos = new Position(tankPos.x - 1, tankPos.y);  // amount?
-            if (!visibleToEnemy(leftPos)) {
-                return Command.LEFT;
-            }
-            Position rightPos = new Position(tankPos.x + 1, tankPos.y);  // amount?
-            if (!visibleToEnemy(rightPos)) {
-                return Command.RIGHT;
-            }
+            return path.poll();
         }
-
-
-        // Alternatively pick a position in range of the agent that is clear of enemies
-        // actually this is probably the way to go
-
-        /*
-        SearchNode goal = getClearLocation()
-        Queue<Command> path = pf.getPathToLocation(graph.getNearestNode(tank.getComponent(Transform.class).GetPosition()), goal);
-        if (path.isEmpty()) {
-            return Command.DOWN;
-        }
-        return path.poll();
-         */
-
         return Command.DOWN;
     }
 
     private Command performObtainingAction() {
         // travel a path to a nearby power up
         return Command.DOWN;
+    }
+
+    private Position getClearPosition() {
+        Position tankPos = tank.getComponent(Transform.class).GetPosition();
+        int viewRange = 8;
+        for (double i = tankPos.x - viewRange; i<tankPos.x + viewRange; i++) {
+            for (double j = tankPos.y - viewRange; j<tankPos.y + viewRange; j++) {
+                Position openPos = new Position(i, j);
+                if (getEnemiesInRange(openPos).isEmpty()) {
+                    return openPos;
+                }
+            }
+        }
+        return null;
     }
 
     private boolean visibleToEnemy(Position from) {

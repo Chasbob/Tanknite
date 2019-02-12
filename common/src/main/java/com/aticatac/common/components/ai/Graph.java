@@ -26,18 +26,19 @@ public class Graph {
      * @param width The number of nodes wide
      * @param height The number of nodes high
      */
-    public Graph(int separation, int width, int height) {
+    public Graph(int width, int height, int separation, char[][] map) {
         nodes = new ArrayList<SearchNode>();
 
         // Add nodes
-        // TODO: don't place a node if position is invalid
         for (int i = 0; i < width*separation; i += separation) {
             for (int j = 0; j < height*separation; j += separation) {
-                nodes.add(new SearchNode(i, j));
+                if (map[i][j] != 'w') { // w for wall, or something
+                    nodes.add(new SearchNode(i, j));
+                }
             }
         }
         // Add connections
-        // TODO: don't make connections if connection is invalid (the node thing might be enough though)
+        // don't make connections if connection is invalid (the node thing might be enough though)
         for (SearchNode node : nodes) {
             for (SearchNode otherNode : nodes) {
                 if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == separation) {
@@ -76,4 +77,24 @@ public class Graph {
         }
         return nearestNode;
     }
+    /*
+    private boolean validCommand(Command command, Position position) {
+        SearchNode currentNode = getNearestNode(position);
+        for (SearchNode connectedNode : currentNode.getConnectedNodes()) {
+            if(command == Command.UP) {
+                connectedNode.
+            }
+            if(command == Command.DOWN) {
+
+            }
+            if(command == Command.LEFT) {
+
+            }
+            if(command == Command.RIGHT) {
+
+            }
+
+        }
+    }
+    */
 }
