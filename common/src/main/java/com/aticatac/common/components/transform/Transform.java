@@ -4,7 +4,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.objectsystem.GameObject;
 
 public class Transform extends Component {
-    private Position position;
+    private Position position = new Position(0,0);
     private double rotation = 0;
 
     public Transform(GameObject parent) {
@@ -20,7 +20,11 @@ public class Transform extends Component {
     }
 
     public void Transform(double x, double y) {
-        SetTransform(position.x + x, position.y + y);
+        this.SetTransform(position.x + x, position.y + y);
+
+        for (var o:gameObject.children) {
+            o.getComponent(Transform.class).Transform(-x,-y);
+        }
     }
 
     public void SetTransform(double x, double y) {

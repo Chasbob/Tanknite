@@ -14,8 +14,8 @@ import java.util.List;
  */
 public class GameObject extends AbstractObject {
     private HashMap<Class<?>, Component> components;
-    private AbstractObject parent;
-    private List<GameObject> children;
+    public AbstractObject parent;
+    public List<GameObject> children;
 
     /**
      * Instantiates a new GameObject.
@@ -115,7 +115,7 @@ public class GameObject extends AbstractObject {
      * @return the component
      */
     public <T extends Component> T getComponent(Class<T> type) {
-        return (type.cast(components.get(type)));
+        return type.cast(components.get(type));
     }
 
     private <T extends Component> boolean componentExists(Class<T> type) {
