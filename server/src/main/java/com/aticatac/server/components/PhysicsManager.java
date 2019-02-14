@@ -26,6 +26,8 @@ public class PhysicsManager extends Component {
     private int frictionCoefficient = 10;
     /**The acceleration for this tank*/
     private int acceleration;
+    /**The velocity for this tank*/
+    private int velocity = 10;
 
     /**
      * Creates a new PhysicsManager with a parent.
@@ -53,11 +55,33 @@ public class PhysicsManager extends Component {
         double oldX = position.getX();
         double oldY = position.getY();
 
-        //TODO figure out the new positions.
+        long dt = componentParent.getComponent(Time.class).timeDifference();
+
+        //velocity altered if there is a powerup
+        if(acceleration != 0) {
+            long newVelocity = velocity + (acceleration * dt);
+            velocity = newVelocity;
+        }
+
+        //TODO figure out the new positions. Based on direction of movement.
+        if(direction == "up" || direction == "down"){
+
+            //only moving on y coord
+            int newYCoord = oldY + (velocity * dt);
+
+        }
+
+        if(direction == "left" || direction == "right"){
+
+            //only moving on x coord
+            int newXCoord = oldX + (velocity * dt);
+
+        }
+
 
         //new proposed positions
-        double newX = 0;
-        double newY = 0;
+        double newX = newXCoord;
+        double newY = newYCoord;
         Position newPosition = new Position(newX, newY);
 
         //checks for collisions
@@ -80,9 +104,9 @@ public class PhysicsManager extends Component {
      * Checks if object can move forwards and returns new position
      * @return Position of the object
      */
-    public Position moveForwards(){
+    public Position moveUp(){
 
-        return move("forwards");
+        return move("up");
 
     }
 
@@ -90,9 +114,9 @@ public class PhysicsManager extends Component {
      * Checks if object can move backwards and returns new position
      * @return Position of the object
      */
-    public Position moveBackwards(){
+    public Position moveDown(){
 
-        return move("backwards");
+        return move("down");
 
     }
 
@@ -123,11 +147,12 @@ public class PhysicsManager extends Component {
     /**
      * Sets acceleration for the object.
      */
+    //Allows for powerups that increase this, to happen.
     private void setAcceleration(){
 
         if(componentParent.getComponent(SpeedPowerUp.class) == null){
 
-            acceleration = (gravity*(frictionCoefficient + objectMass) + thrust)/ objectMass;
+            acceleration = 0;
 
         }
 
