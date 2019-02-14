@@ -1,6 +1,7 @@
 package com.aticatac.server.components.model;
 
 import com.aticatac.common.model.Command;
+import com.aticatac.server.components.PhysicsManager;
 import com.aticatac.server.components.models.Tank;
 
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class Map{
 // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
     // how to get name from user
     public static void createNewTank(String name) {
-        tanks.put(name, new Tank(physicsManager.getStartingXCoordinate, physicaManager.getStartingYCoordinate));
+        tanks.put(name, new Tank(PhysicsManager.getStartingXCoordinate, PhysicsManager.getStartingYCoordinate));
     }
 
     /**

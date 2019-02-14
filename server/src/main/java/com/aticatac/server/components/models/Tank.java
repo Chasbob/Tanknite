@@ -1,9 +1,11 @@
 package com.aticatac.server.components.models;
 
+import com.aticatac.server.components.PhysicsManager;
 import com.aticatac.server.components.models.Bullet;
 import com.aticatac.server.components.model.LogicInterface;
 import com.aticatac.server.components.models.powerups.AmmoPickUp;
-// components for server side make in server or copy from common?
+// components for server side make in server or import from common?
+// needs component of PhysicsManager
 /**
  * The type Tank.
  */
@@ -12,7 +14,7 @@ public class Tank {
     private int currentXCoord;
     private int currentYCoord;
     private int currentAmmo;
-    private char currentDirection;
+    private char currentDirection   ;
     private int maxHealth = 100;
     private int currentHealth;
 
@@ -43,7 +45,7 @@ public class Tank {
     //physics manager now returns transform, so if new transform = old transform collision has happened,
     //else set position to new transform
     public boolean moveForwards() {
-        int [] movement = physicsManager.forwards(int currentXCoord, int currentYCoord);
+        int [] movement = PhysicsManager.moveForwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
         currentDirection = 'N';
@@ -61,7 +63,7 @@ public class Tank {
      */
 // when right arrow/d pressed
     public boolean moveRight (){
-        int [] movement = physicsManager.right(int currentXCoord, int currentYCoord);
+        int [] movement = PhysicsManager.moveRight(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
         currentDirection = 'E';
@@ -78,7 +80,7 @@ public class Tank {
      */
 // when left arrow/a pressed
     public boolean moveLeft (){
-        int [] movement = physicsManager.left(int currentXCoord, int currentYCoord);
+        int [] movement = PhysicsManager.moveLeft(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
         currentDirection = 'W';
@@ -93,7 +95,7 @@ public class Tank {
      */
 // when down arrow/s pressed
     public boolean moveBackwards (){
-        int [] movement = physicsManager.backwards(int currentXCoord, int currentYCoord);
+        int [] movement = PhysicsManager.moveBackwards(int currentXCoord, int currentYCoord);
         currentXCoord = movement[1];
         currentYCoord = movement[2];
         currentDirection = 'S';

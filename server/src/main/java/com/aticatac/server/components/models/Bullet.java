@@ -1,5 +1,7 @@
 package com.aticatac.server.components.models;
 
+import com.aticatac.server.components.PhysicsManager;
+
 /**
  * The type Bullet.
  */
@@ -7,7 +9,7 @@ public class Bullet {
     private int currentXCoord;
     private int currentYCoord;
     private char currentDirection;
-    private int damage;
+    private int damage; // or just have special case when shooting with powerup?
     private boolean collided = false;
 
     /**
@@ -28,23 +30,25 @@ public class Bullet {
     /**
      * Move forwards.
      */
+
+    // Need different methods to tank movement in PhysicsManager as simpler movement?
     public void moveForwards() {
         while (!collided) {
             switch (currentDirection) {
                 case 'N':
-                    if (physicsManager.up()) {
+                    if (PhysicsManager.up()) {
                         setCurrentYCoord(currentYCoord + 1);
                     } else collided();
                 case 'S':
-                    if (physicsManager.down()) {
+                    if (PhysicsManager.down()) {
                         setCurrentYCoord(currentYCoord - 1);
                     } else collided();
                 case 'E':
-                    if (physicsManager.right()) {
+                    if (PhysicsManager.right()) {
                         setCurrentXCoord(currentXCoord + 1);
                     } else collided();
                 case 'W':
-                    if (physicsManager.left()) {
+                    if (PhysicsManager.left()) {
                         setCurrentXCoord(currentXCoord - 1);
                     } else collided();
             }
