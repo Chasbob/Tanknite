@@ -18,6 +18,8 @@ public class Graph {
     private static final PathFinder pf = new PathFinder();
     /** The nodes that make up the graph */
     private ArrayList<SearchNode> nodes;
+    private int width;
+    private int height;
 
     /**
      * Creates a new graph by placing and connecting valid nodes.
@@ -27,6 +29,8 @@ public class Graph {
      * @param height The number of nodes high
      */
     public Graph(int width, int height, int separation, char[][] map) {
+        this.width = width;
+        this.height = height;
         nodes = new ArrayList<SearchNode>();
 
         // Add nodes
@@ -35,6 +39,26 @@ public class Graph {
                 if (map[i][j] != 'w') { // w for wall, or something
                     nodes.add(new SearchNode(i, j));
                 }
+            }
+        }
+        // Add connections
+        // don't make connections if connection is invalid (the node thing might be enough though)
+        for (SearchNode node : nodes) {
+            for (SearchNode otherNode : nodes) {
+                if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == separation) {
+                    node.addConnection(otherNode);
+                }
+            }
+        }
+    }
+
+    public Graph(int width, int height, int separation) {
+        nodes = new ArrayList<SearchNode>();
+
+        // Add nodes
+        for (int i = 0; i < width*separation; i += separation) {
+            for (int j = 0; j < height*separation; j += separation) {
+                nodes.add(new SearchNode(i, j));
             }
         }
         // Add connections
@@ -76,6 +100,24 @@ public class Graph {
             }
         }
         return nearestNode;
+    }
+
+    /**
+     * Gets the width of the graph.
+     *
+     * @return The width of the graph
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * Gets the height of the graph.
+     *
+     * @return The height of the graph
+     */
+    public int getHeight() {
+        return height;
     }
 
 }

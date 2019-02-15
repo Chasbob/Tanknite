@@ -7,6 +7,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.Health;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.model.Command;
+import javafx.geometry.Pos;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class AI extends Component {
         OBTAINING
     }
 
-    private final static int VIEW_RANGE = 8; // some value equivalent to the actual view range that a player would have
+    private final static int VIEW_RANGE = 6; // some value equivalent to the actual view range that a player would have
 
     private final GameObject tank;
     private final Graph graph;
@@ -87,9 +88,11 @@ public class AI extends Component {
 
     private int getAttackingUtility() {
         if (tankAmmo == 0) {
+            // Can't attack
             return 0;
         }
         if (!enemiesInRange.isEmpty()) {
+            // An enemy is in range
             return 80;
         }
         return 0;
@@ -201,15 +204,20 @@ public class AI extends Component {
     }
 
     private Position getClearPosition() {
+        ArrayList<Position> clearPositions = new ArrayList<Position>();
         for (double i = tankPos.x - VIEW_RANGE; i < tankPos.x + VIEW_RANGE; i++) {
             for (double j = tankPos.y - VIEW_RANGE; j < tankPos.y + VIEW_RANGE; j++) {
-                Position openPos = new Position(i, j);
-                if (getEnemiesInRange(openPos, 5).isEmpty()) {
-                    return openPos;
+                // A position outside the map is not valid
+                if (i >= 0 && i < graph.getWidth() && j >= 0 && j < graph.getHeight()) {
+                    Position openPos = new Position(i, j);
+                    if (getEnemiesInRange(openPos, 4).isEmpty()) {
+                        return openPos;
+                    }
                 }
             }
         }
-        return null;
+        Random rand = new Random();
+        return clearPositions.get(rand.nextInt(clearPositions.size()));
     }
 
     private boolean visibleToEnemy(Position from) {
