@@ -1,7 +1,8 @@
 package com.aticatac.server.components.models;
 
-import com.aticatac.server.components.PhysicsManager;
+import com.aticatac.server.components.*;
 import com.aticatac.server.components.models.Bullet;
+import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.model.LogicInterface;
 import com.aticatac.server.components.models.powerups.AmmoPickUp;
 // components for server side make in server or import from common?
@@ -9,7 +10,7 @@ import com.aticatac.server.components.models.powerups.AmmoPickUp;
 /**
  * The type Tank.
  */
-public class Tank {
+public class Tank /*extends Component*/ {
     // change these variables to components when updated
     private int currentXCoord;
     private int currentYCoord;
@@ -25,14 +26,22 @@ public class Tank {
      * @param yCoord the y coord
      */
     public Tank (int xCoord, int yCoord){
+    /*(GameObject componentParent){
+        super(componentParent); */
+        /*Tank.addComponent(Health.class);
+        GameObject.addComponent(AI.class);
+        GameObject.addComponent(Ammo.class);
+        GameObject.addComponent(PhysicsManager.class);
+        GameObject.addComponent(Transform.class);
+        GameObject.getComponent(Health.class).setHealth(100);
+        GameObject.getComponent(Ammo.class).setAmmo(30);*/
         currentXCoord = xCoord;
         currentYCoord = yCoord;
         currentAmmo = 30;
         currentHealth = 100;
     }
-// have ammo as component and get health component, and transform and position etc
+// have ammo as component and get health component, and transform and position etc (and physicsmanager)
 // determine whether ai, put behavioural trees from ai if so
-
 
 
     //when sound plays check all tanks in that area and play noise to all those players
