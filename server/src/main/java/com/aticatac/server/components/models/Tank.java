@@ -33,6 +33,7 @@ public class Tank /*extends Component*/ {
         GameObject.addComponent(Ammo.class);
         GameObject.addComponent(PhysicsManager.class);
         GameObject.addComponent(Transform.class);
+        GameObject.addComponent(Position.class);
         GameObject.getComponent(Health.class).setHealth(100);
         GameObject.getComponent(Ammo.class).setAmmo(30);*/
         currentXCoord = xCoord;
@@ -54,15 +55,15 @@ public class Tank /*extends Component*/ {
     //physics manager now returns transform, so if new transform = old transform collision has happened,
     //else set position to new transform
     public boolean moveForwards() {
-        int [] movement = PhysicsManager.moveForwards(int currentXCoord, int currentYCoord);
-        currentXCoord = movement[1];
-        currentYCoord = movement[2];
+        double oldX = Transform.getX();
+        double oldY = Transform.getY();
+        Position oldPosition = Position(oldX, oldY);
+        Position newPosition = PhysicsManager.moveForwards();
         currentDirection = 'N';
-        if (movement[0] == 0) return false;
+        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        if (oldPosition.equals(newPosition)) return false;
         else return true;
-        // physics returns an array of the boolean, and then 2 co ordinates it moves to
-        // Talk to physics, it will return whether can move, if can then tell renderer it moves and where
-        // co ordinates can be changed in physics
+
     }
 
     /**
@@ -72,14 +73,16 @@ public class Tank /*extends Component*/ {
      */
 // when right arrow/d pressed
     public boolean moveRight (){
-        int [] movement = PhysicsManager.moveRight(int currentXCoord, int currentYCoord);
-        currentXCoord = movement[1];
-        currentYCoord = movement[2];
+        double oldX = Transform.getX();
+        double oldY = Transform.getY();
+        Position oldPosition = Position(oldX, oldY);
+        Position newPosition = PhysicsManager.moveRight();
         currentDirection = 'E';
-        if (movement[0] == 0) return false;
+        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        if (oldPosition.equals(newPosition)) return false;
+        else return true;
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
         //bullet disappears, other collisions have no effect, just stop the current move from happening
-        else return true;
     }
 
     /**
@@ -89,11 +92,13 @@ public class Tank /*extends Component*/ {
      */
 // when left arrow/a pressed
     public boolean moveLeft (){
-        int [] movement = PhysicsManager.moveLeft(int currentXCoord, int currentYCoord);
-        currentXCoord = movement[1];
-        currentYCoord = movement[2];
+        double oldX = Transform.getX();
+        double oldY = Transform.getY();
+        Position oldPosition = Position(oldX, oldY);
+        Position newPosition = PhysicsManager.moveLeft();
         currentDirection = 'W';
-        if (movement[0] == 0) return false;
+        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        if (oldPosition.equals(newPosition)) return false;
         else return true;
     }
 
@@ -104,11 +109,13 @@ public class Tank /*extends Component*/ {
      */
 // when down arrow/s pressed
     public boolean moveBackwards (){
-        int [] movement = PhysicsManager.moveBackwards(int currentXCoord, int currentYCoord);
-        currentXCoord = movement[1];
-        currentYCoord = movement[2];
+        double oldX = Transform.getX();
+        double oldY = Transform.getY();
+        Position oldPosition = Position(oldX, oldY);
+        Position newPosition = PhysicsManager.moveBackwards();
         currentDirection = 'S';
-        if (movement[0] == 0) return false;
+        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        if (oldPosition.equals(newPosition)) return false;
         else return true;
     }
 

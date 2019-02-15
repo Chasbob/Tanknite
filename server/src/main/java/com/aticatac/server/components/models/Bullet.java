@@ -23,7 +23,7 @@ public class Bullet {
         currentXCoord = xCoord;
         currentYCoord = yCoord;
         currentDirection = direction;
-        // add components for physicamanager and transform
+        // add components for physicamanager, transform and position
     }
 
     //physics in charge of moving and collisions for bullet and tank
