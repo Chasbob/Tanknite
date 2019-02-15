@@ -77,24 +77,5 @@ public class Graph {
         }
         return nearestNode;
     }
-    /*
-    private boolean validCommand(Command command, Position position) {
-        SearchNode currentNode = getNearestNode(position);
-        for (SearchNode connectedNode : currentNode.getConnectedNodes()) {
-            if(command == Command.UP) {
-                connectedNode.
-            }
-            if(command == Command.DOWN) {
 
-            }
-            if(command == Command.LEFT) {
-
-            }
-            if(command == Command.RIGHT) {
-
-            }
-
-        }
-    }
-    */
 }

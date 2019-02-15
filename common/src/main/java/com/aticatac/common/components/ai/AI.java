@@ -153,10 +153,14 @@ public class AI extends Component {
     }
 
     private Command performSearchingAction() {
-        // Complete random movement currently
-        // Would be better to avoid moving back on self
-        Random rand = new Random();
-        return Command.values()[rand.nextInt(3)];
+        Position goal = getClearPosition(); // there should be a clear position given we are in the searching state
+        if (!(goal == null)) {
+            Queue<Command> path = graph.getPathToLocation(tankPos, goal);
+            if (!path.isEmpty()) {
+                return path.poll();
+            }
+        }
+        return Command.DOWN;
     }
 
     private Command performAttackingAction() {
