@@ -1,6 +1,8 @@
 package com.aticatac.client.objectsystem;
 
 import com.aticatac.common.components.Component;
+import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,6 +23,5 @@ public class Renderer extends Component {
     public Renderer(GameObject gameObject) {
         super(gameObject);
     }
-
 
 }

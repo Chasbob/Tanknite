@@ -59,6 +59,13 @@ public class GameObject extends AbstractObject {
         this.children.add(child);
     }
 
+    GameObject findChild(String name){
+        for (var o :this.children) {
+            if (o.name.equals(name)) return o;
+        }
+        return null;
+    }
+
     /**
      * Add components.
      *
@@ -118,7 +125,7 @@ public class GameObject extends AbstractObject {
         return type.cast(components.get(type));
     }
 
-    private <T extends Component> boolean componentExists(Class<T> type) {
+    public  <T extends Component> boolean componentExists(Class<T> type) {
         return components.containsKey(type);
     }
 }

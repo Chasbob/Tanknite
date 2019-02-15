@@ -25,7 +25,7 @@ public class OrthoCamera extends OrthographicCamera {
     @Override
     public void update () {
         Position p = c.gameObject.getComponent(Transform.class).GetPosition();
-        super.position.set((float)p.x,(float)p.y,10);
+        //super.position.set((float)p.x,(float)p.y,0);
         super.update();
     }
 }
