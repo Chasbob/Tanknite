@@ -55,6 +55,7 @@ public class AI extends Component {
         return performStateAction();
     }
 
+    // There's probably a more elegant way to do this
     private State getStateChange() {
         // Get utility score for each state
         int searchingUtility = getSearchingUtility();
@@ -185,7 +186,7 @@ public class AI extends Component {
     }
 
     private Command performObtainingAction() {
-        // Get position of power-up to collect and travel there
+        // TODO Get position of power-up to collect and travel there
         Position powerupLocation = new Position(1,2);
 
         Queue<Command> path = graph.getPathToLocation(tankPos, powerupLocation);
@@ -225,7 +226,7 @@ public class AI extends Component {
     }
 
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-        ArrayList<GameObject> allEnemies = new ArrayList<GameObject>(); // ***Get this info***
+        ArrayList<GameObject> allEnemies = new ArrayList<GameObject>(); // TODO ***Get this info***
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
 
         for (GameObject enemy : allEnemies) {
