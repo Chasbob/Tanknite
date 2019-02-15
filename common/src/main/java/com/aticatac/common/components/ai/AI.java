@@ -7,9 +7,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.Health;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.model.Command;
-import javafx.geometry.Pos;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Random;
@@ -220,6 +218,7 @@ public class AI extends Component {
         return clearPositions.get(rand.nextInt(clearPositions.size()));
     }
 
+    // Useful?
     private boolean visibleToEnemy(Position from) {
         for (GameObject enemy : enemiesInRange) {
             Position enemyPos = enemy.getComponent(Transform.class).GetPosition();
@@ -231,10 +230,16 @@ public class AI extends Component {
     }
 
     private boolean checkLineOfSightToPosition(Position from, Position to) {
-
-        // can a direct line be drawn?
-
-        return 1 > 2;
+        // Current: if a path between the positions only contains the same command repeated, there is a line of sight
+        // TODO: change to any angle line of sight
+        Queue<Command> path = graph.getPathToLocation(from, to);
+        Command first = path.peek();
+        while(!path.isEmpty()) {
+            if (path.poll() != first) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
@@ -242,8 +247,8 @@ public class AI extends Component {
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
 
         for (GameObject enemy : allEnemies) {
-            if (Math.abs(enemy.getComponent(Transform.class).GetPosition().x - tankPos.x) <= VIEW_RANGE ||
-                    Math.abs(enemy.getComponent(Transform.class).GetPosition().y - tankPos.y) <= VIEW_RANGE) {
+            if (Math.abs(enemy.getComponent(Transform.class).GetPosition().x - position.x) <= range ||
+                    Math.abs(enemy.getComponent(Transform.class).GetPosition().y - position.y) <= range) {
                 inRange.add(enemy);
             }
         }
