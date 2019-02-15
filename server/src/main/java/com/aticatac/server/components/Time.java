@@ -40,7 +40,7 @@ public class Time extends Component{
         //calculates the current time when this is called
         currentTime = System.nanoTime();
 
-        //calcualtes the difference between the start and current time
+        //calculates the difference between the start and current time
         long timeDifference = currentTime - startTime;
 
         //Sets the start time to the current so that the next time difference is correct.
@@ -49,7 +49,5 @@ public class Time extends Component{
         return timeDifference;
 
     }
-
-
 
 }

@@ -16,18 +16,16 @@ import java.util.ArrayList;
 public class PhysicsManager extends Component {
 
     /**The gravity acting for all objects*/
-    private static int gravity = 10;
+    private static double gravity = 10;
 
     /**The mass of this object*/
-    private int objectMass = 10;
+    private double objectMass = 10;
     /**The thrust for this tank*/
-    private int thrust = 10;
-    /**The frictionCoefficient for this tank*/
-    private int frictionCoefficient = 10;
+    private double thrust = 10;
     /**The acceleration for this tank*/
-    private int acceleration;
+    private double acceleration;
     /**The velocity for this tank*/
-    private int velocity = 10;
+    private double velocity = 10;
 
     /**
      * Creates a new PhysicsManager with a parent.
@@ -54,34 +52,35 @@ public class PhysicsManager extends Component {
         //old positions
         double oldX = position.getX();
         double oldY = position.getY();
+        //new proposed positions
+        double newX = oldX;
+        double newY = oldY;
 
-        long dt = componentParent.getComponent(Time.class).timeDifference();
+        //converting the dt from nanoseconds to seconds
+        long dt = (componentParent.getComponent(Time.class).timeDifference())/1000000000;
 
         //velocity altered if there is a powerup
         if(acceleration != 0) {
-            long newVelocity = velocity + (acceleration * dt);
+            double newVelocity = velocity + (acceleration * dt);
             velocity = newVelocity;
         }
 
-        //TODO figure out the new positions. Based on direction of movement.
+        //Calculates the new coordinates
         if(direction == "up" || direction == "down"){
 
             //only moving on y coord
-            int newYCoord = oldY + (velocity * dt);
+            newY = oldY + (velocity * dt);
 
         }
 
         if(direction == "left" || direction == "right"){
 
             //only moving on x coord
-            int newXCoord = oldX + (velocity * dt);
+            newX = oldX + (velocity * dt);
 
         }
 
-
-        //new proposed positions
-        double newX = newXCoord;
-        double newY = newYCoord;
+        //Sets the new coordinates as a position
         Position newPosition = new Position(newX, newY);
 
         //checks for collisions
@@ -140,9 +139,6 @@ public class PhysicsManager extends Component {
 
     }
 
-    
-    //TODO Bullet interactions
-
 
     /**
      * Sets acceleration for the object.
@@ -161,6 +157,59 @@ public class PhysicsManager extends Component {
             acceleration = (gravity*(componentParent.getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust)/ objectMass;
 
         }
+
+    }
+
+
+    /**
+     * Checks if a bullet has collided with something
+     * @return
+     */
+    public boolean bulletMovement(String direction, Position position){
+
+        //will start from the location of the tank.
+
+        //TODO make this get the server component from a different object not this one
+        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
+
+        //the position for the bullet.
+        Position positionBullet = position;
+        double xCoord = positionBullet.getX();
+        double yCoord = positionBullet.getY();
+
+        //moving up or down for the bullet
+        if(direction == "up" || direction == "down"){
+
+            //checks for collisions
+            for(int i=0; i<occupiedCoordinates.size(); i++){
+
+                if(yCoord++ == occupiedCoordinates.get(i).getY()){
+
+                    return false;
+
+                }
+
+            }
+
+        }
+
+        //moving right or left for the bullet
+        if(direction == "right" || direction == "left"){
+
+            //checks for collisions
+            for(int i=0; i<occupiedCoordinates.size(); i++){
+
+                if(xCoord++ == occupiedCoordinates.get(i).getX()){
+
+                    return false;
+
+                }
+
+            }
+
+        }
+
+        return true;
 
     }
 
