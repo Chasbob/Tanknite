@@ -127,10 +127,11 @@ public class Tank /*extends Component*/ {
 // call method when space bar pressed
     public boolean shoot() {
         // talk to physics?
+        int currentAmmo = Ammo.getAmmo
         if (currentAmmo == 0) return false;
-        Bullet bullet = new Bullet(currentXCoord, currentYCoord, currentDirection);
+        Bullet bullet = new Bullet(Transform.getX(), Transform.getY(), currentDirection);
         bullet.moveForwards();
-        currentAmmo--;
+        Ammo.setAmmo(currentAmmo - 1);
         return true;
 
 // create bullet object current co ordinatesn where shooting tank is, and move
@@ -141,11 +142,13 @@ public class Tank /*extends Component*/ {
      * Is shot.
      */
     public void isShot() {
-        currentHealth = currentHealth - 10;
-        if (currentHealth > 0 && currentHealth <=10){
+        int currentHealth = Health.getHealth();
+        int newHealth = currentHealth - 10;
+        Health.setHealth(newHealth);
+        if (newHealth > 0 && newHealth <=10){
             dying();
         }
-        else if (currentHealth <= 0){
+        else if (newHealth <= 0){
             die();
         }
 // part of colliding? Physics calls this method?
@@ -167,7 +170,7 @@ public class Tank /*extends Component*/ {
     // wheree to have collision with pick up, physics?
     // change from logic interface calling methods to map calling?
     public void die () {
-        new AmmoPickUp(currentXCoord, currentYCoord);
+        new AmmoPickUp(Transform.getX(), Transform.getY());
         /*
         if (map.getNumberOfAliveTanks() == 1){
             map.gameFinish();
@@ -188,10 +191,12 @@ public class Tank /*extends Component*/ {
      * Pick up health.
      */
     public void pickUpHealth () {
-        currentHealth += 10;
-        if (currentHealth > maxHealth){
-            currentHealth = maxHealth;
+        int currentHealth = Health.getHealth();
+        int newHealth = currentHealth + 10;
+        if (newHealth > maxHealth){
+            Health.setHealth(maxHealth);
         }
+        else Health.setHealth(newHealth);
         // only gain health up to maximum
     }
 
@@ -199,7 +204,8 @@ public class Tank /*extends Component*/ {
      * Pick up ammo.
      */
     public void pickUpAmmo () {
-        currentAmmo += 10;
+        int currentAmmo = Ammo.getAmmo();
+        Ammo.setAmmo(currentAmmo + 10);
     }
 
     /**

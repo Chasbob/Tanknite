@@ -35,22 +35,24 @@ public class Bullet {
     // Need different methods to tank movement in PhysicsManager as simpler movement?
     public void moveForwards() {
         while (!collided) {
+            int currentYCoord = Transform.getY();
+            int currentXCoord = Transform.getX();
             switch (currentDirection) {
                 case 'N':
                     if (PhysicsManager.up()) {
-                        setCurrentYCoord(currentYCoord + 1);
+                        Transform.setTransform(currentXCoord, currentYCoord + 1);
                     } else collided();
                 case 'S':
                     if (PhysicsManager.down()) {
-                        setCurrentYCoord(currentYCoord - 1);
+                        Transform.setTransform(currentXCoord, currentYCoord - 1);
                     } else collided();
                 case 'E':
                     if (PhysicsManager.right()) {
-                        setCurrentXCoord(currentXCoord + 1);
+                        Transform.setTransform(currentXCoord + 1, currentYCoord);
                     } else collided();
                 case 'W':
                     if (PhysicsManager.left()) {
-                        setCurrentXCoord(currentXCoord - 1);
+                        Transform.setTransform(currentXCoord - 1, currentYCoord);
                     } else collided();
             }
         }
