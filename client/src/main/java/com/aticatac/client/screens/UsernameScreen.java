@@ -34,7 +34,7 @@ public class UsernameScreen extends AbstractScreen {
         rootTable.addActor(usernameTable);
         usernameTable.setFillParent(true);
         usernameTable.center();
-        usernameTable.defaults().pad(10).width(150).center();
+        usernameTable.defaults().pad(10).width(200).height(30).center();
         //create guidance label
         Label guidanceLabel = uiFactory.createLabel("Enter username");
         usernameTable.add(guidanceLabel);

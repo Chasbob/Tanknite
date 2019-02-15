@@ -44,13 +44,13 @@ public class UIFactory {
 
     private void loadStyles() {
         //load in font for menu
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/ARCADECLASSIC.TTF"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter50 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter15.size = 15;
-        parameter50.size = 50;
+        parameter40.size = 40;
         BitmapFont buttonFont = generator.generateFont(parameter15);
-        BitmapFont titleFont = generator.generateFont(parameter50);
+        BitmapFont titleFont = generator.generateFont(parameter40);
         generator.dispose();
         //create title label style
         titleStyle = new Label.LabelStyle();
