@@ -151,11 +151,4 @@ public class PathFinder {
         return Math.sqrt(Math.pow(from.getPosition().y - to.getPosition().y, 2) + Math.pow(from.getPosition().x - to.getPosition().x, 2));
     }
 
-    public Queue<Command> getRandomPath() {
-        Queue<Command> path = new LinkedList<Command>();
-
-        // hmmm
-
-        return path;
-    }
 }

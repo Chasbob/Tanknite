@@ -13,7 +13,9 @@ import java.util.Queue;
 import java.util.Random;
 
 public class AI extends Component {
-
+    /**
+     * The set of states the AI tank can be in.
+     */
     private enum State {
         SEARCHING,
         ATTACKING,
@@ -39,7 +41,11 @@ public class AI extends Component {
         this.graph = graph;
     }
 
-    // ArrayList||Queue<Command> instead?
+    /**
+     * Returns a command to control the tank.
+     *
+     * @return A command
+     */
     public Command getCommand() {
         // Update information
         tankPos = tank.getComponent(Transform.class).GetPosition();
@@ -54,7 +60,11 @@ public class AI extends Component {
         return performStateAction();
     }
 
-    // There's probably a more elegant way to do this
+    /**
+     * Returns the state with the highest utility score.
+     *
+     * @return The state with the highest utility score
+     */
     private State getStateChange() {
         // Get utility score for each state
         int searchingUtility = getSearchingUtility();
@@ -80,10 +90,20 @@ public class AI extends Component {
         return State.SEARCHING;
     }
 
+    /**
+     * Gets the utility score for the SEARCHING state.
+     *
+     * @return The utility score for the SEARCHING state
+     */
     private int getSearchingUtility() {
         return 50;
     }
 
+    /**
+     * Gets the utility score for the ATTACKING state.
+     *
+     * @return The utility score for the ATTACKING state
+     */
     private int getAttackingUtility() {
         if (tankAmmo == 0) {
             // Can't attack
@@ -96,6 +116,11 @@ public class AI extends Component {
         return 0;
     }
 
+    /**
+     * Gets the utility score for the FLEEING state.
+     *
+     * @return The utility score for the FLEEING state
+     */
     private int getFleeingUtility() {
         if (enemiesInRange.isEmpty()){
             // Nothing to flee from
@@ -123,6 +148,11 @@ public class AI extends Component {
         return 0;
     }
 
+    /**
+     * Gets the utility score for the OBTAINING state.
+     *
+     * @return The utility score for the OBTAINING state
+     */
     private int getObtainingUtility() {
         /*
         if (tankAmmo <= 5 && ammo power up near){
@@ -139,6 +169,11 @@ public class AI extends Component {
         return 0;
     }
 
+    /**
+     * Gets a command from the current state.
+     *
+     * @return A command from the current state
+     */
     private Command performStateAction() {
         switch (state) {
             case SEARCHING:
@@ -153,6 +188,13 @@ public class AI extends Component {
         return performSearchingAction();
     }
 
+    /**
+     * Gets a command from the SEARCHING state.
+     *
+     * Travels a path to a clear position on the map.
+     *
+     * @return A command from the SEARCHING state
+     */
     private Command performSearchingAction() {
         Position goal = getClearPosition(); // there should be a clear position given we are in the searching state
         if (!(goal == null)) {
@@ -164,6 +206,14 @@ public class AI extends Component {
         return Command.DOWN;
     }
 
+    /**
+     * Gets a command from the ATTACKING state.
+     *
+     * If there is a line of sight to the closest enemy then aim towards it then shoots,
+     * Else travels a path to the enemy.
+     *
+     * @return A command from the ATTACKING state
+     */
     private Command performAttackingAction() {
         if (checkLineOfSightToPosition(tankPos, getClosestEnemy().getComponent(Transform.class).GetPosition())) {
             // TODO aim
@@ -178,6 +228,13 @@ public class AI extends Component {
         }
     }
 
+    /**
+     * Gets a command from the FLEEING state.
+     *
+     * Travels a path to a clear position on the map.
+     *
+     * @return A command from the FLEEING state
+     */
     private Command performFleeingAction() {
         // Pick a position in range of the agent that is clear of enemies and travel there
         Position goal = getClearPosition();
@@ -190,6 +247,13 @@ public class AI extends Component {
         return Command.DOWN;
     }
 
+    /**
+     * Gets a command from the OBTAINING state.
+     *
+     * Travels a path to a power-up on the map.
+     *
+     * @return A command from the OBTAINING state
+     */
     private Command performObtainingAction() {
         // TODO Get position of power-up to collect and travel there
         Position powerupLocation = new Position(1,2);
@@ -201,6 +265,11 @@ public class AI extends Component {
         return path.poll();
     }
 
+    /**
+     * Finds a position in range of the tank clear of enemies.
+     *
+     * @return A position clear of enemies
+     */
     private Position getClearPosition() {
         ArrayList<Position> clearPositions = new ArrayList<Position>();
         for (double i = tankPos.x - VIEW_RANGE; i < tankPos.x + VIEW_RANGE; i++) {
@@ -229,6 +298,13 @@ public class AI extends Component {
         return false;
     }
 
+    /**
+     * Checks if there exists a line of sight between two points on the map.
+     *
+     * @param from Start position
+     * @param to End position
+     * @return True if there is a line of sight between
+     */
     private boolean checkLineOfSightToPosition(Position from, Position to) {
         // Current: if a path between the positions only contains the same command repeated, there is a line of sight
         // TODO: change to any angle line of sight
@@ -242,6 +318,13 @@ public class AI extends Component {
         return true;
     }
 
+    /**
+     * Gets a list of enemies that are in a given range from a given position.
+     *
+     * @param position The center position to check from
+     * @param range The range
+     * @return A list of enemies in range of the position
+     */
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
         ArrayList<GameObject> allEnemies = new ArrayList<GameObject>(); // TODO ***Get this info***
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
@@ -255,6 +338,11 @@ public class AI extends Component {
         return inRange;
     }
 
+    /**
+     * Gets the closest enemy to the tank.
+     *
+     * @return The closest enemy to the tank
+     */
     private GameObject getClosestEnemy() {
         GameObject closestEnemy = null;
         double distanceToClosestEnemy = Double.MAX_VALUE;
