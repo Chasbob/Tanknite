@@ -51,22 +51,10 @@ public class GameScreen extends AbstractScreen {
 
             root = new GameObject("Root",rootAbstract);
 
-            tank = new GameObject("Tank1",root);
-            tank.getComponent(Transform.class).SetTransform(getWidth()/2,getHeight()/2);
-
-            new GameObject("TankBottom",tank);
-            new GameObject("TankTop",tank);
-
-            Position p = tank.getComponent(Transform.class).GetPosition();
-
-            tank.children.get(0).getComponent(Transform.class).SetTransform(p.x,p.y);
-            tank.children.get(1).getComponent(Transform.class).SetTransform(p.x+10,p.y+10);
+            tank = new Tank("Tank1",root,new Position(getWidth()/2,getHeight()/2));
 
             tank.children.get(0).addComponent(Renderer.class).setTexture("img/TankBottom.png");
             tank.children.get(1).addComponent(Renderer.class).setTexture("img/TankTop.png");
-
-
-
 
         } catch (Exception e) {
             e.printStackTrace();

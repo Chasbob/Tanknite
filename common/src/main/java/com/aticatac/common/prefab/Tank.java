@@ -1,5 +1,7 @@
 package com.aticatac.common.prefab;
 
+import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
@@ -13,10 +15,14 @@ public class Tank extends GameObject {
      * @param name   the name
      * @param parent the parent
      */
-    public Tank(String name, GameObject parent) throws ComponentExistsException, InvalidClassInstance {
+    public Tank(String name, GameObject parent, Position p) throws ComponentExistsException, InvalidClassInstance {
         super(name, parent);
+        this.getComponent(Transform.class).SetTransform(p.x,p.y);
 
-        new GameObject("Tank Turret",this);
-        new GameObject("Tank Base",this);
+        new GameObject("TankBottom",this);
+        new GameObject("TankTop",this);
+
+        this.children.get(0).getComponent(Transform.class).SetTransform(p.x,p.y);
+        this.children.get(1).getComponent(Transform.class).SetTransform(p.x+10,p.y+10);
     }
 }
