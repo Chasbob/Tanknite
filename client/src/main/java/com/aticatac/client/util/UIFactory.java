@@ -23,8 +23,8 @@ import java.io.IOException;
  * The type Ui factory.
  */
 public class UIFactory {
-    public Label.LabelStyle errorStyle;
-    public Label.LabelStyle hideErrorStyle;
+    private Label.LabelStyle errorStyle;
+    private Label.LabelStyle hideErrorStyle;
     private Label.LabelStyle labelStyle;
     private Label.LabelStyle titleStyle;
     private TextButton.TextButtonStyle buttonStyle;
@@ -164,32 +164,28 @@ public class UIFactory {
         return submitButton2(dstScreen, senderScreen, uiFactory, label, textField, this.address);
     }
 
-    public InputListener submitButton2(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField, ServerInformation information) {
+    private InputListener submitButton2(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField, ServerInformation information) {
         return new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 String name = textField.getText();
-                boolean taken = false;
+                boolean taken;
                 try {
                     taken = client.connect(information, name);
-                } catch (IOException e) {
+                    //if name is not taken load game screen, else keep listening
+                    if (taken) {
+                        //set the error label to invisible
+                        label.setStyle(uiFactory.hideErrorStyle);
+                        ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
+                    } else {
+                        label.setStyle(uiFactory.errorStyle);
+                    }
+                    return false;
+                } catch (IOException | InvalidBytes e) {
                     e.printStackTrace();
                     //TODO reporting?
                     return false;
-                } catch (InvalidBytes invalidBytes) {
-                    invalidBytes.printStackTrace();
-                    return false;
                 }
-                //TODO send message to server to see if name has been taken
-                //if name is not taken load game screen, else keep listening
-                if (!taken) {
-                    //set the error label to invisible
-                    label.setStyle(uiFactory.hideErrorStyle);
-                    ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
-                } else {
-                    label.setStyle(uiFactory.errorStyle);
-                }
-                return false;
             }
         };
     }
