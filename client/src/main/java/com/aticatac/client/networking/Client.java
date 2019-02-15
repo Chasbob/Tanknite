@@ -15,7 +15,7 @@ import java.net.Socket;
 /**
  * The type Client.
  */
-class Client {
+public class Client {
     private final Logger logger;
     private Login login;
     private PrintStream printer;
@@ -23,7 +23,7 @@ class Client {
     /**
      * Instantiates a new Client.
      */
-    Client() {
+    public Client() {
         this.logger = Logger.getLogger(getClass());
 //        login = new Login(id);
     }
@@ -36,7 +36,8 @@ class Client {
      * @throws IOException  the io exception
      * @throws InvalidBytes the invalid bytes
      */
-    void connect(ServerInformation server, String id) throws IOException, InvalidBytes {
+    public boolean connect(ServerInformation server, String id) throws IOException, InvalidBytes {
+        boolean boolOut = false;
         Login login = new Login(id);
         this.logger.trace("ID: " + id);
         this.logger.trace("login: " + ModelReader.toJson(login));
@@ -53,9 +54,11 @@ class Client {
         if (output.isAuthenticated()) {
             this.logger.trace("Multicast address: " + output.getMulticast());
             initUpdateSocket(InetAddress.getByName(output.getMulticast()), server.getPort());
+            boolOut = true;
         }
         this.login = output;
         this.logger.info("Exiting 'connect' cleanly.");
+        return boolOut;
     }
 
     private void initUpdateSocket(InetAddress address, int port) throws IOException {
