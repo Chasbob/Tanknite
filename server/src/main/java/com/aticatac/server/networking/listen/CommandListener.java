@@ -1,22 +1,24 @@
 package com.aticatac.server.networking.listen;
 
+import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
+import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.ModelReader;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 
 public class CommandListener extends Thread {
-    private final Socket socket;
-    private final BlockingQueue<CommandModel> queue;
+    private final BlockingQueue<Command> queue;
     private final Logger logger;
+    private final BufferedReader reader;
 
-    public CommandListener(Socket socket, BlockingQueue<CommandModel> queue) {
-        this.socket = socket;
+    public CommandListener(BufferedReader reader, BlockingQueue<Command> queue) {
         this.queue = queue;
-        logger = Logger.getLogger(getClass());
+        this.logger = Logger.getLogger(getClass());
+        this.reader = reader;
     }
 
     @Override
@@ -26,17 +28,16 @@ public class CommandListener extends Thread {
     }
 
     private void listen() {
-        InputStream in;
-        byte[] bytes;
+        this.logger.trace("Listening");
         while (!this.isInterrupted()) {
             try {
-                in = this.socket.getInputStream();
                 while (!this.isInterrupted()) {
-                    bytes = in.readAllBytes();
-//                    CommandModel commandModel = ModelReader.toModel(bytes, CommandModel.class);
-//                    this.queue.add(commandModel);
+                    String json = this.reader.readLine();
+                    CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
+                    this.logger.trace("JSON: " + json);
+                    this.queue.add(commandModel.getCommand());
                 }
-            } catch (IOException e) {
+            } catch (IOException | InvalidBytes e) {
                 logger.error(e);
             }
         }

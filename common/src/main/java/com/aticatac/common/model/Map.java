@@ -1,4 +1,4 @@
-package com.aticatac.model;
+package com.aticatac.common.model;
 
 /**
  * The type Map.

@@ -1,16 +1,13 @@
 package com.aticatac.client.networking;
 
-import com.aticatac.common.Constant;
-import com.aticatac.common.model.Command;
-import com.aticatac.common.model.CommandModel;
-import com.aticatac.common.model.Login;
-import com.aticatac.common.model.ModelReader;
-import org.apache.log4j.Level;
+import com.aticatac.common.model.*;
+import com.aticatac.common.model.Exception.InvalidBytes;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
@@ -20,71 +17,55 @@ import java.net.Socket;
  */
 class Client {
     private final Logger logger;
-    private final Login login;
-    private Socket commandSocket;
-    private MulticastSocket multicastSocket;
-    private UpdateListener updateListener;
+    private Login login;
+    private PrintStream printer;
 
     /**
      * Instantiates a new Client.
-     *
-     * @param id the id
      */
-    Client(String id) {
+    Client() {
         this.logger = Logger.getLogger(getClass());
-        Logger.getLogger(getClass()).setLevel(Level.TRACE);
-        login = new Login(id);
+//        login = new Login(id);
     }
 
     /**
      * Connect.
      *
-     * @param serverAddress the server address
-     * @throws IOException the io exception
+     * @param server the server
+     * @param id     the id
+     * @throws IOException  the io exception
+     * @throws InvalidBytes the invalid bytes
      */
-    void connect(String serverAddress) throws IOException {
-        logger.info("Connecting...");
-        Socket socket = new Socket(serverAddress, Constant.getPort());
-//            socket = new Socket(InetAddress.getByName("server.lan"), Constant.getAuthPort());
-        logger.info("Connected to server at " + socket.getInetAddress());
-        OutputStream out = socket.getOutputStream();
-        InputStream in = socket.getInputStream();
-        byte[] bytes = ModelReader.toBytes(this.login);
-        logger.info("Writing " + bytes.length + " bytes...");
-        out.write(bytes);
-        logger.info("Closing output stream.");
-        socket.shutdownOutput();
-        logger.info("Waiting for response...");
-        byte[] response = in.readAllBytes();
-        logger.info("Server responded with " + response.length + " bytes.");
-        Logger.getLogger(ModelReader.class).setLevel(Level.TRACE);
-        Login output = ModelReader.toModel(response, Login.class);
-        Logger.getLogger(ModelReader.class).setLevel(Level.FATAL);
-        logger.info("Authenticated = " + output.isAuthenticated());
-//        this.login.setAuthenticated(output.isAuthenticated());
+    void connect(ServerInformation server, String id) throws IOException, InvalidBytes {
+        Login login = new Login(id);
+        this.logger.trace("ID: " + id);
+        this.logger.trace("login: " + ModelReader.toJson(login));
+        this.logger.trace("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
+        Socket socket = new Socket(server.getAddress(), server.getPort());
+        this.logger.trace("Connected to server at " + socket.getInetAddress());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.printer = new PrintStream(socket.getOutputStream());
+        this.printer.println(ModelReader.toJson(login));
+        String json = reader.readLine();
+        this.logger.trace("Waiting for response...");
+        Login output = ModelReader.fromJson(json, Login.class);
+        this.logger.trace("Authenticated = " + output.isAuthenticated());
         if (output.isAuthenticated()) {
-//        initCommandSocket(serverAddress);
-            this.logger.info("Multicast address: " + output.getMulticast());
-            initUpdateSocket(InetAddress.getByName(output.getMulticast()));
+            this.logger.trace("Multicast address: " + output.getMulticast());
+            initUpdateSocket(InetAddress.getByName(output.getMulticast()), server.getPort());
         }
-        logger.info("Exiting 'connect' cleanly.");
+        this.login = output;
+        this.logger.info("Exiting 'connect' cleanly.");
     }
 
-    private void initUpdateSocket(InetAddress address) throws IOException {
-        logger.info("Initialising update socket...");
-        logger.info("Joining multicast " + address);
-        this.multicastSocket = new MulticastSocket(Constant.getPort());
-        this.multicastSocket.joinGroup(address);
-        this.updateListener = new UpdateListener(this.multicastSocket);
-        this.updateListener.start();
-        logger.info("Started update listener!");
-    }
-
-    private void initCommandSocket(InetAddress address) throws IOException {
-        logger.info("Initialising command socket...");
-        logger.info(address.toString() + ":" + Constant.getPort());
-        this.commandSocket = new Socket(address, Constant.getPort());
-        logger.info("Command socket connected!");
+    private void initUpdateSocket(InetAddress address, int port) throws IOException {
+        this.logger.trace("Initialising update socket...");
+        this.logger.trace("Joining multicast: " + address + ":" + port);
+        MulticastSocket multicastSocket = new MulticastSocket(port);
+        multicastSocket.joinGroup(address);
+        UpdateListener updateListener = new UpdateListener(multicastSocket);
+        updateListener.start();
+        this.logger.trace("Started update listener!");
     }
 
     /**
@@ -92,8 +73,15 @@ class Client {
      *
      * @param command the command
      */
-    public void sendCommand(Command command) {
+    void sendCommand(Command command) {
+        if (this.login == null) {
+            return;
+        }
+        this.logger.trace("Sending command: " + command);
         CommandModel commandModel = new CommandModel(this.login.getId(), command);
-        //TODO implement sending commands
+        this.logger.trace("Writing command to output stream.");
+        String json = ModelReader.toJson(commandModel);
+        this.printer.println(json);
+        this.logger.trace("Sent command: " + command);
     }
 }

@@ -1,11 +1,9 @@
 package com.aticatac.common.model;
 
-import java.io.Serializable;
-
 /**
  * The type Model.
  */
-public abstract class Model implements Serializable {
+public abstract class Model {
     private final String id;
     private final String className;
 
@@ -28,8 +26,8 @@ public abstract class Model implements Serializable {
         return id;
     }
 
-    public boolean isModelType(Model model) {
-        return this.getClassName().equals(model.getClassName());
+    public boolean isModelType(String model) {
+        return this.getClassName().equals(model);
     }
 
     public String getClassName() {

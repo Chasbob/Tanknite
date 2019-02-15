@@ -1,14 +1,19 @@
 package com.aticatac.server.networking.authentication;
 
-import com.aticatac.common.Constant;
-import com.aticatac.common.model.*;
+import com.aticatac.common.model.ClientModel;
+import com.aticatac.common.model.Command;
+import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.Login;
+import com.aticatac.common.model.ModelReader;
 import com.aticatac.server.networking.Client;
+import com.aticatac.server.networking.Data;
 import com.aticatac.server.networking.listen.CommandListener;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,9 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Authenticator implements Runnable {
     private final Logger logger;
-    private final Socket client;
     private final ConcurrentHashMap<String, Client> clients;
-    private final BlockingQueue<CommandModel> queue;
+    private final BlockingQueue<Command> queue;
+    private final PrintStream printer;
+    private final BufferedReader reader;
     private boolean authenticated;
 
     /**
@@ -29,20 +35,26 @@ public class Authenticator implements Runnable {
      * @param client  the client
      * @param clients the clients
      * @param queue   the queue
+     * @throws IOException the io exception
      */
-    Authenticator(Socket client, ConcurrentHashMap<String, Client> clients, BlockingQueue<CommandModel> queue) {
-        this.client = client;
+    public Authenticator(Socket client, ConcurrentHashMap<String, Client> clients, BlockingQueue<Command> queue) throws IOException {
         this.clients = clients;
         this.queue = queue;
-        logger = Logger.getLogger(getClass());
+        this.logger = Logger.getLogger(getClass());
         this.authenticated = false;
+        this.printer = new PrintStream(client.getOutputStream());
+        this.reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
     }
 
     @Override
     public void run() {
+        int counter = 0;
         while (!this.authenticated) {
+            if (counter++ > 10) {
+                break;
+            }
             try {
-                Login login = getLoginRequest();
+                Login login = getRequest();
                 if (clientExists(login)) {
                     this.logger.warn("Client already exists... Rejecting...");
                     reject(login);
@@ -52,13 +64,24 @@ public class Authenticator implements Runnable {
                 }
             } catch (IOException e) {
                 this.logger.error(e);
-                this.logger.error("Authentication failed due to IO exception.");
+            } catch (InvalidBytes e) {
+                this.logger.error(e);
+                break;
             }
         }
+        this.logger.trace("Stopping...");
     }
 
-    private Login getLoginRequest() throws IOException {
-        return expectModel(this.client, Login.class);
+    /**
+     * @return Login request
+     * @throws IOException  IO exception
+     * @throws InvalidBytes InvalidByte exception
+     */
+    private Login getRequest() throws IOException, InvalidBytes {
+        this.logger.trace("Expecting " + Login.class.getCanonicalName() + " from socket.");
+        String json = this.reader.readLine();
+        this.logger.trace("Client sent " + json + " bytes.");
+        return ModelReader.fromJson(json, Login.class);
     }
 
     private boolean clientExists(Login clientModel) {
@@ -67,45 +90,41 @@ public class Authenticator implements Runnable {
         return clients.containsKey(clientModel.getId());
     }
 
-    private void reject(Login login) throws IOException {
+    /**
+     * Reject client.
+     *
+     * @param login login details
+     */
+    private void reject(Login login) {
         this.logger.trace("Rejecting client...");
-        OutputStream out = this.client.getOutputStream();
         login.setAuthenticated(false);
-        byte[] bytes = ModelReader.toBytes(login);
-        out.write(bytes);
-        out.flush();
-        this.client.shutdownOutput();
+        this.printer.println(ModelReader.toJson(login));
     }
 
-    private void accept(Login login) throws IOException {
+    /**
+     * Accepts the client and add them to the client map.
+     *
+     * @param login login details
+     */
+    private void accept(Login login) {
         this.logger.trace("Accepting client...");
         login.setAuthenticated(true);
         //TODO add correct map id
         login.setMapID(1);
-//        InetAddress multicast = InetAddress.getByName(Constant.getMulticast());
-        login.setMulticast(Constant.getMulticast());
-        logger.info("Setting multicast address: " + login.getMulticast());
-        OutputStream out = this.client.getOutputStream();
-//        Logger.getLogger(ModelReader.class).setLevel(Level.TRACE);
-        byte[] bytes = ModelReader.toBytes(login);
-//        Logger.getLogger(ModelReader.class).setLevel(Level.FATAL);
-        out.write(bytes);
-        out.flush();
-        this.client.shutdownOutput();
+        login.setMulticast(Data.INSTANCE.getMulticast().getHostAddress());
+        this.logger.trace("Setting multicast address: " + login.getMulticast());
+        this.printer.println(ModelReader.toJson(login));
         addClient(login);
-        this.logger.fatal("Client: " + login.getId() + " accepted.");
+        this.logger.info("Client: " + login.getId() + " accepted.");
     }
 
-    private <T extends Model> T expectModel(Socket socket, Class<T> type) throws IOException {
-        this.logger.trace("Expecting " + type.getCanonicalName() + " from socket.");
-        InputStream in = socket.getInputStream();
-        byte[] fromClient = in.readAllBytes();
-        this.logger.trace("Client sent " + fromClient.length + " bytes.");
-        return ModelReader.toModel(fromClient, type);
-    }
-
+    /**
+     * Add client to client map.
+     *
+     * @param login login details
+     */
     private void addClient(Login login) {
-        CommandListener listener = new CommandListener(this.client, this.queue);
+        CommandListener listener = new CommandListener(this.reader, this.queue);
         ClientModel model = new ClientModel(login.getId());
         Client client = new Client(listener, model);
         this.clients.put(model.getId(), client);

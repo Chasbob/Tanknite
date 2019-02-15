@@ -1,6 +1,5 @@
 package com.aticatac.server.networking;
 
-import com.aticatac.common.Constant;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
 import org.apache.log4j.Logger;
@@ -70,13 +69,8 @@ public class Updater extends Thread {
 
     private void broadcast(Update update) {
         this.logger.trace("Broadcasting...");
-//        try {
-//           this.logger.info("Address = " + this.multicastSocket.getInterface().toString() );
-//        } catch (SocketException e) {
-//           this.logger.error(e);
-//        }
-        byte[] bytes = ModelReader.toBytesUDP(update);
-        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, this.address, Constant.getPort());
+        byte[] bytes = ModelReader.toBytes(update);
+        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, this.address, Data.INSTANCE.getPort());
         this.logger.trace("Packet: " + packet.getAddress().toString() + ":" + packet.getPort());
         try {
             this.multicastSocket.send(packet);
