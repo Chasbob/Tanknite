@@ -1,6 +1,12 @@
-package com.aticatac.server.components.models;
+package com.aticatac.server.components;
 
-public class Transform {
+import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.Component;
+
+public class Transform extends Component {
+    public Transform (GameObject parent){
+        super(parent);
+    }
 
     private double X =0;
     private double Y =0;

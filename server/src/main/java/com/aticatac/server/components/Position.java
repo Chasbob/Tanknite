@@ -1,4 +1,4 @@
-package com.aticatac.server.components.models;
+package com.aticatac.server.components;
 
 public class Position {
 

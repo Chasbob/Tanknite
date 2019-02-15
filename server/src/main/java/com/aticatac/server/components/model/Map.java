@@ -33,6 +33,7 @@ public class Map{
     // how to get name from user
     public static void createNewTank(String name) {
         tanks.put(name, new Tank(PhysicsManager.getStartingXCoordinate, PhysicsManager.getStartingYCoordinate));
+        // fix params for tank and work out how to tell starting co ords from physics
     }
 
     /**
@@ -61,8 +62,8 @@ public class Map{
      */
 // single player
 
-    // Need to know name of tank in single player
-    public static boolean runCommand (Command command){
+    // Need to know name of tank in single player, or just have same as multiplauyer?
+    /*public static boolean runCommand (Command command){
         switch(command){
             case UP : return moveForwards();
             case LEFT : return moveLeft();
@@ -72,7 +73,7 @@ public class Map{
         }
         return false;
     }
-
+    */
     /**
      * Game finish.
      */
@@ -103,7 +104,7 @@ package com.aticatac.server.logic;
  * The type Round logic.
  */
 //public class RoundLogic {
-    // starts round and calls methods from LogicInterface.java
+    // starts round and calls methods from Map.java
 
     // Have a game manager and a TopLevelManager
 //}

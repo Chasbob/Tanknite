@@ -1,9 +1,8 @@
 package com.aticatac.server.components.models;
 
 import com.aticatac.server.components.*;
-import com.aticatac.server.components.models.Bullet;
+import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.model.LogicInterface;
 import com.aticatac.server.components.models.powerups.AmmoPickUp;
 // components for server side make in server or import from common?
 // needs component of PhysicsManager
@@ -177,8 +176,9 @@ public class Tank extends GameObject {
 
 
             */
-        if (LogicInterface.numberOfAliveTanks() == 1){ // in other logic class?
-            LogicInterface.gameFinish();
+        if (Map.getNumberOfAliveTanks() == 1){ // in other logic class?
+            // Map or parent
+            Map.gameFinish();
             // start numberoftanks at 10 and subtract one for each death
         }
     }

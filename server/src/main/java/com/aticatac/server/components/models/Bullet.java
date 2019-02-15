@@ -2,6 +2,8 @@ package com.aticatac.server.components.models;
 
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.PhysicsManager;
+import com.aticatac.server.components.Position;
+import com.aticatac.server.components.Transform;
 
 /**
  * The type Bullet.
