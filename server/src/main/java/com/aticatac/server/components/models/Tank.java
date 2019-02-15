@@ -10,14 +10,12 @@ import com.aticatac.server.components.models.powerups.AmmoPickUp;
 /**
  * The type Tank.
  */
-public class Tank /*extends Component*/ {
+public class Tank extends GameObject {
     // change these variables to components when updated
     private int currentXCoord;
     private int currentYCoord;
-    private int currentAmmo;
-    private char currentDirection   ;
+    private char currentDirection;
     private int maxHealth = 100;
-    private int currentHealth;
 
     /**
      * Instantiates a new Tank.
@@ -25,21 +23,20 @@ public class Tank /*extends Component*/ {
      * @param xCoord the x coord
      * @param yCoord the y coord
      */
-    public Tank (int xCoord, int yCoord){
-    /*(GameObject componentParent){
-        super(componentParent); */
-        /*Tank.addComponent(Health.class);
-        GameObject.addComponent(AI.class);
-        GameObject.addComponent(Ammo.class);
-        GameObject.addComponent(PhysicsManager.class);
-        GameObject.addComponent(Transform.class);
-        GameObject.addComponent(Position.class);
-        GameObject.getComponent(Health.class).setHealth(100);
-        GameObject.getComponent(Ammo.class).setAmmo(30);*/
-        currentXCoord = xCoord;
-        currentYCoord = yCoord;
-        currentAmmo = 30;
-        currentHealth = 100;
+    public Tank (GameObject Parent, String name){
+        // work out where to give starting co ordinates for tank when gets created, change params to work for this when
+        // tank is created
+        super(Parent, name);
+        this.addComponent(Health.class);
+        this.addComponent(AI.class);
+        this.addComponent(Ammo.class);
+        this.addComponent(PhysicsManager.class);
+        this.addComponent(Transform.class);
+        this.addComponent(Position.class);
+        this.addComponent(Time.class);
+        this.getComponent(Health.class).setHealth(100);
+        this.getComponent(Ammo.class).setAmmo(30);
+        // where to set starting coords? this.getComponent(Transform.class).setTransform(xCoord, yCoord);
     }
 // have ammo as component and get health component, and transform and position etc (and physicsmanager)
 // determine whether ai, put behavioural trees from ai if so
@@ -55,12 +52,12 @@ public class Tank /*extends Component*/ {
     //physics manager now returns transform, so if new transform = old transform collision has happened,
     //else set position to new transform
     public boolean moveForwards() {
-        double oldX = Transform.getX();
-        double oldY = Transform.getY();
-        Position oldPosition = Position(oldX, oldY);
-        Position newPosition = PhysicsManager.moveForwards();
+        double oldX = this.getComponent(Transform.class).getX();
+        double oldY = this.getComponent(Transform.class).getY();
+        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position newPosition = this.getComponent(PhysicsManager.class).moveForwards();
         currentDirection = 'N';
-        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
         else return true;
 
@@ -73,12 +70,12 @@ public class Tank /*extends Component*/ {
      */
 // when right arrow/d pressed
     public boolean moveRight (){
-        double oldX = Transform.getX();
-        double oldY = Transform.getY();
-        Position oldPosition = Position(oldX, oldY);
-        Position newPosition = PhysicsManager.moveRight();
+        double oldX = this.getComponent(Transform.class).getX();
+        double oldY = this.getComponent(Transform.class).getY();
+        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position newPosition = this.getComponent(PhysicsManager.class).moveRight();
         currentDirection = 'E';
-        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
         else return true;
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
@@ -92,12 +89,12 @@ public class Tank /*extends Component*/ {
      */
 // when left arrow/a pressed
     public boolean moveLeft (){
-        double oldX = Transform.getX();
-        double oldY = Transform.getY();
-        Position oldPosition = Position(oldX, oldY);
-        Position newPosition = PhysicsManager.moveLeft();
+        double oldX = this.getComponent(Transform.class).getX();
+        double oldY = this.getComponent(Transform.class).getY();
+        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position newPosition = this.getComponent(PhysicsManager.class).moveLeft();
         currentDirection = 'W';
-        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
         else return true;
     }
@@ -109,12 +106,12 @@ public class Tank /*extends Component*/ {
      */
 // when down arrow/s pressed
     public boolean moveBackwards (){
-        double oldX = Transform.getX();
-        double oldY = Transform.getY();
-        Position oldPosition = Position(oldX, oldY);
-        Position newPosition = PhysicsManager.moveBackwards();
+        double oldX = this.getComponent(Transform.class).getX();
+        double oldY = this.getComponent(Transform.class).getY();
+        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position newPosition = this.getComponent(PhysicsManager.class).moveBackwards();
         currentDirection = 'S';
-        Transform.setTransform(newPosition.getX(), newPosition.getY());
+        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
         else return true;
     }
@@ -127,11 +124,11 @@ public class Tank /*extends Component*/ {
 // call method when space bar pressed
     public boolean shoot() {
         // talk to physics?
-        int currentAmmo = Ammo.getAmmo
+        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
         if (currentAmmo == 0) return false;
-        Bullet bullet = new Bullet(Transform.getX(), Transform.getY(), currentDirection);
+        Bullet bullet = new Bullet(Transform.getX(), Transform.getY(), currentDirection); // NEED TO CHANGE PARAMS FOR BULLET
         bullet.moveForwards();
-        Ammo.setAmmo(currentAmmo - 1);
+        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
         return true;
 
 // create bullet object current co ordinatesn where shooting tank is, and move
@@ -142,9 +139,9 @@ public class Tank /*extends Component*/ {
      * Is shot.
      */
     public void isShot() {
-        int currentHealth = Health.getHealth();
+        int currentHealth = this.getComponent(Health.class).getHealth();
         int newHealth = currentHealth - 10;
-        Health.setHealth(newHealth);
+        this.getComponent(Health.class).setHealth(newHealth);
         if (newHealth > 0 && newHealth <=10){
             dying();
         }
@@ -170,7 +167,7 @@ public class Tank /*extends Component*/ {
     // wheree to have collision with pick up, physics?
     // change from logic interface calling methods to map calling?
     public void die () {
-        new AmmoPickUp(Transform.getX(), Transform.getY());
+        new AmmoPickUp(this.getComponent(Transform.class).getX(), this.getComponent(Transform.class).getY());
         /*
         if (map.getNumberOfAliveTanks() == 1){
             map.gameFinish();
@@ -191,12 +188,12 @@ public class Tank /*extends Component*/ {
      * Pick up health.
      */
     public void pickUpHealth () {
-        int currentHealth = Health.getHealth();
+        int currentHealth = this.getComponent(Health.class).getHealth();
         int newHealth = currentHealth + 10;
         if (newHealth > maxHealth){
-            Health.setHealth(maxHealth);
+            this.getComponent(Health.class).setHealth(maxHealth);
         }
-        else Health.setHealth(newHealth);
+        else this.getComponent(Health.class).setHealth(newHealth);
         // only gain health up to maximum
     }
 
@@ -204,8 +201,8 @@ public class Tank /*extends Component*/ {
      * Pick up ammo.
      */
     public void pickUpAmmo () {
-        int currentAmmo = Ammo.getAmmo();
-        Ammo.setAmmo(currentAmmo + 10);
+        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
+        this.getComponent(Ammo.class).setAmmo(currentAmmo + 10);
     }
 
     /**

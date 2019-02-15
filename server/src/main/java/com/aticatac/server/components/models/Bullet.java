@@ -1,11 +1,12 @@
 package com.aticatac.server.components.models;
 
+import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.PhysicsManager;
 
 /**
  * The type Bullet.
  */
-public class Bullet {
+public class Bullet extends GameObject{
     private int currentXCoord;
     private int currentYCoord;
     private char currentDirection;
@@ -19,10 +20,18 @@ public class Bullet {
      * @param yCoord    the y coord
      * @param direction the direction
      */
-    public Bullet (int xCoord, int yCoord, char direction){
+    public Bullet (GameObject Parent, String name){
+        super (Parent, name);
+        this.addComponent(Transform.class);
+        this.addComponent(Position.class);
+        this.addComponent(PhysicsManager.class);
+
+
+    /*(int xCoord, int yCoord, char direction){
         currentXCoord = xCoord;
         currentYCoord = yCoord;
-        currentDirection = direction;
+        currentDirection = direction;*/
+    // work out how to parse in these params!
         // add components for physicamanager, transform and position
     }
 
@@ -35,29 +44,35 @@ public class Bullet {
     // Need different methods to tank movement in PhysicsManager as simpler movement?
     public void moveForwards() {
         while (!collided) {
-            int currentYCoord = Transform.getY();
-            int currentXCoord = Transform.getX();
+            int currentYCoord = this.getComponent(Transform.class).getY();
+            int currentXCoord = this.getComponent(Transform.class).getX();
             switch (currentDirection) {
                 case 'N':
-                    if (PhysicsManager.up()) {
-                        Transform.setTransform(currentXCoord, currentYCoord + 1);
+                    if (this.getComponent(PhysicsManager.class).up()) {
+                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord + 1);
                     } else collided();
                 case 'S':
-                    if (PhysicsManager.down()) {
-                        Transform.setTransform(currentXCoord, currentYCoord - 1);
+                    if (this.getComponent(PhysicsManager.class).down()) {
+                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord - 1);
                     } else collided();
                 case 'E':
-                    if (PhysicsManager.right()) {
-                        Transform.setTransform(currentXCoord + 1, currentYCoord);
+                    if (this.getComponent(PhysicsManager.class).right()) {
+                        this.getComponent(Transform.class).setTransform(currentXCoord + 1, currentYCoord);
                     } else collided();
                 case 'W':
-                    if (PhysicsManager.left()) {
-                        Transform.setTransform(currentXCoord - 1, currentYCoord);
+                    if (this.getComponent(PhysicsManager.class).left()) {
+                        this.getComponent(Transform.class).setTransform(currentXCoord - 1, currentYCoord);
                     } else collided();
             }
         }
     }
     // physics handles bullet collision
+
+    public void collided () {
+        collided = true;
+        // destroy bullet, checkm if collided with tank or wall etc
+        // if collided with tank, tank.isShot();
+    }
     /**
      * Set current x coord.
      *
@@ -120,10 +135,6 @@ public class Bullet {
 
     public boolean getCurrentCollided () {
         return collided;
-    }
-
-    public void collided () {
-        collided = true;
     }
 
 }
