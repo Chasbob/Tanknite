@@ -11,18 +11,20 @@ import com.aticatac.client.util.UIFactory;
  */
 public class MultiplayerScreen extends AbstractScreen {
 
+    private ScreenEnum prevScreen;
+    private UIFactory uiFactory;
+
     /**
      * Instantiates a new Multiplayer screen.
      */
-    public MultiplayerScreen() {
+    public MultiplayerScreen(ScreenEnum prevScreen, UIFactory uiFactory) {
         super();
+        this.prevScreen = prevScreen;
+        this.uiFactory = uiFactory;
     }
 
     @Override
     public void buildStage() {
-
-        //create ui factory instance
-        UIFactory ui = new UIFactory();
 
         //create root table
         Table rootTable = new Table();
@@ -30,7 +32,7 @@ public class MultiplayerScreen extends AbstractScreen {
         addActor(rootTable);
 
         //add multiplayer label to root
-        Label screenTitle = ui.createTitleLabel("Multi Player");
+        Label screenTitle = uiFactory.createTitleLabel("Multi Player");
         screenTitle.setFillParent(true);
         rootTable.add(screenTitle).padTop(50).top();
 
@@ -41,13 +43,13 @@ public class MultiplayerScreen extends AbstractScreen {
         buttonTable.defaults().pad(10).width(100).center();
 
         //create button for hosting game
-        TextButton hostButton = ui.createButton("Host");
-        hostButton.addListener(ui.createListener(ScreenEnum.GAME));
+        TextButton hostButton = uiFactory.createButton("Host");
+        hostButton.addListener(uiFactory.createListener(ScreenEnum.USERNAME, ScreenEnum.MUlTIPLAYER, uiFactory));
         buttonTable.add(hostButton);
 
         //create button for joining
-        TextButton joinButton = ui.createButton("Join");
-        joinButton.addListener(ui.createListener(ScreenEnum.GAME));
+        TextButton joinButton = uiFactory.createButton("Join");
+        joinButton.addListener(uiFactory.createListener(ScreenEnum.USERNAME, ScreenEnum.MUlTIPLAYER, uiFactory));
         buttonTable.add(joinButton);
 
     }

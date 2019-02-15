@@ -14,25 +14,27 @@ import com.aticatac.client.util.UIFactory;
  */
 public class MainMenuScreen extends AbstractScreen {
 
+    private UIFactory uiFactory;
+    private ScreenEnum prevScreen;
+
     /**
      * Instantiates a new Main menu screen.
      */
-    public MainMenuScreen() {
+    public MainMenuScreen(ScreenEnum prevScreen, UIFactory uiFactory) {
         super();
+        this.prevScreen = prevScreen;
+        this.uiFactory = uiFactory;
     }
 
     @Override
     public void buildStage() {
-
-        //create ui factory instance
-        UIFactory ui = new UIFactory();
 
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
         addActor(rootTable);
 
-        Label screenTitle = ui.createTitleLabel("Main Menu");
+        Label screenTitle = uiFactory.createTitleLabel("Main Menu");
         screenTitle.setFillParent(true);
         rootTable.add(screenTitle).padTop(50).top();
 
@@ -43,31 +45,31 @@ public class MainMenuScreen extends AbstractScreen {
         buttonTable.defaults().pad(10).width(100).center();
 
         //create button for single player
-        TextButton singlePlayerButton = ui.createButton("single player");
-        singlePlayerButton.addListener(ui.createListener(ScreenEnum.USERNAME));
+        TextButton singlePlayerButton = uiFactory.createButton("single player");
+        singlePlayerButton.addListener(uiFactory.createListener(ScreenEnum.USERNAME, ScreenEnum.MAIN_MENU, uiFactory));
         buttonTable.add(singlePlayerButton);
         buttonTable.row();
 
         //create button for multi player
-        TextButton multiPlayerButton = ui.createButton("Multi Player");
-        multiPlayerButton.addListener(ui.createListener(ScreenEnum.MUlTIPLAYER));
+        TextButton multiPlayerButton = uiFactory.createButton("Multi Player");
+        multiPlayerButton.addListener(uiFactory.createListener(ScreenEnum.MUlTIPLAYER, ScreenEnum.MAIN_MENU, uiFactory));
         buttonTable.add(multiPlayerButton);
         buttonTable.row();
 
         //create button for leaderboard
-        TextButton leaderboardButton = ui.createButton("Leaderboard");
-        leaderboardButton.addListener(ui.createListener(ScreenEnum.LEADERBOARD));
+        TextButton leaderboardButton = uiFactory.createButton("Leaderboard");
+        leaderboardButton.addListener(uiFactory.createListener(ScreenEnum.LEADERBOARD, ScreenEnum.MAIN_MENU, uiFactory));
         buttonTable.add(leaderboardButton);
         buttonTable.row();
 
         //create button for settings
-        TextButton settingsButton = ui.createButton("Settings");
-        settingsButton.addListener(ui.createListener(ScreenEnum.SETTINGS));
+        TextButton settingsButton = uiFactory.createButton("Settings");
+        settingsButton.addListener(uiFactory.createListener(ScreenEnum.SETTINGS, ScreenEnum.MAIN_MENU, uiFactory));
         buttonTable.add(settingsButton);
         buttonTable.row();
 
         //create button to close game
-        TextButton exitButton = ui.createButton("Quit");
+        TextButton exitButton = uiFactory.createBackButton("Quit");
         exitButton.addListener(
                 new InputListener() {
                     @Override

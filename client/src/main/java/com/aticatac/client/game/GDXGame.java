@@ -2,6 +2,7 @@ package com.aticatac.client.game;
 
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.ScreenManager;
+import com.aticatac.client.util.UIFactory;
 
 /**
  * The type Gdx game.
@@ -10,8 +11,9 @@ public class GDXGame extends com.badlogic.gdx.Game {
 
     @Override
     public void create() {
+        UIFactory uiFactory = new UIFactory();
         ScreenManager.getInstance().initialize(this);
-        ScreenManager.getInstance().showScreen(ScreenEnum.MAIN_MENU);
+        ScreenManager.getInstance().showScreen(ScreenEnum.MAIN_MENU, ScreenEnum.MAIN_MENU, uiFactory);
     }
 
     @Override

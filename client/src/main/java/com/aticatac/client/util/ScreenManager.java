@@ -46,17 +46,18 @@ public class ScreenManager {
     /**
      * Show screen.
      *
-     * @param screenEnum the screen enum
-     * @param params     the params
+     * @param targetScreen the target screen
+     * @param senderScreen the sender screen
+     * @param uiFactory    the ui factory
      */
 // Show in the game the screen which enum type is received
-    public void showScreen(ScreenEnum screenEnum, Object... params) {
+    public void showScreen(ScreenEnum targetScreen, ScreenEnum senderScreen, UIFactory uiFactory) {
 
         // Get current screen to dispose it
         Screen currentScreen = game.getScreen();
 
         // Show new screen
-        AbstractScreen newScreen = screenEnum.getScreen(params);
+        AbstractScreen newScreen = targetScreen.getScreen(senderScreen, uiFactory);
         newScreen.buildStage();
         game.setScreen(newScreen);
 
