@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.objectsystem.Camera;
+import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
@@ -53,8 +54,8 @@ public class GameScreen extends AbstractScreen {
 
             tank = new Tank("Tank1",root,new Position(getWidth()/2,getHeight()/2));
 
-            tank.children.get(0).addComponent(Renderer.class).setTexture("img/TankBottom.png");
-            tank.children.get(1).addComponent(Renderer.class).setTexture("img/TankTop.png");
+            ObjectHelper.AddRenderer(tank.children.get(0),"img/TankBottom.png");
+            ObjectHelper.AddRenderer(tank.children.get(1),"img/TankTop.png");
 
         } catch (Exception e) {
             e.printStackTrace();
