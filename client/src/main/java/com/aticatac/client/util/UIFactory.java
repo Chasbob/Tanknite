@@ -35,6 +35,9 @@ public class UIFactory {
 
     /**
      * Instantiates a new Ui factory.
+     *
+     * @param client the client
+     * @throws Exception the exception
      */
     public UIFactory(Client client) throws Exception {
         this.client = client;
@@ -114,6 +117,12 @@ public class UIFactory {
         return new Label(text, hideErrorStyle);
     }
 
+    /**
+     * Create label label.
+     *
+     * @param text the text
+     * @return the label
+     */
     public Label createLabel(String text) {
         return new Label(text, labelStyle);
     }
@@ -138,6 +147,12 @@ public class UIFactory {
         return new TextButton(text, buttonStyle);
     }
 
+    /**
+     * Create back button text button.
+     *
+     * @param text the text
+     * @return the text button
+     */
     public TextButton createBackButton(String text) {
         return new TextButton(text, backButtonStyle);
     }
@@ -145,8 +160,9 @@ public class UIFactory {
     /**
      * Create listener input listener.
      *
-     * @param dstScreen the dst screen
-     * @param uiFactory the ui factory
+     * @param dstScreen    the dst screen
+     * @param senderScreen the sender screen
+     * @param uiFactory    the ui factory
      * @return the input listener
      */
     public InputListener createListener(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory) {
@@ -160,6 +176,16 @@ public class UIFactory {
         };
     }
 
+    /**
+     * Submit button input listener.
+     *
+     * @param dstScreen    the dst screen
+     * @param senderScreen the sender screen
+     * @param uiFactory    the ui factory
+     * @param label        the label
+     * @param textField    the text field
+     * @return the input listener
+     */
     public InputListener submitButton(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField) {
         return submitButton2(dstScreen, senderScreen, uiFactory, label, textField, this.address);
     }

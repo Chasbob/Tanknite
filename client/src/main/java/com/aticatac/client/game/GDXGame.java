@@ -9,14 +9,15 @@ import com.aticatac.client.util.UIFactory;
  * The type Gdx game.
  */
 public class GDXGame extends com.badlogic.gdx.Game {
+
     private Client client;
 
     @Override
     public void create() {
         this.client = new Client();
-        UIFactory uiFactory = null;
         try {
-            uiFactory = new UIFactory(this.client);
+            //TODO show splash screen whilst it loads
+            UIFactory uiFactory = new UIFactory(this.client);
             ScreenManager.getInstance().initialize(this);
             ScreenManager.getInstance().showScreen(ScreenEnum.MAIN_MENU, ScreenEnum.MAIN_MENU, uiFactory);
         } catch (Exception e) {
