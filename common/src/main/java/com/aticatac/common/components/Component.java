@@ -11,7 +11,7 @@ public abstract class Component extends Thread implements Serializable {
     /**
      * The Component parent.
      */
-    private GameObject gameObject;
+    public GameObject gameObject;
 
     /**
      * Instantiates a new Component.
