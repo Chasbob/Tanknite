@@ -24,8 +24,9 @@ public class Server extends Component {
 
 
     //TODO provide the identifier that will be needed so server knows what info
-    /**ArrayList of the currently occupied coordinates*/
-    private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>();
+    //currently just needs to know the occupied coordinates not by what
+    //Make this an array list
+    private ArrayList<Position> occupiedCoordinates = new ArrayList<>();
 
     //Where the string is the name of the gameObject the value refers to
     /**HashMap to store the health and the object the health relates to*/
