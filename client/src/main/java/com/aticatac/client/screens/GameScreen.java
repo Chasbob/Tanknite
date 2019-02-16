@@ -95,7 +95,7 @@ public class GameScreen extends AbstractScreen {
         popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
 
         //create quit button go back to the main menu
-        TextButton quitButton = uiFactory.createButton("quit");
+        TextButton quitButton = uiFactory.createBackButton("quit");
         quitButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.GAME, uiFactory));
         popUpTable.add(quitButton);
 

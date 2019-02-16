@@ -52,6 +52,17 @@ public class MultiplayerScreen extends AbstractScreen {
         joinButton.addListener(uiFactory.createListener(ScreenEnum.USERNAME, ScreenEnum.MUlTIPLAYER, uiFactory));
         buttonTable.add(joinButton);
 
+        //create table to store back button
+        Table backTable = new Table();
+        backTable.setFillParent(true);
+        rootTable.addActor(backTable);
+        backTable.bottom();
+
+        //create back button
+        TextButton backButton = uiFactory.createBackButton("back");
+        backTable.add(backButton).bottom().padBottom(10);
+        backButton.addListener(uiFactory.createListener(prevScreen, ScreenEnum.MUlTIPLAYER, uiFactory));
+
     }
 
     @Override
