@@ -94,7 +94,7 @@ public class UIFactory {
         //create style for back buttons
         backButtonStyle = new TextButton.TextButtonStyle();
         backButtonStyle.font = buttonFont;
-        backButtonStyle.fontColor = Color.CORAL;
+        backButtonStyle.fontColor = Color.YELLOW;
     }
 
     /**
