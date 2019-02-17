@@ -165,15 +165,13 @@ public class PhysicsManager extends Component {
      * Checks if a bullet has collided with something
      * @return
      */
-    public boolean bulletMovement(String direction, Position position){
-
-        //will start from the location of the tank.
+    public boolean bulletMove(String direction){
 
         //TODO make this get the server component from a different object not this one
         ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
 
         //the position for the bullet.
-        Position positionBullet = position;
+        Position positionBullet = componentParent.getComponent(Transform.class).GetPosition();
         double xCoord = positionBullet.getX();
         double yCoord = positionBullet.getY();
 
@@ -210,6 +208,46 @@ public class PhysicsManager extends Component {
         }
 
         return true;
+
+    }
+
+    /**
+     * Checks if bullet can move up one coordinate
+     * @return
+     */
+    public boolean up(){
+
+        return bulletMove("up");
+
+    }
+
+    /**
+     * Checks if bullet can move down one coordinate
+     * @return
+     */
+    public boolean down(){
+
+        return bulletMove("down");
+
+    }
+
+    /**
+     * Checks if bullet can move left one coordinate
+     * @return
+     */
+    public boolean left(){
+
+        return bulletMove("left");
+
+    }
+
+    /**
+     * Checks if bullet can move right one coordinate
+     * @return
+     */
+    public boolean right(){
+
+        return bulletMove("right");
 
     }
 
