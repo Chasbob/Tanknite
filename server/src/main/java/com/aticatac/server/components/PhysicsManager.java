@@ -252,4 +252,21 @@ public class PhysicsManager extends Component {
     }
 
 
+    //Test bullet calculation with bearings
+
+    public boolean bulletMove(double bearing){
+
+        //gets the start x and y coordinates
+        //calculates the velocity by looking ath the square root of x velocity squared plus y velocity quared
+        //Distance it moves is the change in time * the above velocity
+        //distance travelled in x direction is cos theta * distance
+        //distance travelled in y direction is sin theta * distance
+        //then add those to the original x and y
+
+        //Then do the checks of those positions against the coordinate array
+
+
+    }
+
+
 }
