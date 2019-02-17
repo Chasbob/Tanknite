@@ -49,7 +49,7 @@ public class MultiplayerScreen extends AbstractScreen {
 
         //create button for joining
         TextButton joinButton = uiFactory.createButton("Join");
-        joinButton.addListener(uiFactory.createListener(ScreenEnum.USERNAME, ScreenEnum.MUlTIPLAYER, uiFactory));
+        joinButton.addListener(uiFactory.createListener(ScreenEnum.SERVERS, ScreenEnum.MUlTIPLAYER, uiFactory));
         buttonTable.add(joinButton);
 
         //create table to store back button
