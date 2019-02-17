@@ -37,7 +37,7 @@ public class LeaderBoardScreen extends AbstractScreen {
         //create back button
         TextButton backButton = uiFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(uiFactory.createListener(prevScreen, ScreenEnum.LEADERBOARD, uiFactory));
+        backButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LEADERBOARD, uiFactory));
 
     }
 

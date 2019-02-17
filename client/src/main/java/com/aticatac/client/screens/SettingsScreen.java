@@ -37,12 +37,7 @@ public class SettingsScreen extends AbstractScreen {
         //create back button
         TextButton backButton = uiFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(uiFactory.createListener(prevScreen, ScreenEnum.SETTINGS, uiFactory));
+        backButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.SETTINGS, uiFactory));
 
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 }
