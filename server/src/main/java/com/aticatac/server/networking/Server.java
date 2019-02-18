@@ -20,7 +20,7 @@ public class Server extends Thread {
     private final BlockingQueue<Command> requests;
     private final NewClients newClients;
     private final Updater multicaster;
-    private final Thread discovery;
+    private final Discovery discovery;
 
     /**
      * Instantiates a new Server.

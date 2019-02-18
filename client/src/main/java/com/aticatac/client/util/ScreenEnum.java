@@ -11,8 +11,8 @@ public enum ScreenEnum {
      * The Splash.
      */
     SPLASH {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new SplashScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new SplashScreen(prevScreen);
         }
     },
 
@@ -20,8 +20,8 @@ public enum ScreenEnum {
      * The Main menu.
      */
     MAIN_MENU {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new MainMenuScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new MainMenuScreen(prevScreen);
         }
     },
 
@@ -29,8 +29,8 @@ public enum ScreenEnum {
      * The M ul tiplayer.
      */
     MUlTIPLAYER {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new MultiplayerScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new MultiplayerScreen(prevScreen);
         }
     },
 
@@ -38,8 +38,8 @@ public enum ScreenEnum {
      * The Game.
      */
     GAME {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new GameScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new GameScreen(prevScreen);
         }
     },
 
@@ -47,8 +47,8 @@ public enum ScreenEnum {
      * The Leaderboard.
      */
     LEADERBOARD {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new LeaderBoardScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new LeaderBoardScreen(prevScreen);
         }
     },
 
@@ -56,8 +56,8 @@ public enum ScreenEnum {
      * The Settings.
      */
     SETTINGS {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new SettingsScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new SettingsScreen(prevScreen);
         }
     },
 
@@ -65,20 +65,20 @@ public enum ScreenEnum {
      * The Username.
      */
     USERNAME {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new UsernameScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new UsernameScreen(prevScreen);
         }
     },
 
     LOBBY {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new LobbyScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new LobbyScreen(prevScreen);
         }
     },
 
     SERVERS {
-        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
-            return new ServerScreen(prevScreen, ui);
+        public AbstractScreen getScreen(ScreenEnum prevScreen) {
+            return new ServerScreen(prevScreen);
         }
     };
 
@@ -88,5 +88,5 @@ public enum ScreenEnum {
      * @param ui the UIFactory instance
      * @return the screen
      */
-    public abstract AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui);
+    public abstract AbstractScreen getScreen(ScreenEnum prevScreen);
 }

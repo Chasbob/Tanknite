@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InterfaceAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +20,18 @@ public class Discovery extends Thread {
     private final List<DatagramPacket> packets;
     private final Logger logger;
     private final int port;
+    private final DatagramSocket socket;
 
     /**
      * Instantiates a new Discovery.
      *
      * @param id the id
      */
-    Discovery(String id, int port) {
+    Discovery(String id, int port) throws SocketException {
         this.packets = buildPackets(id, Data.INSTANCE.getInterfaces());
         this.logger = Logger.getLogger(Discovery.class);
         this.port = port;
+        this.socket = new DatagramSocket();
     }
 
     private List<DatagramPacket> buildPackets(String id, List<InterfaceAddress> interfaces) {
@@ -58,7 +61,6 @@ public class Discovery extends Thread {
     }
 
     private void broadcast() throws IOException {
-        DatagramSocket socket = new DatagramSocket();
         for (DatagramPacket packet : this.packets) {
             socket.send(packet);
             logger.warn("Sent packet to: " + packet.getAddress());

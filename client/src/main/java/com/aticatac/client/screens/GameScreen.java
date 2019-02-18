@@ -26,7 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
-    private UIFactory uiFactory;
+
     private ScreenEnum prevScreen;
     private Table popUpTable;
     private TiledMap map;
@@ -39,9 +39,8 @@ public class GameScreen extends AbstractScreen {
     /**
      * Instantiates a new Game screen.
      */
-    public GameScreen(ScreenEnum prevScreen, UIFactory uiFactory) {
+    public GameScreen(ScreenEnum prevScreen) {
         super();
-        this.uiFactory = uiFactory;
         this.prevScreen = prevScreen;
         try {
             cam = new OrthographicCamera(640, 640);
@@ -78,8 +77,8 @@ public class GameScreen extends AbstractScreen {
         tableColour.fill();
         popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
         //create quit button go back to the main menu and disconnect form server
-        TextButton quitButton = uiFactory.createBackButton("quit");
-        quitButton.addListener(uiFactory.createDisconnectListener(ScreenEnum.MAIN_MENU, ScreenEnum.GAME, uiFactory));
+        TextButton quitButton = UIFactory.createBackButton("quit");
+        quitButton.addListener(UIFactory.createDisconnectListener(ScreenEnum.MAIN_MENU, ScreenEnum.GAME));
         popUpTable.add(quitButton);
     }
 

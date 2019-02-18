@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public enum Servers {
     INSTANCE;
-    private final ArrayList<ServerInformation> servers;
+    final ArrayList<ServerInformation> servers;
     private final PopulateServers pop;
 
     Servers() {

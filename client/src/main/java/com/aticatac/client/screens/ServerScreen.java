@@ -7,12 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class ServerScreen extends AbstractScreen {
-    private UIFactory uiFactory;
     private ScreenEnum prevScreen;
 
-    public ServerScreen(ScreenEnum prevScreen, UIFactory uiFactory) {
+    public ServerScreen(ScreenEnum prevScreen) {
         super();
-        this.uiFactory = uiFactory;
         this.prevScreen = prevScreen;
     }
 
@@ -32,30 +30,30 @@ public class ServerScreen extends AbstractScreen {
         dataTable.addActor(serverDetailsTable);
         serverDetailsTable.top().padTop(50);
         //add labels to serverDetailsTable
-        Label waitingLabel = uiFactory.createLabel("Open servers");
+        Label waitingLabel = UIFactory.createLabel("Open servers");
         serverDetailsTable.add(waitingLabel);
         //add table with join button to get into lobby after entering username
         Table joinTable = new Table();
         joinTable.setFillParent(true);
         joinTable.top().padTop(100);
-        TextButton joinButton = uiFactory.createStartButton("Join");
+        TextButton joinButton = UIFactory.createStartButton("Join");
         joinTable.add(joinButton);
-        joinButton.addListener(uiFactory.createJoinServerListener(ScreenEnum.USERNAME, ScreenEnum.SERVERS, uiFactory));
+        joinButton.addListener(UIFactory.createJoinServerListener(ScreenEnum.USERNAME, ScreenEnum.SERVERS));
         dataTable.addActor(joinTable);
         //add table to store all current open servers
         Table serversTable = new Table();
         serversTable.setFillParent(true);
         serversTable.defaults().pad(10).width(450);
         serversTable.top().padTop(150);
-        uiFactory.getServers(serversTable, this.uiFactory);
+        UIFactory.getServers(serversTable);
         dataTable.addActor(serversTable);
         //create table to store back button
         Table backTable = new Table();
         backTable.setFillParent(true);
         rootTable.addActor(backTable);
         backTable.bottom();
-        TextButton backButton = uiFactory.createBackButton("back");
+        TextButton backButton = UIFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LOBBY, uiFactory));
+        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LOBBY));
     }
 }

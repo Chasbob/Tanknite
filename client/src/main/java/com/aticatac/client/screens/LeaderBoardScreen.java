@@ -9,22 +9,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Leader board screen.
  */
 public class LeaderBoardScreen extends AbstractScreen {
-
-    private UIFactory uiFactory;
     private ScreenEnum prevScreen;
 
     /**
      * Instantiates a new Leader board screen.
      */
-    public LeaderBoardScreen(ScreenEnum prevScreen, UIFactory uiFactory) {
+    public LeaderBoardScreen(ScreenEnum prevScreen) {
         super();
         this.prevScreen = prevScreen;
-        this.uiFactory = uiFactory;
     }
 
     @Override
     public void buildStage() {
-
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
@@ -35,10 +31,9 @@ public class LeaderBoardScreen extends AbstractScreen {
         rootTable.addActor(backTable);
         backTable.bottom();
         //create back button
-        TextButton backButton = uiFactory.createBackButton("back");
+        TextButton backButton = UIFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LEADERBOARD, uiFactory));
-
+        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LEADERBOARD));
     }
 
     @Override

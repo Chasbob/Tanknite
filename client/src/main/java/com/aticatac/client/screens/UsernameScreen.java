@@ -11,16 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-    private UIFactory uiFactory;
     private ScreenEnum prevScreen;
 
     /**
      * Instantiates a new Username screen.
      */
-    public UsernameScreen(ScreenEnum prevScreen, UIFactory uiFactory) {
+    public UsernameScreen(ScreenEnum prevScreen) {
         super();
         this.prevScreen = prevScreen;
-        this.uiFactory = uiFactory;
     }
 
     @Override
@@ -36,26 +34,26 @@ public class UsernameScreen extends AbstractScreen {
         usernameTable.center();
         usernameTable.defaults().pad(10).width(200).height(30).center();
         //create guidance label
-        Label guidanceLabel = uiFactory.createLabel("Enter username");
+        Label guidanceLabel = UIFactory.createLabel("Enter username");
         usernameTable.add(guidanceLabel);
         usernameTable.row();
         //create error label
-        Label nameTakenLabel = uiFactory.createErrorLabel("Name Taken");
+        Label nameTakenLabel = UIFactory.createErrorLabel("Name Taken");
         usernameTable.add(nameTakenLabel);
         usernameTable.row();
         //create text field
-        TextField textField = uiFactory.createTextField("");
+        TextField textField = UIFactory.createTextField("");
         usernameTable.add(textField);
         //create button for submit
-        TextButton submitButton = uiFactory.createButton("Submit");
+        TextButton submitButton = UIFactory.createButton("Submit");
         usernameTable.add(submitButton);
         //create custom listener for submit button to get text field text
         if (prevScreen == ScreenEnum.MAIN_MENU) {
-            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+            submitButton.addListener(UIFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, nameTakenLabel, textField));
         } else if (prevScreen == ScreenEnum.MUlTIPLAYER) {
-            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+            submitButton.addListener(UIFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, nameTakenLabel, textField));
         } else if (prevScreen == ScreenEnum.SERVERS) {
-            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+            submitButton.addListener(UIFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, nameTakenLabel, textField));
         }
         //create table to store back button
         Table backTable = new Table();
@@ -63,9 +61,9 @@ public class UsernameScreen extends AbstractScreen {
         rootTable.addActor(backTable);
         backTable.bottom();
         //create back button
-        TextButton backButton = uiFactory.createBackButton("quit");
+        TextButton backButton = UIFactory.createBackButton("quit");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.USERNAME, uiFactory));
+        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.USERNAME));
     }
 
     @Override

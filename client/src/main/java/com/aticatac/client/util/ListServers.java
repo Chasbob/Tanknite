@@ -10,11 +10,9 @@ import java.util.ArrayList;
 
 public class ListServers extends Thread {
     private final Table serversTable;
-    private final UIFactory uiFactory;
 
-    public ListServers(Table serverTable, UIFactory uiFactory) {
+    public ListServers(Table serverTable) {
         this.serversTable = serverTable;
-        this.uiFactory = uiFactory;
     }
 
     @Override
@@ -35,10 +33,10 @@ public class ListServers extends Thread {
         final Servers s = Servers.getInstance();
         ArrayList<ServerInformation> servers = s.getServers();
         for (ServerInformation server : servers) {
-            TextButton serverButton = this.uiFactory.createButton(server.getAddress().getHostAddress());
+            TextButton serverButton = UIFactory.createButton(server.getAddress().getHostAddress());
             serverButton.getLabel().setAlignment(Align.left);
             this.serversTable.add(serverButton);
-            serverButton.addListener(this.uiFactory.createServerButtonListener(serverButton));
+            serverButton.addListener(UIFactory.createServerButtonListener(serverButton));
             this.serversTable.row();
         }
     }

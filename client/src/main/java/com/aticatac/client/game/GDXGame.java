@@ -17,9 +17,8 @@ public class GDXGame extends com.badlogic.gdx.Game {
         this.client = new Client();
         try {
             //TODO show splash screen whilst it loads
-            UIFactory uiFactory = new UIFactory(this.client);
             ScreenManager.getInstance().initialize(this);
-            ScreenManager.getInstance().showScreen(ScreenEnum.MAIN_MENU, ScreenEnum.MAIN_MENU, uiFactory);
+            ScreenManager.getInstance().showScreen(ScreenEnum.MAIN_MENU, ScreenEnum.MAIN_MENU);
         } catch (Exception e) {
             e.printStackTrace();
         }
