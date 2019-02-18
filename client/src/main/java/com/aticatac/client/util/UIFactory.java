@@ -4,6 +4,7 @@ import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -43,11 +44,13 @@ public class UIFactory {
      *
      * @param client the client
      */
-    public UIFactory(Client client) {
+    public UIFactory(Client client) throws Exception {
         this.client = client;
         this.loadStyles();
-//        this.address = new BroadcastListener().call();
+//        this.address = s.getServers().get(0);
         this.servers = new ConcurrentHashMap<>();
+        this.server = new Server();
+        server.start();
     }
 
     private void loadStyles() {
@@ -194,7 +197,7 @@ public class UIFactory {
                 String name = textField.getText();
                 boolean accepted;
                 try {
-                    accepted = client.connect(information, name);
+                    accepted = client.connect(s.getServers().get(0), name);
                     //if name is not taken load game screen, else keep listening
                     if (accepted) {
                         //set the error label to invisible
@@ -233,7 +236,7 @@ public class UIFactory {
     }
 
     public void getServers(Table serversTable, UIFactory uiFactory) {
-        (new ListServers(serversTable,uiFactory)).start();
+        (new ListServers(serversTable, uiFactory)).start();
         serverSelected = false;
         //TODO get all servers that are open on the network
 //        int maxServers = 10;
@@ -293,6 +296,17 @@ public class UIFactory {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 //TODO disconnect from current server
+                ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
+                return false;
+            }
+        };
+    }
+
+    public InputListener createHostServerListener(ScreenEnum dstScreen, ScreenEnum senderScreen, UIFactory uiFactory) {
+        return new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
                 ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
                 return false;
             }
