@@ -49,7 +49,7 @@ public class UIFactory {
 
     private void loadStyles() {
         //load in font for menu
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.TTF"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter15.size = 15;
@@ -247,12 +247,12 @@ public class UIFactory {
             TextButton serverButton = createButton("<space>");
             serverButton.getLabel().setAlignment(Align.left);
             serversTable.add(serverButton);
-            serverButton.addListener(createServerListener(serverButton));
+            serverButton.addListener(createServerButtonListener(serverButton));
             serversTable.row();
         }
     }
 
-    private InputListener createServerListener(TextButton serverButton) {
+    private InputListener createServerButtonListener(TextButton serverButton) {
         return new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -282,4 +282,16 @@ public class UIFactory {
             }
         };
     }
+
+    public InputListener createDisconnectListener(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory) {
+        return new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                //TODO disconnect from current server
+                ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
+                return false;
+            }
+        };
+    }
+
 }
