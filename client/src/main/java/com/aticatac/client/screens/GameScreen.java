@@ -218,6 +218,8 @@ public class GameScreen extends AbstractScreen {
             tank.children.get(0).getComponent(Transform.class).SetRotation(180);
             tank.getComponent(Transform.class).Transform(0,3);
         }
+
+        mouseMoved(Gdx.input.getX(),Gdx.input.getY());
     }
 
     @Override
@@ -275,7 +277,7 @@ public class GameScreen extends AbstractScreen {
 
         var rotation = Math.atan(Y/X);
 
-        if(XMouse>XTankTop)
+        if(XMouse>=XTankTop)
             tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation)-90f);
         else
             tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation)+90f);
