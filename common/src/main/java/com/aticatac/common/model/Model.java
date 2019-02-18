@@ -1,79 +1,36 @@
 package com.aticatac.common.model;
 
 /**
- * The Class Model is designed to be a consistent model
- * to allow communication between client and server.
- * <p>
- * It is made serializable to allow transmission over a socket.
- *
- * @author Charles de Freitas
+ * The type Model.
  */
-public class Model implements java.io.Serializable {
-    /**
-     * The Serial version uid.
-     */
-    final long serialVersionUID = 42L;
-    /**
-     * Used by the server as a unique identifier
-     * as to which client it is intended for.
-     */
+public abstract class Model {
     private final String id;
-    private Map map;
-    private Command command;
+    private final String className;
 
     /**
-     * Construct a new Model for a client to send to the server
-     * when initiating communication
+     * Instantiates a new Model.
      *
-     * @param id Used to differentiate models on the server-side
+     * @param id the id
      */
     public Model(String id) {
         this.id = id;
-        this.command = Command.UP;
-    }
-
-    /**
-     * Gets command.
-     *
-     * @return the command
-     */
-    public Command getCommand() {
-        return command;
-    }
-
-    /**
-     * Sets command.
-     *
-     * @param command the command
-     */
-    public void setCommand(Command command) {
-        this.command = command;
-    }
-
-    /**
-     * Gets map.
-     *
-     * @return the map
-     */
-    public Map getMap() {
-        return map;
-    }
-
-    /**
-     * Sets map.
-     *
-     * @param map the map
-     */
-    public void setMap(Map map) {
-        this.map = map;
+        className = this.getClass().getName();
     }
 
     /**
      * Gets id.
      *
-     * @return id id
+     * @return the id
      */
     public String getId() {
         return id;
+    }
+
+    public boolean isModelType(String model) {
+        return this.getClassName().equals(model);
+    }
+
+    public String getClassName() {
+        return className;
     }
 }

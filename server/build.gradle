@@ -4,16 +4,15 @@ plugins {
 }
 
 application {
-    mainClassName = "com.aticatac.server.networking.singleplayer.Main"
-}
-
-repositories {
-    mavenCentral()
+    mainClassName = "com.aticatac.server.networking.Main"
 }
 
 dependencies {
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     compile project(':common')
+}
+task execServer(type: JavaExec) {
+    main = "com.aticatac.server.networking.Main"
+    classpath = sourceSets.main.runtimeClasspath
 }
 
 dockerBuild.dependsOn(distTar)
