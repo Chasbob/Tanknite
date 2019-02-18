@@ -2,6 +2,7 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
+import com.aticatac.server.networking.Server;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.Gdx;
@@ -13,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.Align;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,17 +37,18 @@ public class UIFactory {
     private ServerInformation address;
     private boolean serverSelected;
     private TextButton currentServer;
+    private Server server;
 
     /**
      * Instantiates a new Ui factory.
      *
      * @param client the client
      */
-    public UIFactory(Client client) {
+    public UIFactory(Client client) throws IOException {
         this.client = client;
         this.loadStyles();
-//        this.address = new BroadcastListener().call();
         this.servers = new ConcurrentHashMap<>();
+        this.server = new Server();
     }
 
     private void loadStyles() {
@@ -235,15 +236,6 @@ public class UIFactory {
     public void getServers(Table serversTable, UIFactory uiFactory) {
         (new ListServers(serversTable,uiFactory)).start();
         serverSelected = false;
-        //TODO get all servers that are open on the network
-//        int maxServers = 10;
-//        for (int i = 0; i < maxServers; i++) {
-//            TextButton serverButton = createButton("<space>");
-//            serverButton.getLabel().setAlignment(Align.left);
-//            serversTable.add(serverButton);
-//            serverButton.addListener(createServerButtonListener(serverButton));
-//            serversTable.row();
-//        }
     }
 
     /**
@@ -293,6 +285,17 @@ public class UIFactory {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 //TODO disconnect from current server
+                ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
+                return false;
+            }
+        };
+    }
+
+    public InputListener createHostServerListener(ScreenEnum dstScreen, ScreenEnum senderScreen, UIFactory uiFactory) {
+        return new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                server.start();
                 ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
                 return false;
             }

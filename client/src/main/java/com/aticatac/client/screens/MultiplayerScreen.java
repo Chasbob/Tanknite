@@ -44,7 +44,7 @@ public class MultiplayerScreen extends AbstractScreen {
 
         //create button for hosting game
         TextButton hostButton = uiFactory.createButton("Host");
-        hostButton.addListener(uiFactory.createListener(ScreenEnum.USERNAME, ScreenEnum.MUlTIPLAYER, uiFactory));
+        hostButton.addListener(uiFactory.createHostServerListener(ScreenEnum.USERNAME, ScreenEnum.MUlTIPLAYER, uiFactory));
         buttonTable.add(hostButton);
 
         //create button for joining

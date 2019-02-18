@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Charles de Freitas
  */
-class Server extends Thread {
+public class Server extends Thread {
     private final Logger logger;
     private final ConcurrentHashMap<String, Client> clients;
     private final BlockingQueue<Command> requests;
@@ -27,7 +27,7 @@ class Server extends Thread {
      *
      * @throws IOException the io exception
      */
-    Server() throws IOException {
+    public Server() throws IOException {
         this.logger = Logger.getLogger(getClass());
         this.clients = new ConcurrentHashMap<>();
         this.requests = new ArrayBlockingQueue<>(1024); //TODO select an appropriate queue size.
