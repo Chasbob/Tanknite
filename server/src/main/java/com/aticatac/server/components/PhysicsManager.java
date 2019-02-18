@@ -37,7 +37,7 @@ public class PhysicsManager extends Component {
         super(componentParent);
     }
 
-
+    //TODO Fix the issue of componentParent
 
     /**
      * Checks if the object can move in a direction and returns if it can and the new/current position.
