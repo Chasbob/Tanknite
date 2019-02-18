@@ -28,5 +28,4 @@ public class Health extends Component {
     public void setHealth(int health) {
         this.health = health;
     }
-
 }
