@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.objectsystem.AddTexture;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.ScreenEnum;
