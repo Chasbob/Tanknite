@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * It will be stored in this component so the server does not need to check all the components for all objects each time.
  */
 
-public class Server extends Component {
+public class ServerData extends Component {
 
     //initial values
     /**Initial Health Value*/
