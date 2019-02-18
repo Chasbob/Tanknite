@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -276,6 +275,7 @@ public class UIFactory {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (serverSelected) {
+                    //TODO show lobby of currentServer
                     ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
                 }
                 return false;

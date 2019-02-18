@@ -54,6 +54,8 @@ public class UsernameScreen extends AbstractScreen {
             submitButton.addListener(uiFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
         } else if (prevScreen == ScreenEnum.MUlTIPLAYER) {
             submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+        } else if (prevScreen == ScreenEnum.SERVERS) {
+            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
         }
         //create table to store back button
         Table backTable = new Table();
