@@ -68,6 +68,18 @@ public enum ScreenEnum {
         public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
             return new UsernameScreen(prevScreen, ui);
         }
+    },
+
+    LOBBY {
+        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
+            return new LobbyScreen(prevScreen, ui);
+        }
+    },
+
+    SERVERS {
+        public AbstractScreen getScreen(ScreenEnum prevScreen, UIFactory ui) {
+            return new ServerScreen(prevScreen, ui);
+        }
     };
 
     /**

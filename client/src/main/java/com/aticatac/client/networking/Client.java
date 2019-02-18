@@ -37,7 +37,7 @@ public class Client {
      * @throws InvalidBytes the invalid bytes
      */
     public boolean connect(ServerInformation server, String id) throws IOException, InvalidBytes {
-        boolean boolOut = false;
+        boolean clientAccepted = false;
         Login login = new Login(id);
         this.logger.trace("ID: " + id);
         this.logger.trace("login: " + ModelReader.toJson(login));
@@ -54,11 +54,11 @@ public class Client {
         if (output.isAuthenticated()) {
             this.logger.trace("Multicast address: " + output.getMulticast());
             initUpdateSocket(InetAddress.getByName(output.getMulticast()), server.getPort());
-            boolOut = true;
+            clientAccepted = true;
         }
         this.login = output;
         this.logger.info("Exiting 'connect' cleanly.");
-        return boolOut;
+        return clientAccepted;
     }
 
     private void initUpdateSocket(InetAddress address, int port) throws IOException {

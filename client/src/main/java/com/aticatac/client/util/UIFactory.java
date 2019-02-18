@@ -10,12 +10,11 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Align;
 
 import java.io.IOException;
 
@@ -24,14 +23,18 @@ import java.io.IOException;
  */
 public class UIFactory {
     private Label.LabelStyle errorStyle;
-    private Label.LabelStyle hideErrorStyle;
+    private Label.LabelStyle hideLabelStyle;
     private Label.LabelStyle labelStyle;
     private Label.LabelStyle titleStyle;
     private TextButton.TextButtonStyle buttonStyle;
+    private TextButton.TextButtonStyle selectedButtonStyle;
+    private TextButton.TextButtonStyle startButtonStyle;
     private TextButton.TextButtonStyle backButtonStyle;
     private TextField.TextFieldStyle textFieldStyle;
     private Client client;
     private ServerInformation address;
+    private boolean serverSelected;
+    private TextButton currentServer;
 
     /**
      * Instantiates a new Ui factory.
@@ -68,9 +71,9 @@ public class UIFactory {
         errorStyle.font = buttonFont;
         errorStyle.fontColor = Color.RED;
         //create style to hide error label - set to black
-        hideErrorStyle = new Label.LabelStyle();
-        hideErrorStyle.font = buttonFont;
-        hideErrorStyle.fontColor = Color.BLACK;
+        hideLabelStyle = new Label.LabelStyle();
+        hideLabelStyle.font = buttonFont;
+        hideLabelStyle.fontColor = Color.BLACK;
         //create text field style with cursor
         textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = buttonFont;
@@ -91,6 +94,14 @@ public class UIFactory {
         //create a style for buttons
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = buttonFont;
+        //create a style for selected buttons
+        selectedButtonStyle = new TextButton.TextButtonStyle();
+        selectedButtonStyle.font = buttonFont;
+        selectedButtonStyle.fontColor = Color.GRAY;
+        //create a style for start buttons
+        startButtonStyle = new TextButton.TextButtonStyle();
+        startButtonStyle.font = buttonFont;
+        startButtonStyle.fontColor = Color.FOREST;
         //create style for back buttons
         backButtonStyle = new TextButton.TextButtonStyle();
         backButtonStyle.font = buttonFont;
@@ -114,7 +125,7 @@ public class UIFactory {
      * @return the label
      */
     public Label createErrorLabel(String text) {
-        return new Label(text, hideErrorStyle);
+        return new Label(text, hideLabelStyle);
     }
 
     /**
@@ -145,6 +156,10 @@ public class UIFactory {
      */
     public TextButton createButton(String text) {
         return new TextButton(text, buttonStyle);
+    }
+
+    public TextButton createStartButton(String text) {
+        return new TextButton(text, startButtonStyle);
     }
 
     /**
@@ -186,22 +201,22 @@ public class UIFactory {
      * @param textField    the text field
      * @return the input listener
      */
-    public InputListener submitButton(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField) {
-        return submitButton2(dstScreen, senderScreen, uiFactory, label, textField, this.address);
+    public InputListener enterLobby(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField) {
+        return enterLobbyHelper(dstScreen, senderScreen, uiFactory, label, textField, this.address);
     }
 
-    private InputListener submitButton2(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField, ServerInformation information) {
+    private InputListener enterLobbyHelper(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField, ServerInformation information) {
         return new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 String name = textField.getText();
-                boolean taken;
+                boolean accepted;
                 try {
-                    taken = client.connect(information, name);
+                    accepted = client.connect(information, name);
                     //if name is not taken load game screen, else keep listening
-                    if (taken) {
+                    if (accepted) {
                         //set the error label to invisible
-                        label.setStyle(uiFactory.hideErrorStyle);
+                        label.setStyle(uiFactory.hideLabelStyle);
                         ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
                     } else {
                         label.setStyle(uiFactory.errorStyle);
@@ -212,6 +227,58 @@ public class UIFactory {
                     //TODO reporting?
                     return false;
                 }
+            }
+        };
+    }
+
+    public void populateLobby(Table playerTable, Label countLabel) {
+        //TODO get client names from server and populate labels, inc player count label
+        int maxClients = 10;
+        for (int i = 0; i < maxClients; i++) {
+            playerTable.add(createLabel("<space>"));
+            playerTable.row();
+        }
+    }
+
+    public void getServers(Table serversTable) {
+        serverSelected = false;
+        //TODO get all servers that are open on the network
+        int maxServers = 10;
+        for (int i = 0; i < maxServers; i++) {
+            TextButton serverButton = createButton("<space>");
+            serverButton.getLabel().setAlignment(Align.left);
+            serversTable.add(serverButton);
+            serverButton.addListener(createServerListener(serverButton));
+            serversTable.row();
+        }
+    }
+
+    private InputListener createServerListener(TextButton serverButton) {
+        return new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (!serverSelected) {
+                    serverSelected = true;
+                } else {
+                    if (currentServer != null) {
+                        currentServer.setStyle(buttonStyle);
+                    }
+                }
+                serverButton.setStyle(selectedButtonStyle);
+                currentServer = serverButton;
+                return false;
+            }
+        };
+    }
+
+    public InputListener createJoinServerListener(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory) {
+        return new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (serverSelected) {
+                    ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
+                }
+                return false;
             }
         };
     }
