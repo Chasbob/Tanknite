@@ -32,8 +32,7 @@ public class GameScreen extends AbstractScreen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
-
-    public RootObject rootAbstract = new RootObject("Root");
+    private RootObject rootAbstract = new RootObject("Root");
     private GameObject root;
     private GameObject tank;
     private SpriteBatch batch;
