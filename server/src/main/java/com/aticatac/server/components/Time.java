@@ -5,8 +5,6 @@ import com.aticatac.common.objectsystem.GameObject;
 
 public class Time extends Component{
 
-    //TODO consider what happens when
-
     /**The start time for the movement*/
     private long startTime;
     /**The current since the movement started*/

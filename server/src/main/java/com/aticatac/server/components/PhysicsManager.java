@@ -4,6 +4,8 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.SpeedPowerUp;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.components.transform.*;
+import java.lang.*;
+
 
 import java.util.ArrayList;
 
@@ -60,6 +62,7 @@ public class PhysicsManager extends Component {
         long dt = (componentParent.getComponent(Time.class).timeDifference())/1000000000;
 
         //velocity altered if there is a powerup
+        //TODO Check that this works as don't think it does
         if(acceleration != 0) {
             double newVelocity = velocity + (acceleration * dt);
             velocity = newVelocity;
@@ -80,22 +83,14 @@ public class PhysicsManager extends Component {
 
         }
 
-        //Sets the new coordinates as a position
         Position newPosition = new Position(newX, newY);
 
-        //checks for collisions
-        for(int i=0; i<occupiedCoordinates.size(); i++){
+        if(collision(newPosition, position)){
 
-            //Checks if new position is already occupied
-            //Checks the occupied coordinate isn't the current position (TODO is this needed)
-            if(newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != position){
-
-                return position;
-            }
+            return position;
 
         }
 
-        //No collision occurred
         return newPosition;
     }
 
@@ -140,10 +135,72 @@ public class PhysicsManager extends Component {
     }
 
 
+    //Test bullet calculation with bearings
+
+    public Position bulletMove(double bearing){
+
+        Position position = componentParent.getComponent(Transform.class).GetPosition();
+        double xCoord = position.getX();
+        double yCoord = position.getY();
+
+        //converting the dt from nanoseconds to seconds
+        long dt = (componentParent.getComponent(Time.class).timeDifference())/1000000000;
+
+        //Distance it moves is the change in time * the above velocity
+        double distance = dt*velocity;
+
+        //distance travelled in x direction is cos theta * distance
+        double distanceX = distance* Math.cos(Math.toRadians(bearing));
+
+        //distance travelled in y direction is sin theta * distance
+        double distanceY = distance*Math.sin(Math.toRadians(bearing));
+
+        //then add those to the original x and y
+        double newX = xCoord + distanceX;
+        double newY = yCoord + distanceY;
+
+        Position newPosition = new Position(newX, newY);
+
+        if(collision(newPosition, position)){
+
+            return position;
+
+        }
+
+        return newPosition;
+
+    }
+
+
+
+    /**
+     *
+     */
+    private boolean collision(Position newPosition, Position oldPosition){
+
+        //TODO make this get the server component from a different object not this one
+        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
+
+        //checks for collisions
+        for(int i=0; i<occupiedCoordinates.size(); i++) {
+
+            //Checks if new position is already occupied
+            //Checks the occupied coordinate isn't the current position (TODO is this needed)
+            if (newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != oldPosition) {
+
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+
     /**
      * Sets acceleration for the object.
      */
-    //Allows for powerups that increase this, to happen.
+    //Allows for power ups that increase this, to happen.
     private void setAcceleration(){
 
         if(componentParent.getComponent(SpeedPowerUp.class) == null){
@@ -160,113 +217,6 @@ public class PhysicsManager extends Component {
 
     }
 
-
-    /**
-     * Checks if a bullet has collided with something
-     * @return
-     */
-    public boolean bulletMove(String direction){
-
-        //TODO make this get the server component from a different object not this one
-        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
-
-        //the position for the bullet.
-        Position positionBullet = componentParent.getComponent(Transform.class).GetPosition();
-        double xCoord = positionBullet.getX();
-        double yCoord = positionBullet.getY();
-
-        //moving up or down for the bullet
-        if(direction == "up" || direction == "down"){
-
-            //checks for collisions
-            for(int i=0; i<occupiedCoordinates.size(); i++){
-
-                if(yCoord++ == occupiedCoordinates.get(i).getY()){
-
-                    return false;
-
-                }
-
-            }
-
-        }
-
-        //moving right or left for the bullet
-        if(direction == "right" || direction == "left"){
-
-            //checks for collisions
-            for(int i=0; i<occupiedCoordinates.size(); i++){
-
-                if(xCoord++ == occupiedCoordinates.get(i).getX()){
-
-                    return false;
-
-                }
-
-            }
-
-        }
-
-        return true;
-
-    }
-
-    /**
-     * Checks if bullet can move up one coordinate
-     * @return
-     */
-    public boolean up(){
-
-        return bulletMove("up");
-
-    }
-
-    /**
-     * Checks if bullet can move down one coordinate
-     * @return
-     */
-    public boolean down(){
-
-        return bulletMove("down");
-
-    }
-
-    /**
-     * Checks if bullet can move left one coordinate
-     * @return
-     */
-    public boolean left(){
-
-        return bulletMove("left");
-
-    }
-
-    /**
-     * Checks if bullet can move right one coordinate
-     * @return
-     */
-    public boolean right(){
-
-        return bulletMove("right");
-
-    }
-
-
-    //Test bullet calculation with bearings
-
-    public boolean bulletMove(double bearing){
-
-        //gets the start x and y coordinates
-        //calculates the velocity by looking ath the square root of x velocity squared plus y velocity quared
-        //Distance it moves is the change in time * the above velocity
-        //distance travelled in x direction is cos theta * distance
-        //distance travelled in y direction is sin theta * distance
-        //then add those to the original x and y
-
-        //Then do the checks of those positions against the coordinate array
-
-
-    }
 
 
 }
