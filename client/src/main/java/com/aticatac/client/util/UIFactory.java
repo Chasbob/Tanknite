@@ -282,8 +282,7 @@ public class UIFactory {
                     //TODO show lobby of currentServer
                     ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
                 }
-                serverButton.setStyle(selectedButtonStyle);
-                currentServer = serverButton;
+                currentServer.setStyle(selectedButtonStyle);
                 return false;
             }
         };
