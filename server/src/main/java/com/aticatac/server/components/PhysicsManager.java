@@ -46,7 +46,7 @@ public class PhysicsManager extends Component {
     private Position move(String direction){
 
         //the position for this tank.
-        Position position = componentParent.getComponent(Transform.class).getPosition();
+        Position position = componentParent.getComponent(Transform.class).GetPosition();
         //Positions of everything
         //TODO make this get the server component from a different object not this one
         ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(ServerData.class).getOccupiedCoordinates();
@@ -139,7 +139,7 @@ public class PhysicsManager extends Component {
 
     public Position bulletMove(double bearing){
 
-        Position position = componentParent.getComponent(Transform.class).getPosition();
+        Position position = componentParent.getComponent(Transform.class).GetPosition();
         double xCoord = position.getX();
         double yCoord = position.getY();
 
