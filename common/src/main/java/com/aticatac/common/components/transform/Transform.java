@@ -23,6 +23,14 @@ public class Transform extends Component {
         return position;
     }
 
+    public double getX(){
+        return GetPosition().x;
+    }
+
+    public double getY(){
+        return GetPosition().y;
+    }
+
 
     public void Transform(double x, double y) {
         this.SetTransform(position.x + x, position.y + y);

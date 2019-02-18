@@ -17,6 +17,8 @@ public class GameObject extends AbstractObject {
     public AbstractObject parent;
     public List<GameObject> children;
 
+    public Transform transform;
+
     /**
      * Instantiates a new GameObject.
      *
@@ -30,6 +32,8 @@ public class GameObject extends AbstractObject {
         this.components = new HashMap<>();
         ((RootObject) this.parent).setChild(this);
         addComponent(Transform.class);
+
+        transform = getComponent(Transform.class);
     }
 
     public GameObject(String name, GameObject parent) throws ComponentExistsException, InvalidClassInstance {
@@ -39,6 +43,8 @@ public class GameObject extends AbstractObject {
         this.components = new HashMap<>();
         ((GameObject) this.parent).addChild(this);
         addComponent(Transform.class);
+
+        transform = getComponent(Transform.class);
     }
 
     /**
