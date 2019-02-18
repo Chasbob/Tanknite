@@ -9,6 +9,7 @@ import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.model.Command;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
@@ -29,6 +30,8 @@ public class AI extends Component {
     private final Graph graph;
 
     private State state;
+    private State prevState;
+    private Queue<Command> searchPath;
     private ArrayList<GameObject> enemiesInRange;
     private Position tankPos;
     private int tankHealth;
@@ -36,9 +39,11 @@ public class AI extends Component {
 
     public AI(GameObject parent, Graph graph) {
         super(parent);
-        this.state = State.SEARCHING;
         this.tank = parent;
         this.graph = graph;
+        this.state = State.SEARCHING;
+        this.prevState = State.SEARCHING;
+        this.searchPath = new LinkedList<>();
     }
 
     /**
@@ -66,6 +71,7 @@ public class AI extends Component {
      * @return The state with the highest utility score
      */
     private State getStateChange() {
+        prevState = state;
         // Get utility score for each state
         int searchingUtility = getSearchingUtility();
         int attackingUtility = getAttackingUtility();
@@ -196,11 +202,17 @@ public class AI extends Component {
      * @return A command from the SEARCHING state
      */
     private Command performSearchingAction() {
-        Position goal = getClearPosition(); // there should be a clear position given we are in the searching state
+        // Keep going along the same path if still searching
+        if (prevState == State.SEARCHING && !searchPath.isEmpty()){
+            return searchPath.poll();
+        }
+
+        // Make new path if transitioned to searching state or previous path was completed
+        Position goal = getClearPosition(); // there should always be a clear position given we are in the searching state
         if (!(goal == null)) {
-            Queue<Command> path = graph.getPathToLocation(tankPos, goal);
-            if (!path.isEmpty()) {
-                return path.poll();
+            searchPath = graph.getPathToLocation(tankPos, goal);
+            if (!searchPath.isEmpty()) {
+                return searchPath.poll();
             }
         }
         return Command.DOWN;
