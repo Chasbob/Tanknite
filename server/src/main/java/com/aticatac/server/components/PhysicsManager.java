@@ -49,7 +49,7 @@ public class PhysicsManager extends Component {
         Position position = componentParent.getComponent(Transform.class).GetPosition();
         //Positions of everything
         //TODO make this get the server component from a different object not this one
-        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
+        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(ServerData.class).getOccupiedCoordinates();
 
         //old positions
         double oldX = position.getX();
@@ -179,7 +179,7 @@ public class PhysicsManager extends Component {
     private boolean collision(Position newPosition, Position oldPosition){
 
         //TODO make this get the server component from a different object not this one
-        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(Server.class).getOccupiedCoordinates();
+        ArrayList<Position> occupiedCoordinates = componentParent.findObject("String").getComponent(ServerData.class).getOccupiedCoordinates();
 
         //checks for collisions
         for(int i=0; i<occupiedCoordinates.size(); i++) {
