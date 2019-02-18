@@ -34,7 +34,7 @@ public class UsernameScreen extends AbstractScreen {
         rootTable.addActor(usernameTable);
         usernameTable.setFillParent(true);
         usernameTable.center();
-        usernameTable.defaults().pad(10).width(150).center();
+        usernameTable.defaults().pad(10).width(200).height(30).center();
         //create guidance label
         Label guidanceLabel = uiFactory.createLabel("Enter username");
         usernameTable.add(guidanceLabel);
@@ -50,16 +50,22 @@ public class UsernameScreen extends AbstractScreen {
         TextButton submitButton = uiFactory.createButton("Submit");
         usernameTable.add(submitButton);
         //create custom listener for submit button to get text field text
-        submitButton.addListener(uiFactory.submitButton(ScreenEnum.GAME, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+        if (prevScreen == ScreenEnum.MAIN_MENU) {
+            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+        } else if (prevScreen == ScreenEnum.MUlTIPLAYER) {
+            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+        } else if (prevScreen == ScreenEnum.SERVERS) {
+            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+        }
         //create table to store back button
         Table backTable = new Table();
         backTable.setFillParent(true);
         rootTable.addActor(backTable);
         backTable.bottom();
         //create back button
-        TextButton backButton = uiFactory.createBackButton("back");
+        TextButton backButton = uiFactory.createBackButton("quit");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(uiFactory.createListener(prevScreen, ScreenEnum.USERNAME, uiFactory));
+        backButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.USERNAME, uiFactory));
     }
 
     @Override

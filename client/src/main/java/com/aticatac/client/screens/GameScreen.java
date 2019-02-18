@@ -1,22 +1,17 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.Camera;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.UIFactory;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.RootObject;
 import com.aticatac.common.prefab.Tank;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -94,9 +89,9 @@ public class GameScreen extends AbstractScreen {
         tableColour.fill();
         popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
 
-        //create quit button go back to the main menu
-        TextButton quitButton = uiFactory.createButton("quit");
-        quitButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.GAME, uiFactory));
+        //create quit button go back to the main menu and disconnect form server
+        TextButton quitButton = uiFactory.createBackButton("quit");
+        quitButton.addListener(uiFactory.createDisconnectListener(ScreenEnum.MAIN_MENU, ScreenEnum.GAME, uiFactory));
         popUpTable.add(quitButton);
 
     }
@@ -182,9 +177,7 @@ public class GameScreen extends AbstractScreen {
     {
         Position g = gameObject.getComponent(Transform.class).GetPosition();
         Position r = root.getComponent(Transform.class).GetPosition();
-
         //cam.position.set(cam.position.x+1,cam.position.y,cam.position.z);
-
         //cam.position.set((float)(r.x-g.x+getWidth()/2f),(float)(r.y-g.y+getHeight()/2f),cam.position.z);
 
         renderer.setView(cam);
