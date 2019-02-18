@@ -1,33 +1,14 @@
 package com.aticatac.common.components;
 
-import com.aticatac.common.objectsystem.GameObject;
+        import com.aticatac.common.objectsystem.GameObject;
 
-import java.io.Serializable;
+        import java.io.Serializable;
 
-/**
- * The type Component.
- */
-public abstract class Component extends Thread implements Serializable {
-    /**
-     * The Component parent.
-     */
-    public GameObject gameObject;
+public abstract class Component<T> extends Thread implements Serializable {
 
-    /**
-     * Instantiates a new Component.
-     *
-     * @param gameObject the component parent
-     */
-    public Component(GameObject gameObject) {
-        this.gameObject = gameObject;
-    }
+    public GameObject componentParent;
 
-    /**
-     * Gets game object.
-     *
-     * @return the game object
-     */
-    public GameObject getGameObject() {
-        return gameObject;
+    public Component(GameObject componentParent){
+        this.componentParent = componentParent;
     }
 }
