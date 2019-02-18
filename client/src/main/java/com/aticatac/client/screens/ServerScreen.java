@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class ServerScreen extends AbstractScreen {
-
     private UIFactory uiFactory;
     private ScreenEnum prevScreen;
 
@@ -48,7 +47,7 @@ public class ServerScreen extends AbstractScreen {
         serversTable.setFillParent(true);
         serversTable.defaults().pad(10).width(450);
         serversTable.top().padTop(150);
-        uiFactory.getServers(serversTable);
+        uiFactory.getServers(serversTable, this.uiFactory);
         dataTable.addActor(serversTable);
         //create table to store back button
         Table backTable = new Table();

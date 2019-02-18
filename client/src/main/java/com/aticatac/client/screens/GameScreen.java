@@ -1,14 +1,11 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.AddTexture;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.UIFactory;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.RootObject;
 import com.aticatac.common.prefab.Bullet;

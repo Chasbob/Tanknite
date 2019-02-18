@@ -1,7 +1,7 @@
 package com.aticatac.client.util;
 
-import com.aticatac.client.networking.BroadcastListener;
 import com.aticatac.client.networking.Client;
+import com.aticatac.client.networking.Servers;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.Gdx;
@@ -16,11 +16,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type Ui factory.
  */
 public class UIFactory {
+    private final ConcurrentHashMap<String, ServerInformation> servers;
+    private final Servers s = Servers.getInstance();
     private Label.LabelStyle errorStyle;
     private Label.LabelStyle hideLabelStyle;
     private Label.LabelStyle labelStyle;
@@ -39,12 +42,12 @@ public class UIFactory {
      * Instantiates a new Ui factory.
      *
      * @param client the client
-     * @throws Exception the exception
      */
-    public UIFactory(Client client) throws Exception {
+    public UIFactory(Client client) {
         this.client = client;
         this.loadStyles();
-        this.address=new BroadcastListener().call();
+//        this.address = new BroadcastListener().call();
+        this.servers = new ConcurrentHashMap<>();
     }
 
     private void loadStyles() {
@@ -128,16 +131,6 @@ public class UIFactory {
     }
 
     /**
-     * Create label label.
-     *
-     * @param text the text
-     * @return the label
-     */
-    public Label createLabel(String text) {
-        return new Label(text, labelStyle);
-    }
-
-    /**
      * Create text field text field.
      *
      * @param text the text
@@ -145,16 +138,6 @@ public class UIFactory {
      */
     public TextField createTextField(String text) {
         return new TextField(text, textFieldStyle);
-    }
-
-    /**
-     * Create button text button.
-     *
-     * @param text the text
-     * @return the text button
-     */
-    public TextButton createButton(String text) {
-        return new TextButton(text, buttonStyle);
     }
 
     public TextButton createStartButton(String text) {
@@ -239,20 +222,41 @@ public class UIFactory {
         }
     }
 
-    public void getServers(Table serversTable) {
-        serverSelected = false;
-        //TODO get all servers that are open on the network
-        int maxServers = 10;
-        for (int i = 0; i < maxServers; i++) {
-            TextButton serverButton = createButton("<space>");
-            serverButton.getLabel().setAlignment(Align.left);
-            serversTable.add(serverButton);
-            serverButton.addListener(createServerButtonListener(serverButton));
-            serversTable.row();
-        }
+    /**
+     * Create label label.
+     *
+     * @param text the text
+     * @return the label
+     */
+    public Label createLabel(String text) {
+        return new Label(text, labelStyle);
     }
 
-    private InputListener createServerButtonListener(TextButton serverButton) {
+    public void getServers(Table serversTable, UIFactory uiFactory) {
+        (new ListServers(serversTable,uiFactory)).start();
+        serverSelected = false;
+        //TODO get all servers that are open on the network
+//        int maxServers = 10;
+//        for (int i = 0; i < maxServers; i++) {
+//            TextButton serverButton = createButton("<space>");
+//            serverButton.getLabel().setAlignment(Align.left);
+//            serversTable.add(serverButton);
+//            serverButton.addListener(createServerButtonListener(serverButton));
+//            serversTable.row();
+//        }
+    }
+
+    /**
+     * Create button text button.
+     *
+     * @param text the text
+     * @return the text button
+     */
+    public TextButton createButton(String text) {
+        return new TextButton(text, buttonStyle);
+    }
+
+    InputListener createServerButtonListener(TextButton serverButton) {
         return new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -278,6 +282,8 @@ public class UIFactory {
                     //TODO show lobby of currentServer
                     ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
                 }
+                serverButton.setStyle(selectedButtonStyle);
+                currentServer = serverButton;
                 return false;
             }
         };
@@ -293,5 +299,4 @@ public class UIFactory {
             }
         };
     }
-
 }
