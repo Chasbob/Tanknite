@@ -51,7 +51,6 @@ public class ServerData extends Component {
     }
 
 
-
     /**
      * Initialises variables for a new Game Object
      * @param name Name of the game object
