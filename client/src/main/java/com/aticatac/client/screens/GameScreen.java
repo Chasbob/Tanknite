@@ -1,13 +1,17 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.objectsystem.AddTexture;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.UIFactory;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.RootObject;
+import com.aticatac.common.prefab.Bullet;
 import com.aticatac.common.prefab.Tank;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -32,6 +36,7 @@ public class GameScreen extends AbstractScreen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
+
     private RootObject rootAbstract = new RootObject("Root");
     private GameObject root;
     private GameObject tank;
@@ -60,6 +65,8 @@ public class GameScreen extends AbstractScreen {
         }
 
         batch = new SpriteBatch();
+
+        Gdx.input.setInputProcessor(this);
 
     }
 
@@ -95,31 +102,6 @@ public class GameScreen extends AbstractScreen {
 
     }
 
-    private void InputDetection(){
-        //quit game
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            //show the pop up table
-            popUpTable.setVisible(true);
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            tank.getComponent(Transform.class).SetRotation(90);
-            tank.getComponent(Transform.class).Forward(3);
-        }
-        else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            tank.getComponent(Transform.class).SetRotation(-90);
-            tank.getComponent(Transform.class).Forward(3);
-        }
-        else if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            tank.getComponent(Transform.class).SetRotation(0);
-            tank.getComponent(Transform.class).Forward(3);
-        }
-        else if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            tank.getComponent(Transform.class).SetRotation(180);
-            tank.getComponent(Transform.class).Forward(3);
-        }
-    }
-
     @Override
     public void render(float delta) {
 
@@ -127,13 +109,11 @@ public class GameScreen extends AbstractScreen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        tank.children.get(1).getComponent(Transform.class).Rotate(1);
-
         CenterCameraToGameObject(tank);
 
         renderer.render();
 
-        InputDetection();
+        Input();
 
         batch.begin();
         ChildRenderer(root);
@@ -155,7 +135,7 @@ public class GameScreen extends AbstractScreen {
                 Texture t = c.getComponent(Renderer.class).getTexture();
 
                 batch.draw(new TextureRegion(t),
-                        (float) p.x, (float) p.y,
+                        (float) p.x - cam.position.x, (float) p.y - cam.position.y,
                         t.getWidth() / 2f, t.getHeight() / 2f,
                         t.getWidth(), t.getHeight(),
                         1, 1,
@@ -188,5 +168,125 @@ public class GameScreen extends AbstractScreen {
         super.dispose();
         map.dispose();
         renderer.dispose();
+    }
+
+
+    //TODO Convert game coord to Transform.class cord
+    public float YLibGdx2YTransform(float y){
+        y=y-cam.viewportHeight;
+        y = - y;
+
+        y = y+cam.viewportWidth/2f;
+
+        return y;
+    }
+
+    public float TransformY2Libgdx(float y){
+        y = y+cam.viewportWidth/2f;
+        y = - y;
+        y=y-cam.viewportHeight;
+        return y;
+    }
+
+    public float XLibGdx2XTransform(float x){
+        x = x+cam.viewportWidth/2f;
+        return x;
+    }
+
+
+    //Input
+
+    public void Input(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            //show the pop up table
+            popUpTable.setVisible(true);
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.A)){
+            tank.children.get(0).getComponent(Transform.class).SetRotation(90);
+            tank.getComponent(Transform.class).Transform(3,0);
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.D)) {
+            tank.children.get(0).getComponent(Transform.class).SetRotation(-90);
+            tank.getComponent(Transform.class).Transform(-3,0);
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.W)) {
+            tank.children.get(0).getComponent(Transform.class).SetRotation(0);
+            tank.getComponent(Transform.class).Transform(0,-3);
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.S)) {
+            tank.children.get(0).getComponent(Transform.class).SetRotation(180);
+            tank.getComponent(Transform.class).Transform(0,3);
+        }
+
+        mouseMoved(Gdx.input.getX(),Gdx.input.getY());
+    }
+
+    @Override
+    public boolean keyDown(int keycode){
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return true;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if(button == Input.Buttons.LEFT){
+            try {
+                var bullet = new Bullet("Bullet",root);
+                AddTexture.addBulletTexture(bullet);
+                var newX =XLibGdx2XTransform(screenX);
+                var newY =YLibGdx2YTransform(screenY);
+                System.out.println("X:"+newX+"\nY:"+newY);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(button == Input.Buttons.RIGHT){
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        var XMouse =XLibGdx2XTransform(screenX);
+        var YMouse =YLibGdx2YTransform(screenY);
+        var XTankTop = tank.children.get(1).transform.getX();
+        var YTankTop = tank.children.get(1).transform.getY();
+
+        var X = XMouse - XTankTop;
+        var Y = YMouse - YTankTop;
+
+        var rotation = Math.atan(Y/X);
+
+        if(XMouse>=XTankTop)
+            tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation)-90f);
+        else
+            tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation)+90f);
+
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
