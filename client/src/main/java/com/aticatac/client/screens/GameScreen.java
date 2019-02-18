@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -26,8 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
-
-    private ScreenEnum prevScreen;
     private Table popUpTable;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
@@ -39,9 +38,8 @@ public class GameScreen extends AbstractScreen {
     /**
      * Instantiates a new Game screen.
      */
-    public GameScreen(ScreenEnum prevScreen) {
+    public GameScreen() {
         super();
-        this.prevScreen = prevScreen;
         try {
             cam = new OrthographicCamera(640, 640);
             cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
@@ -212,13 +210,27 @@ public class GameScreen extends AbstractScreen {
         return false;
     }
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+    public float XLibGdx2XTransform(float x) {
+        x = x + cam.viewportWidth / 2f;
+        return x;
+    }
+    //Input
+
+    //TODO Convert game coord to Transform.class cord
+    public float YLibGdx2YTransform(float y) {
+        y = y - cam.viewportHeight;
+        y = -y;
+        y = y + cam.viewportWidth / 2f;
+        return y;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         return false;
     }
 
@@ -241,5 +253,27 @@ public class GameScreen extends AbstractScreen {
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return true;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        map.dispose();
+        renderer.dispose();
     }
 }

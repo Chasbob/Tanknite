@@ -9,14 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Leader board screen.
  */
 public class LeaderBoardScreen extends AbstractScreen {
-    private ScreenEnum prevScreen;
-
     /**
      * Instantiates a new Leader board screen.
      */
-    public LeaderBoardScreen(ScreenEnum prevScreen) {
+    public LeaderBoardScreen() {
         super();
-        this.prevScreen = prevScreen;
     }
 
     @Override

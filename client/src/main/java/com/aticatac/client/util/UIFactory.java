@@ -2,6 +2,7 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
+import com.aticatac.client.screens.Screens;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.server.networking.Server;
@@ -26,22 +27,6 @@ public class UIFactory {
     private static boolean serverSelected;
     private static TextButton currentServer;
     private static Server server;
-
-    /**
-     * Instantiates a new Ui factory.
-     */
-//    public UIFactory(Client client) throws IOException {
-//        this.client = client;
-////        this.loadStyles();
-//        this.servers = new ConcurrentHashMap<>();
-//        this.server = new Server();
-//    }
-    public UIFactory() {
-//        this.client = client;
-//        this.loadStyles();
-//        this.servers = new ConcurrentHashMap<>();
-//        this.server = new Server();
-    }
 
     /**
      * Create title label label.
@@ -77,7 +62,9 @@ public class UIFactory {
             @Override
             public boolean touchDown(InputEvent event, float x,
                                      float y, int pointer, int button) {
-                ScreenManager.getInstance().showScreen(dstScreen, senderScreen);
+                Screens.INSTANCE.showScreen(dstScreen);
+                Screens.INSTANCE.getScreen(dstScreen).setPrevScreen(senderScreen);
+//                ScreenManager.getInstance().showScreen(dstScreen, senderScreen);
                 return false;
             }
         };
@@ -100,7 +87,7 @@ public class UIFactory {
      * @param serversTable the servers table
      */
     public static void getServers(Table serversTable) {
-        (new ListServers(serversTable)).start();
+//        (new ListServers(serversTable)).start();
         serverSelected = false;
     }
 
@@ -163,7 +150,8 @@ public class UIFactory {
                         //set the error label to invisible
 //                        label.setStyle(uiFactory.hideLabelStyle);
                         label.setStyle(Styles.INSTANCE.getHideLabelStyle());
-                        ScreenManager.getInstance().showScreen(dstScreen, senderScreen);
+                        Screens.INSTANCE.showScreen(dstScreen);
+                        Screens.INSTANCE.getScreen(dstScreen).setPrevScreen(senderScreen);
                     } else {
 //                        label.setStyle(uiFactory.errorStyle);
                         label.setStyle(Styles.INSTANCE.getErrorStyle());
@@ -243,7 +231,8 @@ public class UIFactory {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if (serverSelected) {
                     //TODO show lobby of currentServer
-                    ScreenManager.getInstance().showScreen(dstScreen, senderScreen);
+                    Screens.INSTANCE.showScreen(dstScreen);
+                    Screens.INSTANCE.getScreen(dstScreen).setPrevScreen(senderScreen);
                 }
 //                currentServer.setStyle(selectedButtonStyle);
                 currentServer.setStyle(styles.getSelectedButtonStyle());
@@ -264,7 +253,8 @@ public class UIFactory {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 //TODO disconnect from current server
-                ScreenManager.getInstance().showScreen(dstScreen, senderScreen);
+                Screens.INSTANCE.showScreen(dstScreen);
+                Screens.INSTANCE.getScreen(dstScreen).setPrevScreen(senderScreen);
                 return false;
             }
         };
@@ -275,7 +265,6 @@ public class UIFactory {
      *
      * @param dstScreen    the dst screen
      * @param senderScreen the sender screen
-     * @param uiFactory    the ui factory
      * @return the input listener
      */
     public static InputListener createHostServerListener(ScreenEnum dstScreen, ScreenEnum senderScreen) {
@@ -283,7 +272,8 @@ public class UIFactory {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 server.start();
-                ScreenManager.getInstance().showScreen(dstScreen, senderScreen);
+                Screens.INSTANCE.showScreen(dstScreen);
+                Screens.INSTANCE.getScreen(dstScreen).setPrevScreen(senderScreen);
                 return false;
             }
         };

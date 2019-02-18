@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class Main {
     private static final SecureRandom random = new SecureRandom();
@@ -15,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
         logger.info("Starting...");
         try {
-            Client client = new Client();
+            Client client = new Client(new ArrayBlockingQueue<>(100));
             ServerInformation information = new BroadcastListener().call();
             logger.trace(information.toString());
             logger.trace("Got address: " + information.getAddress() + ":" + information.getPort());

@@ -7,11 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class ServerScreen extends AbstractScreen {
-    private ScreenEnum prevScreen;
-
-    public ServerScreen(ScreenEnum prevScreen) {
+    public ServerScreen() {
         super();
-        this.prevScreen = prevScreen;
     }
 
     @Override

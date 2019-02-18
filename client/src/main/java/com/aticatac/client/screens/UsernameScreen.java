@@ -11,14 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-    private ScreenEnum prevScreen;
-
     /**
      * Instantiates a new Username screen.
      */
-    public UsernameScreen(ScreenEnum prevScreen) {
+    public UsernameScreen() {
         super();
-        this.prevScreen = prevScreen;
     }
 
     @Override
@@ -48,11 +45,11 @@ public class UsernameScreen extends AbstractScreen {
         TextButton submitButton = UIFactory.createButton("Submit");
         usernameTable.add(submitButton);
         //create custom listener for submit button to get text field text
-        if (prevScreen == ScreenEnum.MAIN_MENU) {
+        if (getPrevScreen() == ScreenEnum.MAIN_MENU) {
             submitButton.addListener(UIFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, nameTakenLabel, textField));
-        } else if (prevScreen == ScreenEnum.MUlTIPLAYER) {
+        } else if (getPrevScreen() == ScreenEnum.MUlTIPLAYER) {
             submitButton.addListener(UIFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, nameTakenLabel, textField));
-        } else if (prevScreen == ScreenEnum.SERVERS) {
+        } else if (getPrevScreen() == ScreenEnum.SERVERS) {
             submitButton.addListener(UIFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, nameTakenLabel, textField));
         }
         //create table to store back button

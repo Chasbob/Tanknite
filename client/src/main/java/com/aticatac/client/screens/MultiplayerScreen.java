@@ -10,14 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Multiplayer screen.
  */
 public class MultiplayerScreen extends AbstractScreen {
-    private ScreenEnum prevScreen;
-
     /**
      * Instantiates a new Multiplayer screen.
      */
-    public MultiplayerScreen(ScreenEnum prevScreen) {
+    public MultiplayerScreen() {
         super();
-        this.prevScreen = prevScreen;
     }
 
     @Override

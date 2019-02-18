@@ -8,30 +8,24 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Widget;
-
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * The type Main menu screen.
  */
 public class MainMenuScreen extends AbstractScreen {
-    private ScreenEnum prevScreen;
-    private List<TextButton> widgetList;
-    private HashMap<String, Widget> widgetHashMap;
+//    private List<TextButton> widgetList;
+//    private HashMap<String, Widget> widgetHashMap;
 
     /**
      * Instantiates a new Main menu screen.
      */
-    public MainMenuScreen(ScreenEnum prevScreen) {
+    public MainMenuScreen( ) {
         super();
-        this.prevScreen = prevScreen;
     }
 
-    public List<TextButton> getWidgetList() {
-        return widgetList;
-    }
+//    public List<TextButton> getWidgetList() {
+//        return widgetList;
+//    }
 
     @Override
     public void buildStage() {
@@ -41,7 +35,6 @@ public class MainMenuScreen extends AbstractScreen {
         addActor(rootTable);
         Label screenTitle = UIFactory.createTitleLabel("Main Menu");
         screenTitle.setFillParent(true);
-        this.widgetHashMap.put("ScreenTitle", screenTitle);
         rootTable.add(screenTitle).padTop(50).top();
         //create table to store all buttons
         Table buttonTable = new Table();
@@ -50,7 +43,6 @@ public class MainMenuScreen extends AbstractScreen {
         buttonTable.defaults().pad(10).width(100).center();
         //create button for single player
         TextButton singlePlayerButton = UIFactory.createButton("single player");
-        this.widgetList.add(singlePlayerButton);
         singlePlayerButton.addListener(UIFactory.createListener(ScreenEnum.USERNAME, ScreenEnum.MAIN_MENU));
         buttonTable.add(singlePlayerButton);
         buttonTable.row();

@@ -2,6 +2,7 @@ package com.aticatac.client.networking;
 
 import com.aticatac.common.model.*;
 import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.Updates.Update;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * The type Client.
@@ -19,12 +21,14 @@ public class Client {
     private final Logger logger;
     private Login login;
     private PrintStream printer;
+    private BlockingQueue<Update> updates;
 
     /**
      * Instantiates a new Client.
      */
-    public Client() {
+    public Client(BlockingQueue<Update> updates) {
         this.logger = Logger.getLogger(getClass());
+        this.updates = updates;
 //        login = new Login(id);
     }
 
@@ -66,7 +70,7 @@ public class Client {
         this.logger.trace("Joining multicast: " + address + ":" + port);
         MulticastSocket multicastSocket = new MulticastSocket(port);
         multicastSocket.joinGroup(address);
-        UpdateListener updateListener = new UpdateListener(multicastSocket);
+        UpdateListener updateListener = new UpdateListener(multicastSocket, this.updates);
         updateListener.start();
         this.logger.trace("Started update listener!");
     }

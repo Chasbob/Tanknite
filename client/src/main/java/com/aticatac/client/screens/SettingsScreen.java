@@ -9,14 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Settings screen.
  */
 public class SettingsScreen extends AbstractScreen {
-    private ScreenEnum prevScreen;
-
     /**
      * Instantiates a new Settings screen.
      */
-    public SettingsScreen(ScreenEnum prevScreen) {
+    public SettingsScreen() {
         super();
-        this.prevScreen = prevScreen;
     }
 
     @Override
