@@ -16,7 +16,7 @@ public class Converter {
         com.aticatac.common.components.transform.Transform transform = g.getComponent(com.aticatac.common.components.transform.Transform.class);
         cont.transformModel.x = transform.getPosition().x;
         cont.transformModel.y = transform.getPosition().y;
-        cont.transformModel.rotation = transform.GetRotation();
+        cont.transformModel.r = transform.GetRotation();
         array.add(cont);
 
         for(var c: g.getChildren()){

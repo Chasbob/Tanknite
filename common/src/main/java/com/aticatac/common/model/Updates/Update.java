@@ -8,6 +8,7 @@ import com.aticatac.common.model.Model;
 public class Update extends Model {
     private final boolean changed;
 
+
     /**
      * Instantiates a new Model.
      *
