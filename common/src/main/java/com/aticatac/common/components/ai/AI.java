@@ -28,13 +28,15 @@ public class AI extends Component {
 
     private final GameObject tank;
     private final Graph graph;
-    private final double aggression;
-    private final double collectiveness;
+    private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
+    private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
 
     private State state;
     private State prevState;
     private Queue<Command> searchPath;
     private ArrayList<GameObject> enemiesInRange;
+    private ArrayList<GameObject> powerupsInRange;
+    //private Something idealPowerup;
     private Position tankPos;
     private int tankHealth;
     private int tankAmmo;
@@ -63,6 +65,7 @@ public class AI extends Component {
         tankHealth = tank.getComponent(Health.class).getHealth();
         tankAmmo = tank.getComponent(Ammo.class).getAmmo();
         enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
+        powerupsInRange = getPowerupsInRange(tankPos, VIEW_RANGE);
 
         // Check for a state change
         state = getStateChange();
@@ -167,11 +170,13 @@ public class AI extends Component {
      */
     private int getObtainingUtility() {
         /*
-        if (tankAmmo <= 5 && ammo power up near){
-            return 100
+        if (tankAmmo <= 5 && ammo powerup is in powerupsInRange){
+            idealPowerup = ammo powerup;
+            return 100;
         }
         if (tankHealth <= 30 && health power up near){
-            return 100
+            idealPowerup = health powerup;
+            return 100;
         }
         if (other power up near + some other condition idk)
             return 80
@@ -274,13 +279,20 @@ public class AI extends Component {
      */
     private Command performObtainingAction() {
         // TODO Get position of power-up to collect and travel there
+
+        // Keep going along the same path if still obtaining
+        if (prevState == State.OBTAINING && !searchPath.isEmpty()){
+            return searchPath.poll();
+        }
+        
+        // Position powerupLocation = powerUpsInRange.get ideal powerup type
         Position powerupLocation = new Position(1,2);
 
-        Queue<Command> path = graph.getPathToLocation(tankPos, powerupLocation);
-        if (path.isEmpty()) {
+        searchPath = graph.getPathToLocation(tankPos, powerupLocation);
+        if (searchPath.isEmpty()) {
             return Command.DOWN;
         }
-        return path.poll();
+        return searchPath.poll();
     }
 
     /**
@@ -336,6 +348,8 @@ public class AI extends Component {
         return true;
     }
 
+    // Could change to get objects in range then specify powerup or enemy
+
     /**
      * Gets a list of enemies that are in a given range from a given position.
      *
@@ -372,6 +386,44 @@ public class AI extends Component {
             }
         }
         return closestEnemy;
+    }
+
+    /**
+     * Gets a list of power-ups that are in a given range from a given position.
+     *
+     * @param position The center position to check from
+     * @param range The range
+     * @return A list of power-up in range of the position
+     */
+    private ArrayList<GameObject> getPowerupsInRange(Position position, int range) {
+        ArrayList<GameObject> allPowerups = new ArrayList<GameObject>(); // TODO ***Get this info***
+        ArrayList<GameObject> inRange = new ArrayList<GameObject>();
+
+        for (GameObject powerup : allPowerups) {
+            if (Math.abs(powerup.getComponent(Transform.class).GetPosition().x - position.x) <= range ||
+                    Math.abs(powerup.getComponent(Transform.class).GetPosition().y - position.y) <= range) {
+                inRange.add(powerup);
+            }
+        }
+        return inRange;
+    }
+
+    /**
+     * Gets the closest power-up to the tank.
+     *
+     * @return The closest power-up to the tank
+     */
+    private GameObject getClosestPowerup() {
+        GameObject closestPowerup = null;
+        double distanceToClosestPowerup = Double.MAX_VALUE;
+        for (GameObject powerup : powerupsInRange) {
+            double distanceToTank = Math.sqrt(Math.pow(powerup.getComponent(Transform.class).GetPosition().y - tankPos.y, 2) + Math.pow(powerup.getComponent(Transform.class).GetPosition().x - tankPos.x, 2));
+            if (distanceToTank < distanceToClosestPowerup) {
+                closestPowerup = powerup;
+                distanceToClosestPowerup = distanceToTank;
+            }
+        }
+        return closestPowerup;
     }
 
 }
