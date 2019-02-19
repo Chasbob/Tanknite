@@ -124,8 +124,10 @@ public class ServerData extends Component {
     /**
      * Sets the health of the game object
      */
-    public void setHealth(String name, int health) {
+    public void setHealth(String name, int health){
+
         this.health.replace(name, health);
+
     }
 
     /**
@@ -140,8 +142,38 @@ public class ServerData extends Component {
     /**
      * Sets the ammo for a game object
      */
-    public void setAmmo(String name, int ammo) {
+    public void setAmmo(String name, int ammo){
+
         this.ammo.replace(name, ammo);
+
     }
+
+
+
+    /**
+     * Get the direction of a game object
+     * @return Direction of an object
+     */
+    public int getDirection(String name){
+
+        return direction.get(name);
+
+    }
+
+    /**
+     * Sets the direction of a game object
+     */
+    public void setDirection(String name, int direction){
+
+        this.direction.replace(name, direction);
+
+    }
+
+
+    //TODO get power up
+
+
+    //TODO set power up
+
 
 }
