@@ -14,20 +14,21 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Charles de Freitas
  */
-class Server extends Thread {
+public class Server extends Thread {
     private final Logger logger;
     private final ConcurrentHashMap<String, Client> clients;
     private final BlockingQueue<Command> requests;
     private final NewClients newClients;
     private final Updater multicaster;
-    private final Thread discovery;
+    private final Discovery discovery;
 
     /**
      * Instantiates a new Server.
      *
      * @throws IOException the io exception
      */
-    Server() throws IOException {
+    public Server() throws IOException {
+        //TODO check if additional users are allowed.
         this.logger = Logger.getLogger(getClass());
         this.clients = new ConcurrentHashMap<>();
         this.requests = new ArrayBlockingQueue<>(1024); //TODO select an appropriate queue size.
@@ -55,7 +56,7 @@ class Server extends Thread {
             try {
                 Thread.sleep(5000);
 //                System.out.println("There are: " + this.clients.size() + " clients.");
-                this.logger.info("There are: " + this.requests.size() + " requests in the queue.");
+                this.logger.trace("There are: " + this.requests.size() + " requests in the queue.");
             } catch (InterruptedException e) {
                 this.logger.error(e);
             }

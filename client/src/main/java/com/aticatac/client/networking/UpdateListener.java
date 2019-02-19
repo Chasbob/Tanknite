@@ -8,22 +8,25 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * The type Update listener.
  */
-public class UpdateListener extends Thread {
+class UpdateListener extends Thread {
     private final MulticastSocket multicastSocket;
     private final Logger logger;
+    final BlockingQueue<Update> updates;
 
     /**
      * Instantiates a new Update listener.
      *
      * @param multicastSocket the multicast socket
      */
-    UpdateListener(MulticastSocket multicastSocket) {
+    UpdateListener(MulticastSocket multicastSocket, BlockingQueue<Update> updates) {
         this.logger = Logger.getLogger(getClass());
         this.multicastSocket = multicastSocket;
+        this.updates = updates;
     }
 
     @Override
@@ -48,6 +51,7 @@ public class UpdateListener extends Thread {
         this.multicastSocket.receive(packet);
         logger.trace("Packet received!");
         Update update = ModelReader.toModel(bytes, Update.class);
+        this.updates.add(update);
         logger.trace(update.getId());
     }
 }

@@ -10,7 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.concurrent.Callable;
 
-public class BroadcastListener implements Callable<ServerInformation> {
+class BroadcastListener implements Callable<ServerInformation> {
     @Override
     public ServerInformation call() throws Exception {
         return listen();

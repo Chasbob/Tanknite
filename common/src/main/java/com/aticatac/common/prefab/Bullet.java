@@ -3,7 +3,6 @@ package com.aticatac.common.prefab;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.objectsystem.RootObject;
 
 public class Bullet extends GameObject {
     /**

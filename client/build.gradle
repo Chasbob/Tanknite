@@ -12,6 +12,7 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile project(':common')
+    compile project(':server')
 }
 
 task execClient(type: JavaExec) {

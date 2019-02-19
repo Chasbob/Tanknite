@@ -4,7 +4,7 @@ import com.aticatac.common.model.ServerInformation;
 
 import java.util.ArrayList;
 
-public class PopulateServers extends Thread {
+class PopulateServers extends Thread {
     private final ArrayList<ServerInformation> servers;
 
     public PopulateServers(ArrayList<ServerInformation> servers) {
