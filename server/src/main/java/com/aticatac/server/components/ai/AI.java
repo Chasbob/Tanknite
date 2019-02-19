@@ -347,8 +347,6 @@ public class AI extends Component {
         return true;
     }
 
-    // Could change to get objects in range then specify powerup or enemy
-
     /**
      * Gets a list of enemies that are in a given range from a given position.
      *
@@ -357,19 +355,7 @@ public class AI extends Component {
      * @return A list of enemies in range of the position
      */
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-        return getGameObjects(position, range);
-    }
-
-    private ArrayList<GameObject> getGameObjects(Position position, int range) {
-        ArrayList<GameObject> allEnemies = new ArrayList<GameObject>(); // TODO ***Get this info***
-        ArrayList<GameObject> inRange = new ArrayList<GameObject>();
-        for (GameObject enemy : allEnemies) {
-            if (Math.abs(enemy.getComponent(Transform.class).getPosition().x - position.x) <= range ||
-                    Math.abs(enemy.getComponent(Transform.class).getPosition().y - position.y) <= range) {
-                inRange.add(enemy);
-            }
-        }
-        return inRange;
+        return getGameObjectsInRange(position, range);
     }
 
     /**
@@ -378,20 +364,7 @@ public class AI extends Component {
      * @return The closest enemy to the tank
      */
     private GameObject getClosestEnemy() {
-        return getObject(enemiesInRange);
-    }
-
-    private GameObject getObject(ArrayList<GameObject> enemiesInRange) {
-        GameObject closestEnemy = null;
-        double distanceToClosestEnemy = Double.MAX_VALUE;
-        for (GameObject enemy : enemiesInRange) {
-            double distanceToTank = Math.sqrt(Math.pow(enemy.getComponent(Transform.class).getPosition().y - tankPos.y, 2) + Math.pow(enemy.getComponent(Transform.class).getPosition().x - tankPos.x, 2));
-            if (distanceToTank < distanceToClosestEnemy) {
-                closestEnemy = enemy;
-                distanceToClosestEnemy = distanceToTank;
-            }
-        }
-        return closestEnemy;
+        return getClosestObject(enemiesInRange);
     }
 
     /**
@@ -402,7 +375,7 @@ public class AI extends Component {
      * @return A list of power-up in range of the position
      */
     private ArrayList<GameObject> getPowerupsInRange(Position position, int range) {
-        return getGameObjects(position, range);
+        return getGameObjectsInRange(position, range);
     }
 
     /**
@@ -411,7 +384,32 @@ public class AI extends Component {
      * @return The closest power-up to the tank
      */
     private GameObject getClosestPowerup() {
-        return getObject(powerupsInRange);
+        return getClosestObject(powerupsInRange);
+    }
+
+    private ArrayList<GameObject> getGameObjectsInRange(Position position, int range) {
+        ArrayList<GameObject> allObjects = new ArrayList<GameObject>(); // TODO ***Get this info***
+        ArrayList<GameObject> inRange = new ArrayList<GameObject>();
+        for (GameObject enemy : allObjects) {
+            if (Math.abs(enemy.getComponent(Transform.class).getPosition().x - position.x) <= range ||
+                    Math.abs(enemy.getComponent(Transform.class).getPosition().y - position.y) <= range) {
+                inRange.add(enemy);
+            }
+        }
+        return inRange;
+    }
+
+    private GameObject getClosestObject(ArrayList<GameObject> objectsInRange) {
+        GameObject closestObject = null;
+        double distanceToClosestObject = Double.MAX_VALUE;
+        for (GameObject object : objectsInRange) {
+            double distanceToTank = Math.sqrt(Math.pow(object.getComponent(Transform.class).getPosition().y - tankPos.y, 2) + Math.pow(object.getComponent(Transform.class).getPosition().x - tankPos.x, 2));
+            if (distanceToTank < distanceToClosestObject) {
+                closestObject = object;
+                distanceToClosestObject = distanceToTank;
+            }
+        }
+        return closestObject;
     }
 
 }
