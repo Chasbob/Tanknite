@@ -28,6 +28,8 @@ public class AI extends Component {
 
     private final GameObject tank;
     private final Graph graph;
+    private final double aggression;
+    private final double collectiveness;
 
     private State state;
     private State prevState;
@@ -36,8 +38,6 @@ public class AI extends Component {
     private Position tankPos;
     private int tankHealth;
     private int tankAmmo;
-    private double aggression;
-    private double collectiveness;
 
     public AI(GameObject parent, Graph graph) {
         super(parent);
