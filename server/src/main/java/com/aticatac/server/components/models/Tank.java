@@ -1,9 +1,18 @@
 package com.aticatac.server.components.models;
 
-import com.aticatac.server.components.*;
+
+
+import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.components.transform.Transform;
+import com.aticatac.server.components.AI;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.PhysicsManager;
 import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.models.powerups.AmmoPickUp;
+
+import java.sql.Time;
 // components for server side make in server or import from common?
 // needs component of PhysicsManager
 /**
@@ -16,12 +25,6 @@ public class Tank extends GameObject {
     private char currentDirection;
     private int maxHealth = 100;
 
-    /**
-     * Instantiates a new Tank.
-     *
-     * @param xCoord the x coord
-     * @param yCoord the y coord
-     */
     public Tank (GameObject Parent, String name){
         // work out where to give starting co ordinates for tank when gets created, change params to work for this when
         // tank is created
@@ -32,8 +35,6 @@ public class Tank extends GameObject {
         this.addComponent(AI.class);
         this.addComponent(Ammo.class);
         this.addComponent(PhysicsManager.class);
-        this.addComponent(Transform.class);
-        this.addComponent(Position.class);
         this.addComponent(Time.class);
         this.getComponent(Health.class).setHealth(100);
         this.getComponent(Ammo.class).setAmmo(30);
@@ -53,12 +54,9 @@ public class Tank extends GameObject {
     //physics manager now returns transform, so if new transform = old transform collision has happened,
     //else set position to new transform
     public boolean moveForwards() {
-        double oldX = this.getComponent(Transform.class).getX();
-        double oldY = this.getComponent(Transform.class).getY();
-        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveForwards();
-        currentDirection = 'N';
-        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
+        this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
         else return true;
 
@@ -71,9 +69,7 @@ public class Tank extends GameObject {
      */
 // when right arrow/d pressed
     public boolean moveRight (){
-        double oldX = this.getComponent(Transform.class).getX();
-        double oldY = this.getComponent(Transform.class).getY();
-        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveRight();
         currentDirection = 'E';
         this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
@@ -90,9 +86,7 @@ public class Tank extends GameObject {
      */
 // when left arrow/a pressed
     public boolean moveLeft (){
-        double oldX = this.getComponent(Transform.class).getX();
-        double oldY = this.getComponent(Transform.class).getY();
-        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveLeft();
         currentDirection = 'W';
         this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
@@ -107,9 +101,7 @@ public class Tank extends GameObject {
      */
 // when down arrow/s pressed
     public boolean moveBackwards (){
-        double oldX = this.getComponent(Transform.class).getX();
-        double oldY = this.getComponent(Transform.class).getY();
-        Position oldPosition = this.getComponent(Position.class).Position(oldX, oldY);
+        Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveBackwards();
         currentDirection = 'S';
         this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());

@@ -1,9 +1,9 @@
 package com.aticatac.server.components.models;
 
+import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.PhysicsManager;
-import com.aticatac.server.components.Position;
-import com.aticatac.server.components.Transform;
+import com.aticatac.common.components.transform.Position;
 
 /**
  * The type Bullet.
@@ -15,18 +15,10 @@ public class Bullet extends GameObject{
     private int damage; // or just have special case when shooting with powerup?
     private boolean collided = false;
 
-    /**
-     * Instantiates a new Bullet.
-     *
-     * @param xCoord    the x coord
-     * @param yCoord    the y coord
-     * @param direction the direction
-     */
     public Bullet (GameObject Parent, String name){
         super (Parent, name);
-        this.addComponent(Transform.class);
-        this.addComponent(Position.class);
         this.addComponent(PhysicsManager.class);
+        this.addComponent(Time.class);
 
 
     /*(int xCoord, int yCoord, char direction){
@@ -46,16 +38,13 @@ public class Bullet extends GameObject{
     // Need different methods to tank movement in PhysicsManager as simpler movement?
     public void moveForwards(double rotation) {
         while (!collided) {
-            double oldXCoord = this.getComponent(Transform.class).getX();
-            double oldYCoord = this.getComponent(Transform.class).getY();
-            Position oldPosition = this.getComponent(Position.class).Position(oldXCoord, oldYCoord);
-
-            Position newPosition = this.getComponent(PhysicaManager.class).bulletMove(rotation);
+            Position oldPosition = this.getComponent(Transform.class).GetPosition();
+            Position newPosition = this.getComponent(PhysicsManager.class).bulletMove(rotation);
             if (oldPosition.equals(newPosition)){
                 collided(); // work out whether collided with wall or tank etc
             }
             else {
-                this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
+                this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             }
 
             /*
