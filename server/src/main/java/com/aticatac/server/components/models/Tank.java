@@ -25,7 +25,9 @@ public class Tank extends GameObject {
     public Tank (GameObject Parent, String name){
         // work out where to give starting co ordinates for tank when gets created, change params to work for this when
         // tank is created
+        // need to link turret to tank
         super(Parent, name);
+        GameObject Turret = new GameObject(Tank, name); // will turret move when tank does if turret is child of tank?
         this.addComponent(Health.class);
         this.addComponent(AI.class);
         this.addComponent(Ammo.class);
@@ -122,13 +124,19 @@ public class Tank extends GameObject {
      */
 // call method when space bar pressed
     public boolean shoot() {
+        // call new shoot method from turretx
         // talk to physics?
+
+
         int currentAmmo = this.getComponent(Ammo.class).getAmmo();
+
         if (currentAmmo == 0) return false;
-        Bullet bullet = new Bullet(Transform.getX(), Transform.getY(), currentDirection); // NEED TO CHANGE PARAMS FOR BULLET
-        bullet.moveForwards();
+        return this.findObject()
+        /*Bullet bullet = new Bullet(Transform.getX(), Transform.getY(), currentDirection); // NEED TO CHANGE PARAMS FOR BULLET
+        bullet.moveForwards(); */
         this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
         return true;
+
 
 // create bullet object current co ordinatesn where shooting tank is, and move
         //

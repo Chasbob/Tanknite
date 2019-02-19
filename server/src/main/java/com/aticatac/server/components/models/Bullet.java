@@ -44,10 +44,21 @@ public class Bullet extends GameObject{
      */
 
     // Need different methods to tank movement in PhysicsManager as simpler movement?
-    public void moveForwards() {
+    public void moveForwards(double rotation) {
         while (!collided) {
-            int currentYCoord = this.getComponent(Transform.class).getY();
-            int currentXCoord = this.getComponent(Transform.class).getX();
+            double oldXCoord = this.getComponent(Transform.class).getX();
+            double oldYCoord = this.getComponent(Transform.class).getY();
+            Position oldPosition = this.getComponent(Position.class).Position(oldXCoord, oldYCoord);
+
+            Position newPosition = this.getComponent(PhysicaManager.class).bulletMove(rotation);
+            if (oldPosition.equals(newPosition)){
+                collided(); // work out whether collided with wall or tank etc
+            }
+            else {
+                this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
+            }
+
+            /*
             switch (currentDirection) {
                 case 'N':
                     if (this.getComponent(PhysicsManager.class).up()) {
@@ -66,6 +77,7 @@ public class Bullet extends GameObject{
                         this.getComponent(Transform.class).setTransform(currentXCoord - 1, currentYCoord);
                     } else collided();
             }
+            */
         }
     }
     // physics handles bullet collision
