@@ -128,7 +128,7 @@ public class TankController extends Component {
 //        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
 //
 //        if (currentAmmo == 0) return false;
-//        return this.findObject(Turret,) // get turret for this particular tank, and call shoot method in it
+//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
 //        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
         return true;
 

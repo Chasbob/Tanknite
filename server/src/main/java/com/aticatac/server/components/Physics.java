@@ -1,8 +1,6 @@
 package com.aticatac.server.components;
 
 import com.aticatac.common.components.Component;
-import com.aticatac.common.components.ServerData;
-import com.aticatac.common.components.SpeedPowerUp;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
@@ -10,15 +8,15 @@ import com.aticatac.common.objectsystem.GameObject;
 import java.util.ArrayList;
 
 /**
- * PhysicsManager component will control the physics for the objects in the game. It will consider the new positions of
+ * Physics component will control the physics for the objects in the game. It will consider the new positions of
  * objects and alter any physics values (e.g. velocity) for the object. The positions of the object are kept in
  * TransformModel and will be altered by the logic, not this component.
  */
-public class PhysicsManager extends Component {
+public class Physics extends Component {
     /**
      * The gravity acting for all objects
      */
-    private static double gravity = 10;
+    private static double gravity = 9.81;
     /**
      * The mass of this object
      */
@@ -37,35 +35,12 @@ public class PhysicsManager extends Component {
     private double velocity = 10;
 
     /**
-     * Creates a new PhysicsManager with a parent.
+     * Creates a new Physics with a parent.
      *
      * @param gameObject the game object
      */
-    public PhysicsManager(GameObject gameObject) {
+    public Physics(GameObject gameObject) {
         super(gameObject);
-    }
-
-
-    /**
-     *
-     * @param objectName
-     * @return
-     */
-    public Position initialisePosition(String objectName){
-
-        //randomly generate X
-        double initialX = 0;
-        //randomly generate Y
-        double initialY = 0;
-
-        Position generatedPosition = new Position(initialX, initialY);
-
-        //Check that they don't collide with anything only other tanks and objects
-        collision(generatedPosition, generatedPosition);
-
-        //if
-
-        return generatedPosition;
     }
 
 
@@ -82,9 +57,11 @@ public class PhysicsManager extends Component {
         //Old Positions
         double oldX = position.getX();
         double oldY = position.getY();
+
         //new proposed positions
         double newX = oldX;
         double newY = oldY;
+
         //converting the dt from nanoseconds to seconds
         long dt = (this.getGameObject().getComponent(Time.class).timeDifference()) / 1000000000;
 
@@ -93,15 +70,14 @@ public class PhysicsManager extends Component {
 
         //velocity altered if there is a power up
         if (acceleration != 0) {
-            double newVelocity = velocity + (acceleration * dt);
-            velocity = newVelocity;
+            velocity = velocity + (acceleration * dt);
         }
         //Calculates the new coordinates
-        if (direction == "up" || direction == "down") {
+        if (direction.equals("up") || direction.equals("down")) {
             //only moving on y coord
             newY = oldY + (velocity * dt);
         }
-        if (direction == "left" || direction == "right") {
+        if (direction.equals("left") || direction.equals("right")) {
             //only moving on x coord
             newX = oldX + (velocity * dt);
         }
@@ -109,9 +85,7 @@ public class PhysicsManager extends Component {
         Position newPosition = new Position(newX, newY);
 
         //Returning a collision type and also the position
-        Object[] returnPosition = collision(newPosition, position);
-
-        return returnPosition;
+        return collision(newPosition, position);
 
     }
 
@@ -153,7 +127,7 @@ public class PhysicsManager extends Component {
     //Test bullet calculation with bearings
 
     /**
-     * Bullet move position.
+     * BulletController move position.
      *
      * @param bearing the bearing
      * @return the position

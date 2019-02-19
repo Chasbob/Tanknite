@@ -5,13 +5,13 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 
-public class Turret extends Component {
+public class TurretController extends Component {
     /**
      * Instantiates a new Component.
      *
      * @param gameObject the component parent
      */
-    public Turret(GameObject gameObject) {
+    public TurretController(GameObject gameObject) {
         super(gameObject);
     }
 

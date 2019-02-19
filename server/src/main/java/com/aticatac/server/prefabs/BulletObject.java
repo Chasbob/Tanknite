@@ -1,9 +1,9 @@
-package com.aticatac.server.components.models;
+package com.aticatac.server.prefabs;
 
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.PhysicsManager;
+import com.aticatac.server.components.Physics;
 import com.aticatac.server.components.Time;
 
 public class BulletObject extends GameObject {
@@ -19,7 +19,7 @@ public class BulletObject extends GameObject {
     public BulletObject(String name, GameObject parent) throws InvalidClassInstance, ComponentExistsException {
         super(name, parent);
 
-        this.addComponent(PhysicsManager.class);
+        this.addComponent(Physics.class);
         this.addComponent(Time.class);
     }
 }

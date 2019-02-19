@@ -227,12 +227,12 @@ public class GameScreen extends AbstractScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
             try {
-                var bullet = new Bullet("Bullet", root);
+                var bullet = new Bullet("BulletController", root);
                 //AddTexture.addBulletTexture(bullet);
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
                 System.out.println("X:" + newX + "\nY:" + newY);
-//                var bullet = new Bullet("Bullet",root);
+//                var bullet = new BulletController("BulletController",root);
 //                AddTexture.addBulletTexture(bullet);
 //                var newX =XLibGdx2XTransform(screenX);
 //                var newY =YLibGdx2YTransform(screenY);
