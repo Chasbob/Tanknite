@@ -4,6 +4,9 @@ package com.aticatac.common.objectsystem;
  * The type Game object.
  */
 public abstract class AbstractObject {
+    /**
+     * The Name.
+     */
     protected String name;
 
     /**

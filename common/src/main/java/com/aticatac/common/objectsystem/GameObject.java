@@ -58,23 +58,7 @@ public class GameObject extends AbstractObject {
         this.parent = Optional.empty();
         this.children = new ArrayList<>();
         this.components = new HashMap<>();
-        this.parent.get().addChild(this);
-        this.addComponent(Transform.class);
-        this.transform = getComponent(Transform.class);
-    }
-
-    /**
-     * Instantiates a new Game object.
-     *
-     * @throws InvalidClassInstance     the invalid class instance
-     * @throws ComponentExistsException the component exists exception
-     */
-    public GameObject() throws InvalidClassInstance, ComponentExistsException {
-        super("root");
-        this.parent = Optional.empty();
-        this.children = new ArrayList<>();
-        this.components = new HashMap<>();
-        this.parent.get().addChild(this);
+//        this.parent.get().addChild(this);
         this.addComponent(Transform.class);
         this.transform = getComponent(Transform.class);
     }

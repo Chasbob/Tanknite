@@ -2,8 +2,8 @@ package com.aticatac.client.game;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.screens.Screens;
-import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.common.model.Updates.Update;
+import com.badlogic.gdx.Game;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * The type Gdx game.
  */
-public class GDXGame extends com.badlogic.gdx.Game {
+public class GDXGame extends Game {
     private Client client;
     private BlockingQueue<Update> updates;
 
@@ -19,13 +19,9 @@ public class GDXGame extends com.badlogic.gdx.Game {
     public void create() {
         try {
             this.updates = new ArrayBlockingQueue<>(100);
-            this.client = new Client(updates);
+            this.client = new Client();
             //TODO show splash screen whilst it loads
-//            ScreenManager.getInstance().initialize(this);
-//            ScreenManager.getInstance().showScreen(ScreenEnum.MAIN_MENU, ScreenEnum.MAIN_MENU);
-            Screens s = Screens.INSTANCE;
-            s.initialize(this);
-//            s.showScreen(ScreenEnum.MAIN_MENU);
+            Screens.INSTANCE.initialize(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,21 +29,6 @@ public class GDXGame extends com.badlogic.gdx.Game {
 
     @Override
     public void dispose() {
-    }
-
-    @Override
-    public void pause() {
-        super.pause();
-    }
-
-    @Override
-    public void resume() {
-        super.resume();
-    }
-
-    @Override
-    public void render() {
-        super.render();
     }
 
     @Override
