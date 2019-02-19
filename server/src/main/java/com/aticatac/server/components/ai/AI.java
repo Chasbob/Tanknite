@@ -13,6 +13,15 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+/**
+ * Long ago, the four nations lived together in harmony. Then, everything changed when the Fire Nation attacked.
+ * Only the AI component, master of all four elements, could stop them, but when the world needed it the most,
+ * it vanished. A hundred years passed and my brother and I discovered the new AI component,and although its
+ * airbending skills are great, it has a lot to learn before it's ready to save anyone. But I believe AI component
+ * can save the world.
+ *
+ * @author Dylan
+ */
 public class AI extends Component {
     /**
      * The set of states the AI tank can be in.
