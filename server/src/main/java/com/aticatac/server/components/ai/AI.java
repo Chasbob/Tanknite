@@ -357,9 +357,12 @@ public class AI extends Component {
      * @return A list of enemies in range of the position
      */
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
+        return getGameObjects(position, range);
+    }
+
+    private ArrayList<GameObject> getGameObjects(Position position, int range) {
         ArrayList<GameObject> allEnemies = new ArrayList<GameObject>(); // TODO ***Get this info***
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
-
         for (GameObject enemy : allEnemies) {
             if (Math.abs(enemy.getComponent(Transform.class).getPosition().x - position.x) <= range ||
                     Math.abs(enemy.getComponent(Transform.class).getPosition().y - position.y) <= range) {
@@ -375,6 +378,10 @@ public class AI extends Component {
      * @return The closest enemy to the tank
      */
     private GameObject getClosestEnemy() {
+        return getObject(enemiesInRange);
+    }
+
+    private GameObject getObject(ArrayList<GameObject> enemiesInRange) {
         GameObject closestEnemy = null;
         double distanceToClosestEnemy = Double.MAX_VALUE;
         for (GameObject enemy : enemiesInRange) {
@@ -395,16 +402,7 @@ public class AI extends Component {
      * @return A list of power-up in range of the position
      */
     private ArrayList<GameObject> getPowerupsInRange(Position position, int range) {
-        ArrayList<GameObject> allPowerups = new ArrayList<GameObject>(); // TODO ***Get this info***
-        ArrayList<GameObject> inRange = new ArrayList<GameObject>();
-
-        for (GameObject powerup : allPowerups) {
-            if (Math.abs(powerup.getComponent(Transform.class).getPosition().x - position.x) <= range ||
-                    Math.abs(powerup.getComponent(Transform.class).getPosition().y - position.y) <= range) {
-                inRange.add(powerup);
-            }
-        }
-        return inRange;
+        return getGameObjects(position, range);
     }
 
     /**
@@ -413,16 +411,7 @@ public class AI extends Component {
      * @return The closest power-up to the tank
      */
     private GameObject getClosestPowerup() {
-        GameObject closestPowerup = null;
-        double distanceToClosestPowerup = Double.MAX_VALUE;
-        for (GameObject powerup : powerupsInRange) {
-            double distanceToTank = Math.sqrt(Math.pow(powerup.getComponent(Transform.class).getPosition().y - tankPos.y, 2) + Math.pow(powerup.getComponent(Transform.class).getPosition().x - tankPos.x, 2));
-            if (distanceToTank < distanceToClosestPowerup) {
-                closestPowerup = powerup;
-                distanceToClosestPowerup = distanceToTank;
-            }
-        }
-        return closestPowerup;
+        return getObject(powerupsInRange);
     }
 
 }
