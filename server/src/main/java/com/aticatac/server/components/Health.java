@@ -6,6 +6,8 @@ import com.aticatac.common.objectsystem.GameObject;
 public class Health extends Component {
     private int health = 0;
 
+    private int maxhealth = 100;
+
     public Health(GameObject parent) {
         super(parent);
     }

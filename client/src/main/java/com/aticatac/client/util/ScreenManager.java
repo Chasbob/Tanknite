@@ -1,8 +1,8 @@
 package com.aticatac.client.util;
 
+import com.aticatac.client.screens.AbstractScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
-import com.aticatac.client.screens.AbstractScreen;
 
 /**
  * The type Screen manager.

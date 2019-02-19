@@ -1,4 +1,4 @@
-package com.aticatac.common.components.ai;
+package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
 

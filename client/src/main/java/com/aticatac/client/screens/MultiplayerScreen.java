@@ -1,10 +1,10 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.ScreenEnum;
+import com.aticatac.client.util.UIFactory;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
 
 /**
  * The type Multiplayer screen.
