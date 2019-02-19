@@ -45,6 +45,23 @@ public class PhysicsManager extends Component {
         super(gameObject);
     }
 
+
+    /**
+     *
+     * @param objectName
+     * @return
+     */
+    public Position initialisePosition(String objectName){
+
+        //randomly generate X
+        double initialX = 0;
+        //randomly generate Y
+        double initialY = 0;
+
+        return new Position(initialX, initialY);
+    }
+
+
     /**
      * Checks if the object can move in a direction and returns if it can and the new/current position.
      *
