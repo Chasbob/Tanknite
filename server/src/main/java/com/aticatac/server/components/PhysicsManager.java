@@ -58,7 +58,14 @@ public class PhysicsManager extends Component {
         //randomly generate Y
         double initialY = 0;
 
-        return new Position(initialX, initialY);
+        Position generatedPosition = new Position(initialX, initialY);
+
+        //Check that they don't collide with anything only other tanks and objects
+        collision(generatedPosition, generatedPosition);
+
+        //if
+
+        return generatedPosition;
     }
 
 
