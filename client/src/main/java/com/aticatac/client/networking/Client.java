@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -21,14 +22,14 @@ public class Client {
     private final Logger logger;
     private Login login;
     private PrintStream printer;
-    private BlockingQueue<Update> updates;
+    private final BlockingQueue<Update> updates;
 
     /**
      * Instantiates a new Client.
      */
-    public Client(BlockingQueue<Update> updates) {
+    public Client() {
         this.logger = Logger.getLogger(getClass());
-        this.updates = updates;
+        this.updates = new ArrayBlockingQueue<>(100);
 //        login = new Login(id);
     }
 

@@ -13,10 +13,10 @@ import java.util.concurrent.BlockingQueue;
 /**
  * The type Update listener.
  */
-public class UpdateListener extends Thread {
+class UpdateListener extends Thread {
     private final MulticastSocket multicastSocket;
     private final Logger logger;
-    BlockingQueue<Update> updates;
+    final BlockingQueue<Update> updates;
 
     /**
      * Instantiates a new Update listener.

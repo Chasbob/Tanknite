@@ -7,16 +7,15 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class Main {
     private static final SecureRandom random = new SecureRandom();
-    private static Logger logger = Logger.getLogger(Main.class);
+    private static final Logger logger = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
         logger.info("Starting...");
         try {
-            Client client = new Client(new ArrayBlockingQueue<>(100));
+            Client client = new Client();
             ServerInformation information = new BroadcastListener().call();
             logger.trace(information.toString());
             logger.trace("Got address: " + information.getAddress() + ":" + information.getPort());
@@ -24,7 +23,7 @@ public class Main {
             logger.info("Connected to " + information.getAddress() + ":" + information.getPort());
             while (true) {
                 Thread.sleep(400);
-                client.sendCommand(randomEnum(Command.class));
+                client.sendCommand(randomCommand());
             }
         } catch (InterruptedException | IOException e) {
             logger.error(e);
@@ -33,9 +32,9 @@ public class Main {
         }
     }
 
-    private static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
-        int x = random.nextInt(clazz.getEnumConstants().length);
-        return clazz.getEnumConstants()[x];
+    private static <T extends Enum<?>> T randomCommand() {
+        int x = random.nextInt(((Class<T>) Command.class).getEnumConstants().length);
+        return ((Class<T>) Command.class).getEnumConstants()[x];
     }
 
     private static int getRandomNumberInRange(int min, int max) {
@@ -48,16 +47,16 @@ public class Main {
 }
 
 class NameGenerator {
-    private static String[] Beginning = {"Kr", "Ca", "Ra", "Mrok", "Cru",
+    private static final String[] Beginning = {"Kr", "Ca", "Ra", "Mrok", "Cru",
             "Ray", "Bre", "Zed", "Drak", "Mor", "Jag", "Mer", "Jar", "Mjol",
             "Zork", "Mad", "Cry", "Zur", "Creo", "Azak", "Azur", "Rei", "Cro",
             "Mar", "Luk"};
-    private static String[] Middle = {"air", "ir", "mi", "sor", "mee", "clo",
+    private static final String[] Middle = {"air", "ir", "mi", "sor", "mee", "clo",
             "red", "cra", "ark", "arc", "miri", "lori", "cres", "mur", "zer",
             "marac", "zoir", "slamar", "salmar", "urak"};
-    private static String[] End = {"d", "ed", "ark", "arc", "es", "er", "der",
+    private static final String[] End = {"d", "ed", "ark", "arc", "es", "er", "der",
             "tron", "med", "ure", "zur", "cred", "mur"};
-    private static Random rand = new Random();
+    private static final Random rand = new Random();
 
     static String generateName() {
         return Beginning[rand.nextInt(Beginning.length)] +
