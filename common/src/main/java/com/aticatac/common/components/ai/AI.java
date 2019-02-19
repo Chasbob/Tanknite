@@ -36,6 +36,8 @@ public class AI extends Component {
     private Position tankPos;
     private int tankHealth;
     private int tankAmmo;
+    private double aggression;
+    private double collectiveness;
 
     public AI(GameObject parent, Graph graph) {
         super(parent);
@@ -44,6 +46,10 @@ public class AI extends Component {
         this.state = State.SEARCHING;
         this.prevState = State.SEARCHING;
         this.searchPath = new LinkedList<>();
+
+        Random rand = new Random();
+        this.aggression = 0.5 + rand.nextDouble();
+        this.collectiveness = 0.5 + rand.nextDouble();
     }
 
     /**
@@ -117,7 +123,7 @@ public class AI extends Component {
         }
         if (!enemiesInRange.isEmpty()) {
             // An enemy is in range
-            return 80;
+            return (int)Math.round(80 * aggression);
         }
         return 0;
     }
@@ -144,11 +150,11 @@ public class AI extends Component {
                 return 0;
             }
             // Low health and can run
-            return 100;
+            return (int)Math.round(100 / aggression);
         }
         if (tankHealth <= 30 && closestEnemyHealth < tankHealth){
             // More health than enemy
-            return 10;
+            return (int)Math.round(10 * aggression);
         }
 
         return 0;
