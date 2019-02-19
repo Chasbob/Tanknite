@@ -25,12 +25,14 @@ public class ServerData extends Component {
      * Initial direction value
      */
     private static Integer directionInitial = 0;
-    //TODO provide the identifier that will be needed so server knows what info
+    /**
+     * ArrayList of the currently occupied coordinates
+     */
+    private ArrayList<Position> occupiedCoordinatesTank = new ArrayList<Position>();
     /**
      * ArrayList of the currently occupied coordinates
      */
     private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>();
-    //Where the string is the name of the gameObject the value refers to
     /**
      * HashMap to store the health and the object the health relates to
      */
@@ -85,6 +87,26 @@ public class ServerData extends Component {
     public void setOccupiedCoordinates(Position oldCoords, Position newCoords) {
         occupiedCoordinates.set(occupiedCoordinates.indexOf(oldCoords), newCoords);
     }
+
+    /**
+     * Gets the currently occupied coordinates by bullets
+     *
+     * @return The occupied coordinates.
+     */
+    public ArrayList<Position> getOccupiedCoordinatesTank() {
+        return occupiedCoordinatesTank;
+    }
+
+    /**
+     * Sets the currently occupied coordinates
+     *
+     * @param oldCoords The old coordinates that were occupied.
+     * @param newCoords The new coordinates that are now occupied.
+     */
+    public void setOccupiedCoordinatesTank(Position oldCoords, Position newCoords) {
+        occupiedCoordinatesTank.set(occupiedCoordinatesTank.indexOf(oldCoords), newCoords);
+    }
+
 
     /**
      * Gets the health for a game object

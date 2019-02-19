@@ -45,18 +45,41 @@ public class PhysicsManager extends Component {
         super(gameObject);
     }
 
+
+    /**
+     *
+     * @param objectName
+     * @return
+     */
+    public Position initialisePosition(String objectName){
+
+        //randomly generate X
+        double initialX = 0;
+        //randomly generate Y
+        double initialY = 0;
+
+        Position generatedPosition = new Position(initialX, initialY);
+
+        //Check that they don't collide with anything only other tanks and objects
+        collision(generatedPosition, generatedPosition);
+
+        //if
+
+        return generatedPosition;
+    }
+
+
     /**
      * Checks if the object can move in a direction and returns if it can and the new/current position.
      *
      * @return Position of the object
      */
-    private Position move(String direction) {
+    private Object[] move(String direction) {
+
         //the position for this tank.
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
-        //Positions of everything
-        //TODO make this get the server component from a different object not this one
-        ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        //old positions
+
+        //Old Positions
         double oldX = position.getX();
         double oldY = position.getY();
         //new proposed positions
@@ -64,8 +87,11 @@ public class PhysicsManager extends Component {
         double newY = oldY;
         //converting the dt from nanoseconds to seconds
         long dt = (this.getGameObject().getComponent(Time.class).timeDifference()) / 1000000000;
-        //velocity altered if there is a powerup
-        //TODO Check that this works as don't think it does
+
+        //Set acceleration
+        setAcceleration();
+
+        //velocity altered if there is a power up
         if (acceleration != 0) {
             double newVelocity = velocity + (acceleration * dt);
             velocity = newVelocity;
@@ -79,11 +105,14 @@ public class PhysicsManager extends Component {
             //only moving on x coord
             newX = oldX + (velocity * dt);
         }
+
         Position newPosition = new Position(newX, newY);
-        if (collision(newPosition, position)) {
-            return position;
-        }
-        return newPosition;
+
+        //Returning a collision type and also the position
+        Object[] returnPosition = collision(newPosition, position);
+
+        return returnPosition;
+
     }
 
     /**
@@ -91,7 +120,7 @@ public class PhysicsManager extends Component {
      *
      * @return Position of the object
      */
-    public Position moveUp() {
+    public Object[] moveUp() {
         return move("up");
     }
 
@@ -100,7 +129,7 @@ public class PhysicsManager extends Component {
      *
      * @return Position of the object
      */
-    public Position moveDown() {
+    public Object[] moveDown() {
         return move("down");
     }
 
@@ -109,7 +138,7 @@ public class PhysicsManager extends Component {
      *
      * @return Position of the object
      */
-    public Position moveLeft() {
+    public Object[] moveLeft() {
         return move("left");
     }
 
@@ -118,7 +147,7 @@ public class PhysicsManager extends Component {
      *
      * @return Position of the object
      */
-    public Position moveRight() {
+    public Object[] moveRight() {
         return move("right");
     }
     //Test bullet calculation with bearings
@@ -129,7 +158,7 @@ public class PhysicsManager extends Component {
      * @param bearing the bearing
      * @return the position
      */
-    public Position bulletMove(double bearing) {
+    public Object[] bulletMove(double bearing) {
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
         double xCoord = position.getX();
         double yCoord = position.getY();
@@ -138,34 +167,70 @@ public class PhysicsManager extends Component {
         //Distance it moves is the change in time * the above velocity
         double distance = dt * velocity;
         //distance travelled in x direction is cos theta * distance
-        double distanceX = distance * Math.cos(Math.toRadians(bearing));
+        double distanceX = distance * Math.cos(bearing);
         //distance travelled in y direction is sin theta * distance
-        double distanceY = distance * Math.sin(Math.toRadians(bearing));
+        double distanceY = distance * Math.sin(bearing);
         //then add those to the original x and y
         double newX = xCoord + distanceX;
         double newY = yCoord + distanceY;
+
         Position newPosition = new Position(newX, newY);
-        if (collision(newPosition, position)) {
-            return position;
-        }
-        return newPosition;
+
+        //Returning a collision type and also the position
+        Object[] returnPosition = collision(newPosition, position);
+
+        return returnPosition;
     }
 
     /**
      *
      */
-    private boolean collision(Position newPosition, Position oldPosition) {
-        //TODO make this get the server component from a different object not this one
+    private Object[] collision(Position newPosition, Position oldPosition) {
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        //checks for collisions
+        ArrayList<Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+
+        Integer collisionType;
+        // other object = 1, tank = 2, nothing = 0
+
+        //checks for collisions with
         for (int i = 0; i < occupiedCoordinates.size(); i++) {
             //Checks if new position is already occupied
-            //Checks the occupied coordinate isn't the current position (TODO is this needed)
+            //Checks the occupied coordinate isn't the current position.
             if (newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != oldPosition) {
-                return true;
+
+                collisionType = 1;
+                //Returning a collision type and also the position
+                Object[] returnPosition = new Object[2];
+                returnPosition[0] = collisionType;
+                returnPosition[1] = newPosition;
+
+                return returnPosition;
             }
         }
-        return false;
+
+        //checks for collisions
+        for (int i = 0; i < occupiedCoordinatesTank.size(); i++) {
+            //Checks if new position is already occupied
+            //Checks the occupied coordinate isn't the current position.
+            if (newPosition == occupiedCoordinatesTank.get(i) && occupiedCoordinatesTank.get(i) != oldPosition) {
+                collisionType = 2;
+                //Returning a collision type and also the position
+                Object[] returnPosition = new Object[2];
+                returnPosition[0] = collisionType;
+                returnPosition[1] = newPosition;
+
+                return returnPosition;
+            }
+        }
+
+        collisionType = 0;
+
+        //Returning a collision type and also the position
+        Object[] returnPosition = new Object[2];
+        returnPosition[0] = collisionType;
+        returnPosition[1] = newPosition;
+
+        return returnPosition;
     }
 
     /**
