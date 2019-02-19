@@ -36,21 +36,26 @@ public class Server extends Thread {
         discovery = new Discovery("Server", Data.INSTANCE.getPort());
     }
 
+    public ConcurrentHashMap<String, Client> getClients() {
+        return clients;
+    }
+
     @Override
     public void run() {
         this.logger.trace("Running...");
         this.multicaster.start();
         this.newClients.start();
         this.discovery.start();
-        (new Thread(() -> {
-            //TODO remove testing thread
-            while (true) {
-                try {
-                    System.out.println(this.requests.take());
-                } catch (InterruptedException ignored) {
-                }
-            }
-        })).start();
+//        (new Thread(() -> {
+//            //TODO remove testing thread
+////            while (true) {
+////                try {
+////                    System.out.println(this.requests.take());
+////                } catch (InterruptedException ignored) {
+////                }
+////            }
+//        })).start();
+
         while (!this.isInterrupted()) {
             try {
                 Thread.sleep(5000);
@@ -70,6 +75,7 @@ public class Server extends Thread {
      * @throws InterruptedException the interrupted exception
      */
     public Command nextCommand() throws InterruptedException {
+        this.logger.warn("Taking command");
         return this.requests.take();
     }
 }

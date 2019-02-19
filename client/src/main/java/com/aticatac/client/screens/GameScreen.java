@@ -1,9 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.networking.Client;
-import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
-import com.aticatac.client.util.GameManager;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.UIFactory;
 import com.aticatac.common.components.transform.Position;
@@ -11,8 +9,6 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.prefab.Bullet;
-import com.aticatac.common.prefab.Tank;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
@@ -38,9 +34,6 @@ public class GameScreen extends AbstractScreen {
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
     private GameObject root;
-    private GameObject tank;
-
-    private GameManager gameManager;
 
     private Client client;
 
@@ -57,11 +50,6 @@ public class GameScreen extends AbstractScreen {
             cam = new OrthographicCamera(640, 640);
             cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
             root = new GameObject();
-            tank = new Tank("Tank1", root, new Position(getWidth() / 2, getHeight() / 2));
-            ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/TankBottom.png");
-            ObjectHelper.AddRenderer(tank.getChildren().get(1), "img/TankTop.png");
-
-            gameManager = new GameManager();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,7 +107,6 @@ public class GameScreen extends AbstractScreen {
         renderer.render();
         Input();
         batch.begin();
-        ChildRenderer(gameManager.root);
         batch.end();
         cam.update();
         super.act(delta);
@@ -227,16 +214,11 @@ public class GameScreen extends AbstractScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
             try {
-                var bullet = new Bullet("BulletController", root);
                 //AddTexture.addBulletTexture(bullet);
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
                 System.out.println("X:" + newX + "\nY:" + newY);
-//                var bullet = new BulletController("BulletController",root);
-//                AddTexture.addBulletTexture(bullet);
-//                var newX =XLibGdx2XTransform(screenX);
-//                var newY =YLibGdx2YTransform(screenY);
-//                System.out.println("X:"+newX+"\nY:"+newY);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -258,17 +240,17 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        var XMouse = XLibGdx2XTransform(screenX);
-        var YMouse = YLibGdx2YTransform(screenY);
-        var XTankTop = tank.getChildren().get(1).transform.getX();
-        var YTankTop = tank.getChildren().get(1).transform.getY();
-        var X = XMouse - XTankTop;
-        var Y = YMouse - YTankTop;
-        var rotation = Math.atan(Y / X);
-        if (XMouse >= XTankTop)
-            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
-        else
-            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
+//        var XMouse = XLibGdx2XTransform(screenX);
+//        var YMouse = YLibGdx2YTransform(screenY);
+//        var XTankTop = tank.getChildren().get(1).transform.getX();
+//        var YTankTop = tank.getChildren().get(1).transform.getY();
+//        var X = XMouse - XTankTop;
+//        var Y = YMouse - YTankTop;
+//        var rotation = Math.atan(Y / X);
+//        if (XMouse >= XTankTop)
+//            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
+//        else
+//            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
 //        var XMouse =XLibGdx2XTransform(screenX);
 //        var YMouse =YLibGdx2YTransform(screenY);
 //        var XTankTop = gameManager.self.children.get(1).transform.getX();
