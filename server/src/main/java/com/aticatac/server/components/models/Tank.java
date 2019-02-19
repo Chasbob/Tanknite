@@ -38,6 +38,7 @@ public class Tank extends GameObject {
         this.addComponent(Time.class);
         this.getComponent(Health.class).setHealth(100);
         this.getComponent(Ammo.class).setAmmo(30);
+        this.getComponent(Transform.class).SetTransform(this.getComponent(PhysicsManager.class).initialisePosition(name));
         // where to set starting coords? this.getComponent(Transform.class).setTransform(xCoord, yCoord);
     }
 // have ammo as component and get health component, and transform and position etc (and physicsmanager)
@@ -56,9 +57,13 @@ public class Tank extends GameObject {
     public boolean moveForwards() {
         Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveForwards();
-        this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
-        else return true;
+        else{
+            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(0);
+            return true;
+        }
+        // set occupied co ordinates on server data whenever tank moves
 
     }
 
@@ -71,10 +76,12 @@ public class Tank extends GameObject {
     public boolean moveRight (){
         Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveRight();
-        currentDirection = 'E';
-        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
-        else return true;
+        else{
+            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(90);
+            return true;
+        }
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
         //bullet disappears, other collisions have no effect, just stop the current move from happening
     }
@@ -88,10 +95,12 @@ public class Tank extends GameObject {
     public boolean moveLeft (){
         Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveLeft();
-        currentDirection = 'W';
-        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
-        else return true;
+        else{
+            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(270);
+            return true;
+        }
     }
 
     /**
@@ -100,13 +109,15 @@ public class Tank extends GameObject {
      * @return the boolean
      */
 // when down arrow/s pressed
-    public boolean moveBackwards (){
+    public boolean moveBackwards () {
         Position oldPosition = this.getComponent(Transform.class).GetPosition();
         Position newPosition = this.getComponent(PhysicsManager.class).moveBackwards();
-        currentDirection = 'S';
-        this.getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
         if (oldPosition.equals(newPosition)) return false;
-        else return true;
+        else {
+            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(180);
+            return true;
+        }
     }
 
     /**
@@ -123,9 +134,7 @@ public class Tank extends GameObject {
         int currentAmmo = this.getComponent(Ammo.class).getAmmo();
 
         if (currentAmmo == 0) return false;
-        return this.findObject()
-        /*Bullet bullet = new Bullet(Transform.getX(), Transform.getY(), currentDirection); // NEED TO CHANGE PARAMS FOR BULLET
-        bullet.moveForwards(); */
+        return this.findObject(Turret,) // get turret for this particular tank, and call shoot method in it
         this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
         return true;
 
@@ -166,7 +175,9 @@ public class Tank extends GameObject {
     // wheree to have collision with pick up, physics?
     // change from logic interface calling methods to map calling?
     public void die () {
-        new AmmoPickUp(this.getComponent(Transform.class).getX(), this.getComponent(Transform.class).getY());
+        //new AmmoPickUp(this.getComponent(Transform.class).getX(), this.getComponent(Transform.class).getY());
+        // set ammo pick up transform to where tank died
+        Destroy(this);
         /*
         if (map.getNumberOfAliveTanks() == 1){
             map.gameFinish();

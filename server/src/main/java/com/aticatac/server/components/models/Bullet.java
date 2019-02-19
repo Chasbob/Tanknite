@@ -17,6 +17,7 @@ public class Bullet extends GameObject{
 
     public Bullet (GameObject Parent, String name){
         super (Parent, name);
+
         this.addComponent(PhysicsManager.class);
         this.addComponent(Time.class);
 
@@ -37,12 +38,25 @@ public class Bullet extends GameObject{
 
     // Need different methods to tank movement in PhysicsManager as simpler movement?
     public void moveForwards(double rotation) {
-        while (!collided) {
+        while (true) {
             Position oldPosition = this.getComponent(Transform.class).GetPosition();
-            Position newPosition = this.getComponent(PhysicsManager.class).bulletMove(rotation);
-            if (oldPosition.equals(newPosition)){
-                collided(); // work out whether collided with wall or tank etc
-            }
+            Object physicsData[] = this.getComponent(PhysicsManager.class).bulletMove(rotation);
+            Position newPosition = (Position)physicsData[1];
+            int collisionType = (Integer)physicsData[0];
+            //0 nothing, 1 is a wall, 2 is a tank
+            if (collisionType != 0){
+                if (collisionType == 1){
+                    Destroy(this);
+                }
+                else {
+
+                    Tank collidedTank =;// get tank using new position from serverData
+                    collidedTank.isShot();
+                    Destroy(this);
+
+                    collided(); // work out whether collided with wall or tank etc
+                }
+            }   // set occupied co ordinates for server data
             else {
                 this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             }
@@ -71,10 +85,10 @@ public class Bullet extends GameObject{
     }
     // physics handles bullet collision
 
+    // make a method for bullet to disappear
+
     public void collided () {
         collided = true;
-        // destroy bullet, checkm if collided with tank or wall etc
-        // if collided with tank, tank.isShot();
     }
     /**
      * Set current x coord.

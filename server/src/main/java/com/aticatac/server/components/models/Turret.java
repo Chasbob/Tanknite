@@ -1,16 +1,14 @@
 package com.aticatac.server.components.models;
 
+import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.Position;
-import com.aticatac.server.components.Transform;
 
 public class Turret extends GameObject {
 
     public Turret (GameObject Parent, String name){
 
         super(Parent, name);
-        this.addComponent(Transform.class);
-        this.addComponent(Position.class);
 
         // does the shooting etc, linked to main tank
         // able to shoot 360 degrees

@@ -7,9 +7,6 @@ import com.aticatac.server.components.models.Tank;
 
 import java.util.HashMap;
 
-/**
- * The type Logic interface.
- */
 public class Map{
     private static HashMap<String, Tank> tanks = new HashMap<>();
     private int numberOfAliveTanks;
@@ -33,7 +30,7 @@ public class Map{
 // where to have round starting and ending? upon entering game, check if name appears anywhere currently online?
     // how to get name from user
     public static void createNewTank(String name) {
-        tanks.put(name, new Tank(PhysicsManager.getStartingXCoordinate(), PhysicsManager.getStartingYCoordinate()));
+        tanks.put(name, new Tank(Map, name));
         GameObject Tank = new GameObject(Map, name);
         // fix params for tank and work out how to tell starting co ords from physics
     }
