@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -43,7 +44,9 @@ class Scratch {
         byte[] b = compress(json);
         System.out.println("Compressing json...");
 
-        System.out.println(b.length);
+        System.out.println("Json bytes:"+json.getBytes().length);
+        System.out.println("Json w/ compression" + b.length);
+        System.out.println("Storage saved:"+(100-((float)b.length/(float)json.getBytes().length)*100f)+"%");
         Converter.Constructor(Converter.Deconstructor(root));
     }
 
@@ -60,7 +63,7 @@ class Scratch {
     public static String decompress(byte[] compressed) throws IOException {
         ByteArrayInputStream bis = new ByteArrayInputStream(compressed);
         GZIPInputStream gis = new GZIPInputStream(bis);
-        BufferedReader br = new BufferedReader(new InputStreamReader(gis, "UTF-8"));
+        BufferedReader br = new BufferedReader(new InputStreamReader(gis, StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder();
         String line;
         while((line = br.readLine()) != null) {
