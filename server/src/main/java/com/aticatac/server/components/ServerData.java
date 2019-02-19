@@ -46,7 +46,7 @@ public class ServerData extends Component {
      * Creates a new Server Component with a parent.
      * @param componentParent The parent of the Server.
      */
-    public Server(GameObject componentParent) {
+    public ServerData(GameObject componentParent) {
         super(componentParent);
     }
 
@@ -104,7 +104,7 @@ public class ServerData extends Component {
      */
     public void setHealth(String name, int health){
 
-        health.replace(name, health);
+        this.health.replace(name, health);
 
     }
 
@@ -125,7 +125,7 @@ public class ServerData extends Component {
      */
     public void setAmmo(String name, int ammo){
 
-        ammo.replace(name, ammo);
+        this.ammo.replace(name, ammo);
 
     }
 
@@ -146,7 +146,7 @@ public class ServerData extends Component {
      */
     public void setDirection(String name, int direction){
 
-        direction.replace(name, direction);
+        this.direction.replace(name, direction);
 
     }
 
