@@ -54,11 +54,8 @@ public class PhysicsManager extends Component {
 
         //the position for this tank.
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
-        //Positions of everything
-        ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        ArrayList<Position> occupiedCoordinatesBullet = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesBullet();
-        ArrayList<Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        //old positions
+
+        //Old Positions
         double oldX = position.getX();
         double oldY = position.getY();
         //new proposed positions
@@ -66,7 +63,11 @@ public class PhysicsManager extends Component {
         double newY = oldY;
         //converting the dt from nanoseconds to seconds
         long dt = (this.getGameObject().getComponent(Time.class).timeDifference()) / 1000000000;
-        //velocity altered if there is a powerup
+
+        //Set acceleration
+        setAcceleration();
+
+        //velocity altered if there is a power up
         if (acceleration != 0) {
             double newVelocity = velocity + (acceleration * dt);
             velocity = newVelocity;
@@ -174,6 +175,12 @@ public class PhysicsManager extends Component {
             if (newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != oldPosition) {
 
                 collisionType = 1;
+                //Returning a collision type and also the position
+                Object[] returnPosition = new Object[2];
+                returnPosition[0] = collisionType;
+                returnPosition[1] = newPosition;
+
+                return returnPosition;
             }
         }
 
@@ -183,6 +190,12 @@ public class PhysicsManager extends Component {
             //Checks the occupied coordinate isn't the current position.
             if (newPosition == occupiedCoordinatesTank.get(i) && occupiedCoordinatesTank.get(i) != oldPosition) {
                 collisionType = 2;
+                //Returning a collision type and also the position
+                Object[] returnPosition = new Object[2];
+                returnPosition[0] = collisionType;
+                returnPosition[1] = newPosition;
+
+                return returnPosition;
             }
         }
 
