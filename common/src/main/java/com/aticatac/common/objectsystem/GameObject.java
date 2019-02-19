@@ -16,11 +16,10 @@ import java.util.Optional;
  */
 public class GameObject extends AbstractObject {
     private HashMap<Class<?>, Component> components;
-    private AbstractObject parent;
+    private Optional<GameObject> parent;
     private List<GameObject> children;
 
     public Transform transform;
-    private HashMap<Class<?>, Component> components;
 
     /**
      * Instantiates a new GameObject.
@@ -52,7 +51,6 @@ public class GameObject extends AbstractObject {
         this.parent = Optional.empty();
         this.children = new ArrayList<>();
         this.components = new HashMap<>();
-        this.parent.get().addChild(this);
         this.addComponent(Transform.class);
         this.transform = getComponent(Transform.class);
     }
@@ -68,7 +66,6 @@ public class GameObject extends AbstractObject {
         this.parent = Optional.empty();
         this.children = new ArrayList<>();
         this.components = new HashMap<>();
-        this.parent.get().addChild(this);
         this.addComponent(Transform.class);
         this.transform = getComponent(Transform.class);
     }
@@ -140,17 +137,13 @@ public class GameObject extends AbstractObject {
         return components.values();
     }
 
-    public  <T extends Component> boolean componentExists(Class<T> type) {
-        return components.containsKey(type);
-    }
-
     //Getters and Setters
     public AbstractObject getParent() {
-        return parent;
+        return parent.get();
     }
 
     public void setParent(GameObject parent) {
-        this.parent = parent;
+        this.parent = Optional.of(parent);
     }
 
     public List<GameObject> getChildren() {

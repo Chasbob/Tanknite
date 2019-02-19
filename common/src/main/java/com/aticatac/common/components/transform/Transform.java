@@ -14,8 +14,8 @@ public class Transform extends Component {
 //        if (gameObject.parent== null) return;
 //
 //        if(gameObject.parent instanceof GameObject){
-//            Position p = ((GameObject)gameObject.parent).getComponent(Transform.class).position;
-//            gameObject.getComponent(Transform.class).SetTransform(p.x,p.y);
+//            Position p = ((GameObject)gameObject.parent).getComponent(TransformModel.class).position;
+//            gameObject.getComponent(TransformModel.class).SetTransform(p.x,p.y);
 //        }
     }
 
@@ -75,8 +75,7 @@ public class Transform extends Component {
     }
 
     public void SetView(Position p){
-        Position pRoot = getGameObject().getComponent(Transform.class).GetPosition();
-        Position pRoot = gameObject.getComponent(Transform.class).getPosition();
+        Position pRoot = getGameObject().getComponent(Transform.class).getPosition();
         Position pDelta = new Position(p.x-pRoot.x,p.y-pRoot.y);
         getGameObject().getComponent(Transform.class).SetTransform(pDelta.x,pDelta.y);
     }

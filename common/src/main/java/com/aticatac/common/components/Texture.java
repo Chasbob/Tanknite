@@ -3,7 +3,8 @@ package com.aticatac.common.components;
 import com.aticatac.common.objectsystem.GameObject;
 
 public class Texture extends Component{
-    private String Texture;
+    public String Texture;
+
     /**
      * Instantiates a new Component.
      *
@@ -11,11 +12,5 @@ public class Texture extends Component{
      */
     public Texture(GameObject gameObject) {
         super(gameObject);
-    }
-    public void SetTexture(String texture){
-        Texture = texture;
-    }
-    public String GetTexture(){
-        return Texture;
     }
 }

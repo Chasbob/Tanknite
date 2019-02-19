@@ -3,17 +3,14 @@ package com.aticatac.client.util;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.objectsystem.RootObject;
 import com.aticatac.common.prefab.Tank;
 
 public class GameManager {
-    public RootObject rootAbstract;
     public GameObject root;
 
     public GameManager(){
         try {
-            rootAbstract = new RootObject("Root");
-            root = new GameObject("Root",rootAbstract);
+            root = new GameObject("Root");
 
             //self = CreateTank("selfTank",0,0);
         }catch (Exception ignored){}

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  * PhysicsManager component will control the physics for the objects in the game. It will consider the new positions of
  * objects and alter any physics values (e.g. velocity) for the object. The positions of the object are kept in
- * Transform and will be altered by the logic, not this component.
+ * TransformModel and will be altered by the logic, not this component.
  */
 public class PhysicsManager extends Component {
     /**
