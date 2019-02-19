@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  * PhysicsManager component will control the physics for the objects in the game. It will consider the new positions of
  * objects and alter any physics values (e.g. velocity) for the object. The positions of the object are kept in
- * Transform and will be altered by the logic, not this component.
+ * TransformModel and will be altered by the logic, not this component.
  */
 public class PhysicsManager extends Component {
     /**
@@ -58,7 +58,14 @@ public class PhysicsManager extends Component {
         //randomly generate Y
         double initialY = 0;
 
-        return new Position(initialX, initialY);
+        Position generatedPosition = new Position(initialX, initialY);
+
+        //Check that they don't collide with anything only other tanks and objects
+        collision(generatedPosition, generatedPosition);
+
+        //if
+
+        return generatedPosition;
     }
 
 

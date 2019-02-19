@@ -51,7 +51,7 @@ public class UsernameScreen extends AbstractScreen {
         usernameTable.add(submitButton);
         //create custom listener for submit button to get text field text
         if (prevScreen == ScreenEnum.MAIN_MENU) {
-            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
+            submitButton.addListener(uiFactory.createHostServerListener(ScreenEnum.GAME, ScreenEnum.USERNAME, uiFactory));
         } else if (prevScreen == ScreenEnum.MUlTIPLAYER) {
             submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
         } else if (prevScreen == ScreenEnum.SERVERS) {

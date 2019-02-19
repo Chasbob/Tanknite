@@ -76,7 +76,7 @@ public class Client {
      *
      * @param command the command
      */
-    void sendCommand(Command command) {
+    public void sendCommand(Command command) {
         if (this.login == null) {
             return;
         }

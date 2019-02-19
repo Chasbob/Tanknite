@@ -32,10 +32,6 @@ public class ServerData extends Component {
     /**
      * ArrayList of the currently occupied coordinates
      */
-    private ArrayList<Position> occupiedCoordinatesBullet = new ArrayList<Position>();
-    /**
-     * ArrayList of the currently occupied coordinates
-     */
     private ArrayList<Position> occupiedCoordinates = new ArrayList<Position>();
     /**
      * HashMap to store the health and the object the health relates to
@@ -90,25 +86,6 @@ public class ServerData extends Component {
      */
     public void setOccupiedCoordinates(Position oldCoords, Position newCoords) {
         occupiedCoordinates.set(occupiedCoordinates.indexOf(oldCoords), newCoords);
-    }
-
-    /**
-     * Gets the currently occupied coordinates by bullets
-     *
-     * @return The occupied coordinates.
-     */
-    public ArrayList<Position> getOccupiedCoordinatesBullet() {
-        return occupiedCoordinatesBullet;
-    }
-
-    /**
-     * Sets the currently occupied coordinates
-     *
-     * @param oldCoords The old coordinates that were occupied.
-     * @param newCoords The new coordinates that are now occupied.
-     */
-    public void setOccupiedCoordinatesBullet(Position oldCoords, Position newCoords) {
-        occupiedCoordinatesBullet.set(occupiedCoordinatesBullet.indexOf(oldCoords), newCoords);
     }
 
     /**

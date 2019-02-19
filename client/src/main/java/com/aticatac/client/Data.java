@@ -1,8 +1,5 @@
 package com.aticatac.client;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
  * The type Data.
  *

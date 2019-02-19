@@ -4,6 +4,7 @@ import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -13,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.Align;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +34,7 @@ public class UIFactory {
     private TextButton.TextButtonStyle backButtonStyle;
     private TextField.TextFieldStyle textFieldStyle;
     private Client client;
+    private Server server;
     private ServerInformation address;
     private boolean serverSelected;
     private TextButton currentServer;
@@ -43,11 +44,13 @@ public class UIFactory {
      *
      * @param client the client
      */
-    public UIFactory(Client client) {
+    public UIFactory(Client client) throws Exception {
         this.client = client;
         this.loadStyles();
-//        this.address = new BroadcastListener().call();
+//        this.address = s.getServers().get(0);
         this.servers = new ConcurrentHashMap<>();
+        this.server = new Server();
+        server.start();
     }
 
     private void loadStyles() {
@@ -114,6 +117,7 @@ public class UIFactory {
      * Create title label label.
      *
      * @param text the text
+     *
      * @return the label
      */
     public Label createTitleLabel(String text) {
@@ -124,6 +128,7 @@ public class UIFactory {
      * Create error label label.
      *
      * @param text the text
+     *
      * @return the label
      */
     public Label createErrorLabel(String text) {
@@ -134,6 +139,7 @@ public class UIFactory {
      * Create text field text field.
      *
      * @param text the text
+     *
      * @return the text field
      */
     public TextField createTextField(String text) {
@@ -148,6 +154,7 @@ public class UIFactory {
      * Create back button text button.
      *
      * @param text the text
+     *
      * @return the text button
      */
     public TextButton createBackButton(String text) {
@@ -160,6 +167,7 @@ public class UIFactory {
      * @param dstScreen    the dst screen
      * @param senderScreen the sender screen
      * @param uiFactory    the ui factory
+     *
      * @return the input listener
      */
     public InputListener createListener(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory) {
@@ -181,6 +189,7 @@ public class UIFactory {
      * @param uiFactory    the ui factory
      * @param label        the label
      * @param textField    the text field
+     *
      * @return the input listener
      */
     public InputListener enterLobby(final ScreenEnum dstScreen, final ScreenEnum senderScreen, final UIFactory uiFactory, Label label, TextField textField) {
@@ -194,7 +203,7 @@ public class UIFactory {
                 String name = textField.getText();
                 boolean accepted;
                 try {
-                    accepted = client.connect(information, name);
+                    accepted = client.connect(s.getServers().get(0), name);
                     //if name is not taken load game screen, else keep listening
                     if (accepted) {
                         //set the error label to invisible
@@ -226,6 +235,7 @@ public class UIFactory {
      * Create label label.
      *
      * @param text the text
+     *
      * @return the label
      */
     public Label createLabel(String text) {
@@ -233,7 +243,7 @@ public class UIFactory {
     }
 
     public void getServers(Table serversTable, UIFactory uiFactory) {
-        (new ListServers(serversTable,uiFactory)).start();
+        (new ListServers(serversTable, uiFactory)).start();
         serverSelected = false;
         //TODO get all servers that are open on the network
 //        int maxServers = 10;
@@ -250,6 +260,7 @@ public class UIFactory {
      * Create button text button.
      *
      * @param text the text
+     *
      * @return the text button
      */
     public TextButton createButton(String text) {
@@ -293,6 +304,16 @@ public class UIFactory {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 //TODO disconnect from current server
+                ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
+                return false;
+            }
+        };
+    }
+
+    public InputListener createHostServerListener(ScreenEnum dstScreen, ScreenEnum senderScreen, UIFactory uiFactory) {
+        return new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 ScreenManager.getInstance().showScreen(dstScreen, senderScreen, uiFactory);
                 return false;
             }

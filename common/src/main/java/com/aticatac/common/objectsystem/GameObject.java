@@ -6,6 +6,7 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -14,19 +15,11 @@ import java.util.Optional;
  * The type GameObject.
  */
 public class GameObject extends AbstractObject {
-    /**
-     * The Parent.
-     */
-    public Optional<GameObject> parent;
-    /**
-     * The Children.
-     */
-    public List<GameObject> children;
-    /**
-     * The Transform.
-     */
-    public Transform transform;
     private HashMap<Class<?>, Component> components;
+    private Optional<GameObject> parent;
+    private List<GameObject> children;
+
+    public Transform transform;
 
     /**
      * Instantiates a new GameObject.
@@ -58,7 +51,6 @@ public class GameObject extends AbstractObject {
         this.parent = Optional.empty();
         this.children = new ArrayList<>();
         this.components = new HashMap<>();
-        this.parent.get().addChild(this);
         this.addComponent(Transform.class);
         this.transform = getComponent(Transform.class);
     }
@@ -74,7 +66,6 @@ public class GameObject extends AbstractObject {
         this.parent = Optional.empty();
         this.children = new ArrayList<>();
         this.components = new HashMap<>();
-        this.parent.get().addChild(this);
         this.addComponent(Transform.class);
         this.transform = getComponent(Transform.class);
     }
@@ -142,43 +133,32 @@ public class GameObject extends AbstractObject {
         children.remove(child);
     }
 
-    /**
-     * Find child game object.
-     *
-     * @param name the name
-     * @return the game object
-     */
-    GameObject findChild(String name) {
-        for (var o : this.children) {
-            if (o.name.equals(name)) return o;
-        }
-        return null;
+    public Collection<Component> fetchAllComponents(){
+        return components.values();
     }
 
-    /**
-     * Add components.
-     *
-     * @param components the components
-     * @throws ComponentExistsException the component exists exception
-     * @throws InvalidClassInstance     the invalid class instance
-     */
-    public void addComponents(List<Class<? extends Component>> components) throws ComponentExistsException, InvalidClassInstance {
-        for (Class<? extends Component> c : components) {
-            if (children.contains(c)) {
-                throw new ComponentExistsException();
-            }
-            addComponent(c);
-        }
+    //Getters and Setters
+    public AbstractObject getParent() {
+        return parent.get();
     }
 
-    /**
-     * Remove component.
-     *
-     * @param <T>  the type parameter
-     * @param type the type
-     */
-    public <T extends Component> void removeComponent(Class<T> type) {
-        components.get(type).interrupt();
-        components.remove(type);
+    public void setParent(GameObject parent) {
+        this.parent = Optional.of(parent);
+    }
+
+    public List<GameObject> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<GameObject> children) {
+        this.children = children;
+    }
+
+    public Transform getTransform() {
+        return transform;
+    }
+
+    public void setTransform(Transform transform) {
+        this.transform = transform;
     }
 }
