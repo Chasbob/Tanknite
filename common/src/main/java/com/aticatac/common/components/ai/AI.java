@@ -127,8 +127,8 @@ public class AI extends Component {
     }
 
     private boolean checkLineOfSightToEnemy(GameObject enemy) {
-        Position tankPos = tank.getComponent(Transform.class).GetPosition();
-        Position enemyPos = enemy.getComponent(Transform.class).GetPosition();
+        Position tankPos = tank.getComponent(Transform.class).getPosition();
+        Position enemyPos = enemy.getComponent(Transform.class).getPosition();
 
         // can a direct line be drawn from tankPos to enemyPos?
 

@@ -19,16 +19,16 @@ public class Transform extends Component {
 //        }
     }
 
-    public Position GetPosition() {
+    public Position getPosition() {
         return position;
     }
 
     public double getX(){
-        return GetPosition().x;
+        return getPosition().x;
     }
 
     public double getY(){
-        return GetPosition().y;
+        return getPosition().y;
     }
 
 
@@ -75,7 +75,7 @@ public class Transform extends Component {
     }
 
     public void SetView(Position p){
-        Position pRoot = gameObject.getComponent(Transform.class).GetPosition();
+        Position pRoot = gameObject.getComponent(Transform.class).getPosition();
         Position pDelta = new Position(p.x-pRoot.x,p.y-pRoot.y);
         gameObject.getComponent(Transform.class).SetTransform(pDelta.x,pDelta.y);
     }
