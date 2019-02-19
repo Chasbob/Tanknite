@@ -1,16 +1,12 @@
-package com.aticatac.server.components.models;
+package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
-import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.PhysicsManager;
-import com.aticatac.common.components.transform.Position;
-import com.aticatac.server.components.Time;
 
 /**
- * The type Bullet.
+ * The type BulletController.
  */
-public class Bullet extends Component {
+public class BulletController extends Component {
 
     private int damage; // or just have special case when shooting with powerup?
     private boolean collided = false;
@@ -20,7 +16,7 @@ public class Bullet extends Component {
      *
      * @param gameObject the component parent
      */
-    public Bullet(GameObject gameObject) {
+    public BulletController(GameObject gameObject) {
         super(gameObject);
     }
     //physics in charge of moving and collisions for bullet and tank
@@ -29,11 +25,11 @@ public class Bullet extends Component {
      * Move forwards.
      */
 
-    // Need different methods to tank movement in PhysicsManager as simpler movement?
+    // Need different methods to tank movement in Physics as simpler movement?
 //    public void moveForwards(double rotation) {
 //        while (true) {
 //            Position oldPosition = this.getComponent(Transform.class).GetPosition();
-//            Object physicsData[] = this.getComponent(PhysicsManager.class).bulletMove(rotation);
+//            Object physicsData[] = this.getComponent(Physics.class).bulletMove(rotation);
 //            Position newPosition = (Position)physicsData[1];
 //            int collisionType = (Integer)physicsData[0];
 //            //0 nothing, 1 is a wall, 2 is a tank
@@ -57,19 +53,19 @@ public class Bullet extends Component {
 //            /*
 //            switch (currentDirection) {
 //                case 'N':
-//                    if (this.getComponent(PhysicsManager.class).up()) {
+//                    if (this.getComponent(Physics.class).up()) {
 //                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord + 1);
 //                    } else collided();
 //                case 'S':
-//                    if (this.getComponent(PhysicsManager.class).down()) {
+//                    if (this.getComponent(Physics.class).down()) {
 //                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord - 1);
 //                    } else collided();
 //                case 'E':
-//                    if (this.getComponent(PhysicsManager.class).right()) {
+//                    if (this.getComponent(Physics.class).right()) {
 //                        this.getComponent(Transform.class).setTransform(currentXCoord + 1, currentYCoord);
 //                    } else collided();
 //                case 'W':
-//                    if (this.getComponent(PhysicsManager.class).left()) {
+//                    if (this.getComponent(Physics.class).left()) {
 //                        this.getComponent(Transform.class).setTransform(currentXCoord - 1, currentYCoord);
 //                    } else collided();
 //            }

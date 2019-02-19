@@ -1,20 +1,12 @@
-package com.aticatac.server.components.models;
+package com.aticatac.server.components.controller;
 
 
 
 import com.aticatac.common.components.Component;
-import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.components.transform.Transform;
-import com.aticatac.server.components.AI;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
-import com.aticatac.server.components.PhysicsManager;
 import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
-
-import java.sql.Time;
 // components for server side make in server or import from common?
-// needs component of PhysicsManager
+// needs component of Physics
 /**
  * The type TankController.
  */
@@ -47,7 +39,7 @@ public class TankController extends Component {
     //else set position to new transform
     public boolean moveUp() {
 //        Position oldPosition = this.gameObject.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.gameObject.getComponent(PhysicsManager.class).moveUp();
+//        Position newPosition = this.gameObject.getComponent(Physics.class).moveUp();
 //        if (oldPosition.equals(newPosition)) return false;
 //        else{
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
@@ -66,7 +58,7 @@ public class TankController extends Component {
 // when right arrow/d pressed
     public boolean moveRight (){
 //        Position oldPosition = this.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.getComponent(PhysicsManager.class).moveRight();
+//        Position newPosition = this.getComponent(Physics.class).moveRight();
 //        if (oldPosition.equals(newPosition)) return false;
 //        else{
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
@@ -86,7 +78,7 @@ public class TankController extends Component {
 // when left arrow/a pressed
     public boolean moveLeft (){
 //        Position oldPosition = this.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.getComponent(PhysicsManager.class).moveLeft();
+//        Position newPosition = this.getComponent(Physics.class).moveLeft();
 //        if (oldPosition.equals(newPosition)) return false;
 //        else{
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
@@ -104,7 +96,7 @@ public class TankController extends Component {
 // when down arrow/s pressed
     public boolean moveDown () {
 //        Position oldPosition = this.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.getComponent(PhysicsManager.class).moveBackwards();
+//        Position newPosition = this.getComponent(Physics.class).moveBackwards();
 //        if (oldPosition.equals(newPosition)) return false;
 //        else {
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
