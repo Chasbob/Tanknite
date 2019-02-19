@@ -1,15 +1,20 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.AddTexture;
-import com.aticatac.client.objectsystem.ObjectHelper;
+import com.aticatac.client.networking.Client;
 import com.aticatac.client.objectsystem.Renderer;
+import com.aticatac.client.util.GameManager;
 import com.aticatac.client.util.ScreenEnum;
 import com.aticatac.client.util.UIFactory;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.model.Command;
+import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.objectsystem.GameObject;
+<<<<<<< refs/remotes/origin/dev
 import com.aticatac.common.prefab.Bullet;
 import com.aticatac.common.prefab.Tank;
+=======
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
@@ -22,6 +27,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.net.InetAddress;
+
 /**
  * The type Game screen.
  */
@@ -32,8 +39,16 @@ public class GameScreen extends AbstractScreen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
+<<<<<<< refs/remotes/origin/dev
     private GameObject root;
     private GameObject tank;
+=======
+
+    private GameManager gameManager;
+
+    private Client client;
+
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
     private SpriteBatch batch;
 
     /**
@@ -45,16 +60,38 @@ public class GameScreen extends AbstractScreen {
         this.prevScreen = prevScreen;
         try {
             cam = new OrthographicCamera(640, 640);
+<<<<<<< refs/remotes/origin/dev
             cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
             root = new GameObject();
             tank = new Tank("Tank1", root, new Position(getWidth() / 2, getHeight() / 2));
             ObjectHelper.AddRenderer(tank.children.get(0), "img/TankBottom.png");
             ObjectHelper.AddRenderer(tank.children.get(1), "img/TankTop.png");
+=======
+
+            gameManager = new GameManager();
+
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
         } catch (Exception e) {
             e.printStackTrace();
         }
         batch = new SpriteBatch();
+<<<<<<< refs/remotes/origin/dev
         Gdx.input.setInputProcessor(this);
+=======
+
+        cam.position.set(cam.viewportWidth/2f,cam.viewportHeight/2f,cam.position.z);
+
+        Gdx.input.setInputProcessor(this);
+
+        client = new Client();
+        try {
+            InetAddress addr = InetAddress.getByName("127.0.0.1");
+            var info = new ServerInformation("",addr,5500);
+            client.connect(info,"");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
     }
 
     @Override
@@ -88,25 +125,35 @@ public class GameScreen extends AbstractScreen {
         // Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+<<<<<<< refs/remotes/origin/dev
         CenterCameraToGameObject(tank);
+=======
+
+        renderer.setView(cam);
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
         renderer.render();
         Input();
         batch.begin();
-        ChildRenderer(root);
+        ChildRenderer(gameManager.root);
         batch.end();
         cam.update();
         super.act(delta);
         super.draw();
     }
 
+<<<<<<< refs/remotes/origin/dev
     private void ChildRenderer(GameObject g) {
         for (var c : g.children) {
+=======
+    private void ChildRenderer(GameObject g){
+        for (var c:g.getChildren()) {
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
             ChildRenderer(c);
             if (c.componentExists(Renderer.class)) {
                 Position p = c.getComponent(Transform.class).getPosition();
                 Texture t = c.getComponent(Renderer.class).getTexture();
                 batch.draw(new TextureRegion(t),
-                        (float) p.x - cam.position.x, (float) p.y - cam.position.y,
+                        (float) p.x, (float) p.y,
                         t.getWidth() / 2f, t.getHeight() / 2f,
                         t.getWidth(), t.getHeight(),
                         1, 1,
@@ -124,8 +171,13 @@ public class GameScreen extends AbstractScreen {
     }
 
     public void CenterCameraToGameObject(GameObject gameObject) {
+<<<<<<< refs/remotes/origin/dev
         Position g = gameObject.getComponent(Transform.class).getPosition();
         Position r = root.getComponent(Transform.class).getPosition();
+=======
+        //Position g = gameObject.getComponent(Transform.class).GetPosition();
+        //Position r = root.getComponent(Transform.class).GetPosition();
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
         //cam.position.set(cam.position.x+1,cam.position.y,cam.position.z);
         //cam.position.set((float)(r.x-g.x+getWidth()/2f),(float)(r.y-g.y+getHeight()/2f),cam.position.z);
         renderer.setView(cam);
@@ -138,6 +190,7 @@ public class GameScreen extends AbstractScreen {
         renderer.dispose();
     }
 
+<<<<<<< refs/remotes/origin/dev
     //TODO Convert game co-ord to Transform.class cord
     public float YLibGdx2YTransform(float y) {
         y = y - cam.viewportHeight;
@@ -157,6 +210,22 @@ public class GameScreen extends AbstractScreen {
         x = x + cam.viewportWidth / 2f;
         return x;
     }
+=======
+    public float YLibGdx2YTransform(float y){
+        y=y-cam.viewportHeight;
+        y = - y;
+
+        y = y+cam.viewportWidth/2f;
+
+        return y;
+    }
+
+    public float XLibGdx2XTransform(float x){
+        x = x+cam.viewportWidth/2f;
+        return x;
+    }
+
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
     //Input
 
     public void Input() {
@@ -164,6 +233,7 @@ public class GameScreen extends AbstractScreen {
             //show the pop up table
             popUpTable.setVisible(true);
         }
+<<<<<<< refs/remotes/origin/dev
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             tank.children.get(0).getComponent(Transform.class).SetRotation(90);
             tank.getComponent(Transform.class).Transform(3, 0);
@@ -176,6 +246,20 @@ public class GameScreen extends AbstractScreen {
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             tank.children.get(0).getComponent(Transform.class).SetRotation(180);
             tank.getComponent(Transform.class).Transform(0, 3);
+=======
+
+        if(Gdx.input.isKeyPressed(Input.Keys.A)){
+            client.sendCommand(Command.LEFT);
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.D)) {
+            client.sendCommand(Command.RIGHT);
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.W)) {
+            client.sendCommand(Command.UP);
+        }
+        else if(Gdx.input.isKeyPressed(Input.Keys.S)) {
+            client.sendCommand(Command.DOWN);
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
         }
         mouseMoved(Gdx.input.getX(), Gdx.input.getY());
     }
@@ -199,11 +283,19 @@ public class GameScreen extends AbstractScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
             try {
+<<<<<<< refs/remotes/origin/dev
                 var bullet = new Bullet("Bullet", root);
                 AddTexture.addBulletTexture(bullet);
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
                 System.out.println("X:" + newX + "\nY:" + newY);
+=======
+//                var bullet = new Bullet("Bullet",root);
+//                AddTexture.addBulletTexture(bullet);
+//                var newX =XLibGdx2XTransform(screenX);
+//                var newY =YLibGdx2YTransform(screenY);
+//                System.out.println("X:"+newX+"\nY:"+newY);
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -225,6 +317,7 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+<<<<<<< refs/remotes/origin/dev
         var XMouse = XLibGdx2XTransform(screenX);
         var YMouse = YLibGdx2YTransform(screenY);
         var XTankTop = tank.children.get(1).transform.getX();
@@ -236,6 +329,24 @@ public class GameScreen extends AbstractScreen {
             tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
         else
             tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
+=======
+//        var XMouse =XLibGdx2XTransform(screenX);
+//        var YMouse =YLibGdx2YTransform(screenY);
+//        var XTankTop = gameManager.self.children.get(1).transform.getX();
+//        var YTankTop = gameManager.self.children.get(1).transform.getY();
+//
+//        var X = XMouse - XTankTop;
+//        var Y = YMouse - YTankTop;
+//
+//        var rotation = Math.atan(Y/X);
+//
+//        if(XMouse>=XTankTop)
+//            gameManager.SetRotateTankTop(Math.toDegrees(rotation)-90f);
+//
+//        else
+//            gameManager.SetRotateTankTop(Math.toDegrees(rotation)-90f);
+
+>>>>>>> Auto stash before merge of "add_shooting" and "origin/ui"
         return false;
     }
 

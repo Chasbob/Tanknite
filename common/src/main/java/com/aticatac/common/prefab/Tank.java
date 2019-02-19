@@ -22,7 +22,7 @@ public class Tank extends GameObject {
         new GameObject("TankBottom",this);
         new GameObject("TankTop",this);
 
-        this.children.get(0).getComponent(Transform.class).SetTransform(p.x,p.y);
-        this.children.get(1).getComponent(Transform.class).SetTransform(p.x+10,p.y+10);
+        this.getChildren().get(0).getComponent(Transform.class).SetTransform(p.x,p.y);
+        this.getChildren().get(1).getComponent(Transform.class).SetTransform(p.x+10,p.y+10);
     }
 }

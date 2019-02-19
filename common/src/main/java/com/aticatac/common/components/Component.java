@@ -8,10 +8,14 @@ import java.io.Serializable;
  * The type Component.
  */
 public abstract class Component extends Thread implements Serializable {
+    public void setGameObject(GameObject gameObject) {
+        this.gameObject = gameObject;
+    }
+
     /**
      * The Component parent.
      */
-    public GameObject gameObject;
+    private GameObject gameObject;
 
     /**
      * Instantiates a new Component.

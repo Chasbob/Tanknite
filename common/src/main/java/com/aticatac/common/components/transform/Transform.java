@@ -40,7 +40,7 @@ public class Transform extends Component {
         double deltaX = position.x-x;
         double deltaY = position.y-y;
 
-        for (var o:gameObject.children) {
+        for (var o:getGameObject().getChildren()) {
             o.getComponent(Transform.class).Transform(deltaX,deltaY);
         }
 
@@ -60,7 +60,7 @@ public class Transform extends Component {
 
     public void SetRotation(double r) {
         rotation = r;
-        for (var o:gameObject.children) {
+        for (var o:getGameObject().getChildren()) {
             o.getComponent(Transform.class).SetRotation(r);
         }
     }
@@ -75,8 +75,9 @@ public class Transform extends Component {
     }
 
     public void SetView(Position p){
+        Position pRoot = getGameObject().getComponent(Transform.class).GetPosition();
         Position pRoot = gameObject.getComponent(Transform.class).getPosition();
         Position pDelta = new Position(p.x-pRoot.x,p.y-pRoot.y);
-        gameObject.getComponent(Transform.class).SetTransform(pDelta.x,pDelta.y);
+        getGameObject().getComponent(Transform.class).SetTransform(pDelta.x,pDelta.y);
     }
 }
