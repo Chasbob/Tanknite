@@ -1,7 +1,5 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
@@ -12,7 +10,7 @@ public class LeaderBoardScreen extends AbstractScreen {
     /**
      * Instantiates a new Leader board screen.
      */
-    public LeaderBoardScreen() {
+    LeaderBoardScreen() {
         super();
     }
 
@@ -21,7 +19,7 @@ public class LeaderBoardScreen extends AbstractScreen {
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
-        addActor(rootTable);
+        this.addActor(rootTable);
         //create table to store back button
         Table backTable = new Table();
         backTable.setFillParent(true);
@@ -30,11 +28,6 @@ public class LeaderBoardScreen extends AbstractScreen {
         //create back button
         TextButton backButton = UIFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LEADERBOARD));
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
+        backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     }
 }

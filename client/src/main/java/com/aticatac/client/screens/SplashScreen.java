@@ -7,16 +7,11 @@ public class SplashScreen extends AbstractScreen {
     /**
      * Instantiates a new Splash screen.
      */
-    public SplashScreen() {
+    SplashScreen() {
         super();
     }
 
     @Override
     public void buildStage() {
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 }

@@ -63,7 +63,7 @@ public class Discovery extends Thread {
     private void broadcast() throws IOException {
         for (DatagramPacket packet : this.packets) {
             socket.send(packet);
-            logger.warn("Sent packet to: " + packet.getAddress());
+            logger.trace("Sent packet to: " + packet.getAddress());
         }
     }
 }

@@ -1,42 +1,35 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ScreenEnum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import org.apache.log4j.Logger;
 
 /**
  * The type Abstract screen.
  */
-public abstract class AbstractScreen extends Stage implements Screen {
-    private ScreenEnum prevScreen;
+abstract class AbstractScreen extends Stage implements Screen {
+    private final Logger logger;
+    private Class prevScreen;
 
     /**
      * Instantiates a new Abstract screen.
      */
     AbstractScreen() {
         super(new StretchViewport(640, 640));
-        this.prevScreen = ScreenEnum.NONE;
+//        this.prevScreen = (Class<T>) MainMenuScreen.class;
+        logger = Logger.getLogger(getClass());
     }
 
     /**
-     * Gets prev screen.
+     * Gets logger.
      *
-     * @return the prev screen
+     * @return the logger
      */
-    public ScreenEnum getPrevScreen() {
-        return prevScreen;
-    }
-
-    /**
-     * Sets prev screen.
-     *
-     * @param prevScreen the prev screen
-     */
-    public void setPrevScreen(ScreenEnum prevScreen) {
-        this.prevScreen = prevScreen;
+    public Logger getLogger() {
+        return logger;
     }
 
     /**

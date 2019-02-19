@@ -3,8 +3,6 @@ package com.aticatac.client.screens;
 import com.aticatac.client.objectsystem.AddTexture;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
@@ -18,7 +16,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -33,17 +30,17 @@ public class GameScreen extends AbstractScreen {
     private OrthographicCamera cam;
     private GameObject root;
     private GameObject tank;
-    private SpriteBatch batch;
+    private final SpriteBatch batch;
 
     /**
      * Instantiates a new Game screen.
      */
-    public GameScreen() {
+    GameScreen() {
         super();
         try {
             cam = new OrthographicCamera(640, 640);
             cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
-            root = new GameObject();
+            root = new GameObject("root");
             tank = new Tank("Tank1", root, new Position(getWidth() / 2, getHeight() / 2));
             ObjectHelper.AddRenderer(tank.children.get(0), "img/TankBottom.png");
             ObjectHelper.AddRenderer(tank.children.get(1), "img/TankTop.png");
@@ -76,7 +73,8 @@ public class GameScreen extends AbstractScreen {
         popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
         //create quit button go back to the main menu and disconnect form server
         TextButton quitButton = UIFactory.createBackButton("quit");
-        quitButton.addListener(UIFactory.createDisconnectListener(ScreenEnum.MAIN_MENU, ScreenEnum.GAME));
+        //TODO add proper exiting of server
+        quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
     }
 
@@ -120,11 +118,14 @@ public class GameScreen extends AbstractScreen {
         cam.update();
     }
 
-    public void CenterCameraToGameObject(GameObject gameObject) {
+    /**
+     * Center camera to game object.
+     *
+     * @param gameObject the game object
+     */
+    private void CenterCameraToGameObject(GameObject gameObject) {
         Position g = gameObject.getComponent(Transform.class).getPosition();
         Position r = root.getComponent(Transform.class).getPosition();
-        //cam.position.set(cam.position.x+1,cam.position.y,cam.position.z);
-        //cam.position.set((float)(r.x-g.x+getWidth()/2f),(float)(r.y-g.y+getHeight()/2f),cam.position.z);
         renderer.setView(cam);
     }
 
@@ -135,14 +136,26 @@ public class GameScreen extends AbstractScreen {
         renderer.dispose();
     }
 
-    //TODO Convert game co-ord to Transform.class cord
-    public float YLibGdx2YTransform(float y) {
+    /**
+     * Y lib gdx 2 y transform float.
+     *
+     * @param y the y
+     * @return the float
+     */
+//TODO Convert game co-ord to Transform.class cord
+    private float YLibGdx2YTransform(float y) {
         y = y - cam.viewportHeight;
         y = -y;
         y = y + cam.viewportWidth / 2f;
         return y;
     }
 
+    /**
+     * Transform y 2 libgdx float.
+     *
+     * @param y the y
+     * @return the float
+     */
     public float TransformY2Libgdx(float y) {
         y = y + cam.viewportWidth / 2f;
         y = -y;
@@ -150,13 +163,22 @@ public class GameScreen extends AbstractScreen {
         return y;
     }
 
-    public float XLibGdx2XTransform(float x) {
+    /**
+     * X lib gdx 2 x transform float.
+     *
+     * @param x the x
+     * @return the float
+     */
+    private float XLibGdx2XTransform(float x) {
         x = x + cam.viewportWidth / 2f;
         return x;
     }
     //Input
 
-    public void Input() {
+    /**
+     * Input.
+     */
+    private void Input() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             //show the pop up table
             popUpTable.setVisible(true);
@@ -210,20 +232,6 @@ public class GameScreen extends AbstractScreen {
         return false;
     }
 
-    public float XLibGdx2XTransform(float x) {
-        x = x + cam.viewportWidth / 2f;
-        return x;
-    }
-    //Input
-
-    //TODO Convert game coord to Transform.class cord
-    public float YLibGdx2YTransform(float y) {
-        y = y - cam.viewportHeight;
-        y = -y;
-        y = y + cam.viewportWidth / 2f;
-        return y;
-    }
-
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         return false;
@@ -248,32 +256,5 @@ public class GameScreen extends AbstractScreen {
         else
             tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
         return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return true;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return true;
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        map.dispose();
-        renderer.dispose();
     }
 }

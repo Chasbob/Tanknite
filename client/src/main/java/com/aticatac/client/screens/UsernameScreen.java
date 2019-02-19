@@ -1,7 +1,7 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
+import com.aticatac.client.networking.Client;
+import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -14,7 +14,7 @@ public class UsernameScreen extends AbstractScreen {
     /**
      * Instantiates a new Username screen.
      */
-    public UsernameScreen() {
+    UsernameScreen() {
         super();
     }
 
@@ -45,12 +45,30 @@ public class UsernameScreen extends AbstractScreen {
         TextButton submitButton = UIFactory.createButton("Submit");
         usernameTable.add(submitButton);
         //create custom listener for submit button to get text field text
-        if (getPrevScreen() == ScreenEnum.MAIN_MENU) {
-            submitButton.addListener(UIFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, nameTakenLabel, textField));
-        } else if (getPrevScreen() == ScreenEnum.MUlTIPLAYER) {
-            submitButton.addListener(UIFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, nameTakenLabel, textField));
-        } else if (getPrevScreen() == ScreenEnum.SERVERS) {
-            submitButton.addListener(UIFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, nameTakenLabel, textField));
+        if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
+            submitButton.addListener(UIFactory.newListenerEvent(() -> {
+                Client client = new Client();
+                boolean accepted = client.connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
+                if (accepted) {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+                    Screens.INSTANCE.showScreen(GameScreen.class);
+                } else {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+                }
+                return false;
+            }));
+        } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
+            submitButton.addListener(UIFactory.newListenerEvent(() -> {
+                Client client = new Client();
+                boolean accepted = client.connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
+                if (accepted) {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+                    Screens.INSTANCE.showScreen(LobbyScreen.class);
+                } else {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+                }
+                return false;
+            }));
         }
         //create table to store back button
         Table backTable = new Table();
@@ -60,11 +78,10 @@ public class UsernameScreen extends AbstractScreen {
         //create back button
         TextButton backButton = UIFactory.createBackButton("quit");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.USERNAME));
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
+        backButton.addListener(UIFactory.newListenerEvent(() -> {
+            Screens.INSTANCE.setSingleplayer(false);
+            return false;
+        }));
+        backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     }
 }

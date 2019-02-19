@@ -1,13 +1,17 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
+/**
+ * The type Lobby screen.
+ */
 public class LobbyScreen extends AbstractScreen {
-    public LobbyScreen() {
+    /**
+     * Instantiates a new Lobby screen.
+     */
+    LobbyScreen() {
         super();
     }
 
@@ -39,7 +43,7 @@ public class LobbyScreen extends AbstractScreen {
         startTable.top().padTop(100);
         TextButton startButton = UIFactory.createStartButton("Start");
         startTable.add(startButton);
-        startButton.addListener(UIFactory.createListener(ScreenEnum.GAME, ScreenEnum.LOBBY));
+        startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
         dataTable.addActor(startTable);
         //add table to store players joining server
         Table playersTable = new Table();
@@ -55,6 +59,6 @@ public class LobbyScreen extends AbstractScreen {
         backTable.bottom();
         TextButton backButton = UIFactory.createBackButton("quit");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LOBBY));
+        backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     }
 }

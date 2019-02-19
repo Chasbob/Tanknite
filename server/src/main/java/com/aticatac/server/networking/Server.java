@@ -28,6 +28,7 @@ public class Server extends Thread {
      * @throws IOException the io exception
      */
     public Server() throws IOException {
+        //TODO check if additional users are allowed.
         this.logger = Logger.getLogger(getClass());
         this.clients = new ConcurrentHashMap<>();
         this.requests = new ArrayBlockingQueue<>(1024); //TODO select an appropriate queue size.
@@ -55,7 +56,7 @@ public class Server extends Thread {
             try {
                 Thread.sleep(5000);
 //                System.out.println("There are: " + this.clients.size() + " clients.");
-                this.logger.info("There are: " + this.requests.size() + " requests in the queue.");
+                this.logger.trace("There are: " + this.requests.size() + " requests in the queue.");
             } catch (InterruptedException e) {
                 this.logger.error(e);
             }

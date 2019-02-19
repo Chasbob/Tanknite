@@ -1,7 +1,5 @@
 package com.aticatac.client.util;
 
-import com.aticatac.client.screens.*;
-
 /**
  * The enum Screen enum.
  */
@@ -9,7 +7,7 @@ public enum ScreenEnum {
     /**
      * The Splash.
      */
-    SPLASH ,MAIN_MENU,MUlTIPLAYER,GAME,LEADERBOARD,SETTINGS,USERNAME,LOBBY,SERVERS,NONE;
+    SPLASH, MAIN_MENU, MUlTIPLAYER, GAME, LEADERBOARD, SETTINGS, USERNAME, LOBBY, SERVERS, NONE
 //            {
 //        public AbstractScreen getScreen(ScreenEnum prevScreen) {
 //            return new SplashScreen(prevScreen);
@@ -80,7 +78,6 @@ public enum ScreenEnum {
 //            return new ServerScreen(prevScreen);
 //        }
 //    };
-
 //    /**
 //     * Gets screen.
 //     *

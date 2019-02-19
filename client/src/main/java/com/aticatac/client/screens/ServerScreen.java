@@ -1,14 +1,58 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
+import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
+/**
+ * The type Server screen.
+ */
 public class ServerScreen extends AbstractScreen {
-    public ServerScreen() {
+    private Boolean serverSelected;
+    private TextButton currentServer;
+
+    /**
+     * Instantiates a new Server screen.
+     */
+    ServerScreen() {
         super();
+    }
+
+    /**
+     * Gets current server.
+     *
+     * @return the current server
+     */
+    public TextButton getCurrentServer() {
+        return currentServer;
+    }
+
+    /**
+     * Sets current server.
+     *
+     * @param currentServer the current server
+     */
+    public void setCurrentServer(TextButton currentServer) {
+        this.currentServer = currentServer;
+    }
+
+    /**
+     * Gets server selected.
+     *
+     * @return the server selected
+     */
+    public Boolean getServerSelected() {
+        return serverSelected;
+    }
+
+    /**
+     * Sets server selected.
+     *
+     * @param serverSelected the server selected
+     */
+    public void setServerSelected(Boolean serverSelected) {
+        this.serverSelected = serverSelected;
     }
 
     @Override
@@ -35,7 +79,15 @@ public class ServerScreen extends AbstractScreen {
         joinTable.top().padTop(100);
         TextButton joinButton = UIFactory.createStartButton("Join");
         joinTable.add(joinButton);
-        joinButton.addListener(UIFactory.createJoinServerListener(ScreenEnum.USERNAME, ScreenEnum.SERVERS));
+        joinButton.addListener(UIFactory.newListenerEvent(() -> {
+                    if (serverSelected) {
+                        //TODO show lobby of currentServer
+                        Screens.INSTANCE.showScreen(UsernameScreen.class);
+                    }
+                    currentServer.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
+                    return false;
+                }
+        ));
         dataTable.addActor(joinTable);
         //add table to store all current open servers
         Table serversTable = new Table();
@@ -51,6 +103,6 @@ public class ServerScreen extends AbstractScreen {
         backTable.bottom();
         TextButton backButton = UIFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.LOBBY));
+        backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     }
 }

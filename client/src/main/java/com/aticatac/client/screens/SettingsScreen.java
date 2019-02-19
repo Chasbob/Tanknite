@@ -1,7 +1,5 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
@@ -12,7 +10,7 @@ public class SettingsScreen extends AbstractScreen {
     /**
      * Instantiates a new Settings screen.
      */
-    public SettingsScreen() {
+    SettingsScreen() {
         super();
     }
 
@@ -30,6 +28,6 @@ public class SettingsScreen extends AbstractScreen {
         //create back button
         TextButton backButton = UIFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(UIFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.SETTINGS));
+        backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     }
 }
