@@ -16,6 +16,7 @@ public enum Screens {
     private final HashMap<ScreenEnum, AbstractScreen> screens;
     private Game game;
     private boolean isInit;
+    private ScreenEnum currentScreen;
 
     Screens() {
         isInit = false;
@@ -42,6 +43,7 @@ public enum Screens {
         this.isInit = true;
         getScreen(ScreenEnum.MAIN_MENU).buildStage();
         this.game.setScreen(getScreen(ScreenEnum.MAIN_MENU));
+        this.currentScreen = ScreenEnum.MAIN_MENU;
     }
 
     /**
@@ -79,8 +81,10 @@ public enum Screens {
      * @param screenEnum the screen enum
      */
     public void showScreen(ScreenEnum screenEnum) {
-        this.game.getScreen().dispose();
+        getScreen(screenEnum).setPrevScreen(currentScreen);
         getScreen(screenEnum).buildStage();
         this.game.setScreen(getScreen(screenEnum));
+//        getScreen(this.currentScreen).dispose();
+        this.currentScreen = screenEnum;
     }
 }
