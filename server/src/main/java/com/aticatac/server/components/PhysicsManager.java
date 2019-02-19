@@ -50,12 +50,13 @@ public class PhysicsManager extends Component {
      *
      * @return Position of the object
      */
-    private Position move(String direction) {
+    private Object[] move(String direction) {
         //the position for this tank.
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
         //Positions of everything
-        //TODO make this get the server component from a different object not this one
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+        ArrayList<Position> occupiedCoordinatesBullet = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesBullet();
+        ArrayList<Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
         //old positions
         double oldX = position.getX();
         double oldY = position.getY();
@@ -65,7 +66,6 @@ public class PhysicsManager extends Component {
         //converting the dt from nanoseconds to seconds
         long dt = (this.getGameObject().getComponent(Time.class).timeDifference()) / 1000000000;
         //velocity altered if there is a powerup
-        //TODO Check that this works as don't think it does
         if (acceleration != 0) {
             double newVelocity = velocity + (acceleration * dt);
             velocity = newVelocity;
@@ -80,7 +80,9 @@ public class PhysicsManager extends Component {
             newX = oldX + (velocity * dt);
         }
         Position newPosition = new Position(newX, newY);
-        if (collision(newPosition, position)) {
+
+        //checks if it has collided
+        if (collision(newPosition, position) != 0) {
             return position;
         }
         return newPosition;
@@ -145,7 +147,9 @@ public class PhysicsManager extends Component {
         double newX = xCoord + distanceX;
         double newY = yCoord + distanceY;
         Position newPosition = new Position(newX, newY);
-        if (collision(newPosition, position)) {
+
+        //checks if it collided with something
+        if (collision(newPosition, position) != 0) {
             return position;
         }
         return newPosition;
@@ -154,18 +158,42 @@ public class PhysicsManager extends Component {
     /**
      *
      */
-    private boolean collision(Position newPosition, Position oldPosition) {
-        //TODO make this get the server component from a different object not this one
+    private int collision(Position newPosition, Position oldPosition) {
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        //checks for collisions
+        ArrayList<Position> occupiedCoordinatesBullet = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+        ArrayList<Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+
+        // wall = 1, bullet = 2, tank = 3, nothing = 0
+
+        //checks for collisions with
         for (int i = 0; i < occupiedCoordinates.size(); i++) {
             //Checks if new position is already occupied
-            //Checks the occupied coordinate isn't the current position (TODO is this needed)
+            //Checks the occupied coordinate isn't the current position.
             if (newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != oldPosition) {
-                return true;
+
+                return 1;
             }
         }
-        return false;
+
+        //checks for collisions
+        for (int i = 0; i < occupiedCoordinatesBullet.size(); i++) {
+            //Checks if new position is already occupied
+            //Checks the occupied coordinate isn't the current position.
+            if (newPosition == occupiedCoordinatesBullet.get(i) && occupiedCoordinatesBullet.get(i) != oldPosition) {
+                return 2;
+            }
+        }
+
+        //checks for collisions
+        for (int i = 0; i < occupiedCoordinatesTank.size(); i++) {
+            //Checks if new position is already occupied
+            //Checks the occupied coordinate isn't the current position.
+            if (newPosition == occupiedCoordinatesTank.get(i) && occupiedCoordinatesTank.get(i) != oldPosition) {
+                return 3;
+            }
+        }
+
+        return 0;
     }
 
     /**
