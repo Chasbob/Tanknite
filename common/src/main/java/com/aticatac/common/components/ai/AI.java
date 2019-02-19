@@ -49,9 +49,8 @@ public class AI extends Component {
         this.prevState = State.SEARCHING;
         this.searchPath = new LinkedList<>();
 
-        Random rand = new Random();
-        this.aggression = 0.5 + rand.nextDouble();
-        this.collectiveness = 0.5 + rand.nextDouble();
+        this.aggression = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
+        this.collectiveness = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
     }
 
     /**
@@ -172,16 +171,16 @@ public class AI extends Component {
         /*
         if (tankAmmo <= 5 && ammo powerup is in powerupsInRange){
             idealPowerup = ammo powerup;
-            return 100;
+            return (int)Math.round(100 * collectiveness);
         }
         if (tankHealth <= 30 && health power up near){
             idealPowerup = health powerup;
-            return 100;
+            return (int)Math.round(100 * collectiveness);
         }
         if (other power up near + some other condition idk)
-            return 80
+            return (int)Math.round(80 * collectiveness)
         if (ANY power up near)
-            return 60
+            return (int)Math.round(60 * collectiveness)
         */
         return 0;
     }
@@ -284,7 +283,7 @@ public class AI extends Component {
         if (prevState == State.OBTAINING && !searchPath.isEmpty()){
             return searchPath.poll();
         }
-        
+
         // Position powerupLocation = powerUpsInRange.get ideal powerup type
         Position powerupLocation = new Position(1,2);
 
