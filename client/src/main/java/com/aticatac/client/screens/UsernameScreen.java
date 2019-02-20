@@ -45,8 +45,8 @@ public class UsernameScreen extends AbstractScreen {
         TextButton submitButton = UIFactory.createButton("Submit");
         usernameTable.add(submitButton);
         //create custom listener for submit button to get text field text
-        if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
-            submitButton.addListener(UIFactory.newListenerEvent(() -> {
+        submitButton.addListener(UIFactory.newListenerEvent(() -> {
+            if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
                 Client client = new Client();
                 boolean accepted = client.connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
                 if (accepted) {
@@ -56,9 +56,7 @@ public class UsernameScreen extends AbstractScreen {
                     nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
                 }
                 return false;
-            }));
-        } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-            submitButton.addListener(UIFactory.newListenerEvent(() -> {
+            } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
                 Client client = new Client();
                 boolean accepted = client.connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
                 if (accepted) {
@@ -68,8 +66,10 @@ public class UsernameScreen extends AbstractScreen {
                     nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
                 }
                 return false;
-            }));
-        }
+            } else {
+                return false;
+            }
+        }));
         //create table to store back button
         Table backTable = new Table();
         backTable.setFillParent(true);
