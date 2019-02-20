@@ -1,89 +1,60 @@
 package com.aticatac.server.gameManager;
 
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.controller.TankController;
-import com.aticatac.server.prefabs.TankObject;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
-public class GameManager {
+public class GameManager implements Runnable {
+    private static final int min = 0, max = 640;
+    private final Logger logger;
     public HashMap<String, GameObject> playerMap = new HashMap<>();
     private GameObject root;
-    private static final int min = 0, max = 640;
 
     public GameManager() {
+        this.logger = Logger.getLogger(getClass());
         try {
             root = new GameObject("Root");
-
-            new GameObject("Tank Container", root);
-
-        } catch (Exception unchecked) {
+            root.addComponent(com.aticatac.server.components.GameManager.class);
+        } catch (ComponentExistsException | InvalidClassInstance e) {
+            this.logger.error("Ewan promises this will NEVER HAPPEN.\n" + e);
         }
     }
 
-    public void addClient(String username){
-        if(!playerMap.containsKey(username)) {
-            playerMap.put(username,createTank());
-        }
+    public void addClient(String username) {
+        root.getComponent(com.aticatac.server.components.GameManager.class).addPlayer(username);
     }
 
-    public void removeClient(String username){
-        if(playerMap.containsKey(username)) {
-            playerMap.remove(username);
-        }
-    }
-
-    public TankObject createTank(){
-        try {
-            return new TankObject(root.getChildren().get(0),
-                    "Tank",
-                    new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-                            ThreadLocalRandom.current().nextInt(min, max + 1)),
-                    100,
-                    30);
-        } catch (InvalidClassInstance invalidClassInstance) {
-            invalidClassInstance.printStackTrace();
-        } catch (ComponentExistsException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public void removeClient(String username) {
+        root.getComponent(com.aticatac.server.components.GameManager.class).removeClient(username);
     }
 
     public void playerInput(String player, Command cmd) {
-        var tank = playerMap.get(player);
-        switch (cmd) {
-            case UP:
-                tank.getComponent(TankController.class).moveUp();
-                break;
-            case DOWN:
-                tank.getComponent(TankController.class).moveDown();
-                break;
-            case LEFT:
-                tank.getComponent(TankController.class).moveLeft();
-                break;
-            case RIGHT:
-                tank.getComponent(TankController.class).moveRight();
-                break;
-            case SHOOT:
-                tank.getComponent(TankController.class).shoot();
-        }
-        System.out.println("printing input" + player);
+        root.getComponent(com.aticatac.server.components.GameManager.class).playerInput(player, cmd);
     }
 
-    public void EndOfGame() {
-        Iterator it = playerMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            removeClient((String)pair.getKey());
-            it.remove();
-        }
+    public void endOfGame() {
+        //TODO
+    }
+
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+    @Override
+    public void run() {
+    }
+
+    public void stop() {
     }
 }
