@@ -20,7 +20,7 @@ public class Server extends Thread {
     private final BlockingQueue<Command> requests;
     private final NewClients newClients;
     private final Updater multicaster;
-    private final Thread discovery;
+    private final Discovery discovery;
 
     /**
      * Instantiates a new Server.
@@ -28,6 +28,7 @@ public class Server extends Thread {
      * @throws IOException the io exception
      */
     public Server() throws IOException {
+        //TODO check if additional users are allowed.
         this.logger = Logger.getLogger(getClass());
         this.clients = new ConcurrentHashMap<>();
         this.requests = new ArrayBlockingQueue<>(1024); //TODO select an appropriate queue size.
@@ -42,20 +43,20 @@ public class Server extends Thread {
         this.multicaster.start();
         this.newClients.start();
         this.discovery.start();
-        (new Thread(() -> {
-            //TODO remove testing thread
-            while (true) {
-                try {
-                    System.out.println(this.requests.take());
-                } catch (InterruptedException ignored) {
-                }
-            }
-        })).start();
+//        (new Thread(() -> {
+//            //TODO remove testing thread
+//            while (true) {
+//                try {
+//                    this.requests.take();
+//                } catch (InterruptedException ignored) {
+//                }
+//            }
+//        })).start();
         while (!this.isInterrupted()) {
             try {
                 Thread.sleep(5000);
 //                System.out.println("There are: " + this.clients.size() + " clients.");
-                this.logger.info("There are: " + this.requests.size() + " requests in the queue.");
+                this.logger.trace("There are: " + this.requests.size() + " requests in the queue.");
             } catch (InterruptedException e) {
                 this.logger.error(e);
             }
@@ -66,7 +67,6 @@ public class Server extends Thread {
      * Next command command.
      *
      * @return the command
-     *
      * @throws InterruptedException the interrupted exception
      */
     public Command nextCommand() throws InterruptedException {

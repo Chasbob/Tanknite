@@ -11,7 +11,7 @@ public enum Data {
      */
     INSTANCE;
 //    private InetAddress server;
-    private int discoveryPort = 5000;
+private final int discoveryPort = 5000;
 
     Data() {
 //        try {
