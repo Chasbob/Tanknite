@@ -27,9 +27,9 @@ public class ServerData extends Component {
      */
     private static Integer directionInitial = 0;
     /**
-     * ArrayList of the currently occupied coordinates
+     * HashMap of the tank and it's current coordinates
      */
-    private ArrayList<Position> occupiedCoordinatesTank = new ArrayList<Position>();
+    private HashMap<String, Position> occupiedCoordinatesTank = new HashMap<>();
     /**
      * ArrayList of the currently occupied coordinates
      */
@@ -90,22 +90,22 @@ public class ServerData extends Component {
     }
 
     /**
-     * Gets the currently occupied coordinates by bullets
+     * Gets the currently occupied coordinates by Tanks
      *
      * @return The occupied coordinates.
      */
-    public ArrayList<Position> getOccupiedCoordinatesTank() {
+    public HashMap<String, Position> getOccupiedCoordinatesTank() {
         return occupiedCoordinatesTank;
     }
 
     /**
      * Sets the currently occupied coordinates
      *
-     * @param oldCoords The old coordinates that were occupied.
-     * @param newCoords The new coordinates that are now occupied.
+     * @param name Name of the tank.
+     * @param newPosition The new coordinates that are now occupied.
      */
-    public void setOccupiedCoordinatesTank(Position oldCoords, Position newCoords) {
-        occupiedCoordinatesTank.set(occupiedCoordinatesTank.indexOf(oldCoords), newCoords);
+    public void setOccupiedCoordinatesTank(String name, Position newPosition) {
+        this.occupiedCoordinatesTank.replace(name, newPosition);
     }
 
 

@@ -6,6 +6,7 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Physics component will control the physics for the objects in the game. It will consider the new positions of
@@ -161,7 +162,7 @@ public class Physics extends Component {
      */
     private Object[] collision(Position newPosition, Position oldPosition) {
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        ArrayList<Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+        HashMap<String, Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank();
 
         Integer collisionType;
         // other object = 1, tank = 2, nothing = 0
@@ -182,19 +183,16 @@ public class Physics extends Component {
             }
         }
 
-        //checks for collisions
-        for (int i = 0; i < occupiedCoordinatesTank.size(); i++) {
-            //Checks if new position is already occupied
-            //Checks the occupied coordinate isn't the current position.
-            if (newPosition == occupiedCoordinatesTank.get(i) && occupiedCoordinatesTank.get(i) != oldPosition) {
-                collisionType = 2;
-                //Returning a collision type and also the position
-                Object[] returnPosition = new Object[2];
-                returnPosition[0] = collisionType;
-                returnPosition[1] = newPosition;
+        //Collisions check in hashmap of tank coordinates
+        //TODO does it need to check if not itself?
+        if(occupiedCoordinatesTank.containsValue(newPosition)){
+            collisionType = 2;
+            //Returning a collision type and also the position
+            Object[] returnPosition = new Object[2];
+            returnPosition[0] = collisionType;
+            returnPosition[1] = newPosition;
 
-                return returnPosition;
-            }
+            return returnPosition;
         }
 
         collisionType = 0;

@@ -5,7 +5,6 @@ package com.aticatac.server.components.controller;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.server.components.ServerData;
-//import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
 
 // components for server side make in server or import from common?
@@ -48,7 +47,7 @@ public class TankController extends Component {
 //        else{
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
 //            this.getComponent(Transform.class).SetRotation(0);
-//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinates(oldPosition, newPosition);
+//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
 //          //set occupied co ordinates on server data whenever tank moves
 //            return true;
 //        }
@@ -69,8 +68,8 @@ public class TankController extends Component {
 //        else{
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
 //            this.getComponent(Transform.class).SetRotation(90);
-//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinates(oldPosition, newPosition);
-//          //set occupied co ordinates on server data whenever tank moves
+//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
+////          //set occupied co ordinates on server data whenever tank moves
 //            return true;
 //        }
 //        //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
@@ -91,8 +90,8 @@ public class TankController extends Component {
 //        else{
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
 //            this.getComponent(Transform.class).SetRotation(270);
-//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinates(oldPosition, newPosition);
-//          //set occupied co ordinates on server data whenever tank moves
+//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
+////          //set occupied co ordinates on server data whenever tank moves
 //            return true;
 //        }
         return true;
@@ -111,8 +110,8 @@ public class TankController extends Component {
 //        else {
 //            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
 //            this.getComponent(Transform.class).SetRotation(180);
-//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinates(oldPosition, newPosition);
-//          //set occupied co ordinates on server data whenever tank moves
+//            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
+////          //set occupied co ordinates on server data whenever tank moves
 //            return true;
 //        }
         return true;

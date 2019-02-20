@@ -39,7 +39,7 @@ public class BulletController extends Component {
 //                }
 //                else {
 //
-//                    TankController collidedTank =;// get tank using new position from serverData
+//                    TankController collidedTank = ;// get tank using new position from serverData
 //                    collidedTank.isShot();
 //                    Destroy(this);
 //
