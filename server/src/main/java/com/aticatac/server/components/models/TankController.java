@@ -3,11 +3,9 @@ package com.aticatac.server.components.models;
 
 
 import com.aticatac.common.components.Component;
+import com.aticatac.common.components.ServerData;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
-import com.aticatac.server.components.AI;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
 import com.aticatac.server.components.PhysicsManager;
 import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
@@ -46,15 +44,18 @@ public class TankController extends Component {
     //physics manager now returns transform, so if new transform = old transform collision has happened,
     //else set position to new transform
     public boolean moveUp() {
-//        Position oldPosition = this.gameObject.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.gameObject.getComponent(PhysicsManager.class).moveUp();
-//        if (oldPosition.equals(newPosition)) return false;
-//        else{
-//            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
-//            this.getComponent(Transform.class).SetRotation(0);
-//            return true;
-//        }
-//        // set occupied co ordinates on server data whenever tank moves
+        Position oldPosition = this.gameObject.getComponent(Transform.class).getPosition();
+        Position newPosition = this.gameObject.getComponent(PhysicsManager.class).moveUp();
+        if (oldPosition.equals(newPosition)) return false;
+        else{
+            parent.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(0);
+            ServerData.setOccupiedCoordinatesTank(oldPosition, newPosition);
+            // server data component add to tank
+            // where to set initial tanks occupied co ordinates
+            return true;
+        }
+        // set occupied co ordinates on server data whenever tank moves
         return true;
     }
 
@@ -65,16 +66,18 @@ public class TankController extends Component {
      */
 // when right arrow/d pressed
     public boolean moveRight (){
-//        Position oldPosition = this.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.getComponent(PhysicsManager.class).moveRight();
-//        if (oldPosition.equals(newPosition)) return false;
-//        else{
-//            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
-//            this.getComponent(Transform.class).SetRotation(90);
-//            return true;
-//        }
-//        //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
-//        //bullet disappears, other collisions have no effect, just stop the current move from happening
+        Position oldPosition = this.getComponent(Transform.class).getPosition();
+        Position newPosition = this.getComponent(PhysicsManager.class).moveRight();
+        if (oldPosition.equals(newPosition)) return false;
+        else{
+            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(90);
+            ServerData.setOccupiedCoordinatesTank(oldPosition, newPosition);
+
+            return true;
+        }
+        //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
+        //bullet disappears, other collisions have no effect, just stop the current move from happening
         return true;
     }
 
@@ -85,14 +88,15 @@ public class TankController extends Component {
      */
 // when left arrow/a pressed
     public boolean moveLeft (){
-//        Position oldPosition = this.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.getComponent(PhysicsManager.class).moveLeft();
-//        if (oldPosition.equals(newPosition)) return false;
-//        else{
-//            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
-//            this.getComponent(Transform.class).SetRotation(270);
-//            return true;
-//        }
+        Position oldPosition = this.getComponent(Transform.class).getPosition();
+        Position newPosition = this.getComponent(PhysicsManager.class).moveLeft();
+        if (oldPosition.equals(newPosition)) return false;
+        else{
+            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(270);
+            ServerData.setOccupiedCoordinatesTank(oldPosition, newPosition);
+            return true;
+        }
         return true;
     }
 
@@ -103,14 +107,15 @@ public class TankController extends Component {
      */
 // when down arrow/s pressed
     public boolean moveDown () {
-//        Position oldPosition = this.getComponent(Transform.class).getPosition();
-//        Position newPosition = this.getComponent(PhysicsManager.class).moveBackwards();
-//        if (oldPosition.equals(newPosition)) return false;
-//        else {
-//            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
-//            this.getComponent(Transform.class).SetRotation(180);
-//            return true;
-//        }
+        Position oldPosition = this.getComponent(Transform.class).getPosition();
+        Position newPosition = this.getComponent(PhysicsManager.class).moveBackwards();
+        if (oldPosition.equals(newPosition)) return false;
+        else {
+            this.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(180);
+            ServerData.setOccupiedCoordinatesTank(oldPosition, newPosition);
+            return true;
+        }
         return true;
     }
 
