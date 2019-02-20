@@ -4,12 +4,12 @@ import com.aticatac.common.components.transform.Position;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
-public enum Data {
+public enum DataServer {
 
     INSTANCE;
 
     private BidiMap<String, Position> occupiedCoordinates= new DualHashBidiMap();
-    Data(){
+    DataServer(){
 
         //anything that needs setting up.
 
