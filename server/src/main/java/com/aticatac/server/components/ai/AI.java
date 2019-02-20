@@ -74,7 +74,7 @@ public class AI extends Component {
         tankHealth = tank.getComponent(Health.class).getHealth();
         tankAmmo = tank.getComponent(Ammo.class).getAmmo();
         enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
-        powerupsInRange = getPowerupsInRange(tankPos, VIEW_RANGE);
+        powerupsInRange = getPowerupsInRange(tankPos);
 
         // Change aim angle
         aimed = false;
@@ -330,7 +330,7 @@ public class AI extends Component {
                 if (i >= 0 && i < graph.getWidth() && j >= 0 && j < graph.getHeight()) {
                     Position openPos = new Position(i, j);
                     if (getEnemiesInRange(openPos, 4).isEmpty()) {
-                        return openPos;
+                        clearPositions.add(openPos);
                     }
                 }
             }
@@ -394,11 +394,10 @@ public class AI extends Component {
      * Gets a list of power-ups that are in a given range from a given position.
      *
      * @param position The center position to check from
-     * @param range The range
      * @return A list of power-up in range of the position
      */
-    private ArrayList<GameObject> getPowerupsInRange(Position position, int range) {
-        return getGameObjectsInRange(position, range, new ArrayList<GameObject>()); // TODO: get this INFO BOI
+    private ArrayList<GameObject> getPowerupsInRange(Position position) {
+        return getGameObjectsInRange(position, VIEW_RANGE, new ArrayList<GameObject>()); // TODO: get this INFO BOI
     }
 
     /**
@@ -459,7 +458,7 @@ public class AI extends Component {
             angle += (Math.PI * 2);
         int targetAngle = (int)Math.round(Math.toDegrees(angle));
 
-        int change = Math.abs(targetAngle - aimAngle) / 2;
+        int change = (Math.abs(targetAngle - aimAngle) / 2) + 1;
 
         if (Math.abs(((aimAngle + change) % 360) - targetAngle) < Math.abs(((aimAngle - change) % 360) - targetAngle)) {
             return change;
