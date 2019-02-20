@@ -25,13 +25,13 @@ public class Discovery extends Thread {
      *
      * @param id the id
      */
-    Discovery(String id, int port) {
+    Discovery(String id, int port) throws IOException {
         this.packets = buildPackets(id, Data.INSTANCE.getInterfaces());
         this.logger = Logger.getLogger(Discovery.class);
         this.port = port;
     }
 
-    private List<DatagramPacket> buildPackets(String id, List<InterfaceAddress> interfaces) {
+    private List<DatagramPacket> buildPackets(String id, List<InterfaceAddress> interfaces) throws IOException {
         List<DatagramPacket> output = new ArrayList<>();
         for (InterfaceAddress current : interfaces) {
             if (current.getBroadcast() == null) {
