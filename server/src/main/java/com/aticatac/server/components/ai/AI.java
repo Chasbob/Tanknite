@@ -299,15 +299,20 @@ public class AI extends Component {
      * @return A command from the OBTAINING state
      */
     private Command performObtainingAction() {
-        // TODO Get position of power-up to collect and travel there
+        // TODO Get position of (ideal if in range else closest) power-up to collect and travel there
 
         // Keep going along the same path if still obtaining
         if (prevState == State.OBTAINING && !searchPath.isEmpty()){
             return searchPath.poll();
         }
 
-        // Position powerupLocation = powerUpsInRange.get ideal powerup type
-        Position powerupLocation = new Position(1,2);
+        Position powerupLocation = getClosestPowerup().getTransform().getPosition();
+
+        // Get ideal power-up if can, else carry on with closest
+        GameObject idealPowerup = getIdealPowerup();
+        if (idealPowerup != null) {
+            powerupLocation = idealPowerup.getTransform().getPosition();
+        }
 
         searchPath = graph.getPathToLocation(tankPos, powerupLocation);
         if (searchPath.isEmpty()) {
@@ -407,6 +412,18 @@ public class AI extends Component {
      */
     private GameObject getClosestPowerup() {
         return getClosestObject(powerupsInRange);
+    }
+
+    private GameObject getIdealPowerup() {
+        ArrayList<GameObject> idealInRange = new ArrayList<GameObject>();
+        for (GameObject powerup : powerupsInRange) {
+            /*
+            if (powerup == idealPowerup) {
+                idealInRange.add(powerup);
+            }
+            */
+        }
+        return getClosestObject(idealInRange);
     }
 
     private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
