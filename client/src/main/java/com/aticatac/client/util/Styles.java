@@ -1,16 +1,15 @@
 package com.aticatac.client.util;
 
-import com.aticatac.client.game.GDXGame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public enum Styles {
     INSTANCE;
@@ -24,6 +23,7 @@ public enum Styles {
     private TextButton.TextButtonStyle backButtonStyle;
     private TextField.TextFieldStyle textFieldStyle;
     private Texture blank;
+    private ImageButton refreshIcon;
 
     Styles() {
         System.out.println("Loading styles...");
@@ -94,6 +94,10 @@ public enum Styles {
         backButtonStyle.fontColor = Color.YELLOW;
         //load in blank texture for healthbar
         blank = new Texture(Gdx.files.internal("img/white.png"));
+        //load in refresh icon
+        Texture refreshTexture = new Texture(Gdx.files.internal("img/refresh.png"));
+        Drawable drawable = new TextureRegionDrawable(new TextureRegion(refreshTexture));
+        refreshIcon = new ImageButton(drawable);
     }
 
     public static Styles getInstance() {
@@ -138,5 +142,9 @@ public enum Styles {
 
     public Texture getBlank() {
         return blank;
+    }
+
+    public ImageButton getRefreshButton() {
+        return refreshIcon;
     }
 }

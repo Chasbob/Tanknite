@@ -20,14 +20,15 @@ public class ListServers extends Thread {
     @Override
     public void run() {
         super.run();
-        while (!this.isInterrupted()) {
-            try {
-                list();
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        while (!this.isInterrupted()) {
+//            try {
+//                list();
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        list();
     }
 
     private void list() {

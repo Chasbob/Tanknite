@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.networking.Servers;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -46,7 +47,7 @@ public class MultiplayerScreen extends AbstractScreen {
         //create button for joining
         TextButton joinButton = UIFactory.createButton("Join");
 //        joinButton.addListener(UIFactory.createListener(ScreenEnum.SERVERS, ScreenEnum.MUlTIPLAYER));
-        joinButton.addListener(UIFactory.newChangeScreenEvent(MultiplayerScreen.class));
+        joinButton.addListener(UIFactory.newChangeScreenEvent(ServerScreen.class));
         buttonTable.add(joinButton);
         //create table to store back button
         Table backTable = new Table();

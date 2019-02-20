@@ -1,6 +1,8 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Styles;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -11,12 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 public class ServerScreen extends AbstractScreen {
     private Boolean serverSelected;
     private TextButton currentServer;
+    private final SpriteBatch batch;
 
     /**
      * Instantiates a new Server screen.
      */
     ServerScreen() {
         super();
+        serverSelected = false;
+        //TODO dont use null
+        currentServer = null;
+        batch = new SpriteBatch();
     }
 
     /**
@@ -65,7 +72,7 @@ public class ServerScreen extends AbstractScreen {
         Table dataTable = new Table();
         dataTable.setFillParent(true);
         rootTable.addActor(dataTable);
-        //create table for waiting for players label and player count for the lobby
+        //create table for top lables and refresh button
         Table serverDetailsTable = new Table();
         serverDetailsTable.setFillParent(true);
         dataTable.addActor(serverDetailsTable);
@@ -84,7 +91,9 @@ public class ServerScreen extends AbstractScreen {
                         //TODO show lobby of currentServer
                         Screens.INSTANCE.showScreen(UsernameScreen.class);
                     }
-                    currentServer.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
+                    if (currentServer!=null){
+                        currentServer.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
+                    }
                     return false;
                 }
         ));
@@ -104,5 +113,21 @@ public class ServerScreen extends AbstractScreen {
         TextButton backButton = UIFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
         backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+        //add refresh button
+        ImageButton refreshButton = Styles.getInstance().getRefreshButton();
+        serverDetailsTable.add(refreshButton).right().padLeft(100);
+        refreshButton.addListener(UIFactory.newListenerEvent(()->{
+                    UIFactory.getServers(serversTable);
+                    return false;
+                }
+        ));
+    }
+
+    @Override
+    public void render(float delta) {
+        super.render(delta);
+        batch.begin();
+
+        batch.end();
     }
 }
