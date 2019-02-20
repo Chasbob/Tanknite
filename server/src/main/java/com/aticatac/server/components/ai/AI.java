@@ -14,11 +14,7 @@ import java.util.Queue;
 import java.util.Random;
 
 /**
- * Long ago, the four nations lived together in harmony. Then, everything changed when the Fire Nation attacked.
- * Only the AI component, master of all four elements, could stop them, but when the world needed it the most,
- * it vanished. A hundred years passed and my brother and I discovered the new AI component,and although its
- * airbending skills are great, it has a lot to learn before it's ready to save anyone. But I believe AI component
- * can save the world.
+ * AI
  *
  * @author Dylan
  */
@@ -129,7 +125,7 @@ public class AI extends Component {
      * @return The utility score for the SEARCHING state
      */
     private int getSearchingUtility() {
-        return 50;
+        return 30;
     }
 
     /**
@@ -187,16 +183,16 @@ public class AI extends Component {
      * @return The utility score for the OBTAINING state
      */
     private int getObtainingUtility() {
-        /*
         if (tankHealth <= 10) {
             // can't move -> can't obtain
             return 0;
         }
+        /*
         if (tankAmmo <= 5 && ammo powerup is in powerupsInRange){
             idealPowerup = ammo powerup;
             return (int)Math.round(100 * collectiveness);
         }
-        if (tankHealth <= 30 && health power up near){
+        if (tankHealth <= 30 && health power up is in powerupsInRange){
             idealPowerup = health powerup;
             return (int)Math.round(100 * collectiveness);
         }
