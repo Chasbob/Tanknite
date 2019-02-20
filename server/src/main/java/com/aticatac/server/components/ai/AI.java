@@ -14,11 +14,7 @@ import java.util.Queue;
 import java.util.Random;
 
 /**
- * Long ago, the four nations lived together in harmony. Then, everything changed when the Fire Nation attacked.
- * Only the AI component, master of all four elements, could stop them, but when the world needed it the most,
- * it vanished. A hundred years passed and my brother and I discovered the new AI component,and although its
- * airbending skills are great, it has a lot to learn before it's ready to save anyone. But I believe AI component
- * can save the world.
+ * AI
  *
  * @author Dylan
  */
@@ -49,6 +45,8 @@ public class AI extends Component {
     private Position tankPos;
     private int tankHealth;
     private int tankAmmo;
+    private int aimAngle;
+    private boolean aimed;
 
     public AI(GameObject parent, Graph graph) {
         super(parent);
@@ -60,26 +58,34 @@ public class AI extends Component {
 
         this.aggression = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
         this.collectiveness = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
+
+        this.aimAngle = 0; // or whichever direction the tank faces at start
+        this.aimed = false;
     }
 
     /**
-     * Returns a command to control the tank.
+     * Returns a decision to control the tank.
      *
-     * @return A command
+     * @return A decision
      */
-    public Command getCommand() {
+    public Decision getDecision() {
         // Update information
         tankPos = tank.getComponent(Transform.class).getPosition();
         tankHealth = tank.getComponent(Health.class).getHealth();
         tankAmmo = tank.getComponent(Ammo.class).getAmmo();
         enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
-        powerupsInRange = getPowerupsInRange(tankPos, VIEW_RANGE);
+        powerupsInRange = getPowerupsInRange(tankPos);
+
+        // Change aim angle
+        aimed = false;
+        int angleChange = getAngleChange();
+        aimAngle += angleChange;
 
         // Check for a state change
         state = getStateChange();
 
-        // Perform the action(s) of the current state
-        return performStateAction();
+        // Return a decision
+        return new Decision(performStateAction(), angleChange);
     }
 
     /**
@@ -101,13 +107,13 @@ public class AI extends Component {
         if (maxUtility == searchingUtility) {
             return State.SEARCHING;
         }
-        else if (maxUtility == attackingUtility) {
+        if (maxUtility == attackingUtility) {
             return State.ATTACKING;
         }
-        else if (maxUtility == fleeingUtility) {
+        if (maxUtility == fleeingUtility) {
             return State.FLEEING;
         }
-        else if (maxUtility == obtainingUtility) {
+        if (maxUtility == obtainingUtility) {
             return State.OBTAINING;
         }
         return State.SEARCHING;
@@ -119,7 +125,7 @@ public class AI extends Component {
      * @return The utility score for the SEARCHING state
      */
     private int getSearchingUtility() {
-        return 50;
+        return 30;
     }
 
     /**
@@ -145,8 +151,8 @@ public class AI extends Component {
      * @return The utility score for the FLEEING state
      */
     private int getFleeingUtility() {
-        if (enemiesInRange.isEmpty()){
-            // Nothing to flee from
+        if (enemiesInRange.isEmpty() || tankHealth <= 10){
+            // Nothing to flee from || can't move -> can't flee
             return 0;
         }
         if (tankAmmo == 0) {
@@ -177,12 +183,16 @@ public class AI extends Component {
      * @return The utility score for the OBTAINING state
      */
     private int getObtainingUtility() {
+        if (tankHealth <= 10) {
+            // can't move -> can't obtain
+            return 0;
+        }
         /*
         if (tankAmmo <= 5 && ammo powerup is in powerupsInRange){
             idealPowerup = ammo powerup;
             return (int)Math.round(100 * collectiveness);
         }
-        if (tankHealth <= 30 && health power up near){
+        if (tankHealth <= 30 && health power up is in powerupsInRange){
             idealPowerup = health powerup;
             return (int)Math.round(100 * collectiveness);
         }
@@ -246,8 +256,7 @@ public class AI extends Component {
      * @return A command from the ATTACKING state
      */
     private Command performAttackingAction() {
-        if (checkLineOfSightToPosition(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition())) {
-            // TODO aim
+        if (checkLineOfSightToPosition(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition()) && aimed) {
             return Command.SHOOT;
         }
         else {
@@ -286,15 +295,20 @@ public class AI extends Component {
      * @return A command from the OBTAINING state
      */
     private Command performObtainingAction() {
-        // TODO Get position of power-up to collect and travel there
+        // TODO Get position of (ideal if in range else closest) power-up to collect and travel there
 
         // Keep going along the same path if still obtaining
         if (prevState == State.OBTAINING && !searchPath.isEmpty()){
             return searchPath.poll();
         }
 
-        // Position powerupLocation = powerUpsInRange.get ideal powerup type
-        Position powerupLocation = new Position(1,2);
+        Position powerupLocation = getClosestPowerup().getTransform().getPosition();
+
+        // Get ideal power-up if can, else carry on with closest
+        GameObject idealPowerup = getIdealPowerup();
+        if (idealPowerup != null) {
+            powerupLocation = idealPowerup.getTransform().getPosition();
+        }
 
         searchPath = graph.getPathToLocation(tankPos, powerupLocation);
         if (searchPath.isEmpty()) {
@@ -316,7 +330,7 @@ public class AI extends Component {
                 if (i >= 0 && i < graph.getWidth() && j >= 0 && j < graph.getHeight()) {
                     Position openPos = new Position(i, j);
                     if (getEnemiesInRange(openPos, 4).isEmpty()) {
-                        return openPos;
+                        clearPositions.add(openPos);
                     }
                 }
             }
@@ -364,7 +378,7 @@ public class AI extends Component {
      * @return A list of enemies in range of the position
      */
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-        return getGameObjectsInRange(position, range);
+        return getGameObjectsInRange(position, range,  new ArrayList<GameObject>()); // TODO: GeT tHiS iNfO
     }
 
     /**
@@ -380,11 +394,10 @@ public class AI extends Component {
      * Gets a list of power-ups that are in a given range from a given position.
      *
      * @param position The center position to check from
-     * @param range The range
      * @return A list of power-up in range of the position
      */
-    private ArrayList<GameObject> getPowerupsInRange(Position position, int range) {
-        return getGameObjectsInRange(position, range);
+    private ArrayList<GameObject> getPowerupsInRange(Position position) {
+        return getGameObjectsInRange(position, VIEW_RANGE, new ArrayList<GameObject>()); // TODO: get this INFO BOI
     }
 
     /**
@@ -396,8 +409,19 @@ public class AI extends Component {
         return getClosestObject(powerupsInRange);
     }
 
-    private ArrayList<GameObject> getGameObjectsInRange(Position position, int range) {
-        ArrayList<GameObject> allObjects = new ArrayList<GameObject>(); // TODO ***Get this info***
+    private GameObject getIdealPowerup() {
+        ArrayList<GameObject> idealInRange = new ArrayList<GameObject>();
+        for (GameObject powerup : powerupsInRange) {
+            /*
+            if (powerup == idealPowerup) {
+                idealInRange.add(powerup);
+            }
+            */
+        }
+        return getClosestObject(idealInRange);
+    }
+
+    private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
         for (GameObject enemy : allObjects) {
             if (Math.abs(enemy.getComponent(Transform.class).getPosition().x - position.x) <= range ||
@@ -419,6 +443,34 @@ public class AI extends Component {
             }
         }
         return closestObject;
+    }
+
+    private int getAngleChange() {
+        // No enemy to aim at
+        if (enemiesInRange.isEmpty()) {
+            return 0;
+        }
+
+        Position target = getClosestEnemy().getTransform().getPosition();
+
+        double angle = Math.atan2(target.x - tankPos.x, tankPos.y - target.y);
+        if (angle < 0)
+            angle += (Math.PI * 2);
+        int targetAngle = (int)Math.round(Math.toDegrees(angle));
+
+        int change = (Math.abs(targetAngle - aimAngle) / 2) + 1;
+
+        if (Math.abs(((aimAngle + change) % 360) - targetAngle) < Math.abs(((aimAngle - change) % 360) - targetAngle)) {
+            return change;
+        }
+        if (Math.abs(((aimAngle + change) % 360) - targetAngle) > Math.abs(((aimAngle - change) % 360) - targetAngle)) {
+            return -change;
+        }
+
+        // No change needed -> on target
+        aimed = true;
+        return 0;
+
     }
 
 }
