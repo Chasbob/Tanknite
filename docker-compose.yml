@@ -13,12 +13,18 @@ services:
     networks:
       - 'lan'
 
-  client:
-    container_name: 'client'
-    image: 'client:testing'
-    build:
-      context: './client'
+  client1:
+    container_name: 'client1'
+    image: 'client'
     networks:
       - 'lan'
     depends_on:
-      - 'server'
+      - server
+
+  client2:
+    container_name: 'client2'
+    image: 'client'
+    networks:
+      - 'lan'
+    depends_on:
+      - server

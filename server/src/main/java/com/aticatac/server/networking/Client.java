@@ -18,5 +18,8 @@ public class Client {
         this.commandListener.start();
     }
 
+    public String getId() {
+        return id;
+    }
     //TODO add access to threads along with information about client.
 }
