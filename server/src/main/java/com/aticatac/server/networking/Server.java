@@ -1,6 +1,8 @@
 package com.aticatac.server.networking;
 
 import com.aticatac.common.model.CommandModel;
+import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.networking.listen.NewClients;
 import org.apache.log4j.Logger;
@@ -55,6 +57,9 @@ public class Server extends Thread {
 //                    System.out.println(this.requests.take());
                     CommandModel model = this.requests.take();
                     Manager.INSTANCE.playerInput(model.getId(), model.getCommand());
+                    var update = new Update(true);
+                    update.setObj(Converter.Deconstructor(Manager.INSTANCE.getRoot()));
+                    setUpdateModel(update);
                 } catch (InterruptedException ignored) {
                 }
             }
@@ -75,10 +80,17 @@ public class Server extends Thread {
         this.logger.warn("Interrupted");
     }
 
+    public synchronized void setUpdateModel(Update update) {
+        //TODO optimise setting new model by calculating a differential
+        // as to send less data.
+        this.multicaster.setUpdateModel(update);
+    }
+
     /**
      * Next command command.
      *
      * @return the command
+     *
      * @throws InterruptedException the interrupted exception
      */
     public CommandModel nextCommand() throws InterruptedException {

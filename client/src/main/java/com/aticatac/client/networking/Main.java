@@ -1,5 +1,6 @@
 package com.aticatac.client.networking;
 
+import com.aticatac.client.screens.Screens;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import org.apache.log4j.Logger;
@@ -15,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
         logger.info("Starting...");
         try {
-            Client client = new Client();
+            Client client = new Client(Screens.INSTANCE.getUpdates());
             ServerInformation information = new BroadcastListener().call();
             logger.trace(information.toString());
             logger.trace("Got address: " + information.getAddress() + ":" + information.getPort());

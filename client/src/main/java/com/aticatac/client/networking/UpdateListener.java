@@ -49,7 +49,7 @@ class UpdateListener extends Thread {
         byte[] bytes = new byte[8000];
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
         this.multicastSocket.receive(packet);
-        logger.trace("Packet received!");
+        logger.info("Packet received!");
         Update update = ModelReader.toModel(bytes, Update.class);
         this.updates.add(update);
         logger.trace(update.getId());

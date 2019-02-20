@@ -1,14 +1,14 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.AddTexture;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
+import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.prefabs.BulletObject;
 import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -118,6 +118,17 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
+        (new Thread(() -> {
+            //TODO remove testing thread
+            while (true) {
+                try {
+                    Update update = Screens.INSTANCE.getUpdates().take();
+                    System.out.println(Converter.Constructor(update.getObj()));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        })).start();
     }
 
     @Override
@@ -236,20 +247,12 @@ public class GameScreen extends AbstractScreen {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
-            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(90);
-            tank.getComponent(Transform.class).Transform(3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
-            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(90);
-            tank.getComponent(Transform.class).Transform(-3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             Screens.INSTANCE.getClient().sendCommand(Command.UP);
-            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(0);
-            tank.getComponent(Transform.class).Transform(0, -3);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
-            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(0);
-            tank.getComponent(Transform.class).Transform(0, 3);
         }
         mouseMoved(Gdx.input.getX(), Gdx.input.getY());
     }
@@ -274,8 +277,7 @@ public class GameScreen extends AbstractScreen {
         super.touchDown(screenX, screenY, pointer, button);
         if (button == Input.Buttons.LEFT) {
             try {
-                var bullet = new BulletObject("Bullet", root);
-                AddTexture.addTexture(bullet);
+
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
                 System.out.println("X:" + newX + "\nY:" + newY);
@@ -307,10 +309,10 @@ public class GameScreen extends AbstractScreen {
         var X = XMouse - XTankTop;
         var Y = YMouse - YTankTop;
         var rotation = Math.atan(Y / X);
-        if (XMouse >= XTankTop)
-            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
-        else
-            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
+//        if (XMouse >= XTankTop)
+//            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
+//        else
+//            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
         return false;
     }
 }

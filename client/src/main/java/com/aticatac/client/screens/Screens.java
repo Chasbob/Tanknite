@@ -3,6 +3,7 @@ package com.aticatac.client.screens;
 import com.aticatac.client.networking.Client;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Updates.Update;
 import com.badlogic.gdx.Game;
 import org.apache.log4j.Logger;
 
@@ -10,6 +11,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * The enum Screens.
@@ -21,6 +24,7 @@ public enum Screens {
     INSTANCE;
     private final Logger logger;
     private final HashMap<Class, AbstractScreen> screens;
+    private final BlockingQueue<Update> updates;
     private Game game;
     private boolean isInit;
     private Class currentScreen;
@@ -49,6 +53,11 @@ public enum Screens {
         screens.put(SplashScreen.class, new SplashScreen());
         screens.put(UsernameScreen.class, new UsernameScreen());
         logger = Logger.getLogger(getClass());
+        updates = new ArrayBlockingQueue<>(1024);
+    }
+
+    public BlockingQueue<Update> getUpdates() {
+        return updates;
     }
 
     /**
@@ -124,7 +133,7 @@ public enum Screens {
      */
 // Initialization with the game class
     public void initialize(Game game) {
-        this.client = new Client();
+        this.client = new Client(this.updates);
         this.logger.warn("Init");
         this.game = game;
         this.isInit = true;
@@ -142,6 +151,7 @@ public enum Screens {
      *
      * @param <T>  the type parameter
      * @param type the type
+     *
      * @return the screen
      */
     public <T extends AbstractScreen> T getScreen(Class<T> type) {

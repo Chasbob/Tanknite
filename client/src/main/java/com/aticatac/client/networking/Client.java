@@ -12,7 +12,6 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -29,9 +28,9 @@ public class Client {
     /**
      * Instantiates a new Client.
      */
-    public Client() {
+    public Client(BlockingQueue<Update> updates) {
         this.logger = Logger.getLogger(getClass());
-        this.updates = new ArrayBlockingQueue<>(100);
+        this.updates = updates;
 //        login = new Login(id);
     }
 
@@ -40,6 +39,7 @@ public class Client {
      *
      * @param server the server
      * @param id     the id
+     *
      * @throws IOException  the io exception
      * @throws InvalidBytes the invalid bytes
      */

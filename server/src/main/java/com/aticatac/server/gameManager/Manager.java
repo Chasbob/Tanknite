@@ -16,6 +16,10 @@ public enum Manager {
     private final HashMap<String, GameObject> playerMap;
     private GameObject root;
 
+    public GameObject getRoot() {
+        return root;
+    }
+
     Manager() {
         this.logger = Logger.getLogger(getClass());
         playerMap = new HashMap<>();
