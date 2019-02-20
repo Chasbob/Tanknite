@@ -1,5 +1,6 @@
 package com.aticatac.client.util;
 
+import com.aticatac.client.game.GDXGame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -22,6 +23,7 @@ public enum Styles {
     private TextButton.TextButtonStyle startButtonStyle;
     private TextButton.TextButtonStyle backButtonStyle;
     private TextField.TextFieldStyle textFieldStyle;
+    private Texture blank;
 
     Styles() {
         System.out.println("Loading styles...");
@@ -90,6 +92,8 @@ public enum Styles {
         backButtonStyle = new TextButton.TextButtonStyle();
         backButtonStyle.font = buttonFont;
         backButtonStyle.fontColor = Color.YELLOW;
+        //load in blank texture for healthbar
+        blank = new Texture(Gdx.files.internal("img/white.png"));
     }
 
     public static Styles getInstance() {
@@ -130,5 +134,9 @@ public enum Styles {
 
     public TextField.TextFieldStyle getTextFieldStyle() {
         return textFieldStyle;
+    }
+
+    public Texture getBlank() {
+        return blank;
     }
 }

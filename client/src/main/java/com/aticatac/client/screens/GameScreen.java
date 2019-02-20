@@ -3,6 +3,7 @@ package com.aticatac.client.screens;
 import com.aticatac.client.objectsystem.AddTexture;
 import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
+import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
@@ -31,6 +32,7 @@ public class GameScreen extends AbstractScreen {
     private GameObject root;
     private GameObject tank;
     private final SpriteBatch batch;
+    private float health;
 
     /**
      * Instantiates a new Game screen.
@@ -47,6 +49,7 @@ public class GameScreen extends AbstractScreen {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        health = 1f;
         batch = new SpriteBatch();
         Gdx.input.setInputProcessor(this);
     }
@@ -88,6 +91,18 @@ public class GameScreen extends AbstractScreen {
         Input();
         batch.begin();
         ChildRenderer(root);
+
+        //health bar
+        if (health > 0.6f){
+            batch.setColor(Color.GREEN);
+        }else if(health < 0.6f && health >0.2f){
+            batch.setColor(Color.ORANGE);
+        }else{
+            batch.setColor(Color.RED);
+        }
+        batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth()*health, 5);
+        batch.setColor(Color.WHITE);
+
         batch.end();
         cam.update();
         super.act(delta);
