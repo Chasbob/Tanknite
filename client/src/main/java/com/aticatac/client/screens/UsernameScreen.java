@@ -47,8 +47,8 @@ public class UsernameScreen extends AbstractScreen {
         //create custom listener for submit button to get text field text
         submitButton.addListener(UIFactory.newListenerEvent(() -> {
             if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
-                Client client = new Client();
-                boolean accepted = client.connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
+//                Client client = new Client();
+                boolean accepted = Screens.INSTANCE.getClient().connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
                 if (accepted) {
                     nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
                     Screens.INSTANCE.showScreen(GameScreen.class);

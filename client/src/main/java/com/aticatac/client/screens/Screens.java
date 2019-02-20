@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.networking.Client;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.Game;
 import org.apache.log4j.Logger;
@@ -25,6 +26,7 @@ public enum Screens {
     private ServerInformation localhost;
     private ServerInformation currentInformation;
     private boolean singleplayer;
+    private Client client;
 
     Screens() {
         try {
@@ -105,6 +107,10 @@ public enum Screens {
         return previousScreen;
     }
 
+    public Client getClient() {
+        return client;
+    }
+
     /**
      * Initialize.
      *
@@ -112,6 +118,7 @@ public enum Screens {
      */
 // Initialization with the game class
     public void initialize(Game game) {
+        this.client = new Client();
         this.logger.warn("Init");
         this.game = game;
         this.isInit = true;
@@ -129,6 +136,7 @@ public enum Screens {
      *
      * @param <T>  the type parameter
      * @param type the type
+     *
      * @return the screen
      */
     public <T extends AbstractScreen> T getScreen(Class<T> type) {

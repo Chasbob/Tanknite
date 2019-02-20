@@ -11,14 +11,12 @@ import java.util.concurrent.BlockingQueue;
  * The type Gdx game.
  */
 public class GDXGame extends Game {
-    private Client client;
     private BlockingQueue<Update> updates;
 
     @Override
     public void create() {
         try {
             this.updates = new ArrayBlockingQueue<>(100);
-            this.client = new Client();
             //TODO show splash screen whilst it loads
             Screens.INSTANCE.initialize(this);
         } catch (Exception e) {

@@ -20,9 +20,9 @@ import java.util.concurrent.BlockingQueue;
  */
 public class Client {
     private final Logger logger;
+    private final BlockingQueue<Update> updates;
     private Login login;
     private PrintStream printer;
-    private final BlockingQueue<Update> updates;
 
     /**
      * Instantiates a new Client.
@@ -38,6 +38,7 @@ public class Client {
      *
      * @param server the server
      * @param id     the id
+     *
      * @throws IOException  the io exception
      * @throws InvalidBytes the invalid bytes
      */
@@ -90,6 +91,6 @@ public class Client {
         this.logger.trace("Writing command to output stream.");
         String json = ModelReader.toJson(commandModel);
         this.printer.println(json);
-        this.logger.trace("Sent command: " + command);
+        this.logger.info("Sent command: " + command);
     }
 }

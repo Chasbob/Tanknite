@@ -63,7 +63,7 @@ public class Server extends Thread {
             try {
                 Thread.sleep(5000);
 //                System.out.println("There are: " + this.clients.size() + " clients.");
-                this.logger.trace("There are: " + this.requests.size() + " requests in the queue.");
+                this.logger.info("There are: " + this.requests.size() + " requests in the queue.");
             } catch (InterruptedException e) {
                 this.multicaster.interrupt();
                 this.newClients.interrupt();

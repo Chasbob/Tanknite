@@ -6,6 +6,7 @@ import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.prefabs.BulletObject;
 import com.aticatac.server.prefabs.TankObject;
@@ -26,13 +27,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
+    private final SpriteBatch batch;
     private Table popUpTable;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
     private GameObject root;
     private GameObject tank;
-    private final SpriteBatch batch;
     private float health;
 
     /**
@@ -42,7 +43,7 @@ public class GameScreen extends AbstractScreen {
         super();
         try {
             cam = new OrthographicCamera(getWidth(), getHeight());
-            cam.position.set(getWidth()/2f, getHeight()/2f, cam.position.z);
+            cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
             root = new GameObject("root");
             tank = new TankObject(root, "Tank", new Position(getWidth() / 2, getHeight() / 2), 100, 100);
             ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/TankBottom.png");
@@ -106,7 +107,7 @@ public class GameScreen extends AbstractScreen {
         popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
         //create resume button
         TextButton resumeButton = UIFactory.createButton("resume");
-        resumeButton.addListener(UIFactory.newListenerEvent(()-> {
+        resumeButton.addListener(UIFactory.newListenerEvent(() -> {
             popUpTable.setVisible(false);
             return false;
         }));
@@ -129,18 +130,16 @@ public class GameScreen extends AbstractScreen {
         Input();
         batch.begin();
         ChildRenderer(root);
-
         //health bar
-        if (health > 0.6f){
+        if (health > 0.6f) {
             batch.setColor(Color.GREEN);
-        }else if(health < 0.6f && health >0.2f){
+        } else if (health < 0.6f && health > 0.2f) {
             batch.setColor(Color.ORANGE);
-        }else{
+        } else {
             batch.setColor(Color.RED);
         }
-        batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth()*health, 5);
+        batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
-
         batch.end();
         cam.update();
         super.act(delta);
@@ -193,6 +192,7 @@ public class GameScreen extends AbstractScreen {
      * Y lib gdx 2 y transform float.
      *
      * @param y the y
+     *
      * @return the float
      */
 //TODO Convert game co-ord to Transform.class cord
@@ -207,6 +207,7 @@ public class GameScreen extends AbstractScreen {
      * Transform y 2 libgdx float.
      *
      * @param y the y
+     *
      * @return the float
      */
     public float TransformY2Libgdx(float y) {
@@ -220,6 +221,7 @@ public class GameScreen extends AbstractScreen {
      * X lib gdx 2 x transform float.
      *
      * @param x the x
+     *
      * @return the float
      */
     private float XLibGdx2XTransform(float x) {
@@ -236,15 +238,19 @@ public class GameScreen extends AbstractScreen {
             popUpTable.setVisible(true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
             tank.getChildren().get(0).getComponent(Transform.class).SetRotation(90);
             tank.getComponent(Transform.class).Transform(3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
             tank.getChildren().get(0).getComponent(Transform.class).SetRotation(90);
             tank.getComponent(Transform.class).Transform(-3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            Screens.INSTANCE.getClient().sendCommand(Command.UP);
             tank.getChildren().get(0).getComponent(Transform.class).SetRotation(0);
             tank.getComponent(Transform.class).Transform(0, -3);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             tank.getChildren().get(0).getComponent(Transform.class).SetRotation(0);
             tank.getComponent(Transform.class).Transform(0, 3);
         }
