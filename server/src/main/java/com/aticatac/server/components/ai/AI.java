@@ -63,7 +63,7 @@ public class AI extends Component {
         this.aggression = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
         this.collectiveness = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
 
-        this.aimAngle = 0;
+        this.aimAngle = 0; // or whichever direction the tank faces at start
         this.aimed = false;
     }
 
@@ -444,14 +444,13 @@ public class AI extends Component {
             angle += (Math.PI * 2);
         int targetAngle = (int)Math.round(Math.toDegrees(angle));
 
-        // TODO: proportional control
-        //int difference = Math.abs(targetAngle - aimAngle);
+        int change = Math.abs(targetAngle - aimAngle) / 2;
 
-        if (Math.abs(((aimAngle + 1) % 360) - targetAngle) < Math.abs(((aimAngle - 1) % 360) - targetAngle)) {
-            aimAngle += 1;
+        if (Math.abs(((aimAngle + change) % 360) - targetAngle) < Math.abs(((aimAngle - change) % 360) - targetAngle)) {
+            aimAngle += change;
         }
-        else if (Math.abs(((aimAngle + 1) % 360) - targetAngle) > Math.abs(((aimAngle - 1) % 360) - targetAngle)) {
-            aimAngle -= 1;
+        else if (Math.abs(((aimAngle + change) % 360) - targetAngle) > Math.abs(((aimAngle - change) % 360) - targetAngle)) {
+            aimAngle -= change;
         }
         else {
             aimed = true;
