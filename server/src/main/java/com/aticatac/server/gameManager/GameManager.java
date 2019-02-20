@@ -1,63 +1,60 @@
 package com.aticatac.server.gameManager;
 
-import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.prefabs.TankObject;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
-public class GameManager {
+public class GameManager implements Runnable {
+    private static final int min = 0, max = 640;
+    private final Logger logger;
     public HashMap<String, GameObject> playerMap = new HashMap<>();
     private GameObject root;
 
-    public GameManager(ArrayList<String> username) {
+    public GameManager() {
+        this.logger = Logger.getLogger(getClass());
         try {
             root = new GameObject("Root");
-
-            var tankContainer = new GameObject("Tank Container", root);
-
-            int min = 0, max = 640;
-            for (int i = 0; i < username.size(); i++) {
-                //Initalise Tank
-                var tank = new TankObject(tankContainer,
-                        "Tank" + i,
-                                        new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-                                                ThreadLocalRandom.current().nextInt(min, max + 1)),
-                                        100,
-                                        30);
-                //Insert Tank into Hashmap
-                playerMap.put(username.get(i), tank);
-            }
-        } catch (Exception unchecked) {
+            root.addComponent(com.aticatac.server.components.GameManager.class);
+        } catch (ComponentExistsException | InvalidClassInstance e) {
+            this.logger.error("Ewan promises this will NEVER HAPPEN.\n" + e);
         }
     }
 
-    public void playerInput(String player, Command cmd) {
-//        var tank = playerMap.get(player);
-//        switch (cmd) {
-//            case UP:
-//                tank.transform.SetRotation(0);
-//                tank.transform.Forward(-3);
-//                break;
-//            case DOWN:
-//                tank.transform.SetRotation(180);
-//                tank.transform.Forward(-3);
-//                break;
-//            case LEFT:
-//                tank.transform.SetRotation(-90);
-//                tank.transform.Forward(-3);
-//                break;
-//            case RIGHT:
-//                tank.transform.SetRotation(90);
-//                tank.transform.Forward(-3);
-//                break;
-//        }
-        System.out.println("printing input");
+    public void addClient(String username) {
+        root.getComponent(com.aticatac.server.components.GameManager.class).addPlayer(username);
     }
 
-    public void EndOfGame() {
+    public void removeClient(String username) {
+        root.getComponent(com.aticatac.server.components.GameManager.class).removeClient(username);
+    }
+
+    public void playerInput(String player, Command cmd) {
+        root.getComponent(com.aticatac.server.components.GameManager.class).playerInput(player, cmd);
+    }
+
+    public void endOfGame() {
+        //TODO
+    }
+
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+    @Override
+    public void run() {
+    }
+
+    public void stop() {
     }
 }

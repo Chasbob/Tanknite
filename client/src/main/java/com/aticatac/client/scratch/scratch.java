@@ -2,6 +2,7 @@ package com.aticatac.client.scratch;
 
 import com.aticatac.client.objectsystem.ContainerWrapper;
 import com.aticatac.common.components.Component;
+import com.aticatac.common.components.Texture;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
@@ -28,9 +29,14 @@ class Scratch {
         var root = new GameObject("Test");
         System.out.println("Generating Objects...");
 
+        String[] texture = new String[10];
+        for (int i = 0;i<=9;i++){
+            texture[i]= Integer.toString(i);
+        }
         for (int i = 0;i<1000;i++){
             var obj = new GameObject("Test", root);
             obj.transform.SetTransform((float)(Math.random()*1000),(float)(Math.random()*1000));
+            obj.addComponent(Texture.class).Texture=texture[0];
         }
 
         GsonBuilder builder = new GsonBuilder();

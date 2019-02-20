@@ -123,6 +123,10 @@ public class GameObject extends AbstractObject {
         return components.values();
     }
 
+    public static void Destroy(GameObject g){
+
+    }
+
     //Getters and Setters
     public AbstractObject getParent() {
         return parent.get();

@@ -15,8 +15,10 @@ public class TurretController extends Component {
 
     public boolean shoot () {
         //TODO shooting
-        //BulletController bullet = new BulletController(Transform.getX(), Transform.getY(), Transform.getRotation()); // NEED TO CHANGE PARAMS FOR BULLET
-        //bullet.moveForwards();
+        BulletController bullet = new BulletController(this.getGameObject());
+        bullet.moveForwards();
+        //moves forwards until collision happens then it will be destroyed.
+        //constantly check if collided() method is returning true
         return true;
     }
 

@@ -1,6 +1,7 @@
 package com.aticatac.server.networking;
 
-import com.aticatac.common.model.Command;
+import com.aticatac.common.model.CommandModel;
+import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.networking.listen.NewClients;
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server extends Thread {
     private final Logger logger;
     private final ConcurrentHashMap<String, Client> clients;
-    private final BlockingQueue<Command> requests;
+    private final BlockingQueue<CommandModel> requests;
     private final NewClients newClients;
     private final Updater multicaster;
     private final Discovery discovery;
@@ -47,25 +48,31 @@ public class Server extends Thread {
         this.multicaster.start();
         this.newClients.start();
         this.discovery.start();
-//        (new Thread(() -> {
-//            //TODO remove testing thread
-////            while (true) {
-////                try {
-////                    System.out.println(this.requests.take());
-////                } catch (InterruptedException ignored) {
-////                }
-////            }
-//        })).start();
-
+        (new Thread(() -> {
+            //TODO remove testing thread
+            while (true) {
+                try {
+//                    System.out.println(this.requests.take());
+                    CommandModel model = this.requests.take();
+                    Manager.INSTANCE.playerInput(model.getId(), model.getCommand());
+                } catch (InterruptedException ignored) {
+                }
+            }
+        })).start();
         while (!this.isInterrupted()) {
             try {
                 Thread.sleep(5000);
 //                System.out.println("There are: " + this.clients.size() + " clients.");
                 this.logger.trace("There are: " + this.requests.size() + " requests in the queue.");
             } catch (InterruptedException e) {
-                this.logger.error(e);
+                this.multicaster.interrupt();
+                this.newClients.interrupt();
+                this.discovery.interrupt();
+                this.interrupt();
+                return;
             }
         }
+        this.logger.warn("Interrupted");
     }
 
     /**
@@ -74,7 +81,7 @@ public class Server extends Thread {
      * @return the command
      * @throws InterruptedException the interrupted exception
      */
-    public Command nextCommand() throws InterruptedException {
+    public CommandModel nextCommand() throws InterruptedException {
         this.logger.warn("Taking command");
         return this.requests.take();
     }
