@@ -5,6 +5,7 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.objectsystem.GameObject;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,8 @@ import java.util.Set;
  * The server component will be used to store data that needs to be seen by the server and potentially passed to the
  * client. It will be the up to date synchronised data from all the GameObjects. It will be stored in this component so
  * the server does not need to check all the components for all objects each time.
+ *
+ * @author Claire Fletcher
  */
 public class ServerData extends Component {
     //initial values
@@ -33,87 +36,7 @@ public class ServerData extends Component {
     /**
      * HashMap of the tank and it's current coordinates
      */
-    private BidiMap<String, Position> occupiedCoordinatesTank = new BidiMap<>() {
-        @Override
-        public MapIterator<String, Position> mapIterator() {
-            return null;
-        }
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Position get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Position put(String key, Position value) {
-            return null;
-        }
-
-        @Override
-        public Position remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(Map<? extends String, ? extends Position> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @Override
-        public String getKey(Object value) {
-            return null;
-        }
-
-        @Override
-        public String removeValue(Object value) {
-            return null;
-        }
-
-        @Override
-        public BidiMap<Position, String> inverseBidiMap() {
-            return null;
-        }
-
-        @Override
-        public Set<Position> values() {
-            return null;
-        }
-
-        @Override
-        public Set<Entry<String, Position>> entrySet() {
-            return null;
-        }
-    };
+    private BidiMap<String, Position> occupiedCoordinatesTank = new DualHashBidiMap<>();
     /**
      * ArrayList of the currently occupied coordinates
      */

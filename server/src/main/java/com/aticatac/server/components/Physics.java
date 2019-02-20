@@ -13,6 +13,9 @@ import java.util.ArrayList;
  * Physics component will control the physics for the objects in the game. It will consider the new positions of
  * objects and alter any physics values (e.g. velocity) for the object. The positions of the object are kept in
  * TransformModel and will be altered by the logic, not this component.
+ *
+ * @author Claire Fletcher
+ *
  */
 public class Physics extends Component {
     /**
@@ -131,7 +134,7 @@ public class Physics extends Component {
     /**
      * BulletController move position.
      *
-     * @param bearing the bearing
+     * @param rotation the bearing
      * @return the position
      */
     public Object[] bulletMove(double rotation) {
@@ -165,6 +168,8 @@ public class Physics extends Component {
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
         BidiMap<String, Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank();
 
+        //TODO make this get coords from DataServer
+
         Integer collisionType;
         // other object = 1, tank = 2, nothing = 0
 
@@ -184,8 +189,7 @@ public class Physics extends Component {
             }
         }
 
-        //Collisions check in hashmap of tank coordinates
-        //TODO does it need to check if not itself?
+        //Below can be the only part of this that is checked and will then return the type that it is
         if(occupiedCoordinatesTank.containsValue(newPosition)){
             collisionType = 2;
             //Returning a collision type and also the position
