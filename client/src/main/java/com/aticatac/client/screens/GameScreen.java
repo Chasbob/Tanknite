@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -62,18 +63,54 @@ public class GameScreen extends AbstractScreen {
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
-        //rootTable.setPosition(640/2f, 640/2f);
         addActor(rootTable);
+        //create table and labels for player count and kills - TOP LEFT
+        Table countTable = new Table();
+        countTable.setFillParent(true);
+        rootTable.addActor(countTable);
+        countTable.top().left();
+        countTable.defaults().padTop(10).padLeft(10).left();
+        Label players = UIFactory.createLabel("player count: ");
+        countTable.add(players);
+        countTable.row();
+        Label kills = UIFactory.createLabel("kills: ");
+        countTable.add(kills);
+        //create table for kill feed - BOTTOM LEFT
+        Table killTable = new Table();
+        killTable.setFillParent(true);
+        rootTable.addActor(killTable);
+        killTable.bottom().left();
+        killTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
+        Label tempKill = UIFactory.createGameLabel("Archie killed Ewan");
+        killTable.add(tempKill);
+        //create table for ammo - BOTTOM RIGHT
+        Table ammoTable = new Table();
+        ammoTable.setFillParent(true);
+        rootTable.addActor(ammoTable);
+        ammoTable.bottom().right();
+        ammoTable.defaults().padRight(10).padTop(10).padBottom(20).left();
+        Label ammo = UIFactory.createLabel("ammo: ");
+        ammoTable.add(ammo);
         //create pop up table
         popUpTable = new Table();
-        rootTable.add(popUpTable);
+        rootTable.addActor(popUpTable);
+        popUpTable.setFillParent(true);
+        popUpTable.center();
         popUpTable.setVisible(false);
-        popUpTable.defaults().pad(10).width(150).center();
+        popUpTable.defaults().pad(10).width(150);
         //create style for pop up tables
         Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGB565);
         tableColour.setColor(Color.DARK_GRAY);
         tableColour.fill();
         popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
+        //create resume button
+        TextButton resumeButton = UIFactory.createButton("resume");
+        resumeButton.addListener(UIFactory.newListenerEvent(()-> {
+            popUpTable.setVisible(false);
+            return false;
+        }));
+        popUpTable.add(resumeButton);
+        popUpTable.row();
         //create quit button go back to the main menu and disconnect form server
         TextButton quitButton = UIFactory.createBackButton("quit");
         //TODO add proper exiting of server

@@ -122,6 +122,10 @@ public class UIFactory {
         return new Label(text, Styles.INSTANCE.getLabelStyle());
     }
 
+    public static Label createGameLabel(String text){
+        return new Label(text, Styles.INSTANCE.getGameLabelStyle());
+    }
+
     /**
      * New change screen event input listener.
      *

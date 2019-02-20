@@ -16,6 +16,7 @@ public enum Styles {
     private Label.LabelStyle errorStyle;
     private Label.LabelStyle hideLabelStyle;
     private Label.LabelStyle labelStyle;
+    private Label.LabelStyle gameLabelStyle;
     private Label.LabelStyle titleStyle;
     private TextButton.TextButtonStyle buttonStyle;
     private TextButton.TextButtonStyle selectedButtonStyle;
@@ -37,10 +38,13 @@ public enum Styles {
         //System.out.println("Path: " + path);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.ttf"));
         System.out.println("Loaded ttf");
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter10.size = 10;
         parameter15.size = 15;
         parameter40.size = 40;
+        BitmapFont gameLabelFont = generator.generateFont(parameter10);
         BitmapFont buttonFont = generator.generateFont(parameter15);
         BitmapFont titleFont = generator.generateFont(parameter40);
         generator.dispose();
@@ -60,6 +64,10 @@ public enum Styles {
         hideLabelStyle = new Label.LabelStyle();
         hideLabelStyle.font = buttonFont;
         hideLabelStyle.fontColor = Color.BLACK;
+        //create style for game screen labels
+        gameLabelStyle = new Label.LabelStyle();
+        gameLabelStyle.font = gameLabelFont;
+        gameLabelStyle.fontColor = Color.WHITE;
         //create text field style with cursor
         textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = buttonFont;
@@ -115,6 +123,8 @@ public enum Styles {
     public Label.LabelStyle getLabelStyle() {
         return labelStyle;
     }
+
+    public Label.LabelStyle getGameLabelStyle(){ return gameLabelStyle;}
 
     public Label.LabelStyle getTitleStyle() {
         return titleStyle;
