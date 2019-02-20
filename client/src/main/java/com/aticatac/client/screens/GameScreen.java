@@ -7,8 +7,8 @@ import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.prefab.Bullet;
-import com.aticatac.common.prefab.Tank;
+import com.aticatac.server.prefabs.BulletObject;
+import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
@@ -44,9 +44,9 @@ public class GameScreen extends AbstractScreen {
             cam = new OrthographicCamera(getWidth(), getHeight());
             cam.position.set(getWidth()/2f, getHeight()/2f, cam.position.z);
             root = new GameObject("root");
-            tank = new Tank("Tank1", root, new Position(getWidth() / 2, getHeight() / 2));
-            ObjectHelper.AddRenderer(tank.children.get(0), "img/TankBottom.png");
-            ObjectHelper.AddRenderer(tank.children.get(1), "img/TankTop.png");
+            tank = new TankObject(root, "Tank", new Position(getWidth() / 2, getHeight() / 2), 100, 100);
+            ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/TankBottom.png");
+            ObjectHelper.AddRenderer(tank.getChildren().get(1), "img/TankTop.png");
             //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,7 +148,7 @@ public class GameScreen extends AbstractScreen {
     }
 
     private void ChildRenderer(GameObject g) {
-        for (var c : g.children) {
+        for (var c : g.getChildren()) {
             ChildRenderer(c);
             if (c.componentExists(Renderer.class)) {
                 Position p = c.getComponent(Transform.class).getPosition();
@@ -236,16 +236,16 @@ public class GameScreen extends AbstractScreen {
             popUpTable.setVisible(true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            tank.children.get(0).getComponent(Transform.class).SetRotation(90);
+            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(90);
             tank.getComponent(Transform.class).Transform(3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            tank.children.get(0).getComponent(Transform.class).SetRotation(90);
+            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(90);
             tank.getComponent(Transform.class).Transform(-3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            tank.children.get(0).getComponent(Transform.class).SetRotation(0);
+            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(0);
             tank.getComponent(Transform.class).Transform(0, -3);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            tank.children.get(0).getComponent(Transform.class).SetRotation(0);
+            tank.getChildren().get(0).getComponent(Transform.class).SetRotation(0);
             tank.getComponent(Transform.class).Transform(0, 3);
         }
         mouseMoved(Gdx.input.getX(), Gdx.input.getY());
@@ -271,8 +271,8 @@ public class GameScreen extends AbstractScreen {
         super.touchDown(screenX, screenY, pointer, button);
         if (button == Input.Buttons.LEFT) {
             try {
-                var bullet = new Bullet("Bullet", root);
-                AddTexture.addBulletTexture(bullet);
+                var bullet = new BulletObject("Bullet", root);
+                AddTexture.addTexture(bullet);
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
                 System.out.println("X:" + newX + "\nY:" + newY);
@@ -299,15 +299,15 @@ public class GameScreen extends AbstractScreen {
     public boolean mouseMoved(int screenX, int screenY) {
         var XMouse = XLibGdx2XTransform(screenX);
         var YMouse = YLibGdx2YTransform(screenY);
-        var XTankTop = tank.children.get(1).transform.getX();
-        var YTankTop = tank.children.get(1).transform.getY();
+        var XTankTop = tank.getChildren().get(1).transform.getX();
+        var YTankTop = tank.getChildren().get(1).transform.getY();
         var X = XMouse - XTankTop;
         var Y = YMouse - YTankTop;
         var rotation = Math.atan(Y / X);
         if (XMouse >= XTankTop)
-            tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
+            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
         else
-            tank.children.get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
+            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
         return false;
     }
 }
