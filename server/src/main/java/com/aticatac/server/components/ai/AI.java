@@ -72,7 +72,7 @@ public class AI extends Component {
      *
      * @return A decision
      */
-    public Decision getCommand() {
+    public Decision getDecision() {
         // Update information
         tankPos = tank.getComponent(Transform.class).getPosition();
         tankHealth = tank.getComponent(Health.class).getHealth();
@@ -82,13 +82,14 @@ public class AI extends Component {
 
         // Change aim angle
         aimed = false;
-        changeAimAngle();
+        int angleChange = getAngleChange();
+        aimAngle += angleChange;
 
         // Check for a state change
         state = getStateChange();
 
-        // Perform the action(s) of the current state
-        return new Decision(performStateAction(), aimAngle);
+        // Return a decision
+        return new Decision(performStateAction(), angleChange);
     }
 
     /**
@@ -432,9 +433,10 @@ public class AI extends Component {
         return closestObject;
     }
 
-    private void changeAimAngle() {
+    private int getAngleChange() {
+        // No enemy to aim at
         if (enemiesInRange.isEmpty()) {
-            return;
+            return 0;
         }
 
         Position target = getClosestEnemy().getTransform().getPosition();
@@ -447,14 +449,15 @@ public class AI extends Component {
         int change = Math.abs(targetAngle - aimAngle) / 2;
 
         if (Math.abs(((aimAngle + change) % 360) - targetAngle) < Math.abs(((aimAngle - change) % 360) - targetAngle)) {
-            aimAngle += change;
+            return change;
         }
-        else if (Math.abs(((aimAngle + change) % 360) - targetAngle) > Math.abs(((aimAngle - change) % 360) - targetAngle)) {
-            aimAngle -= change;
+        if (Math.abs(((aimAngle + change) % 360) - targetAngle) > Math.abs(((aimAngle - change) % 360) - targetAngle)) {
+            return -change;
         }
-        else {
-            aimed = true;
-        }
+
+        // No change needed -> on target
+        aimed = true;
+        return 0;
 
     }
 
