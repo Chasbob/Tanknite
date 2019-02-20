@@ -49,6 +49,8 @@ public class AI extends Component {
     private Position tankPos;
     private int tankHealth;
     private int tankAmmo;
+    private int aimAngle;
+    private boolean aimed;
 
     public AI(GameObject parent, Graph graph) {
         super(parent);
@@ -60,14 +62,17 @@ public class AI extends Component {
 
         this.aggression = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
         this.collectiveness = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
+
+        this.aimAngle = 0;
+        this.aimed = false;
     }
 
     /**
-     * Returns a command to control the tank.
+     * Returns a decision to control the tank.
      *
-     * @return A command
+     * @return A decision
      */
-    public Command getCommand() {
+    public Decision getCommand() {
         // Update information
         tankPos = tank.getComponent(Transform.class).getPosition();
         tankHealth = tank.getComponent(Health.class).getHealth();
@@ -75,11 +80,15 @@ public class AI extends Component {
         enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
         powerupsInRange = getPowerupsInRange(tankPos, VIEW_RANGE);
 
+        // Change aim angle
+        aimed = false;
+        changeAimAngle();
+
         // Check for a state change
         state = getStateChange();
 
         // Perform the action(s) of the current state
-        return performStateAction();
+        return new Decision(performStateAction(), aimAngle);
     }
 
     /**
@@ -145,8 +154,8 @@ public class AI extends Component {
      * @return The utility score for the FLEEING state
      */
     private int getFleeingUtility() {
-        if (enemiesInRange.isEmpty()){
-            // Nothing to flee from
+        if (enemiesInRange.isEmpty() || tankHealth <= 10){
+            // Nothing to flee from || can't move -> can't flee
             return 0;
         }
         if (tankAmmo == 0) {
@@ -178,6 +187,10 @@ public class AI extends Component {
      */
     private int getObtainingUtility() {
         /*
+        if (tankHealth <= 10) {
+            // can't move -> can't obtain
+            return 0;
+        }
         if (tankAmmo <= 5 && ammo powerup is in powerupsInRange){
             idealPowerup = ammo powerup;
             return (int)Math.round(100 * collectiveness);
@@ -246,8 +259,7 @@ public class AI extends Component {
      * @return A command from the ATTACKING state
      */
     private Command performAttackingAction() {
-        if (checkLineOfSightToPosition(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition())) {
-            // TODO aim
+        if (checkLineOfSightToPosition(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition()) && aimed) {
             return Command.SHOOT;
         }
         else {
@@ -364,7 +376,7 @@ public class AI extends Component {
      * @return A list of enemies in range of the position
      */
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-        return getGameObjectsInRange(position, range);
+        return getGameObjectsInRange(position, range,  new ArrayList<GameObject>()); // TODO: GeT tHiS iNfO
     }
 
     /**
@@ -384,7 +396,7 @@ public class AI extends Component {
      * @return A list of power-up in range of the position
      */
     private ArrayList<GameObject> getPowerupsInRange(Position position, int range) {
-        return getGameObjectsInRange(position, range);
+        return getGameObjectsInRange(position, range, new ArrayList<GameObject>()); // TODO: get this INFO BOI
     }
 
     /**
@@ -396,8 +408,7 @@ public class AI extends Component {
         return getClosestObject(powerupsInRange);
     }
 
-    private ArrayList<GameObject> getGameObjectsInRange(Position position, int range) {
-        ArrayList<GameObject> allObjects = new ArrayList<GameObject>(); // TODO ***Get this info***
+    private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
         for (GameObject enemy : allObjects) {
             if (Math.abs(enemy.getComponent(Transform.class).getPosition().x - position.x) <= range ||
@@ -419,6 +430,33 @@ public class AI extends Component {
             }
         }
         return closestObject;
+    }
+
+    private void changeAimAngle() {
+        if (enemiesInRange.isEmpty()) {
+            return;
+        }
+
+        Position target = getClosestEnemy().getTransform().getPosition();
+
+        double angle = Math.atan2(target.x - tankPos.x, tankPos.y - target.y);
+        if (angle < 0)
+            angle += (Math.PI * 2);
+        int targetAngle = (int)Math.round(Math.toDegrees(angle));
+
+        // TODO: proportional control
+        //int difference = Math.abs(targetAngle - aimAngle);
+
+        if (Math.abs(((aimAngle + 1) % 360) - targetAngle) < Math.abs(((aimAngle - 1) % 360) - targetAngle)) {
+            aimAngle += 1;
+        }
+        else if (Math.abs(((aimAngle + 1) % 360) - targetAngle) > Math.abs(((aimAngle - 1) % 360) - targetAngle)) {
+            aimAngle -= 1;
+        }
+        else {
+            aimed = true;
+        }
+
     }
 
 }
