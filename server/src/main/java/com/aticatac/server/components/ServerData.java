@@ -4,13 +4,10 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.objectsystem.GameObject;
 import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The server component will be used to store data that needs to be seen by the server and potentially passed to the

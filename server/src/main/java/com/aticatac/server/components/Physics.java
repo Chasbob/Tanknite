@@ -168,7 +168,8 @@ public class Physics extends Component {
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
         BidiMap<String, Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank();
 
-        //TODO make this get coords from DataServer
+        //BidiMap<String, Position> occupiedCoordinatesTank = DataServer.INSTANCE.getOccupiedCoordinates();
+        //String typeOfCollision;
 
         Integer collisionType;
         // other object = 1, tank = 2, nothing = 0
@@ -192,6 +193,8 @@ public class Physics extends Component {
         //Below can be the only part of this that is checked and will then return the type that it is
         if(occupiedCoordinatesTank.containsValue(newPosition)){
             collisionType = 2;
+            //typeOfCollision = occupiedCoordinatesTank.getKey(newPosition);
+            //returnPosition[0] = typeOfCollision;
             //Returning a collision type and also the position
             Object[] returnPosition = new Object[2];
             returnPosition[0] = collisionType;
@@ -201,6 +204,7 @@ public class Physics extends Component {
         }
 
         collisionType = 0;
+        //typeOfCollision = "none";
 
         //Returning a collision type and also the position
         Object[] returnPosition = new Object[2];
