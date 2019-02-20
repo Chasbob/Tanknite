@@ -107,13 +107,13 @@ public class AI extends Component {
         if (maxUtility == searchingUtility) {
             return State.SEARCHING;
         }
-        else if (maxUtility == attackingUtility) {
+        if (maxUtility == attackingUtility) {
             return State.ATTACKING;
         }
-        else if (maxUtility == fleeingUtility) {
+        if (maxUtility == fleeingUtility) {
             return State.FLEEING;
         }
-        else if (maxUtility == obtainingUtility) {
+        if (maxUtility == obtainingUtility) {
             return State.OBTAINING;
         }
         return State.SEARCHING;
