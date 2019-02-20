@@ -16,7 +16,11 @@ public enum DataServer {
     INSTANCE;
 
     private BidiMap<String, Position> occupiedCoordinates= new DualHashBidiMap<>();
-    DataServer(){ }
+    DataServer(){
+
+        //anything that needs setting up.
+
+    }
 
     /**
      * Sets the
@@ -33,7 +37,7 @@ public enum DataServer {
      * @param type
      * @param position
      */
-    public void setOccupiedCoordinates(String type, Position position) {
+    public void setCoordinates(String type, Position position) {
         this.occupiedCoordinates.replace(type, position);
 
     }
