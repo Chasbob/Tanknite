@@ -50,25 +50,24 @@ public class GameManager extends Component {
         switch (cmd) {
             case UP:
                 //tank.getComponent(TankController.class).moveUp();
-                getLogger().info("Player: " + player + " sent command: " + cmd);
+                logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case DOWN:
                 //tank.getComponent(TankController.class).moveDown();
-                getLogger().info("Player: " + player + " sent command: " + cmd);
+                logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case LEFT:
                 //tank.getComponent(TankController.class).moveLeft();
-                getLogger().info("Player: " + player + " sent command: " + cmd);
+                logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case RIGHT:
                 //tank.getComponent(TankController.class).moveRight();
-                getLogger().info("Player: " + player + " sent command: " + cmd);
+                logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case SHOOT:
                 //tank.getComponent(TankController.class).shoot();
-                getLogger().info("Player: " + player + " sent command: " + cmd);
+                logger.info("Player: " + player + " sent command: " + cmd);
         }
-        System.out.println("printing input" + player);
     }
 
     public TankObject createTank() {

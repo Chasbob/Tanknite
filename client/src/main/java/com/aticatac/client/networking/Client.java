@@ -22,7 +22,9 @@ public class Client {
     private final Logger logger;
     private final BlockingQueue<Update> updates;
     private Login login;
+    private String id;
     private PrintStream printer;
+    private boolean connected;
 
     /**
      * Instantiates a new Client.
@@ -38,12 +40,11 @@ public class Client {
      *
      * @param server the server
      * @param id     the id
-     *
      * @throws IOException  the io exception
      * @throws InvalidBytes the invalid bytes
      */
     public boolean connect(ServerInformation server, String id) throws IOException, InvalidBytes {
-        boolean clientAccepted = false;
+        this.connected = false;
         Login login = new Login(id);
         this.logger.trace("ID: " + id);
         this.logger.trace("login: " + ModelReader.toJson(login));
@@ -60,11 +61,11 @@ public class Client {
         if (output.isAuthenticated()) {
             this.logger.trace("Multicast address: " + output.getMulticast());
             initUpdateSocket(InetAddress.getByName(output.getMulticast()), server.getPort());
-            clientAccepted = true;
+            this.connected = true;
         }
-        this.login = output;
+        this.id = output.getId();
         this.logger.info("Exiting 'connect' cleanly.");
-        return clientAccepted;
+        return this.connected;
     }
 
     private void initUpdateSocket(InetAddress address, int port) throws IOException {
@@ -83,11 +84,11 @@ public class Client {
      * @param command the command
      */
     public void sendCommand(Command command) {
-        if (this.login == null) {
+        if (!this.connected) {
             return;
         }
         this.logger.trace("Sending command: " + command);
-        CommandModel commandModel = new CommandModel(this.login.getId(), command);
+        CommandModel commandModel = new CommandModel(this.id, command);
         this.logger.trace("Writing command to output stream.");
         String json = ModelReader.toJson(commandModel);
         this.printer.println(json);

@@ -192,7 +192,6 @@ public class GameScreen extends AbstractScreen {
      * Y lib gdx 2 y transform float.
      *
      * @param y the y
-     *
      * @return the float
      */
 //TODO Convert game co-ord to Transform.class cord
@@ -207,7 +206,6 @@ public class GameScreen extends AbstractScreen {
      * Transform y 2 libgdx float.
      *
      * @param y the y
-     *
      * @return the float
      */
     public float TransformY2Libgdx(float y) {
@@ -221,7 +219,6 @@ public class GameScreen extends AbstractScreen {
      * X lib gdx 2 x transform float.
      *
      * @param x the x
-     *
      * @return the float
      */
     private float XLibGdx2XTransform(float x) {

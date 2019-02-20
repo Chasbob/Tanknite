@@ -1,6 +1,5 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.networking.Client;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -57,8 +56,7 @@ public class UsernameScreen extends AbstractScreen {
                 }
                 return false;
             } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-                Client client = new Client();
-                boolean accepted = client.connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
+                boolean accepted = Screens.INSTANCE.connect(textField.getText());
                 if (accepted) {
                     nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
                     Screens.INSTANCE.showScreen(LobbyScreen.class);

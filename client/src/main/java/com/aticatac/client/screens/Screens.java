@@ -1,10 +1,12 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.networking.Client;
+import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.Game;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -111,6 +113,10 @@ public enum Screens {
         return client;
     }
 
+    public boolean connect(String id) throws IOException, InvalidBytes {
+        return this.client.connect(this.getCurrentInformation(), id);
+    }
+
     /**
      * Initialize.
      *
@@ -136,7 +142,6 @@ public enum Screens {
      *
      * @param <T>  the type parameter
      * @param type the type
-     *
      * @return the screen
      */
     public <T extends AbstractScreen> T getScreen(Class<T> type) {
