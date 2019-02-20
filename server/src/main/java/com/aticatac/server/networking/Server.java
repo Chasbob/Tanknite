@@ -48,18 +48,18 @@ public class Server extends Thread {
         this.discovery.start();
 //        (new Thread(() -> {
 //            //TODO remove testing thread
-////            while (true) {
-////                try {
-////                    System.out.println(this.requests.take());
-////                } catch (InterruptedException ignored) {
-////                }
-////            }
+//            while (true) {
+//                try {
+//                    System.out.println(this.requests.take());
+//                } catch (InterruptedException ignored) {
+//                }
+//            }
 //        })).start();
 
         while (!this.isInterrupted()) {
             try {
                 Thread.sleep(5000);
-//                System.out.println("There are: " + this.clients.size() + " clients.");
+                this.logger.info("There are: " + this.clients.size() + " clients.");
                 this.logger.info("There are: " + this.requests.size() + " requests in the queue.");
             } catch (InterruptedException e) {
                 this.logger.error(e);
