@@ -47,6 +47,7 @@ public class GameScreen extends AbstractScreen {
             tank = new Tank("Tank1", root, new Position(getWidth() / 2, getHeight() / 2));
             ObjectHelper.AddRenderer(tank.children.get(0), "img/TankBottom.png");
             ObjectHelper.AddRenderer(tank.children.get(1), "img/TankTop.png");
+            //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
         } catch (Exception e) {
             e.printStackTrace();
         }

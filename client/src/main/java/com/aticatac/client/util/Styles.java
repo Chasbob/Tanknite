@@ -88,6 +88,7 @@ public enum Styles {
         //create a style for buttons
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = buttonFont;
+        buttonStyle.fontColor = Color.WHITE;
         //create a style for selected buttons
         selectedButtonStyle = new TextButton.TextButtonStyle();
         selectedButtonStyle.font = buttonFont;

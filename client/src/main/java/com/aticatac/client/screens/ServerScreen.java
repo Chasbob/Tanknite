@@ -87,9 +87,6 @@ public class ServerScreen extends AbstractScreen {
                         currentServer.setStyle(Styles.INSTANCE.getButtonStyle());
                         Screens.INSTANCE.showScreen(UsernameScreen.class);
                     }
-                    if (currentServer!=null){
-                        currentServer.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
-                    }
                     return false;
                 }
         ));
@@ -126,8 +123,8 @@ public class ServerScreen extends AbstractScreen {
 //        serverDetailsTable.addActor(labelTable);
 //        labelTable.center();
         //add labels to serverDetailsTable
-        TextButton refreshButton = UIFactory.createButton("Refresh");
-        refreshButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
+        TextButton refreshButton = UIFactory.createStartButton("Refresh");
+        //refreshButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
         refreshButton.addListener(UIFactory.newListenerEvent(()->{
                     UIFactory.getServers(serversTable);
                     return false;

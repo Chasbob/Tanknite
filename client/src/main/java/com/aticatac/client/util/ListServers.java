@@ -6,8 +6,10 @@ import com.aticatac.client.screens.ServerScreen;
 import com.aticatac.client.screens.UIFactory;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ListServers extends Thread {
@@ -38,16 +40,16 @@ public class ListServers extends Thread {
         for (ServerInformation server : servers) {
             ServerButton serverButton = UIFactory.createServerButton(server.getAddress().getHostAddress(), server);
             serverButton.addListener(UIFactory.newListenerEvent(() -> {
+                TextButton currentButton = Screens.INSTANCE.getScreen(ServerScreen.class).getCurrentServer();;
                 if (!Screens.INSTANCE.getScreen(ServerScreen.class).getServerSelected()) {
                     Screens.INSTANCE.getScreen(ServerScreen.class).setServerSelected(true);
-                } else {
-                    if (Screens.INSTANCE.getScreen(ServerScreen.class).getCurrentServer() != null) {
-                        Screens.INSTANCE.getScreen(ServerScreen.class).getCurrentServer().setStyle(Styles.INSTANCE.getButtonStyle());
-                    }
                     serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
-                    Screens.INSTANCE.getScreen(ServerScreen.class).setCurrentServer(serverButton);
-                    Screens.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
+                }else{
+                    currentButton.setStyle(Styles.INSTANCE.getButtonStyle());
                 }
+                Screens.INSTANCE.getScreen(ServerScreen.class).setCurrentServer(serverButton);
+                Screens.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
+                serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
                 return false;
             }));
             serverButton.getLabel().setAlignment(Align.left);
