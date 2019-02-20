@@ -49,25 +49,29 @@ public class Updater extends Thread {
         this.logger.trace("Running...");
         super.run();
         while (!this.isInterrupted()) {
-            if (this.changes) {
-                this.logger.info("Changes detected.");
-                this.logger.trace("Broadcasting...");
-                broadcast(this.update);
-                this.logger.trace("Setting changes to false.");
-                this.changes = false;
-            } else {
-                this.logger.trace("Broadcasting no changes.");
-                broadcast(new Update(false));
-            }
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+                if (this.changes) {
+                    this.logger.info("Changes detected.");
+                    this.logger.trace("Broadcasting...");
+                    broadcast(this.update);
+                    this.logger.trace("Setting changes to false.");
+                    this.changes = false;
+                } else {
+                    this.logger.trace("Broadcasting no changes.");
+                    broadcast(new Update(false));
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    this.logger.error(e);
+                }
+            } catch (IOException e) {
                 this.logger.error(e);
             }
         }
     }
 
-    private void broadcast(Update update) {
+    private void broadcast(Update update) throws IOException {
         this.logger.trace("Broadcasting...");
         byte[] bytes = ModelReader.toBytes(update);
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, this.address, Data.INSTANCE.getPort());
