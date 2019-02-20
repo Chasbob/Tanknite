@@ -5,7 +5,6 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.ServerData;
 import com.aticatac.common.objectsystem.GameObject;
 
 // components for server side make in server or import from common?

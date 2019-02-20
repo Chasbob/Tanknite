@@ -5,8 +5,9 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 
+import org.apache.commons.collections4.BidiMap;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Physics component will control the physics for the objects in the game. It will consider the new positions of
@@ -162,7 +163,7 @@ public class Physics extends Component {
      */
     private Object[] collision(Position newPosition, Position oldPosition) {
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        HashMap<String, Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank();
+        BidiMap<String, Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank();
 
         Integer collisionType;
         // other object = 1, tank = 2, nothing = 0

@@ -3,9 +3,13 @@ package com.aticatac.server.components;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.objectsystem.GameObject;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.MapIterator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The server component will be used to store data that needs to be seen by the server and potentially passed to the
@@ -29,7 +33,87 @@ public class ServerData extends Component {
     /**
      * HashMap of the tank and it's current coordinates
      */
-    private HashMap<String, Position> occupiedCoordinatesTank = new HashMap<>();
+    private BidiMap<String, Position> occupiedCoordinatesTank = new BidiMap<>() {
+        @Override
+        public MapIterator<String, Position> mapIterator() {
+            return null;
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return false;
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            return false;
+        }
+
+        @Override
+        public Position get(Object key) {
+            return null;
+        }
+
+        @Override
+        public Position put(String key, Position value) {
+            return null;
+        }
+
+        @Override
+        public Position remove(Object key) {
+            return null;
+        }
+
+        @Override
+        public void putAll(Map<? extends String, ? extends Position> m) {
+
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
+        @Override
+        public Set<String> keySet() {
+            return null;
+        }
+
+        @Override
+        public String getKey(Object value) {
+            return null;
+        }
+
+        @Override
+        public String removeValue(Object value) {
+            return null;
+        }
+
+        @Override
+        public BidiMap<Position, String> inverseBidiMap() {
+            return null;
+        }
+
+        @Override
+        public Set<Position> values() {
+            return null;
+        }
+
+        @Override
+        public Set<Entry<String, Position>> entrySet() {
+            return null;
+        }
+    };
     /**
      * ArrayList of the currently occupied coordinates
      */
@@ -43,11 +127,8 @@ public class ServerData extends Component {
      */
     private HashMap<String, Integer> ammo = new HashMap<>();
     //What data type will direction be?
-    /**
-     * HashMap to store the direction and the object the direction relates to
-     */
-    private HashMap<String, Integer> direction = new HashMap<>();
-    //This one is not immediately initialised
+
+
     //TODO New way of storing power ups as needs multiple for same
 
     /**
@@ -67,7 +148,6 @@ public class ServerData extends Component {
     public void initialiseValues(String name) {
         health.put(name, healthInitial);
         ammo.put(name, ammoInitial);
-        direction.put(name, directionInitial);
     }
 
     /**
@@ -94,7 +174,7 @@ public class ServerData extends Component {
      *
      * @return The occupied coordinates.
      */
-    public HashMap<String, Position> getOccupiedCoordinatesTank() {
+    public BidiMap<String, Position> getOccupiedCoordinatesTank() {
         return occupiedCoordinatesTank;
     }
 
@@ -141,21 +221,4 @@ public class ServerData extends Component {
         this.ammo.replace(name, ammo);
     }
 
-    /**
-     * Get the direction of a game object
-     *
-     * @return Direction of an object
-     */
-    public int getDirection(String name) {
-        return direction.get(name);
-    }
-
-    /**
-     * Sets the direction of a game object
-     */
-    public void setDirection(String name, int direction) {
-        this.direction.replace(name, direction);
-    }
-    //TODO get power up
-    //TODO set power up
 }

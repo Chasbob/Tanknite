@@ -138,7 +138,7 @@ public class GameObject extends AbstractObject {
     }
 
     public static void Destroy(GameObject g){
-        
+
     }
 
     //Getters and Setters
