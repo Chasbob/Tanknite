@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class ListServers extends Thread {
@@ -22,14 +21,6 @@ public class ListServers extends Thread {
     @Override
     public void run() {
         super.run();
-//        while (!this.isInterrupted()) {
-//            try {
-//                list();
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
         list();
     }
 
@@ -40,7 +31,7 @@ public class ListServers extends Thread {
         for (ServerInformation server : servers) {
             ServerButton serverButton = UIFactory.createServerButton(server.getAddress().getHostAddress(), server);
             serverButton.addListener(UIFactory.newListenerEvent(() -> {
-                TextButton currentButton = Screens.INSTANCE.getScreen(ServerScreen.class).getCurrentServer();;
+                TextButton currentButton = Screens.INSTANCE.getScreen(ServerScreen.class).getCurrentServer();
                 if (!Screens.INSTANCE.getScreen(ServerScreen.class).getServerSelected()) {
                     Screens.INSTANCE.getScreen(ServerScreen.class).setServerSelected(true);
                     serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());

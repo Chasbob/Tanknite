@@ -6,8 +6,6 @@ import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
-import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
@@ -118,17 +116,17 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
-        (new Thread(() -> {
-            //TODO remove testing thread
-            while (true) {
-                try {
-                    Update update = Screens.INSTANCE.getUpdates().take();
-                    System.out.println(Converter.Constructor(update.getObj()));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        })).start();
+//        (new Thread(() -> {
+//            //TODO remove testing thread
+//            while (true) {
+////                try {
+//                    Update update = Screens.INSTANCE.getUpdate();
+//                    System.out.println(Converter.Constructor(update.getObj()));
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+//            }
+//        })).start();
     }
 
     @Override

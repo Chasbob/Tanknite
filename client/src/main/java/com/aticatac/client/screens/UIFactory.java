@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.ListServers;
+import com.aticatac.client.util.PopulatePlayers;
 import com.aticatac.client.util.ServerButton;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
@@ -104,12 +105,16 @@ public class UIFactory {
      * @param countLabel  the count label
      */
     public static void populateLobby(Table playerTable, Label countLabel) {
+        //TODO make this less dirty.
+//                if (Screens.INSTANCE.isUpdatePlayers()) {
+        (new PopulatePlayers(playerTable, countLabel)).start();
+//                }
         //TODO get client names from server and populate labels, inc player count label
-        int maxClients = 10;
-        for (int i = 0; i < maxClients; i++) {
-            playerTable.add(createLabel("<space>"));
-            playerTable.row();
-        }
+//        int maxClients = 10;
+//        for (int i = 0; i < maxClients; i++) {
+//            playerTable.add(createLabel("<space>"));
+//            playerTable.row();
+//        }
     }
 
     /**
@@ -122,7 +127,7 @@ public class UIFactory {
         return new Label(text, Styles.INSTANCE.getLabelStyle());
     }
 
-    public static Label createGameLabel(String text){
+    public static Label createGameLabel(String text) {
         return new Label(text, Styles.INSTANCE.getGameLabelStyle());
     }
 

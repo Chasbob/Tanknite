@@ -10,9 +10,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * The enum Screens.
@@ -22,9 +21,11 @@ public enum Screens {
      * Instance screens.
      */
     INSTANCE;
+
     private final Logger logger;
     private final HashMap<Class, AbstractScreen> screens;
-    private final BlockingQueue<Update> updates;
+    public Update update;
+    private ArrayList<String> clients;
     private Game game;
     private boolean isInit;
     private Class currentScreen;
@@ -32,8 +33,8 @@ public enum Screens {
     private ServerInformation localhost;
     private ServerInformation currentInformation;
     private boolean singleplayer;
+    private boolean updatePlayers;
     private Client client;
-
     Screens() {
         try {
             //TODO don't hard code the port.
@@ -53,12 +54,60 @@ public enum Screens {
         screens.put(SplashScreen.class, new SplashScreen());
         screens.put(UsernameScreen.class, new UsernameScreen());
         logger = Logger.getLogger(getClass());
-        updates = new ArrayBlockingQueue<>(1024);
+//        this.updates = new ArrayBlockingQueue<>(1024);
+        this.update = new Update(false);
+        this.clients = new ArrayList<>();
     }
 
-    public BlockingQueue<Update> getUpdates() {
-        return updates;
+    public Update getUpdate() {
+        return update;
     }
+
+    public void setUpdate(Update update) {
+        this.update = update;
+    }
+//
+//    public BlockingQueue<Update> getUpdates() {
+//        return updates;
+//    }
+//
+//    public void addUpdate(Update update) {
+//        this.updates.add(update);
+//    }
+//    public BlockingQueue<Update> getUpdates() {
+//        return updates;
+//    }
+//
+//    public void addUpdate(Update update) {
+//        this.updates.add(update);
+//    }
+
+    public ArrayList<String> getClients() {
+        return clients;
+    }
+
+    public boolean isUpdatePlayers() {
+        return updatePlayers;
+    }
+
+    public void setUpdatePlayers(boolean updatePlayers) {
+        this.updatePlayers = updatePlayers;
+    }
+//
+//    public ArrayList<String> getClients() {
+//        this.logger.info("getting clients..");
+//        try {
+//            Update update = this.updates.take();
+//            if (update.isPlayersChanged()) {
+//                this.clients = update.getPlayers();
+//                this.logger.info("Updated player list.");
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        this.logger.info("Returning clients!\n");
+//        return this.clients;
+//    }
 
     /**
      * Gets current information.
@@ -133,7 +182,7 @@ public enum Screens {
      */
 // Initialization with the game class
     public void initialize(Game game) {
-        this.client = new Client(this.updates);
+        this.client = new Client();
         this.logger.warn("Init");
         this.game = game;
         this.isInit = true;
@@ -151,7 +200,6 @@ public enum Screens {
      *
      * @param <T>  the type parameter
      * @param type the type
-     *
      * @return the screen
      */
     public <T extends AbstractScreen> T getScreen(Class<T> type) {

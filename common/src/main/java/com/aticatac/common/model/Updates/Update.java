@@ -11,6 +11,11 @@ import java.util.ArrayList;
 public class Update extends Model {
     private final boolean changed;
     private ArrayList<Container> obj;
+    /**
+     * The Players.
+     */
+    ArrayList<String> players;
+    private boolean playersChanged;
 
     public ArrayList<Container> getObj() {
         return obj;
@@ -28,6 +33,35 @@ public class Update extends Model {
     public Update(boolean changed) {
         super("update");
         this.changed = changed;
+        this.players = new ArrayList<>();
+        this.playersChanged = true;
+    }
+
+    /**
+     * Gets players.
+     *
+     * @return the players
+     */
+    public ArrayList<String> getPlayers() {
+        return players;
+    }
+
+    /**
+     * Add player.
+     *
+     * @param name the name
+     */
+    public void addPlayer(String name) {
+        this.players.add(name);
+    }
+
+    /**
+     * Is players changed boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isPlayersChanged() {
+        return playersChanged;
     }
 
     /**

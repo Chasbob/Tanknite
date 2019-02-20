@@ -36,7 +36,7 @@ public class Server extends Thread {
         this.clients = new ConcurrentHashMap<>();
         this.requests = new ArrayBlockingQueue<>(1024); //TODO select an appropriate queue size.
         newClients = new NewClients(this.clients, this.requests);
-        multicaster = new Updater(Data.INSTANCE.getMulticast());
+        multicaster = new Updater(Data.INSTANCE.getMulticast(), this.clients);
         discovery = new Discovery("Server", Data.INSTANCE.getPort());
     }
 

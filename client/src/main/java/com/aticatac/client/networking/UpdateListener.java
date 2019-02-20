@@ -1,5 +1,6 @@
 package com.aticatac.client.networking;
 
+import com.aticatac.client.screens.Screens;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
@@ -8,25 +9,24 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * The type Update listener.
  */
 class UpdateListener extends Thread {
+    //    final BlockingQueue<Update> updates;
     private final MulticastSocket multicastSocket;
     private final Logger logger;
-    final BlockingQueue<Update> updates;
 
     /**
      * Instantiates a new Update listener.
      *
      * @param multicastSocket the multicast socket
      */
-    UpdateListener(MulticastSocket multicastSocket, BlockingQueue<Update> updates) {
+    UpdateListener(MulticastSocket multicastSocket) {
         this.logger = Logger.getLogger(getClass());
         this.multicastSocket = multicastSocket;
-        this.updates = updates;
+//        this.updates = updates;
     }
 
     @Override
@@ -51,7 +51,11 @@ class UpdateListener extends Thread {
         this.multicastSocket.receive(packet);
         logger.info("Packet received!");
         Update update = ModelReader.toModel(bytes, Update.class);
-        this.updates.add(update);
-        logger.trace(update.getId());
+        //TODO refactor to use queue all the way down
+        this.logger.trace("Player count: " + update.getPlayers().size());
+        if (update.isChanged()) {
+            Screens.INSTANCE.setUpdate(update);
+            this.logger.trace("added update to queue.");
+        }
     }
 }
