@@ -3,14 +3,21 @@ package com.aticatac.server.components;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.objectsystem.GameObject;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The server component will be used to store data that needs to be seen by the server and potentially passed to the
  * client. It will be the up to date synchronised data from all the GameObjects. It will be stored in this component so
  * the server does not need to check all the components for all objects each time.
+ *
+ * @author Claire Fletcher
  */
 public class ServerData extends Component {
     //initial values
@@ -27,9 +34,9 @@ public class ServerData extends Component {
      */
     private static Integer directionInitial = 0;
     /**
-     * ArrayList of the currently occupied coordinates
+     * HashMap of the tank and it's current coordinates
      */
-    private ArrayList<Position> occupiedCoordinatesTank = new ArrayList<Position>();
+    private BidiMap<String, Position> occupiedCoordinatesTank = new DualHashBidiMap<>();
     /**
      * ArrayList of the currently occupied coordinates
      */
@@ -43,11 +50,8 @@ public class ServerData extends Component {
      */
     private HashMap<String, Integer> ammo = new HashMap<>();
     //What data type will direction be?
-    /**
-     * HashMap to store the direction and the object the direction relates to
-     */
-    private HashMap<String, Integer> direction = new HashMap<>();
-    //This one is not immediately initialised
+
+
     //TODO New way of storing power ups as needs multiple for same
 
     /**
@@ -67,7 +71,6 @@ public class ServerData extends Component {
     public void initialiseValues(String name) {
         health.put(name, healthInitial);
         ammo.put(name, ammoInitial);
-        direction.put(name, directionInitial);
     }
 
     /**
@@ -90,22 +93,22 @@ public class ServerData extends Component {
     }
 
     /**
-     * Gets the currently occupied coordinates by bullets
+     * Gets the currently occupied coordinates by Tanks
      *
      * @return The occupied coordinates.
      */
-    public ArrayList<Position> getOccupiedCoordinatesTank() {
+    public BidiMap<String, Position> getOccupiedCoordinatesTank() {
         return occupiedCoordinatesTank;
     }
 
     /**
      * Sets the currently occupied coordinates
      *
-     * @param oldCoords The old coordinates that were occupied.
-     * @param newCoords The new coordinates that are now occupied.
+     * @param name Name of the tank.
+     * @param newPosition The new coordinates that are now occupied.
      */
-    public void setOccupiedCoordinatesTank(Position oldCoords, Position newCoords) {
-        occupiedCoordinatesTank.set(occupiedCoordinatesTank.indexOf(oldCoords), newCoords);
+    public void setOccupiedCoordinatesTank(String name, Position newPosition) {
+        this.occupiedCoordinatesTank.replace(name, newPosition);
     }
 
 
@@ -141,21 +144,4 @@ public class ServerData extends Component {
         this.ammo.replace(name, ammo);
     }
 
-    /**
-     * Get the direction of a game object
-     *
-     * @return Direction of an object
-     */
-    public int getDirection(String name) {
-        return direction.get(name);
-    }
-
-    /**
-     * Sets the direction of a game object
-     */
-    public void setDirection(String name, int direction) {
-        this.direction.replace(name, direction);
-    }
-    //TODO get power up
-    //TODO set power up
 }

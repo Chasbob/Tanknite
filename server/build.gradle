@@ -9,6 +9,7 @@ application {
 
 dependencies {
     compile project(':common')
+    compile 'org.apache.commons:commons-collections4:4.1'
 }
 task execServer(type: JavaExec) {
     main = "com.aticatac.server.Main"

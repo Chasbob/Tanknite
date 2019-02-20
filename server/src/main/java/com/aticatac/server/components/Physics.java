@@ -5,12 +5,17 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 
+import org.apache.commons.collections4.BidiMap;
+
 import java.util.ArrayList;
 
 /**
  * Physics component will control the physics for the objects in the game. It will consider the new positions of
  * objects and alter any physics values (e.g. velocity) for the object. The positions of the object are kept in
  * TransformModel and will be altered by the logic, not this component.
+ *
+ * @author Claire Fletcher
+ *
  */
 public class Physics extends Component {
     /**
@@ -129,10 +134,10 @@ public class Physics extends Component {
     /**
      * BulletController move position.
      *
-     * @param bearing the bearing
+     * @param rotation the bearing
      * @return the position
      */
-    public Object[] bulletMove(double bearing) {
+    public Object[] bulletMove(double rotation) {
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
         double xCoord = position.getX();
         double yCoord = position.getY();
@@ -141,9 +146,9 @@ public class Physics extends Component {
         //Distance it moves is the change in time * the above velocity
         double distance = dt * velocity;
         //distance travelled in x direction is cos theta * distance
-        double distanceX = distance * Math.cos(bearing);
+        double distanceX = distance * Math.cos(rotation);
         //distance travelled in y direction is sin theta * distance
-        double distanceY = distance * Math.sin(bearing);
+        double distanceY = distance * Math.sin(rotation);
         //then add those to the original x and y
         double newX = xCoord + distanceX;
         double newY = yCoord + distanceY;
@@ -161,7 +166,9 @@ public class Physics extends Component {
      */
     private Object[] collision(Position newPosition, Position oldPosition) {
         ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        ArrayList<Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+        BidiMap<String, Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank();
+
+        //TODO make this get coords from DataServer
 
         Integer collisionType;
         // other object = 1, tank = 2, nothing = 0
@@ -182,19 +189,15 @@ public class Physics extends Component {
             }
         }
 
-        //checks for collisions
-        for (int i = 0; i < occupiedCoordinatesTank.size(); i++) {
-            //Checks if new position is already occupied
-            //Checks the occupied coordinate isn't the current position.
-            if (newPosition == occupiedCoordinatesTank.get(i) && occupiedCoordinatesTank.get(i) != oldPosition) {
-                collisionType = 2;
-                //Returning a collision type and also the position
-                Object[] returnPosition = new Object[2];
-                returnPosition[0] = collisionType;
-                returnPosition[1] = newPosition;
+        //Below can be the only part of this that is checked and will then return the type that it is
+        if(occupiedCoordinatesTank.containsValue(newPosition)){
+            collisionType = 2;
+            //Returning a collision type and also the position
+            Object[] returnPosition = new Object[2];
+            returnPosition[0] = collisionType;
+            returnPosition[1] = newPosition;
 
-                return returnPosition;
-            }
+            return returnPosition;
         }
 
         collisionType = 0;

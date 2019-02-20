@@ -20,11 +20,14 @@ public class TankObject extends GameObject {
         this.getChildren().get(0).getComponent(Transform.class).SetTransform(p.x,p.y);
         this.getChildren().get(1).getComponent(Transform.class).SetTransform(p.x+10,p.y+10);
 
+        // determine whether ai, put behavioural trees from ai if so
+
         this.addComponent(Health.class).setHealth(health);
         this.addComponent(Ammo.class).setAmmo(ammo);
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
 
+        //Think this is being done in the main part (the random location generation)
         //this.getComponent(Transform.class).SetTransform(this.getComponent(Physics.class).initialisePosition(name));
     }
 }

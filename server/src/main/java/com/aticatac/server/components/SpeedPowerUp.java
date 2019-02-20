@@ -6,6 +6,8 @@ import com.aticatac.common.objectsystem.GameObject;
 /**
  * Speed power up is a power up which, when picked up, will allow the tank to move faster.
  * Therefore, if the speed power up component is attached to a tank then it will provide a lower friction coefficient,
+ *
+ * @author Claire Fletcher
  */
 
 public class SpeedPowerUp extends Component {
@@ -25,7 +27,7 @@ public class SpeedPowerUp extends Component {
      * gets acceleration.
      * @return The frictionCoefficient.
      */
-    public int getFrictionCoefficient(){
+    int getFrictionCoefficient(){
         return frictionCoefficient;
     }
 
