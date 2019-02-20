@@ -1,9 +1,6 @@
 package com.aticatac.server.components.controller;
 
-
-
 import com.aticatac.common.components.Component;
-import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
 // components for server side make in server or import from common?
 // needs component of Physics

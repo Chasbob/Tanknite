@@ -11,8 +11,8 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.prefab.Bullet;
-import com.aticatac.common.prefab.Tank;
+import com.aticatac.server.prefabs.BulletObject;
+import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
@@ -57,7 +57,7 @@ public class GameScreen extends AbstractScreen {
             cam = new OrthographicCamera(640, 640);
             cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
             root = new GameObject();
-            tank = new Tank("Tank1", root, new Position(getWidth() / 2, getHeight() / 2));
+            tank = new TankObject(root, "Tank1", new Position(getWidth() / 2, getHeight() / 2), 100, 100);
             ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/TankBottom.png");
             ObjectHelper.AddRenderer(tank.getChildren().get(1), "img/TankTop.png");
 
@@ -227,7 +227,7 @@ public class GameScreen extends AbstractScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
             try {
-                var bullet = new Bullet("BulletController", root);
+                var bullet = new BulletObject("BulletController", root);
                 //AddTexture.addBulletTexture(bullet);
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
