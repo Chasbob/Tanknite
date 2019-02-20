@@ -38,8 +38,8 @@ public class GameScreen extends AbstractScreen {
     GameScreen() {
         super();
         try {
-            cam = new OrthographicCamera(640, 640);
-            cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
+            cam = new OrthographicCamera(getWidth(), getHeight());
+            cam.position.set(getWidth()/2f, getHeight()/2f, cam.position.z);
             root = new GameObject("root");
             tank = new Tank("Tank1", root, new Position(getWidth() / 2, getHeight() / 2));
             ObjectHelper.AddRenderer(tank.children.get(0), "img/TankBottom.png");
@@ -173,7 +173,6 @@ public class GameScreen extends AbstractScreen {
         x = x + cam.viewportWidth / 2f;
         return x;
     }
-    //Input
 
     /**
      * Input.
@@ -187,13 +186,13 @@ public class GameScreen extends AbstractScreen {
             tank.children.get(0).getComponent(Transform.class).SetRotation(90);
             tank.getComponent(Transform.class).Transform(3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            tank.children.get(0).getComponent(Transform.class).SetRotation(-90);
+            tank.children.get(0).getComponent(Transform.class).SetRotation(90);
             tank.getComponent(Transform.class).Transform(-3, 0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             tank.children.get(0).getComponent(Transform.class).SetRotation(0);
             tank.getComponent(Transform.class).Transform(0, -3);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            tank.children.get(0).getComponent(Transform.class).SetRotation(180);
+            tank.children.get(0).getComponent(Transform.class).SetRotation(0);
             tank.getComponent(Transform.class).Transform(0, 3);
         }
         mouseMoved(Gdx.input.getX(), Gdx.input.getY());
@@ -216,6 +215,7 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        super.touchDown(screenX, screenY, pointer, button);
         if (button == Input.Buttons.LEFT) {
             try {
                 var bullet = new Bullet("Bullet", root);

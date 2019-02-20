@@ -163,4 +163,5 @@ public enum Screens {
      */
     public void setSingleplayer(boolean singleplayer) {
         this.singleplayer = singleplayer;
-    }}
+    }
+}
