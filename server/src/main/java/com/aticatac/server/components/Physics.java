@@ -133,7 +133,7 @@ public class Physics extends Component {
      * @param bearing the bearing
      * @return the position
      */
-    public Object[] bulletMove(double bearing) {
+    public Object[] bulletMove(double rotation) {
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
         double xCoord = position.getX();
         double yCoord = position.getY();
@@ -142,9 +142,9 @@ public class Physics extends Component {
         //Distance it moves is the change in time * the above velocity
         double distance = dt * velocity;
         //distance travelled in x direction is cos theta * distance
-        double distanceX = distance * Math.cos(bearing);
+        double distanceX = distance * Math.cos(rotation);
         //distance travelled in y direction is sin theta * distance
-        double distanceY = distance * Math.sin(bearing);
+        double distanceY = distance * Math.sin(rotation);
         //then add those to the original x and y
         double newX = xCoord + distanceX;
         double newY = yCoord + distanceY;

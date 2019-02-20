@@ -36,13 +36,14 @@ public class TankController extends Component {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
         Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
+
         else{
             this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).SetRotation(0);
             //TODO Where is the name of the tank stored?
-            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
-            return true;
+            //this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
         }
 
         return true;
@@ -58,14 +59,16 @@ public class TankController extends Component {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
         Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
+
         else{
             this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).SetRotation(90);
             //TODO Where is the name of the tank stored?
-            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
+           // this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
           //set occupied co ordinates on server data whenever tank moves
-            return true;
+
         }
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
         //bullet disappears, other collisions have no effect, just stop the current move from happening
@@ -82,14 +85,15 @@ public class TankController extends Component {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
         Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
+
         else{
             this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).SetRotation(270);
             //TODO Where is the name of the tank stored?
-            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
+           // this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
           //set occupied co ordinates on server data whenever tank moves
-            return true;
         }
         return true;
     }
@@ -104,14 +108,15 @@ public class TankController extends Component {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
         Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
+
         else {
             this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).SetRotation(180);
              //TODO Where is the name of the tank stored?
-            this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
+            //this.getGameObject().getComponent(ServerData.class).setOccupiedCoordinatesTank(this.name(), newPosition );
           //set occupied co ordinates on server data whenever tank moves
-            return true;
         }
         return true;
     }
