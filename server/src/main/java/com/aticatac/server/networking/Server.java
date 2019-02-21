@@ -52,6 +52,7 @@ public class Server extends Thread {
         this.newClients.start();
         this.discovery.start();
         this.logger.warn("Interrupted");
+        testThreads();
     }
 
     /**
