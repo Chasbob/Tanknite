@@ -13,6 +13,8 @@ import java.util.HashMap;
 
 public class TankObject extends GameObject {
 
+    //add in a parameter boolean which is ai true or false
+    //TODO add in the parameter changes everywhere
     public TankObject (GameObject Parent, String name, Position p,int health,int ammo) throws InvalidClassInstance, ComponentExistsException {
         super(name, Parent);
 
@@ -32,9 +34,7 @@ public class TankObject extends GameObject {
         this.addComponent(Time.class);
         this.addComponent(TankController.class);
 
-        //checking if player character, if not then add AI
-//        HashMap<String, GameObject> playerMap = this.findObject("Root", this).getComponent(GameManager.class).getPlayerMap();
-//        if(!(playerMap.containsKey(name))){
+//        if(isAI){
 //            this.addComponent(AI.class);
 //        }
 

@@ -188,7 +188,7 @@ public class Physics extends Component {
 //        }
 
         //Below can be the only part of this that is checked and will then return the type that it is
-        if(occupiedCoordinates.containsValue(newPosition)){
+        if(occupiedCoordinates.containsKey(newPosition)){
 
             collisionType = occupiedCoordinates.get(newPosition);
 
