@@ -1,10 +1,7 @@
 package com.aticatac.server.networking;
 
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
 import org.apache.log4j.Logger;
@@ -13,7 +10,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -55,9 +51,9 @@ public class Updater extends Thread {
         }
     }
 
-    public void addObject(ArrayList<Container> objects){
+    public void addObject(GameObject objects) {
         try {
-            this.update.setObj(Converter.Deconstructor(new GameObject("Root")));
+            this.update.setObj(Converter.Deconstructor(objects));
         } catch (Exception unchecked) {
             unchecked.printStackTrace();
         }
@@ -73,17 +69,16 @@ public class Updater extends Thread {
             this.changes = true;
         }
     }
-
-    /**
-     * Sets update model.
-     *
-     * @param update the update model
-     */
-    synchronized void setUpdateModel(Update update) {
-        //TODO optimise setting new model by calculating a differential
-        // as to send less data.
-        this.update = update;
-    }
+//    /**
+//     * Sets update model.
+//     *
+//     * @param update the update model
+//     */
+//    synchronized void setUpdateModel(Update update) {
+//        //TODO optimise setting new model by calculating a differential
+//        // as to send less data.
+//        this.update = update;
+//    }
 
     @Override
     public void run() {
@@ -94,14 +89,14 @@ public class Updater extends Thread {
                 updateClientNames();
                 if (this.changes) {
                     this.logger.info("Changes detected.");
-                    this.logger.info("players: " + this.update.getPlayers().toString());
+                    this.logger.trace("players: " + this.update.getPlayers().toString());
                     this.logger.trace("Broadcasting...");
                     broadcast(this.update);
                     this.logger.trace("Setting changes to false.");
                     this.changes = false;
                 } else {
                     this.logger.trace("Broadcasting no changes.");
-                    broadcast(new Update(false));
+                    broadcast(this.update);
                 }
                 try {
                     Thread.sleep(3000);
@@ -116,7 +111,7 @@ public class Updater extends Thread {
 
     private void broadcast(Update update) throws IOException {
         this.logger.trace("Broadcasting...");
-        this.logger.info("Player count: " + this.update.getPlayers().size());
+        this.logger.trace("Player count: " + this.update.getPlayers().size());
         byte[] bytes = ModelReader.toBytes(update);
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, this.address, Data.INSTANCE.getPort());
         this.logger.trace("Packet: " + packet.getAddress().toString() + ":" + packet.getPort());

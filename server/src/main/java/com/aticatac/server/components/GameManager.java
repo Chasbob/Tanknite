@@ -6,7 +6,6 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.prefabs.TankObject;
 
@@ -40,15 +39,13 @@ public class GameManager extends Component {
     }
 
     public void removeClient(String username) {
-        if (playerMap.containsKey(username)) {
-            playerMap.remove(username);
-        }
+        playerMap.remove(username);
     }
-
     public void playerInput(String player, Command cmd) {
         //Gets the tank that the command came from
         var tank = playerMap.get(player);
         switch (cmd) {
+            //TODO set name of tank game object to player id and pass that in to logic.
             case UP:
                 tank.getComponent(TankController.class).moveUp();
                 logger.info("Player: " + player + " sent command: " + cmd);

@@ -135,8 +135,13 @@ public class GameScreen extends AbstractScreen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         CenterCameraToGameObject(tank);
+//        Update update = Screens.INSTANCE.getUpdate();
+//        if (update.getObj() != null) {
+//            this.root = Converter.Constructor(update.getObj());
+//            this.getLogger().info("Root position: " + this.root.transform.getPosition().toString());
+//        }
         renderer.render();
-        Input();
+        input();
         batch.begin();
         ChildRenderer(root);
         //health bar
@@ -201,6 +206,7 @@ public class GameScreen extends AbstractScreen {
      * Y lib gdx 2 y transform float.
      *
      * @param y the y
+     *
      * @return the float
      */
 //TODO Convert game co-ord to Transform.class cord
@@ -215,6 +221,7 @@ public class GameScreen extends AbstractScreen {
      * Transform y 2 libgdx float.
      *
      * @param y the y
+     *
      * @return the float
      */
     public float TransformY2Libgdx(float y) {
@@ -228,6 +235,7 @@ public class GameScreen extends AbstractScreen {
      * X lib gdx 2 x transform float.
      *
      * @param x the x
+     *
      * @return the float
      */
     private float XLibGdx2XTransform(float x) {
@@ -236,9 +244,9 @@ public class GameScreen extends AbstractScreen {
     }
 
     /**
-     * Input.
+     * input.
      */
-    private void Input() {
+    private void input() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             //show the pop up table
             popUpTable.setVisible(true);
@@ -275,7 +283,6 @@ public class GameScreen extends AbstractScreen {
         super.touchDown(screenX, screenY, pointer, button);
         if (button == Input.Buttons.LEFT) {
             try {
-
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
                 System.out.println("X:" + newX + "\nY:" + newY);

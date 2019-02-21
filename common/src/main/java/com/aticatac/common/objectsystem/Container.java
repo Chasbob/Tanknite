@@ -6,4 +6,12 @@ import com.aticatac.common.model.TransformModel;
 public class Container {
     TransformModel transformModel;
     Texture texture;
+
+    @Override
+    public String toString() {
+        return "Container{" +
+                "transformModel=" + transformModel +
+                ", texture=" + texture +
+                '}';
+    }
 }

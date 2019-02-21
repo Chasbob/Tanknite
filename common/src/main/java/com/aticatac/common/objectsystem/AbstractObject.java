@@ -8,7 +8,7 @@ public abstract class AbstractObject {
      * The Name.
      */
     protected String name;
-
+    //TODO possibly add boolean marking if GameObject is a player?
     /**
      * Instantiates a new Game object.
      *
