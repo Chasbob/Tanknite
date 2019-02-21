@@ -52,8 +52,8 @@ public class TankController extends Component {
         else{
             parent.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getComponent(Transform.class).SetRotation(0);
-            DataSever.setOccupiedCoordinatesTank(oldPosition, newPosition);
-            // convert to enums
+            DataServer.getOccupiedCoordinates(oldPosition, newPosition);
+            // convert to enums, use code before to get key
             // server data component add to tank
             // where to set initial tanks occupied co ordinates
             return true;
