@@ -4,6 +4,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
+import com.aticatac.server.components.controller.BulletController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -123,7 +124,7 @@ public class GameObject extends AbstractObject {
         return components.values();
     }
 
-    public static void Destroy(GameObject g){
+    public static void Destroy(BulletController g){
 
     }
 

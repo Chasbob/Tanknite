@@ -4,9 +4,11 @@ package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.ServerData;
+import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.server.components.PhysicsManager;
+import com.aticatac.server.components.ServerData;
 import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
 
@@ -50,7 +52,8 @@ public class TankController extends Component {
         else{
             parent.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getComponent(Transform.class).SetRotation(0);
-            ServerData.setOccupiedCoordinatesTank(oldPosition, newPosition);
+            DataSever.setOccupiedCoordinatesTank(oldPosition, newPosition);
+            // convert to enums
             // server data component add to tank
             // where to set initial tanks occupied co ordinates
             return true;
