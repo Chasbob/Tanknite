@@ -2,6 +2,7 @@ package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
+import javafx.geometry.Pos;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,6 +20,11 @@ public class PathFinder {
         g score = the cost of the path from the start node to the current node
         f score = g + an estimate of the cost from the current node to the goal node
      */
+    private int separation;
+
+    public PathFinder(int separation) {
+        this.separation = separation;
+    }
 
     /**
      * Uses A* search to find a path from one node to another.
@@ -85,21 +91,32 @@ public class PathFinder {
             Position from = path.get(i - 1).getPosition();
             Position to = path.get(i).getPosition();
 
-            // THESE MIGHT BE WRONG
-            if (from.x > to.x) {
-                steps.add(Command.RIGHT);
+            Command command = commandToAdd(from, to);
+
+            // Adjust amount needed to reach next node
+            for (int j = 0; j < 1; j++) {
+                steps.add(command);
             }
-            else if (from.x < to.x) {
-                steps.add(Command.LEFT);
-            }
-            else if (from.y > to.y) {
-                steps.add(Command.UP);
-            }
-            else if (from.y < to.y) {
-                steps.add(Command.DOWN);
-            }
+
         }
         return steps;
+    }
+
+    private Command commandToAdd(Position from, Position to) {
+        // THESE MIGHT BE WRONG
+        if (from.x > to.x) {
+            return Command.RIGHT;
+        }
+        else if (from.x < to.x) {
+            return Command.LEFT;
+        }
+        else if (from.y > to.y) {
+            return Command.UP;
+        }
+        else if (from.y < to.y) {
+            return Command.DOWN;
+        }
+        return null;
     }
 
     /**

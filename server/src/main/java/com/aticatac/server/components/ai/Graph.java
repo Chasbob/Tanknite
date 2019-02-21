@@ -15,11 +15,12 @@ import java.util.Queue;
  */
 public class Graph {
     /** A pathfinder that can generate a path in the graph */
-    private static final PathFinder pf = new PathFinder();
+    private final PathFinder pf;
     /** The nodes that make up the graph */
     private ArrayList<SearchNode> nodes;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
+    private final int separation;
 
     /**
      * Creates a new graph by placing and connecting valid nodes.
@@ -28,9 +29,11 @@ public class Graph {
      * @param width The number of nodes wide
      * @param height The number of nodes high
      */
+    /*
     public Graph(int width, int height, int separation, char[][] map) {
         this.width = width;
         this.height = height;
+        this.separation = separation;
         nodes = new ArrayList<SearchNode>();
 
         // Add nodes
@@ -51,9 +54,14 @@ public class Graph {
             }
         }
     }
+    */
 
     public Graph(int width, int height, int separation) {
+        this.width = width;
+        this.height = height;
+        this.separation = separation;
         nodes = new ArrayList<SearchNode>();
+        pf = new PathFinder(separation);
 
         // Add nodes
         for (int i = 0; i < width*separation; i += separation) {
