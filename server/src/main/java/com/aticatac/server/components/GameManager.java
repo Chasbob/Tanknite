@@ -35,14 +35,22 @@ public class GameManager extends Component {
 
     public void addPlayer(String player) {
         if (!playerMap.containsKey(player)) {
-            playerMap.put(player, createTank(player));
+            playerMap.put(player, createTank(player, false));
         }
     }
 
     //TODO addAI which passes in that AI is true.
-    //IN here it could check the count to know how many times it needs to create an AI
-    //count how many times the addPLayer is called.
     //This needs to be called upon the start of the game as all clients shld then be added.
+    public void addAI(String name){
+
+        //IN here it could check the count to know how many times it needs to create an AI
+        //count how many times the addPLayer is called.
+
+        if (!playerMap.containsKey(name)){
+            playerMap.put(name, createTank(name, true));
+        }
+
+    }
 
     public void removeClient(String username) {
         if (playerMap.containsKey(username)) {
@@ -76,7 +84,7 @@ public class GameManager extends Component {
         }
     }
 
-    public TankObject createTank(String player) {
+    public TankObject createTank(String player, boolean isAI) {
         try {
 
             Position position;
@@ -86,7 +94,8 @@ public class GameManager extends Component {
                     position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
                             ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1)),
                     100,
-                    30);
+                    30,
+                    isAI);
 
             DataServer.INSTANCE.setCoordinates(position, "Tank");
 
