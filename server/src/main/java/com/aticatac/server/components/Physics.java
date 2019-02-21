@@ -165,33 +165,33 @@ public class Physics extends Component {
      *
      */
     private Object[] collision(Position newPosition, Position oldPosition) {
-        ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
-        BidiMap<String, Position> occupiedCoordinatesTank = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank();
+//        ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+        BidiMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
-        //TODO make this get coords from DataServer
-
-        Integer collisionType;
+        String collisionType;
         // other object = 1, tank = 2, nothing = 0
 
-        //checks for collisions with
-        for (int i = 0; i < occupiedCoordinates.size(); i++) {
-            //Checks if new position is already occupied
-            //Checks the occupied coordinate isn't the current position.
-            if (newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != oldPosition) {
-
-                collisionType = 1;
-                //Returning a collision type and also the position
-                Object[] returnPosition = new Object[2];
-                returnPosition[0] = collisionType;
-                returnPosition[1] = newPosition;
-
-                return returnPosition;
-            }
-        }
+//        //checks for collisions with
+//        for (int i = 0; i < occupiedCoordinates.size(); i++) {
+//            //Checks if new position is already occupied
+//            //Checks the occupied coordinate isn't the current position.
+//            if (newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != oldPosition) {
+//
+//                collisionType = 1;
+//                //Returning a collision type and also the position
+//                Object[] returnPosition = new Object[2];
+//                returnPosition[0] = collisionType;
+//                returnPosition[1] = newPosition;
+//
+//                return returnPosition;
+//            }
+//        }
 
         //Below can be the only part of this that is checked and will then return the type that it is
-        if(occupiedCoordinatesTank.containsValue(newPosition)){
-            collisionType = 2;
+        if(occupiedCoordinates.containsKey(newPosition)){
+
+            collisionType = occupiedCoordinates.get(newPosition);
+
             //Returning a collision type and also the position
             Object[] returnPosition = new Object[2];
             returnPosition[0] = collisionType;
@@ -200,7 +200,7 @@ public class Physics extends Component {
             return returnPosition;
         }
 
-        collisionType = 0;
+        collisionType = "none";
 
         //Returning a collision type and also the position
         Object[] returnPosition = new Object[2];
