@@ -6,6 +6,7 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +48,8 @@ public class GameObject {
             this.getComponent(Texture.class).setTexture(container.getTexture());
         }
     }
+
+    public Transform transform;
 
     /**
      * Instantiates a new Game object.
@@ -265,6 +268,14 @@ public class GameObject {
      */
     public void removeChild(String childName) {
         children.remove(childName);
+    }
+
+    public Collection<Component> fetchAllComponents(){
+        return components.values();
+    }
+
+    public static void Destroy(BulletController g){
+
     }
 
     /**
