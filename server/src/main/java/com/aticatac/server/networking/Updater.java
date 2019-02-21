@@ -1,13 +1,19 @@
 package com.aticatac.server.networking;
 
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.Converter;
+import com.aticatac.common.objectsystem.GameObject;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -49,6 +55,13 @@ public class Updater extends Thread {
         }
     }
 
+    public void addObject(ArrayList<Container> objects){
+        try {
+            this.update.setObj(Converter.Deconstructor(new GameObject("Root")));
+        } catch (Exception unchecked) {
+            unchecked.printStackTrace();
+        }
+    }
     /**
      * Add client.
      *
