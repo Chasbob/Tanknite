@@ -73,12 +73,20 @@ public class GameManager extends Component {
 
     public TankObject createTank(String player) {
         try {
-            return new TankObject(getGameObject().getChildren().get(0),
+
+            Position position;
+
+            TankObject tank = new TankObject(getGameObject().getChildren().get(0),
                     player,
-                    new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+                    position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
                             ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1)),
                     100,
                     30);
+
+            DataServer.INSTANCE.setCoordinates(position, "Tank");
+
+            return tank;
+
         } catch (InvalidClassInstance invalidClassInstance) {
             invalidClassInstance.printStackTrace();
         } catch (ComponentExistsException e) {
