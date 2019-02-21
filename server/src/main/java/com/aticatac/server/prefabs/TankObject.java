@@ -6,19 +6,25 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.*;
+import com.aticatac.server.components.ai.AI;
+import com.aticatac.server.components.controller.TankController;
+
+import java.util.HashMap;
 
 public class TankObject extends GameObject {
 
+    //add in a parameter boolean which is ai true or false
+    //TODO add in the parameter changes everywhere
     public TankObject (GameObject Parent, String name, Position p,int health,int ammo) throws InvalidClassInstance, ComponentExistsException {
-        super(name,Parent);
+        super(name, Parent);
 
-        this.getComponent(Transform.class).SetTransform(p.x,p.y);
+        this.getComponent(Transform.class).SetTransform(p.x, p.y);
 
-        new GameObject("TankBottom",this);
-        new GameObject("TankTop",this);
+        new GameObject("TankBottom", this);
+        new GameObject("TankTop", this);
 
-        this.getChildren().get(0).getComponent(Transform.class).SetTransform(p.x,p.y);
-        this.getChildren().get(1).getComponent(Transform.class).SetTransform(p.x+10,p.y+10);
+        this.getChildren().get(0).getComponent(Transform.class).SetTransform(p.x, p.y);
+        this.getChildren().get(1).getComponent(Transform.class).SetTransform(p.x + 10, p.y + 10);
 
         // determine whether ai, put behavioural trees from ai if so
 
@@ -26,8 +32,13 @@ public class TankObject extends GameObject {
         this.addComponent(Ammo.class).setAmmo(ammo);
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
+        this.addComponent(TankController.class);
 
-        //Think this is being done in the main part (the random location generation)
-        //this.getComponent(Transform.class).SetTransform(this.getComponent(Physics.class).initialisePosition(name));
+//        if(isAI){
+//            this.addComponent(AI.class);
+//        }
+
+
+
     }
 }

@@ -1,6 +1,9 @@
 package com.aticatac.server.networking;
 
-import com.aticatac.common.model.Command;
+import com.aticatac.common.model.CommandModel;
+import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Converter;
+import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.networking.listen.NewClients;
 import org.apache.log4j.Logger;
 
@@ -17,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server extends Thread {
     private final Logger logger;
     private final ConcurrentHashMap<String, Client> clients;
-    private final BlockingQueue<Command> requests;
+    private final BlockingQueue<CommandModel> requests;
     private final NewClients newClients;
     private final Updater multicaster;
-    private final Thread discovery;
+    private final Discovery discovery;
 
     /**
      * Instantiates a new Server.
@@ -28,12 +31,17 @@ public class Server extends Thread {
      * @throws IOException the io exception
      */
     public Server() throws IOException {
+        //TODO check if additional users are allowed.
         this.logger = Logger.getLogger(getClass());
         this.clients = new ConcurrentHashMap<>();
         this.requests = new ArrayBlockingQueue<>(1024); //TODO select an appropriate queue size.
         newClients = new NewClients(this.clients, this.requests);
-        multicaster = new Updater(Data.INSTANCE.getMulticast());
+        multicaster = new Updater(Data.INSTANCE.getMulticast(), this.clients);
         discovery = new Discovery("Server", Data.INSTANCE.getPort());
+    }
+
+    public ConcurrentHashMap<String, Client> getClients() {
+        return clients;
     }
 
     @Override
@@ -46,7 +54,12 @@ public class Server extends Thread {
             //TODO remove testing thread
             while (true) {
                 try {
-                    System.out.println(this.requests.take());
+//                    System.out.println(this.requests.take());
+                    CommandModel model = this.requests.take();
+                    Manager.INSTANCE.playerInput(model.getId(), model.getCommand());
+                    var update = new Update(true);
+                    update.setObj(Converter.Deconstructor(Manager.INSTANCE.getRoot()));
+                    setUpdateModel(update);
                 } catch (InterruptedException ignored) {
                 }
             }
@@ -57,9 +70,20 @@ public class Server extends Thread {
 //                System.out.println("There are: " + this.clients.size() + " clients.");
                 this.logger.info("There are: " + this.requests.size() + " requests in the queue.");
             } catch (InterruptedException e) {
-                this.logger.error(e);
+                this.multicaster.interrupt();
+                this.newClients.interrupt();
+                this.discovery.interrupt();
+                this.interrupt();
+                return;
             }
         }
+        this.logger.warn("Interrupted");
+    }
+
+    public synchronized void setUpdateModel(Update update) {
+        //TODO optimise setting new model by calculating a differential
+        // as to send less data.
+        this.multicaster.setUpdateModel(update);
     }
 
     /**
@@ -69,7 +93,8 @@ public class Server extends Thread {
      *
      * @throws InterruptedException the interrupted exception
      */
-    public Command nextCommand() throws InterruptedException {
+    public CommandModel nextCommand() throws InterruptedException {
+        this.logger.warn("Taking command");
         return this.requests.take();
     }
 }

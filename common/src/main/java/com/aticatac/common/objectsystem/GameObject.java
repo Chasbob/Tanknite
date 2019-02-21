@@ -51,21 +51,7 @@ public class GameObject extends AbstractObject {
         this.parent = Optional.empty();
         this.children = new ArrayList<>();
         this.components = new HashMap<>();
-        this.addComponent(Transform.class);
-        this.transform = getComponent(Transform.class);
-    }
-
-    /**
-     * Instantiates a new Game object.
-     *
-     * @throws InvalidClassInstance     the invalid class instance
-     * @throws ComponentExistsException the component exists exception
-     */
-    public GameObject() throws InvalidClassInstance, ComponentExistsException {
-        super("root");
-        this.parent = Optional.empty();
-        this.children = new ArrayList<>();
-        this.components = new HashMap<>();
+//        this.parent.get().addChild(this);
         this.addComponent(Transform.class);
         this.transform = getComponent(Transform.class);
     }
@@ -139,6 +125,26 @@ public class GameObject extends AbstractObject {
 
     public static void Destroy(GameObject g){
 
+    }
+
+    /**
+     *
+     * @param tag
+     * @param gameObject
+     * @return
+     */
+    public GameObject findObject(String tag, GameObject gameObject){
+        return gameObject.parent.isEmpty() ? findObject(tag,gameObject) : findObjectHelper(tag,gameObject);
+    }
+
+    private GameObject findObjectHelper(String t, GameObject g){
+        if (g.name.equals(t)) return g;
+
+        for (var c:g.children){
+            findObject(t,c);
+        }
+
+        return null;
     }
 
     //Getters and Setters

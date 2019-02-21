@@ -1,6 +1,5 @@
 package com.aticatac.server.networking.listen;
 
-import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
@@ -11,11 +10,11 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 public class CommandListener extends Thread {
-    private final BlockingQueue<Command> queue;
+    private final BlockingQueue<CommandModel> queue;
     private final Logger logger;
     private final BufferedReader reader;
 
-    public CommandListener(BufferedReader reader, BlockingQueue<Command> queue) {
+    public CommandListener(BufferedReader reader, BlockingQueue<CommandModel> queue) {
         this.queue = queue;
         this.logger = Logger.getLogger(getClass());
         this.reader = reader;
@@ -34,8 +33,8 @@ public class CommandListener extends Thread {
                 while (!this.isInterrupted()) {
                     String json = this.reader.readLine();
                     CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
-                    this.logger.trace("JSON: " + json);
-                    this.queue.add(commandModel.getCommand());
+                    this.logger.info("JSON: " + json);
+                    this.queue.add(commandModel);
                 }
             } catch (IOException | InvalidBytes e) {
                 logger.error(e);

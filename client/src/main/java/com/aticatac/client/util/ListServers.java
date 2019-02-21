@@ -1,6 +1,9 @@
 package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Servers;
+import com.aticatac.client.screens.Screens;
+import com.aticatac.client.screens.ServerScreen;
+import com.aticatac.client.screens.UIFactory;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -10,24 +13,15 @@ import java.util.ArrayList;
 
 public class ListServers extends Thread {
     private final Table serversTable;
-    private final UIFactory uiFactory;
 
-    public ListServers(Table serverTable, UIFactory uiFactory) {
+    public ListServers(Table serverTable) {
         this.serversTable = serverTable;
-        this.uiFactory = uiFactory;
     }
 
     @Override
     public void run() {
         super.run();
-        while (!this.isInterrupted()) {
-            try {
-                list();
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        list();
     }
 
     private void list() {
@@ -35,10 +29,22 @@ public class ListServers extends Thread {
         final Servers s = Servers.getInstance();
         ArrayList<ServerInformation> servers = s.getServers();
         for (ServerInformation server : servers) {
-            TextButton serverButton = this.uiFactory.createButton(server.getAddress().getHostAddress());
+            ServerButton serverButton = UIFactory.createServerButton(server.getAddress().getHostAddress(), server);
+            serverButton.addListener(UIFactory.newListenerEvent(() -> {
+                TextButton currentButton = Screens.INSTANCE.getScreen(ServerScreen.class).getCurrentServer();
+                if (!Screens.INSTANCE.getScreen(ServerScreen.class).getServerSelected()) {
+                    Screens.INSTANCE.getScreen(ServerScreen.class).setServerSelected(true);
+                    serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
+                }else{
+                    currentButton.setStyle(Styles.INSTANCE.getButtonStyle());
+                }
+                Screens.INSTANCE.getScreen(ServerScreen.class).setCurrentServer(serverButton);
+                Screens.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
+                serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
+                return false;
+            }));
             serverButton.getLabel().setAlignment(Align.left);
             this.serversTable.add(serverButton);
-            serverButton.addListener(this.uiFactory.createServerButtonListener(serverButton));
             this.serversTable.row();
         }
     }

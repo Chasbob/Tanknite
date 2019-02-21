@@ -1,6 +1,7 @@
 package com.aticatac.server.networking.listen;
 
 import com.aticatac.common.model.Command;
+import com.aticatac.common.model.CommandModel;
 import com.aticatac.server.networking.Client;
 import com.aticatac.server.networking.Data;
 import com.aticatac.server.networking.authentication.Authenticator;
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class NewClients extends Thread {
     private final ConcurrentHashMap<String, Client> clients;
-    private final BlockingQueue<Command> requests;
+    private final BlockingQueue<CommandModel> requests;
     private final ServerSocket serverSocket;
     private final Logger logger;
 
@@ -28,7 +29,7 @@ public class NewClients extends Thread {
      * @param requests the requests
      * @throws IOException the io exception
      */
-    public NewClients(ConcurrentHashMap<String, Client> clients, BlockingQueue<Command> requests) throws IOException {
+    public NewClients(ConcurrentHashMap<String, Client> clients, BlockingQueue<CommandModel> requests) throws IOException {
         this.clients = clients;
         this.serverSocket = new ServerSocket(Data.INSTANCE.getPort());
         this.logger = Logger.getLogger(getClass());

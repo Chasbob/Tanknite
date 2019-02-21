@@ -1,8 +1,8 @@
-package com.gdx.game.desktop;
+package com.aticatac.desktop;
 
+import com.aticatac.client.game.GDXGame;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.aticatac.client.game.GDXGame;
 
 public class DesktopLauncher {
     public static void main(String[] arg) {
