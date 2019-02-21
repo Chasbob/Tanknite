@@ -31,12 +31,10 @@ public class TankObject extends GameObject {
         this.addComponent(Time.class);
 
         //checking if player character, if not then add AI
-        //needs to find the game object then get the component for that in order to get the map.
-        HashMap<String, GameObject> playerMap = GameObject.findObject("Root").getComponent(GameManager.class).getPlayerMap();
-        if(!(playerMap.containsKey(name))){
-
-            this.addComponent(AI.class);
-        }
+//        HashMap<String, GameObject> playerMap = this.findObject("Root", this).getComponent(GameManager.class).getPlayerMap();
+ //       if(!(playerMap.containsKey(name))){
+ //           this.addComponent(AI.class);
+ //       }
 
 
 

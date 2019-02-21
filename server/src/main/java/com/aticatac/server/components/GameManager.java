@@ -46,27 +46,27 @@ public class GameManager extends Component {
     }
 
     public void playerInput(String player, Command cmd) {
+        //Gets the tank that the command came from
         var tank = playerMap.get(player);
-        //use the player name to find an object and then you can use that object
         switch (cmd) {
             case UP:
-                //findObject(name, gameObject).getComponent(TankController.class).moveUp();
+                tank.getComponent(TankController.class).moveUp();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case DOWN:
-                //findObject(name, gameObject).getComponent(TankController.class).moveDown();
+                tank.getComponent(TankController.class).moveDown();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case LEFT:
-                //findObject(name, gameObject).getComponent(TankController.class).moveLeft();
+                tank.getComponent(TankController.class).moveLeft();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case RIGHT:
-                //findObject(name, gameObject).getComponent(TankController.class).moveRight();
+                tank.getComponent(TankController.class).moveRight();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case SHOOT:
-                //findObject(name, gameObject).getComponent(TankController.class).shoot();
+                tank.getComponent(TankController.class).shoot();
                 logger.info("Player: " + player + " sent command: " + cmd);
         }
     }

@@ -127,7 +127,25 @@ public class GameObject extends AbstractObject {
 
     }
 
-    public void findObject(String tag){}
+    /**
+     *
+     * @param tag
+     * @param gameObject
+     * @return
+     */
+    public GameObject findObject(String tag, GameObject gameObject){
+        return gameObject.parent.isEmpty() ? findObject(tag,gameObject) : findObjectHelper(tag,gameObject);
+    }
+
+    private GameObject findObjectHelper(String t, GameObject g){
+        if (g.name.equals(t)) return g;
+
+        for (var c:g.children){
+            findObject(t,c);
+        }
+
+        return null;
+    }
 
     //Getters and Setters
     public AbstractObject getParent() {

@@ -17,8 +17,6 @@ import com.badlogic.gdx.audio.Sound;
 
 import java.util.concurrent.Callable;
 
-import static com.badlogic.gdx.Gdx.audio;
-
 /**
  * The type Ui factory.
  */
@@ -172,7 +170,7 @@ public class UIFactory {
                     result = func.call();
 
                     //addition of sound
-                    Sound tank = Gdx.audio.newSound(Gdx.files.internal("resources/Tank-SoundBible.com-1359027625.wav"));
+                    Sound tank = Gdx.audio.newSound(Gdx.files.internal("audio/Humvee-Stephan_Schutze-1064024548.mp3"));
                     tank.play();
 
                 } catch (Exception e) {
