@@ -74,29 +74,6 @@ public class BulletController extends Component {
             else {
                 this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             }
-
-            /*
-            switch (currentDirection) {
-                case 'N':
-                    if (this.getComponent(Physics.class).up()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord + 1);
-                    } else collided();
-                case 'S':
-                    if (this.getComponent(Physics.class).down()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord - 1);
-                    } else collided();
-                case 'E':
-                    if (this.getComponent(Physics.class).right()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord + 1, currentYCoord);
-                    } else collided();
-                case 'W':
-                    if (this.getComponent(Physics.class).left()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord - 1, currentYCoord);
-                    } else collided();
-            }
-            */
-        }
-    }
     // physics handles bullet collision
 
     // make a method for bullet to disappear

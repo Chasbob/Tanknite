@@ -12,8 +12,6 @@ import com.aticatac.server.components.controller.TankController;
 =======
 >>>>>>> dev
 
-import java.util.HashMap;
-
 public class TankObject extends GameObject {
 
     public TankObject (GameObject Parent, String name, Position p,int health,int ammo) throws InvalidClassInstance, ComponentExistsException {
