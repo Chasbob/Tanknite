@@ -2,7 +2,6 @@ package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
-import javafx.geometry.Pos;
 
 import java.util.HashMap;
 import java.util.LinkedList;

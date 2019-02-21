@@ -275,8 +275,12 @@ public class AI extends Component {
             // Is a path from tank -> power-up -> enemy viable?
             if (!powerupsInRange.isEmpty()) {
                 Position nearPowerup = getClosestPowerup().getTransform().getPosition();
-                Queue<Command> tankToPowerupToEnemy = graph.getPathToLocation(tankPos, nearPowerup);
-                tankToPowerupToEnemy.addAll(graph.getPathToLocation(nearPowerup, nearestEnemy));
+
+                Queue<Command> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup);
+                Queue<Command> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy);
+                Queue<Command> tankToPowerupToEnemy = new LinkedList<>();
+                tankToPowerupToEnemy.addAll(tankToPowerup);
+                tankToPowerupToEnemy.addAll(powerupToEnemy);
 
                 // Viable if path is 1.5x normal path
                 if ((tankToPowerupToEnemy.size() / pathToEnemy.size()) < 1.5) {
