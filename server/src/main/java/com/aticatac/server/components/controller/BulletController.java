@@ -8,6 +8,9 @@ import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Physics;
 
 import static com.aticatac.common.objectsystem.GameObject.Destroy;
+import com.aticatac.server.components.Physics;
+import com.aticatac.server.components.ServerData;
+
 
 /**
  * The type BulletController.
@@ -34,14 +37,13 @@ public class BulletController extends Component {
         while (true) {
             //Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
             Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).GetRotation());
-            Position newPosition = (Position)physicsData[1];
-            int collisionType = (Integer)physicsData[0];
+            Position newPosition = (Position) physicsData[1];
+            int collisionType = (Integer) physicsData[0];
             //0 nothing, 1 is a wall, 2 is a tank
-            if (collisionType != 0){
-                if (collisionType == 1){
+            if (collisionType != 0) {
+                if (collisionType == 1) {
                     Destroy(this);
-                }
-                else {
+                } else {
                     String collidedTankName = DataServer.INSTANCE.getOccupiedCoordinates().getKey(newPosition); //
                     // TODO: use secind bidimap which stores tanks names and tanks positions
 
@@ -52,21 +54,35 @@ public class BulletController extends Component {
                     Destroy(this);
 
                     // dont need collided(); // work out whether collided with wall or tank etc
+                    //Destroy(this);
+
+
+
+                    //collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
+                    //collidedTank.isShot();
+                    //Destroy(this);
+
+                    collided(); // work out whether collided with wall or tank etc
                 }
             }   // set occupied co ordinates for server data
             else {
                 this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             }
+        }
+    }
     // physics handles bullet collision
 
     // make a method for bullet to disappear
 
-    public void collided () {
+    public void collided() {
         collided = true;
     }
 
-    public boolean getCurrentCollided () {
+    public boolean getCurrentCollided() {
         return collided;
     }
-
 }
+
+
+
+

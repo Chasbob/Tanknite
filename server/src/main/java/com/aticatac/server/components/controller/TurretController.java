@@ -16,7 +16,7 @@ public class TurretController extends Component {
 
     public boolean shoot () {
         //TODO shooting
-        BulletObject bullet = new BulletObject(this.getGameObject());
+        BulletObject bullet = new BulletObject(this.getGameObject()); // get name of bullet
         bullet.getComponent(BulletController.class).moveForwards();
         //moves forwards until collision happens then it will be destroyed.
         //constantly check if collided() method is returning true

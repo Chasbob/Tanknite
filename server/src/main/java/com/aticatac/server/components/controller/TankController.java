@@ -1,8 +1,13 @@
 package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
+import com.aticatac.common.components.ServerData;
+import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.server.components.PhysicsManager;
+import com.aticatac.server.components.ServerData;
+import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Health;
@@ -25,24 +30,38 @@ public class TankController extends Component {
   }
   //when sound plays check all tanks in that area and play noise to all those players
 
-  /**
-   * call method when up arrow/w pressed
-   *
-   * @return the boolean @
-   */
-  //physics manager will return a value. 0 = no collision, any other will mean collision.
-  //else set position to new transform
-  public boolean moveUp() {
-    this.getGameObject().getComponent(Time.class).startMoving();
-    Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-    Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
-    Position newPosition = (Position) physicsData[1];
-    if (oldPosition.equals(newPosition)) {
-      return false;
-    } else {
-      this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-      this.getGameObject().getComponent(Transform.class).setRotation(0);
-      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+
+    // change these variables to components when updated
+
+
+// have ammo as component and get health component, and transform and position etc (and physicsmanager)
+// determine whether ai, put behavioural trees from ai if so
+
+
+    //when sound plays check all tanks in that area and play noise to all those players
+
+    /**
+     * call method when up arrow/w pressed
+     *
+     * @return the boolean @
+     */
+    //physics manager now returns transform, so if new transform = old transform collision has happened,
+    //else set position to new transform
+    public boolean moveUp() {
+        Position oldPosition = this.gameObject.getComponent(Transform.class).getPosition();
+        Position newPosition = this.gameObject.getComponent(PhysicsManager.class).moveUp();
+        if (oldPosition.equals(newPosition)) return false;
+        else{
+            parent.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getComponent(Transform.class).SetRotation(0);
+            DataSever.setOccupiedCoordinatesTank(oldPosition, newPosition);
+            // convert to enums
+            // server data component add to tank
+            // where to set initial tanks occupied co ordinates
+            return true;
+        }
+        // set occupied co ordinates on server data whenever tank moves
+        return true;
     }
     return true;
   }
