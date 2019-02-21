@@ -98,11 +98,11 @@ public class Updater extends Thread {
                     this.logger.trace("Broadcasting no changes.");
                     broadcast(this.update);
                 }
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    this.logger.error(e);
-                }
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    this.logger.error(e);
+//                }
             } catch (IOException e) {
                 this.logger.error(e);
             }
