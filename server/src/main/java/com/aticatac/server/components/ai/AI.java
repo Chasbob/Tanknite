@@ -320,9 +320,9 @@ public class AI extends Component {
     }
 
     /**
-     * Finds a position in range of the tank clear of enemies.
+     * Finds all positions in range of the tank clear of enemies.
      *
-     * @return A position clear of enemies
+     * @return All positions clear of enemies
      */
     private ArrayList<Position> getClearPositions() {
         ArrayList<Position> clearPositions = new ArrayList<Position>();
@@ -341,9 +341,9 @@ public class AI extends Component {
     }
 
     /**
-     * Finds a position in range of the tank clear of enemies.
+     * Finds a random position in range of the tank clear of enemies.
      *
-     * @return A position clear of enemies
+     * @return A random position clear of enemies
      */
     private Position getRandomClearPosition() {
         ArrayList<Position> clearPositions = getClearPositions();
@@ -352,9 +352,9 @@ public class AI extends Component {
     }
 
     /**
-     * Finds a position in range of the tank clear of enemies.
+     * Finds the closest position in range of the tank clear of enemies.
      *
-     * @return A position clear of enemies
+     * @return The closest position clear of enemies
      */
     private Position getClosestClearPosition() {
         ArrayList<Position> clearPositions = getClearPositions();
