@@ -3,15 +3,17 @@ package com.aticatac.common.components;
 import com.aticatac.common.objectsystem.GameObject;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 /**
  * The type Component.
  */
 public abstract class Component extends Thread implements Serializable {
+    public final Logger logger;
     /**
      * The Component parent.
      */
-    public GameObject gameObject;
+    private GameObject gameObject;
 
     /**
      * Instantiates a new Component.
@@ -20,6 +22,7 @@ public abstract class Component extends Thread implements Serializable {
      */
     public Component(GameObject gameObject) {
         this.gameObject = gameObject;
+        this.logger = Logger.getLogger(getName());
     }
 
     /**
@@ -29,5 +32,9 @@ public abstract class Component extends Thread implements Serializable {
      */
     public GameObject getGameObject() {
         return gameObject;
+    }
+
+    public void setGameObject(GameObject gameObject) {
+        this.gameObject = gameObject;
     }
 }

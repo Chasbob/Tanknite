@@ -1,7 +1,6 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ScreenEnum;
-import com.aticatac.client.util.UIFactory;
+import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -11,16 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-    private UIFactory uiFactory;
-    private ScreenEnum prevScreen;
-
     /**
      * Instantiates a new Username screen.
      */
-    public UsernameScreen(ScreenEnum prevScreen, UIFactory uiFactory) {
+    UsernameScreen() {
         super();
-        this.prevScreen = prevScreen;
-        this.uiFactory = uiFactory;
     }
 
     @Override
@@ -36,40 +30,56 @@ public class UsernameScreen extends AbstractScreen {
         usernameTable.center();
         usernameTable.defaults().pad(10).width(200).height(30).center();
         //create guidance label
-        Label guidanceLabel = uiFactory.createLabel("Enter username");
+        Label guidanceLabel = UIFactory.createLabel("Enter username");
         usernameTable.add(guidanceLabel);
         usernameTable.row();
         //create error label
-        Label nameTakenLabel = uiFactory.createErrorLabel("Name Taken");
+        Label nameTakenLabel = UIFactory.createErrorLabel("Name Taken");
         usernameTable.add(nameTakenLabel);
         usernameTable.row();
         //create text field
-        TextField textField = uiFactory.createTextField("");
+        TextField textField = UIFactory.createTextField("");
         usernameTable.add(textField);
         //create button for submit
-        TextButton submitButton = uiFactory.createButton("Submit");
+        TextButton submitButton = UIFactory.createButton("Submit");
         usernameTable.add(submitButton);
         //create custom listener for submit button to get text field text
-        if (prevScreen == ScreenEnum.MAIN_MENU) {
-            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.GAME, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
-        } else if (prevScreen == ScreenEnum.MUlTIPLAYER) {
-            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
-        } else if (prevScreen == ScreenEnum.SERVERS) {
-            submitButton.addListener(uiFactory.enterLobby(ScreenEnum.LOBBY, ScreenEnum.USERNAME, uiFactory, nameTakenLabel, textField));
-        }
+        submitButton.addListener(UIFactory.newListenerEvent(() -> {
+            if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
+//                Client client = new Client();
+                boolean accepted = Screens.INSTANCE.getClient().connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
+                if (accepted) {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+                    Screens.INSTANCE.showScreen(GameScreen.class);
+                } else {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+                }
+                return false;
+            } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
+                boolean accepted = Screens.INSTANCE.connect(textField.getText());
+                if (accepted) {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+                    Screens.INSTANCE.showScreen(LobbyScreen.class);
+                } else {
+                    nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+                }
+                return false;
+            } else {
+                return false;
+            }
+        }));
         //create table to store back button
         Table backTable = new Table();
         backTable.setFillParent(true);
         rootTable.addActor(backTable);
         backTable.bottom();
         //create back button
-        TextButton backButton = uiFactory.createBackButton("quit");
+        TextButton backButton = UIFactory.createBackButton("quit");
         backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(uiFactory.createListener(ScreenEnum.MAIN_MENU, ScreenEnum.USERNAME, uiFactory));
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
+        backButton.addListener(UIFactory.newListenerEvent(() -> {
+            Screens.INSTANCE.setSingleplayer(false);
+            return false;
+        }));
+        backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     }
 }

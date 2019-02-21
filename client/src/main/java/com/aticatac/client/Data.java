@@ -1,8 +1,5 @@
 package com.aticatac.client;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
  * The type Data.
  *
@@ -14,7 +11,7 @@ public enum Data {
      */
     INSTANCE;
 //    private InetAddress server;
-    private int discoveryPort = 5000;
+private final int discoveryPort = 5000;
 
     Data() {
 //        try {

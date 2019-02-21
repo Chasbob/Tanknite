@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type EmptyUpdate.
@@ -18,6 +19,7 @@ public class Updater extends Thread {
     private final MulticastSocket multicastSocket;
     private final InetAddress address;
     private final Logger logger;
+    private ConcurrentHashMap<String, Client> clients;
     private Update update;
     private boolean changes;
 
@@ -27,10 +29,36 @@ public class Updater extends Thread {
      * @param address the address
      * @throws IOException the io exception
      */
-    Updater(InetAddress address) throws IOException {
+    Updater(InetAddress address, ConcurrentHashMap<String, Client> clients) throws IOException {
         this.logger = Logger.getLogger(getClass());
         this.address = address;
         this.multicastSocket = new MulticastSocket();
+        this.update = new Update(true);
+        this.changes = true;
+        this.clients = clients;
+    }
+
+    private void updateClientNames() {
+        for (String client :
+                this.clients.keySet()) {
+            if (!this.update.getPlayers().contains(client)) {
+                this.logger.info("Adding: " + client + " to clientNames.");
+                this.update.addPlayer(client);
+                this.changes = true;
+            }
+        }
+    }
+
+    /**
+     * Add client.
+     *
+     * @param client the client
+     */
+    public void addClient(String client) {
+        if (!this.update.getPlayers().contains(client)) {
+            this.update.addPlayer(client);
+            this.changes = true;
+        }
     }
 
     /**
@@ -38,7 +66,7 @@ public class Updater extends Thread {
      *
      * @param update the update model
      */
-    public synchronized void setUpdateModel(Update update) {
+    synchronized void setUpdateModel(Update update) {
         //TODO optimise setting new model by calculating a differential
         // as to send less data.
         this.update = update;
@@ -49,26 +77,33 @@ public class Updater extends Thread {
         this.logger.trace("Running...");
         super.run();
         while (!this.isInterrupted()) {
-            if (this.changes) {
-                this.logger.info("Changes detected.");
-                this.logger.trace("Broadcasting...");
-                broadcast(this.update);
-                this.logger.trace("Setting changes to false.");
-                this.changes = false;
-            } else {
-                this.logger.trace("Broadcasting no changes.");
-                broadcast(new Update(false));
-            }
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+                updateClientNames();
+                if (this.changes) {
+                    this.logger.info("Changes detected.");
+                    this.logger.info("players: " + this.update.getPlayers().toString());
+                    this.logger.trace("Broadcasting...");
+                    broadcast(this.update);
+                    this.logger.trace("Setting changes to false.");
+                    this.changes = false;
+                } else {
+                    this.logger.trace("Broadcasting no changes.");
+                    broadcast(new Update(false));
+                }
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    this.logger.error(e);
+                }
+            } catch (IOException e) {
                 this.logger.error(e);
             }
         }
     }
 
-    private void broadcast(Update update) {
+    private void broadcast(Update update) throws IOException {
         this.logger.trace("Broadcasting...");
+        this.logger.info("Player count: " + this.update.getPlayers().size());
         byte[] bytes = ModelReader.toBytes(update);
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, this.address, Data.INSTANCE.getPort());
         this.logger.trace("Packet: " + packet.getAddress().toString() + ":" + packet.getPort());

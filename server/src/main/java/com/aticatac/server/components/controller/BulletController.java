@@ -4,10 +4,15 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
+<<<<<<< HEAD
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Physics;
 
 import static com.aticatac.common.objectsystem.GameObject.Destroy;
+=======
+import com.aticatac.server.components.Physics;
+import com.aticatac.server.components.ServerData;
+>>>>>>> dev
 
 /**
  * The type BulletController.
@@ -39,6 +44,7 @@ public class BulletController extends Component {
             //0 nothing, 1 is a wall, 2 is a tank
             if (collisionType != 0){
                 if (collisionType == 1){
+<<<<<<< HEAD
                     Destroy(this);
                 }
                 else {
@@ -52,6 +58,17 @@ public class BulletController extends Component {
                     Destroy(this);
 
                     // dont need collided(); // work out whether collided with wall or tank etc
+=======
+                    //Destroy(this);
+                }
+                else {
+
+                    //collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
+                    //collidedTank.isShot();
+                    //Destroy(this);
+
+                    collided(); // work out whether collided with wall or tank etc
+>>>>>>> dev
                 }
             }   // set occupied co ordinates for server data
             else {

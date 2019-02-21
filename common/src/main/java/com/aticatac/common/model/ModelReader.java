@@ -5,9 +5,14 @@ import com.google.gson.Gson;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * The type Model reader.
@@ -21,12 +26,12 @@ public class ModelReader {
      * @param model the model
      * @return the byte [ ]
      */
-    public static byte[] toBytes(Model model) {
+    public static byte[] toBytes(Model model) throws IOException {
         logger.trace("Reading " + model.getClass().getName());
         String json = toJson(model);
         byte[] data = json.getBytes();
         byte[] length = ByteBuffer.allocate(4).putInt(data.length).array();
-        return ArrayUtils.addAll(length, data);
+        return compress(ArrayUtils.addAll(length, data));
     }
 
     /**
@@ -49,10 +54,11 @@ public class ModelReader {
      * @return the t
      * @throws InvalidBytes the invalid bytes
      */
-    public static <T extends Model> T toModel(byte[] in, Class<T> type) throws InvalidBytes {
+    public static <T extends Model> T toModel(byte[] in, Class<T> type) throws InvalidBytes, IOException {
         logger.trace("Converting bytes to " + type.getCanonicalName());
-        int length = ByteBuffer.wrap(Arrays.copyOfRange(in, 0, 4)).getInt();
-        return fromJson(new String(Arrays.copyOfRange(in, 4, length + 4), StandardCharsets.UTF_8), type);
+        byte[] decompressed = decompress(in);
+        int length = ByteBuffer.wrap(Arrays.copyOfRange(decompressed, 0, 4)).getInt();
+        return fromJson(new String(Arrays.copyOfRange(decompressed, 4, length + 4), StandardCharsets.UTF_8), type);
     }
 
     /**
@@ -73,5 +79,24 @@ public class ModelReader {
         } else {
             return output;
         }
+    }
+
+    private static byte[] compress(byte[] data) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
+        GZIPOutputStream gzip = new GZIPOutputStream(bos);
+        gzip.write(data);
+        gzip.close();
+        byte[] compressed = bos.toByteArray();
+        bos.close();
+        return compressed;
+    }
+
+    private static byte[] decompress(byte[] compressed) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(compressed);
+        GZIPInputStream gis = new GZIPInputStream(bis);
+        byte[] output = gis.readAllBytes();
+        bis.close();
+        gis.close();
+        return output;
     }
 }

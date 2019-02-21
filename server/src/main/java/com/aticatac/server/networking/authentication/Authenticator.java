@@ -1,10 +1,11 @@
 package com.aticatac.server.networking.authentication;
 
 import com.aticatac.common.model.ClientModel;
-import com.aticatac.common.model.Command;
+import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Login;
 import com.aticatac.common.model.ModelReader;
+import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.networking.Client;
 import com.aticatac.server.networking.Data;
 import com.aticatac.server.networking.listen.CommandListener;
@@ -24,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Authenticator implements Runnable {
     private final Logger logger;
     private final ConcurrentHashMap<String, Client> clients;
-    private final BlockingQueue<Command> queue;
+    private final BlockingQueue<CommandModel> queue;
     private final PrintStream printer;
     private final BufferedReader reader;
     private boolean authenticated;
@@ -35,9 +36,10 @@ public class Authenticator implements Runnable {
      * @param client  the client
      * @param clients the clients
      * @param queue   the queue
+     *
      * @throws IOException the io exception
      */
-    public Authenticator(Socket client, ConcurrentHashMap<String, Client> clients, BlockingQueue<Command> queue) throws IOException {
+    public Authenticator(Socket client, ConcurrentHashMap<String, Client> clients, BlockingQueue<CommandModel> queue) throws IOException {
         this.clients = clients;
         this.queue = queue;
         this.logger = Logger.getLogger(getClass());
@@ -74,6 +76,7 @@ public class Authenticator implements Runnable {
 
     /**
      * @return Login request
+     *
      * @throws IOException  IO exception
      * @throws InvalidBytes InvalidByte exception
      */
@@ -127,6 +130,7 @@ public class Authenticator implements Runnable {
         CommandListener listener = new CommandListener(this.reader, this.queue);
         ClientModel model = new ClientModel(login.getId());
         Client client = new Client(listener, model);
+        Manager.INSTANCE.addClient(client.getId());
         this.clients.put(model.getId(), client);
     }
 }
