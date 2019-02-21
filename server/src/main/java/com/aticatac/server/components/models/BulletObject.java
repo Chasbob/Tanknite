@@ -5,6 +5,7 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.PhysicsManager;
 import com.aticatac.server.components.Time;
+import com.aticatac.server.components.controller.BulletController;
 
 public class BulletObject extends GameObject {
     /**
@@ -21,5 +22,6 @@ public class BulletObject extends GameObject {
 
         this.addComponent(PhysicsManager.class);
         this.addComponent(Time.class);
+        this.addComponent(BulletController.class);
     }
 }
