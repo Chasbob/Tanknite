@@ -13,7 +13,9 @@ import java.util.HashMap;
 
 public class TankObject extends GameObject {
 
-    public TankObject (GameObject Parent, String name, Position p,int health,int ammo, boolean isAI) throws InvalidClassInstance, ComponentExistsException {
+    //add in a parameter boolean which is ai true or false
+    //TODO add in the parameter changes everywhere
+    public TankObject (GameObject Parent, String name, Position p,int health,int ammo) throws InvalidClassInstance, ComponentExistsException {
         super(name, Parent);
 
         this.getComponent(Transform.class).SetTransform(p.x, p.y);
@@ -32,9 +34,9 @@ public class TankObject extends GameObject {
         this.addComponent(Time.class);
         this.addComponent(TankController.class);
 
-        if(isAI){
-            this.addComponent(AI.class);
-        }
+//        if(isAI){
+//            this.addComponent(AI.class);
+//        }
 
 
 
