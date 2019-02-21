@@ -11,6 +11,7 @@ import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.prefabs.TankObject;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameManager extends Component {
@@ -38,17 +39,20 @@ public class GameManager extends Component {
             playerMap.put(player, createTank(player));
         }
     }
+    //TODO addAI which passes in that AI is true.
+    //IN here it could check the count to know how many times it needs to create an AI
+    //count how many times the addPLayer is called.
+    //This needs to be called upon the start of the game as all clients shld then be added.
 
     public void removeClient(String username) {
-        if (playerMap.containsKey(username)) {
-            playerMap.remove(username);
-        }
+        playerMap.remove(username);
     }
 
     public void playerInput(String player, Command cmd) {
         //Gets the tank that the command came from
         var tank = playerMap.get(player);
         switch (cmd) {
+            //TODO set name of tank game object to player id and pass that in to logic.
             case UP:
                 tank.getComponent(TankController.class).moveUp();
                 logger.info("Player: " + player + " sent command: " + cmd);
@@ -71,14 +75,17 @@ public class GameManager extends Component {
         }
     }
 
-    public TankObject createTank(String player) {
+    private TankObject createTank(String player) {
         try {
-            return new TankObject(getGameObject().getChildren().get(0),
+            Position position;
+            TankObject tank = new TankObject(getGameObject().getChildren().get(0),
                     player,
-                    new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+                    position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
                             ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1)),
                     100,
                     30);
+            DataServer.INSTANCE.setCoordinates(position, "Tank");
+            return tank;
         } catch (InvalidClassInstance invalidClassInstance) {
             invalidClassInstance.printStackTrace();
         } catch (ComponentExistsException e) {

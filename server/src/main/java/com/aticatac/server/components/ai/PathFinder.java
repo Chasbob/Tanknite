@@ -29,47 +29,35 @@ public class PathFinder {
      * Uses A* search to find a path from one node to another.
      *
      * @param start The node to start from
-     * @param goal The node to end at
+     * @param goal  The node to end at
      * @return A queue of commands that define a path from the start node to the goal node
      */
     public Queue<Command> getPathToLocation(SearchNode start, SearchNode goal) {
-
         LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
-
         LinkedList<SearchNode> openSet = new LinkedList<SearchNode>();
         openSet.add(start);
-
         HashMap cameFrom = new HashMap<SearchNode, SearchNode>();
-
         HashMap<SearchNode, Integer> g = new HashMap<SearchNode, Integer>();
         g.put(start, 0);
-
         HashMap<SearchNode, Double> f = new HashMap<SearchNode, Double>();
         f.put(start, costEstimate(start, goal));
-
         while (!openSet.isEmpty()) {
             SearchNode current = getLowestFScoreNode(openSet, f);
             if (current.equals(goal)) {
                 return convertToCommands(reconstructPath(cameFrom, current));
             }
-
             openSet.remove(current);
             closedSet.add(current);
-
             for (SearchNode connectedNode : current.getConnectedNodes()) {
                 if (closedSet.contains(connectedNode)) {
                     continue;
                 }
-
                 int tempG = g.get(current) + 1;
-
                 if (!openSet.contains(connectedNode)) {
                     openSet.add(connectedNode);
-                }
-                else if (tempG >= g.get(connectedNode)) {
+                } else if (tempG >= g.get(connectedNode)) {
                     continue;
                 }
-
                 cameFrom.put(connectedNode, current);
                 g.put(connectedNode, tempG);
                 f.put(connectedNode, g.get(connectedNode) + costEstimate(connectedNode, goal));
@@ -79,7 +67,7 @@ public class PathFinder {
     }
 
     /**
-     * Converts a path of SearchNodes to a queue of Commands that execute the path
+     * Converts a path of SearchNodes to a queue of Commands that .getX()ecute the path
      *
      * @param path The path to convert
      * @return A queue of Commands
@@ -89,14 +77,11 @@ public class PathFinder {
         for (int i = 1; i < path.size(); i++) {
             Position from = path.get(i - 1).getPosition();
             Position to = path.get(i).getPosition();
-
             Command command = commandToAdd(from, to);
-
-            // Adjust amount needed to reach next node
+            // Adjust amount needed to reach n.getX()t node
             for (int j = 0; j < 1; j++) {
                 steps.add(command);
             }
-
         }
         return steps;
     }
@@ -110,16 +95,13 @@ public class PathFinder {
      */
     private Command commandToAdd(Position from, Position to) {
         // THESE MIGHT BE WRONG
-        if (from.x > to.x) {
+        if (from.getX() > to.getX()) {
             return Command.RIGHT;
-        }
-        else if (from.x < to.x) {
+        } else if (from.getX() < to.getX()) {
             return Command.LEFT;
-        }
-        else if (from.y > to.y) {
+        } else if (from.getY() > to.getY()) {
             return Command.UP;
-        }
-        else if (from.y < to.y) {
+        } else if (from.getY() < to.getY()) {
             return Command.DOWN;
         }
         return null;
@@ -129,13 +111,12 @@ public class PathFinder {
      * Reconstructs the final path when the goal node is reached.
      *
      * @param cameFrom A mapping from node to node, defining for a node which node was previous
-     * @param current The current node
+     * @param current  The current node
      * @return The final path from the start to goal node
      */
     private LinkedList<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
         LinkedList<SearchNode> totalPath = new LinkedList<SearchNode>();
         totalPath.add(current);
-
         while (cameFrom.containsKey(current)) {
             current = cameFrom.get(current);
             totalPath.add(current);
@@ -147,7 +128,7 @@ public class PathFinder {
      * Returns the node in the open set with the lowest f score
      *
      * @param openSet The set of open nodes
-     * @param f A mapping from search nodes to f score
+     * @param f       A mapping from search nodes to f score
      * @return The node with the lowest f score from the set of open nodes
      */
     private SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Double> f) {
@@ -163,15 +144,14 @@ public class PathFinder {
     }
 
     /**
-     * Calculates a cost estimate for travelling from one node to another using euclidean distance.
-     * Used as a heuristic for A* search.
+     * Calculates a cost estimate for travelling from one node to another using euclidean distance. Used as a heuristic
+     * for A* search.
      *
      * @param from Node to start from
-     * @param to Node to end on
+     * @param to   Node to end on
      * @return An estimate for the cost of travelling from one node to another
      */
     private double costEstimate(SearchNode from, SearchNode to) {
-        return Math.sqrt(Math.pow(from.getPosition().y - to.getPosition().y, 2) + Math.pow(from.getPosition().x - to.getPosition().x, 2));
+        return Math.sqrt(Math.pow(from.getY() - to.getY(), 2) + Math.pow(from.getX() - to.getX(), 2));
     }
-
 }

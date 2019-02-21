@@ -5,15 +5,19 @@ import com.aticatac.common.components.transform.Position;
 import java.util.ArrayList;
 
 /**
- * A SearchNode is a node in the graph representing the game's map.
- * Path finding using A* search is performed on a graph of SearchNodes.
+ * A SearchNode is a node in the graph representing the game's map. Path finding using A* search is performed on a graph
+ * of SearchNodes.
  *
  * @author Dylan
  */
 public class SearchNode {
-    /** The position of this SearchNode */
+    /**
+     * The position of this SearchNode
+     */
     private Position position;
-    /** All the SearchNodes connected to this SearchNode */
+    /**
+     * All the SearchNodes connected to this SearchNode
+     */
     private ArrayList<SearchNode> connectedNodes;
 
     /**
@@ -25,6 +29,24 @@ public class SearchNode {
     public SearchNode(int x, int y) {
         setPosition(new Position(x, y));
         connectedNodes = new ArrayList<SearchNode>();
+    }
+
+    /**
+     * Gets x.
+     *
+     * @return the x
+     */
+    public double getX() {
+        return this.position.getX();
+    }
+
+    /**
+     * Gets y.
+     *
+     * @return the y
+     */
+    public double getY() {
+        return this.position.getY();
     }
 
     /**

@@ -1,42 +1,35 @@
 package com.aticatac.server.prefabs;
 
+import com.aticatac.common.components.Texture;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.*;
-import com.aticatac.server.components.ai.AI;
-
-import java.util.HashMap;
+import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.Physics;
+import com.aticatac.server.components.Time;
+import com.aticatac.server.components.controller.TankController;
 
 public class TankObject extends GameObject {
-
-    public TankObject (GameObject Parent, String name, Position p,int health,int ammo) throws InvalidClassInstance, ComponentExistsException {
-        super(name, Parent);
-
-        this.getComponent(Transform.class).SetTransform(p.x, p.y);
-
+    //add in a parameter boolean which is ai true or false
+    //TODO add in the parameter changes everywhere
+    public TankObject(GameObject parent, String name, Position p, int health, int ammo) throws InvalidClassInstance, ComponentExistsException {
+        super(name, parent, ObjectType.TANK);
+        this.getComponent(Transform.class).setPosition(p.getX(), p.getY());
         new GameObject("TankBottom", this);
         new GameObject("TankTop", this);
-
-        this.getChildren().get(0).getComponent(Transform.class).SetTransform(p.x, p.y);
-        this.getChildren().get(1).getComponent(Transform.class).SetTransform(p.x + 10, p.y + 10);
-
+        this.getChildren().get(0).getComponent(Transform.class).setPosition(p.getX(), p.getY());
+        this.getChildren().get(1).getComponent(Transform.class).setPosition(p.getX() + 10, p.getY() + 10);
+        this.getChildren().get(0).addComponent(Texture.class).Texture = "img/TankTop.png";
+        this.getChildren().get(1).addComponent(Texture.class).Texture = "img/TankBottom.png";
         // determine whether ai, put behavioural trees from ai if so
-
         this.addComponent(Health.class).setHealth(health);
         this.addComponent(Ammo.class).setAmmo(ammo);
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
-
-        //checking if player character, if not then add AI
-//        HashMap<String, GameObject> playerMap = this.findObject("Root", this).getComponent(GameManager.class).getPlayerMap();
- //       if(!(playerMap.containsKey(name))){
- //           this.addComponent(AI.class);
- //       }
-
-
-
+        this.addComponent(TankController.class);
     }
 }

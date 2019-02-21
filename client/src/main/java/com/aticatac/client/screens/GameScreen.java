@@ -6,8 +6,9 @@ import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
+import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
@@ -21,6 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.util.List;
+
 /**
  * The type Game screen.
  */
@@ -31,7 +34,6 @@ public class GameScreen extends AbstractScreen {
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
     private GameObject root;
-    private GameObject tank;
     private float health;
 
     /**
@@ -43,9 +45,6 @@ public class GameScreen extends AbstractScreen {
             cam = new OrthographicCamera(getWidth(), getHeight());
             cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
             root = new GameObject("root");
-            tank = new TankObject(root, "Tank", new Position(getWidth() / 2, getHeight() / 2), 100, 100);
-            ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/TankBottom.png");
-            ObjectHelper.AddRenderer(tank.getChildren().get(1), "img/TankTop.png");
             //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,7 +120,7 @@ public class GameScreen extends AbstractScreen {
 //            while (true) {
 ////                try {
 //                    Update update = Screens.INSTANCE.getUpdate();
-//                    System.out.println(Converter.Constructor(update.getObj()));
+//                    System.out.println(Converter.construct(update.getObj()));
 ////                } catch (InterruptedException e) {
 ////                    e.printStackTrace();
 ////                }
@@ -134,11 +133,28 @@ public class GameScreen extends AbstractScreen {
         // Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        CenterCameraToGameObject(tank);
+        Update update = Screens.INSTANCE.getUpdate();
+        renderer.setView(cam);
         renderer.render();
-        Input();
+        input();
         batch.begin();
-        ChildRenderer(root);
+        if (update.getObj() != null) {
+            this.root = Converter.construct(update.getObj());
+            try {
+                if (root != null) {
+                    List<GameObject> children = this.root.getChildren();
+                    for (var c : children) {
+                        if (c.componentExists(com.aticatac.common.components.Texture.class)) {
+                            ObjectHelper.AddRenderer(c, c.getComponent(com.aticatac.common.components.Texture.class).Texture);
+                            //TODO stop making everything a tank bottom?
+                        }
+                    }
+                    ChildRenderer(root);
+                }
+            } catch (Exception e) {
+                this.getLogger().error("Root position: " + this.root.getTransform().toString());
+            }
+        }
         //health bar
         if (health > 0.6f) {
             batch.setColor(Color.GREEN);
@@ -162,11 +178,11 @@ public class GameScreen extends AbstractScreen {
                 Position p = c.getComponent(Transform.class).getPosition();
                 Texture t = c.getComponent(Renderer.class).getTexture();
                 batch.draw(new TextureRegion(t),
-                        (float) p.x - cam.position.x, (float) p.y - cam.position.y,
+                        (float) p.getX(), (float) p.getY(),
                         t.getWidth() / 2f, t.getHeight() / 2f,
                         t.getWidth(), t.getHeight(),
                         1, 1,
-                        (float) c.getComponent(Transform.class).GetRotation());
+                        (float) c.getComponent(Transform.class).getRotation());
             }
         }
     }
@@ -203,7 +219,7 @@ public class GameScreen extends AbstractScreen {
      * @param y the y
      * @return the float
      */
-//TODO Convert game co-ord to Transform.class cord
+//TODO Convert game co-ord to applyTransform.class cord
     private float YLibGdx2YTransform(float y) {
         y = y - cam.viewportHeight;
         y = -y;
@@ -212,7 +228,7 @@ public class GameScreen extends AbstractScreen {
     }
 
     /**
-     * Transform y 2 libgdx float.
+     * applyTransform y 2 libgdx float.
      *
      * @param y the y
      * @return the float
@@ -236,9 +252,9 @@ public class GameScreen extends AbstractScreen {
     }
 
     /**
-     * Input.
+     * input.
      */
-    private void Input() {
+    private void input() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             //show the pop up table
             popUpTable.setVisible(true);
@@ -275,7 +291,6 @@ public class GameScreen extends AbstractScreen {
         super.touchDown(screenX, screenY, pointer, button);
         if (button == Input.Buttons.LEFT) {
             try {
-
                 var newX = XLibGdx2XTransform(screenX);
                 var newY = YLibGdx2YTransform(screenY);
                 System.out.println("X:" + newX + "\nY:" + newY);
@@ -300,17 +315,17 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        var XMouse = XLibGdx2XTransform(screenX);
-        var YMouse = YLibGdx2YTransform(screenY);
-        var XTankTop = tank.getChildren().get(1).transform.getX();
-        var YTankTop = tank.getChildren().get(1).transform.getY();
-        var X = XMouse - XTankTop;
-        var Y = YMouse - YTankTop;
-        var rotation = Math.atan(Y / X);
+//        var XMouse = XLibGdx2XTransform(screenX);
+//        var YMouse = YLibGdx2YTransform(screenY);
+//        var XTankTop = tank.getChildren().get(1).transform.getX();
+//        var YTankTop = tank.getChildren().get(1).transform.getY();
+//        var X = XMouse - XTankTop;
+//        var Y = YMouse - YTankTop;
+//        var rotation = Math.atan(Y / X);
 //        if (XMouse >= XTankTop)
-//            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
+//            tank.getChildren().get(1).transform.setRotation(Math.toDegrees(rotation) - 90f);
 //        else
-//            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
+//            tank.getChildren().get(1).transform.setRotation(Math.toDegrees(rotation) + 90f);
         return false;
     }
 }

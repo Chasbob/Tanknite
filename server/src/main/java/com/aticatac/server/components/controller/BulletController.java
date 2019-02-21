@@ -5,7 +5,6 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.ServerData;
 
 /**
  * The type BulletController.
@@ -30,8 +29,8 @@ public class BulletController extends Component {
 
     public void moveForwards() {
         while (true) {
-            //Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-            Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).GetRotation());
+            //Position oldPosition = this.getGameObject().getComponent(applyTransform.class).getPosition();
+            Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
             Position newPosition = (Position)physicsData[1];
             int collisionType = (Integer)physicsData[0];
             //0 nothing, 1 is a wall, 2 is a tank
@@ -49,26 +48,26 @@ public class BulletController extends Component {
                 }
             }   // set occupied co ordinates for server data
             else {
-                this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+                this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             }
 
             /*
             switch (currentDirection) {
                 case 'N':
                     if (this.getComponent(Physics.class).up()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord + 1);
+                        this.getComponent(applyTransform.class).setPosition(currentXCoord, currentYCoord + 1);
                     } else collided();
                 case 'S':
                     if (this.getComponent(Physics.class).down()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord, currentYCoord - 1);
+                        this.getComponent(applyTransform.class).setPosition(currentXCoord, currentYCoord - 1);
                     } else collided();
                 case 'E':
                     if (this.getComponent(Physics.class).right()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord + 1, currentYCoord);
+                        this.getComponent(applyTransform.class).setPosition(currentXCoord + 1, currentYCoord);
                     } else collided();
                 case 'W':
                     if (this.getComponent(Physics.class).left()) {
-                        this.getComponent(Transform.class).setTransform(currentXCoord - 1, currentYCoord);
+                        this.getComponent(applyTransform.class).setPosition(currentXCoord - 1, currentYCoord);
                     } else collided();
             }
             */

@@ -10,20 +10,13 @@ import java.util.ArrayList;
  */
 public class Update extends Model {
     private final boolean changed;
-    private ArrayList<Container> obj;
     /**
      * The Players.
      */
     ArrayList<String> players;
+    private boolean objectChanged;
+    private ArrayList<Container> obj;
     private boolean playersChanged;
-
-    public ArrayList<Container> getObj() {
-        return obj;
-    }
-
-    public void setObj(ArrayList<Container> obj) {
-        this.obj = obj;
-    }
 
     /**
      * Instantiates a new Model.
@@ -35,6 +28,15 @@ public class Update extends Model {
         this.changed = changed;
         this.players = new ArrayList<>();
         this.playersChanged = true;
+    }
+
+    public ArrayList<Container> getObj() {
+        return obj;
+    }
+
+    public void setObj(ArrayList<Container> obj) {
+        this.obj = obj;
+        this.objectChanged = true;
     }
 
     /**
@@ -71,5 +73,16 @@ public class Update extends Model {
      */
     public boolean isChanged() {
         return changed;
+    }
+
+    @Override
+    public String toString() {
+        String toString = "Update{" +
+                "changed=" + changed +
+                ", obj=" + obj.toString() +
+                ", players=" + players.toString() +
+                ", playersChanged=" + playersChanged +
+                '}';
+        return toString;
     }
 }

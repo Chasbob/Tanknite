@@ -6,7 +6,7 @@ public class Ammo extends Component {
     private int ammo = 0;
 
     /**
-     * Constructor for component: Ammo.
+     * construct for component: Ammo.
      * @param parent
      */
     public Ammo(GameObject parent) {
