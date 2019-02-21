@@ -358,7 +358,7 @@ public class AI extends Component {
         Position closestClearPosition = null;
         double distanceToClosestPosition = Double.MAX_VALUE;
         for (Position clearPosition : clearPositions) {
-            double distanceToTank = Math.sqrt(Math.pow(clearPosition.y - tankPos.y, 2) + Math.pow(clearPosition.x - tankPos.x, 2));
+            double distanceToTank = Math.sqrt(Math.pow(clearPosition.getY() - tankPos.getY(), 2) + Math.pow(clearPosition.getX() - tankPos.getX(), 2));
             if (distanceToTank < distanceToClosestPosition) {
                 closestClearPosition = clearPosition;
                 distanceToClosestPosition = distanceToTank;
@@ -455,8 +455,8 @@ public class AI extends Component {
     private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
         for (GameObject enemy : allObjects) {
-            if (Math.abs(enemy.getComponent(Transform.class).getX() - position.getX()) <= range ||
-                    Math.abs(enemy.getComponent(Transform.class).getY() - position.getY()) <= range) {
+            if (Math.abs(enemy.getTransform().getX() - position.getX()) <= range ||
+                    Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
                 inRange.add(enemy);
             }
         }

@@ -67,7 +67,7 @@ public class PathFinder {
     }
 
     /**
-     * Converts a path of SearchNodes to a queue of Commands that .getX()ecute the path
+     * Converts a path of SearchNodes to a queue of Commands that execute the path
      *
      * @param path The path to convert
      * @return A queue of Commands
@@ -78,7 +78,7 @@ public class PathFinder {
             Position from = path.get(i - 1).getPosition();
             Position to = path.get(i).getPosition();
             Command command = commandToAdd(from, to);
-            // Adjust amount needed to reach n.getX()t node
+            // Adjust amount needed to reach next node
             for (int j = 0; j < 1; j++) {
                 steps.add(command);
             }
