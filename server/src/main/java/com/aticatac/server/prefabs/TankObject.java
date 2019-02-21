@@ -7,6 +7,7 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.*;
 import com.aticatac.server.components.ai.AI;
+import com.aticatac.server.components.controller.TankController;
 
 import java.util.HashMap;
 
@@ -29,12 +30,13 @@ public class TankObject extends GameObject {
         this.addComponent(Ammo.class).setAmmo(ammo);
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
+        this.addComponent(TankController.class);
 
         //checking if player character, if not then add AI
 //        HashMap<String, GameObject> playerMap = this.findObject("Root", this).getComponent(GameManager.class).getPlayerMap();
- //       if(!(playerMap.containsKey(name))){
- //           this.addComponent(AI.class);
- //       }
+//        if(!(playerMap.containsKey(name))){
+//            this.addComponent(AI.class);
+//        }
 
 
 
