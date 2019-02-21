@@ -51,15 +51,22 @@ public class Server extends Thread {
         this.newClients.start();
         this.discovery.start();
         (new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep((long) 16.66666666);
+                    this.multicaster.addObject(Converter.Deconstructor(Manager.INSTANCE.getRoot()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        })).start();
+        (new Thread(() -> {
             //TODO remove testing thread
             while (true) {
                 try {
 //                    System.out.println(this.requests.take());
                     CommandModel model = this.requests.take();
                     Manager.INSTANCE.playerInput(model.getId(), model.getCommand());
-                    var update = new Update(true);
-                    update.setObj(Converter.Deconstructor(Manager.INSTANCE.getRoot()));
-                    setUpdateModel(update);
                 } catch (InterruptedException ignored) {
                 }
             }
