@@ -33,6 +33,9 @@ public class GameScreen extends AbstractScreen {
     private GameObject root;
     private GameObject tank;
     private float health;
+    private Label ammoValue;
+    private Label killCount;
+    private Label playerCount;
 
     /**
      * Instantiates a new Game screen.
@@ -51,6 +54,9 @@ public class GameScreen extends AbstractScreen {
             e.printStackTrace();
         }
         health = 1f;
+        ammoValue = UIFactory.createLabel("30");
+        killCount = UIFactory.createLabel("0");
+        playerCount = UIFactory.createLabel("1");
         batch = new SpriteBatch();
         Gdx.input.setInputProcessor(this);
     }
@@ -72,9 +78,11 @@ public class GameScreen extends AbstractScreen {
         countTable.defaults().padTop(10).padLeft(10).left();
         Label players = UIFactory.createLabel("player count: ");
         countTable.add(players);
+        countTable.add(playerCount);
         countTable.row();
         Label kills = UIFactory.createLabel("kills: ");
         countTable.add(kills);
+        countTable.add(killCount);
         //create table for kill feed - BOTTOM LEFT
         Table killTable = new Table();
         killTable.setFillParent(true);
@@ -91,6 +99,7 @@ public class GameScreen extends AbstractScreen {
         ammoTable.defaults().padRight(10).padTop(10).padBottom(20).left();
         Label ammo = UIFactory.createLabel("ammo: ");
         ammoTable.add(ammo);
+        ammoTable.add(ammoValue);
         //create pop up table
         popUpTable = new Table();
         rootTable.addActor(popUpTable);
@@ -116,17 +125,6 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
-//        (new Thread(() -> {
-//            //TODO remove testing thread
-//            while (true) {
-////                try {
-//                    Update update = Screens.INSTANCE.getUpdate();
-//                    System.out.println(Converter.Constructor(update.getObj()));
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-//            }
-//        })).start();
     }
 
     @Override
