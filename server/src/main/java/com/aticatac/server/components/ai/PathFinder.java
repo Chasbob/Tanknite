@@ -102,6 +102,13 @@ public class PathFinder {
         return steps;
     }
 
+    /**
+     * Returns the correct command to travel from one node to another.
+     *
+     * @param from The position of the node to travel from
+     * @param to The position of the node to travel to
+     * @return A command that executes the path
+     */
     private Command commandToAdd(Position from, Position to) {
         // THESE MIGHT BE WRONG
         if (from.x > to.x) {

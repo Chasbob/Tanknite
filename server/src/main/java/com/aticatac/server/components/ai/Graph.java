@@ -29,6 +29,30 @@ public class Graph {
      * @param width The number of nodes wide
      * @param height The number of nodes high
      */
+    public Graph(int width, int height, int separation) {
+        this.width = width;
+        this.height = height;
+        this.separation = separation;
+        nodes = new ArrayList<SearchNode>();
+        pf = new PathFinder(separation);
+
+        // Add nodes
+        for (int i = 0; i < width*separation; i += separation) {
+            for (int j = 0; j < height*separation; j += separation) {
+                nodes.add(new SearchNode(i, j));
+            }
+        }
+        // Add connections
+        // don't make connections if connection is invalid (the node thing might be enough though)
+        for (SearchNode node : nodes) {
+            for (SearchNode otherNode : nodes) {
+                if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == separation) {
+                    node.addConnection(otherNode);
+                }
+            }
+        }
+    }
+    // Makes a graph with excluded nodes
     /*
     public Graph(int width, int height, int separation, char[][] map) {
         this.width = width;
@@ -55,30 +79,6 @@ public class Graph {
         }
     }
     */
-
-    public Graph(int width, int height, int separation) {
-        this.width = width;
-        this.height = height;
-        this.separation = separation;
-        nodes = new ArrayList<SearchNode>();
-        pf = new PathFinder(separation);
-
-        // Add nodes
-        for (int i = 0; i < width*separation; i += separation) {
-            for (int j = 0; j < height*separation; j += separation) {
-                nodes.add(new SearchNode(i, j));
-            }
-        }
-        // Add connections
-        // don't make connections if connection is invalid (the node thing might be enough though)
-        for (SearchNode node : nodes) {
-            for (SearchNode otherNode : nodes) {
-                if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == separation) {
-                    node.addConnection(otherNode);
-                }
-            }
-        }
-    }
 
     /**
      * Uses the pathfinder to generate queue of commands that define a path from one location to another.
