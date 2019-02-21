@@ -1,10 +1,15 @@
 package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
+import com.aticatac.common.components.ServerData;
+import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Health;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.server.components.PhysicsManager;
+import com.aticatac.server.components.ServerData;
+import com.aticatac.server.components.model.Map;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.Physics;
 import com.aticatac.server.components.Time;
@@ -39,7 +44,6 @@ public class TankController extends Component {
         Position newPosition = (Position) physicsData[1];
         if (oldPosition.equals(newPosition)) return false;
         else {
-            System.out.println("new coordinates:" + newPosition.getX() +" "+ newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);

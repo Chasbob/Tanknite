@@ -5,6 +5,8 @@ import com.aticatac.common.components.Texture;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
+import com.aticatac.server.components.controller.BulletController;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
