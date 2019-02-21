@@ -13,4 +13,11 @@ public class Texture extends Component{
     public Texture(GameObject gameObject) {
         super(gameObject);
     }
+
+    @Override
+    public String toString() {
+        return "Texture{" +
+                "Texture='" + Texture + '\'' +
+                '}';
+    }
 }

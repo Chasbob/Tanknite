@@ -26,10 +26,8 @@ public enum Manager {
         try {
             this.root = new GameObject("Root");
             root.addComponent(GameManager.class);
-        } catch (InvalidClassInstance invalidClassInstance) {
+        } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
             throw new ExceptionInInitializerError(invalidClassInstance);
-        } catch (ComponentExistsException e) {
-            throw new ExceptionInInitializerError(e);
         }
     }
 

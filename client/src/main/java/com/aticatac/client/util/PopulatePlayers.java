@@ -34,20 +34,16 @@ public class PopulatePlayers extends Thread {
     }
 
     private void list() {
-        this.logger.info("Listing...");
+        this.logger.trace("Listing...");
         //TODO
         ArrayList<String> players;
-//        try {
         players = new ArrayList<>(Screens.INSTANCE.getUpdate().getPlayers());
-        this.logger.info("Players: " + players.toString());
+        this.logger.trace("Players: " + players.toString());
         this.playerTable.clearChildren();
-        this.logger.info("Got update! " + players.size());
-//        } catch (InterruptedException e) {
-//            this.logger.error(e);
-//        }
+        this.logger.trace("Got update! " + players.size());
         this.logger.trace("Listing");
         for (String player : players) {
-            this.logger.info("Player: " + player);
+            this.logger.trace("Player: " + player);
             Label playerLabel = UIFactory.createLabel(player);
             this.playerTable.add(playerLabel);
             this.playerTable.row();
