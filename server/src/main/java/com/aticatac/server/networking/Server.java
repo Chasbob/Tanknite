@@ -77,10 +77,11 @@ public class Server extends Thread {
             int counter = 0;
             while (true) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(16);
                     counter++;
-                    Manager.INSTANCE.getRoot().transform.SetTransform(counter, counter++);
-                    ArrayList<Container> containers = Converter.Deconstructor(Manager.INSTANCE.getRoot());
+                    //TODO this sometimes crashes; <null pointer>
+//                    Manager.INSTANCE.getRoot().transform.setPosition(counter, counter++);
+                    ArrayList<Container> containers = Converter.deconstruct(Manager.INSTANCE.getRoot());
                     this.logger.trace("Containers: " + containers.toString());
                     this.multicaster.addObject(Manager.INSTANCE.getRoot());
                 } catch (Exception e) {

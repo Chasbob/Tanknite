@@ -53,7 +53,7 @@ public class Updater extends Thread {
 
     public void addObject(GameObject objects) {
         try {
-            this.update.setObj(Converter.Deconstructor(objects));
+            this.update.setObj(Converter.deconstruct(objects));
         } catch (Exception unchecked) {
             unchecked.printStackTrace();
         }

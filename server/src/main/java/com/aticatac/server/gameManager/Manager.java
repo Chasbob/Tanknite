@@ -16,19 +16,19 @@ public enum Manager {
     private final HashMap<String, GameObject> playerMap;
     private GameObject root;
 
-    public GameObject getRoot() {
-        return root;
-    }
-
     Manager() {
         this.logger = Logger.getLogger(getClass());
         playerMap = new HashMap<>();
         try {
             this.root = new GameObject("Root");
-            root.addComponent(GameManager.class);
+            this.root.addComponent(GameManager.class);
         } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
             throw new ExceptionInInitializerError(invalidClassInstance);
         }
+    }
+
+    public GameObject getRoot() {
+        return this.root;
     }
 
     public int getMin() {
@@ -42,7 +42,7 @@ public enum Manager {
     public void addClient(String username) {
         this.root.getComponent(GameManager.class).addPlayer(username);
         this.logger.info("added client: " + username);
-        this.logger.info("root: " + this.root.getComponent(GameManager.class).getPlayerMap().size());
+        this.logger.trace("root: " + this.root.getComponent(GameManager.class).getPlayerMap().size());
     }
 
     public void removeClient(String username) {

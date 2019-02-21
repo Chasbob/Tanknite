@@ -1,21 +1,23 @@
 package com.aticatac.common.components.transform;
 
+/**
+ * The type Position.
+ */
 public class Position {
     /**
      * The x and y coordinates for the position
      */
-    public double x, y;
+    private double x, y;
 
     /**
-     * Constructor for a position where the values are not yet set
+     * construct for a position where the values are not yet set
      */
     public Position() {
-        x = 0;
-        y = 0;
+        this(0, 0);
     }
 
     /**
-     * Constructor for a position where the values are known
+     * construct for a position where the values are known
      *
      * @param xs the X value
      * @param ys the Y value
@@ -35,12 +37,30 @@ public class Position {
     }
 
     /**
+     * Sets x.
+     *
+     * @param x the x
+     */
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    /**
      * Gets the Y value for the position
      *
      * @return the Y value
      */
     public double getY() {
         return y;
+    }
+
+    /**
+     * Sets y.
+     *
+     * @param y the y
+     */
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override

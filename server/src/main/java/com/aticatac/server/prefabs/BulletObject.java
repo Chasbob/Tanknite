@@ -12,13 +12,11 @@ public class BulletObject extends GameObject {
      *
      * @param name   the name
      * @param parent the parent
-     *
      * @throws InvalidClassInstance     the invalid class instance
      * @throws ComponentExistsException the component exists exception
      */
     public BulletObject(String name, GameObject parent) throws InvalidClassInstance, ComponentExistsException {
-        super(name, parent);
-
+        super(name, (parent));
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
     }
