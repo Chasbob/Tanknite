@@ -6,6 +6,7 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.prefabs.TankObject;
 
