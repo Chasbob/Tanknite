@@ -24,7 +24,7 @@ public enum Screens {
 
     private final Logger logger;
     private final HashMap<Class, AbstractScreen> screens;
-    public Update update;
+    private Update update;
     private ArrayList<String> clients;
     private Game game;
     private boolean isInit;
@@ -55,7 +55,7 @@ public enum Screens {
         screens.put(UsernameScreen.class, new UsernameScreen());
         logger = Logger.getLogger(getClass());
 //        this.updates = new ArrayBlockingQueue<>(1024);
-        this.update = new Update(false);
+        this.update = new Update(true);
         this.clients = new ArrayList<>();
     }
 
@@ -66,21 +66,6 @@ public enum Screens {
     public void setUpdate(Update update) {
         this.update = update;
     }
-//
-//    public BlockingQueue<Update> getUpdates() {
-//        return updates;
-//    }
-//
-//    public void addUpdate(Update update) {
-//        this.updates.add(update);
-//    }
-//    public BlockingQueue<Update> getUpdates() {
-//        return updates;
-//    }
-//
-//    public void addUpdate(Update update) {
-//        this.updates.add(update);
-//    }
 
     public ArrayList<String> getClients() {
         return clients;
@@ -93,21 +78,6 @@ public enum Screens {
     public void setUpdatePlayers(boolean updatePlayers) {
         this.updatePlayers = updatePlayers;
     }
-//
-//    public ArrayList<String> getClients() {
-//        this.logger.info("getting clients..");
-//        try {
-//            Update update = this.updates.take();
-//            if (update.isPlayersChanged()) {
-//                this.clients = update.getPlayers();
-//                this.logger.info("Updated player list.");
-//            }
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        this.logger.info("Returning clients!\n");
-//        return this.clients;
-//    }
 
     /**
      * Gets current information.
@@ -183,7 +153,7 @@ public enum Screens {
 // Initialization with the game class
     public void initialize(Game game) {
         this.client = new Client();
-        this.logger.warn("Init");
+        this.logger.warn("Initializing...");
         this.game = game;
         this.isInit = true;
         getScreen(MainMenuScreen.class).buildStage();
@@ -192,7 +162,7 @@ public enum Screens {
         for (Class key : screens.keySet()) {
             screens.get(key).buildStage();
         }
-        this.logger.warn("End of init");
+        this.logger.warn("End of initialize.");
     }
 
     /**

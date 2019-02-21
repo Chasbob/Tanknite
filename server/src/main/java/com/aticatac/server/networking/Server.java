@@ -1,13 +1,14 @@
 package com.aticatac.server.networking;
 
 import com.aticatac.common.model.CommandModel;
-import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.server.gameManager.Manager;
 import com.aticatac.server.networking.listen.NewClients;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,40 +51,8 @@ public class Server extends Thread {
         this.multicaster.start();
         this.newClients.start();
         this.discovery.start();
-        (new Thread(() -> {
-            //TODO remove testing thread
-            while (true) {
-                try {
-//                    System.out.println(this.requests.take());
-                    CommandModel model = this.requests.take();
-                    Manager.INSTANCE.playerInput(model.getId(), model.getCommand());
-                    var update = new Update(true);
-                    update.setObj(Converter.Deconstructor(Manager.INSTANCE.getRoot()));
-                    setUpdateModel(update);
-                } catch (InterruptedException ignored) {
-                }
-            }
-        })).start();
-        while (!this.isInterrupted()) {
-            try {
-                Thread.sleep(5000);
-//                System.out.println("There are: " + this.clients.size() + " clients.");
-                this.logger.info("There are: " + this.requests.size() + " requests in the queue.");
-            } catch (InterruptedException e) {
-                this.multicaster.interrupt();
-                this.newClients.interrupt();
-                this.discovery.interrupt();
-                this.interrupt();
-                return;
-            }
-        }
         this.logger.warn("Interrupted");
-    }
-
-    public synchronized void setUpdateModel(Update update) {
-        //TODO optimise setting new model by calculating a differential
-        // as to send less data.
-        this.multicaster.setUpdateModel(update);
+        testThreads();
     }
 
     /**
@@ -96,5 +65,39 @@ public class Server extends Thread {
     public CommandModel nextCommand() throws InterruptedException {
         this.logger.warn("Taking command");
         return this.requests.take();
+    }
+//    public synchronized void setUpdateModel(Update update) {
+//        //TODO optimise setting new model by calculating a differential
+//        // as to send less data.
+//        this.multicaster.setUpdateModel(update);
+//    }
+
+    private void testThreads() {
+        (new Thread(() -> {
+            int counter = 0;
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                    counter++;
+                    Manager.INSTANCE.getRoot().transform.SetTransform(counter, counter++);
+                    ArrayList<Container> containers = Converter.Deconstructor(Manager.INSTANCE.getRoot());
+                    this.logger.info("Containers: " + containers.toString());
+                    this.multicaster.addObject(Manager.INSTANCE.getRoot());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        })).start();
+        (new Thread(() -> {
+            //TODO remove testing thread
+            while (true) {
+                try {
+//                    System.out.println(this.requests.take());
+                    CommandModel model = this.requests.take();
+                    Manager.INSTANCE.playerInput(model.getId(), model.getCommand());
+                } catch (InterruptedException ignored) {
+                }
+            }
+        })).start();
     }
 }
