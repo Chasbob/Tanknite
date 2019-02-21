@@ -35,7 +35,7 @@ public class GameManager extends Component {
 
     public void addPlayer(String player) {
         if (!playerMap.containsKey(player)) {
-            playerMap.put(player, createTank());
+            playerMap.put(player, createTank(player));
         }
     }
 
@@ -47,33 +47,34 @@ public class GameManager extends Component {
 
     public void playerInput(String player, Command cmd) {
         var tank = playerMap.get(player);
+        //use the player name to find an object and then you can use that object
         switch (cmd) {
             case UP:
-                //tank.getComponent(TankController.class).moveUp();
+                //findObject(name, gameObject).getComponent(TankController.class).moveUp();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case DOWN:
-                //tank.getComponent(TankController.class).moveDown();
+                //findObject(name, gameObject).getComponent(TankController.class).moveDown();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case LEFT:
-                //tank.getComponent(TankController.class).moveLeft();
+                //findObject(name, gameObject).getComponent(TankController.class).moveLeft();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case RIGHT:
-                //tank.getComponent(TankController.class).moveRight();
+                //findObject(name, gameObject).getComponent(TankController.class).moveRight();
                 logger.info("Player: " + player + " sent command: " + cmd);
                 break;
             case SHOOT:
-                //tank.getComponent(TankController.class).shoot();
+                //findObject(name, gameObject).getComponent(TankController.class).shoot();
                 logger.info("Player: " + player + " sent command: " + cmd);
         }
     }
 
-    public TankObject createTank() {
+    public TankObject createTank(String player) {
         try {
             return new TankObject(getGameObject().getChildren().get(0),
-                    "Tank",
+                    player,
                     new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
                             ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1)),
                     100,

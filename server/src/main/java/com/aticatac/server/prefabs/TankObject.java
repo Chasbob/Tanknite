@@ -10,15 +10,15 @@ import com.aticatac.server.components.*;
 public class TankObject extends GameObject {
 
     public TankObject (GameObject Parent, String name, Position p,int health,int ammo) throws InvalidClassInstance, ComponentExistsException {
-        super(name,Parent);
+        super(name, Parent);
 
-        this.getComponent(Transform.class).SetTransform(p.x,p.y);
+        this.getComponent(Transform.class).SetTransform(p.x, p.y);
 
-        new GameObject("TankBottom",this);
-        new GameObject("TankTop",this);
+        new GameObject("TankBottom", this);
+        new GameObject("TankTop", this);
 
-        this.getChildren().get(0).getComponent(Transform.class).SetTransform(p.x,p.y);
-        this.getChildren().get(1).getComponent(Transform.class).SetTransform(p.x+10,p.y+10);
+        this.getChildren().get(0).getComponent(Transform.class).SetTransform(p.x, p.y);
+        this.getChildren().get(1).getComponent(Transform.class).SetTransform(p.x + 10, p.y + 10);
 
         // determine whether ai, put behavioural trees from ai if so
 
@@ -27,7 +27,10 @@ public class TankObject extends GameObject {
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
 
-        //Think this is being done in the main part (the random location generation)
-        //this.getComponent(Transform.class).SetTransform(this.getComponent(Physics.class).initialisePosition(name));
+        //checking if player character, if not then add AI
+        //(name != )
+
+
+
     }
 }

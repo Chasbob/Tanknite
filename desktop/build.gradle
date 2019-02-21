@@ -10,3 +10,8 @@ apply plugin: 'application'
 application {
     mainClassName = "com.aticatac.desktop.DesktopLauncher"
 }
+
+task execDesktop(type: JavaExec) {
+    main = "com.aticatac.desktop.DesktopLauncher"
+    classpath = sourceSets.main.runtimeClasspath
+}

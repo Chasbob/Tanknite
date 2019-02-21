@@ -5,6 +5,7 @@ import com.aticatac.client.util.PopulatePlayers;
 import com.aticatac.client.util.ServerButton;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,7 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import com.badlogic.gdx.audio.Sound;
+
 import java.util.concurrent.Callable;
+
+import static com.badlogic.gdx.Gdx.audio;
 
 /**
  * The type Ui factory.
@@ -165,6 +170,11 @@ public class UIFactory {
                 Boolean result = false;
                 try {
                     result = func.call();
+
+                    //addition of sound
+                    Sound tank = Gdx.audio.newSound(Gdx.files.internal("resources/Tank-SoundBible.com-1359027625.wav"));
+                    tank.play();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

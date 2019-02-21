@@ -127,6 +127,8 @@ public class GameObject extends AbstractObject {
 
     }
 
+    public void findObject(String tag, GameObject gameObject){}
+
     //Getters and Setters
     public AbstractObject getParent() {
         return parent.get();
