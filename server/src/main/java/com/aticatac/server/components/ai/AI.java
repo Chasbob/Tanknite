@@ -258,15 +258,33 @@ public class AI extends Component {
      * @return A command from the ATTACKING state
      */
     private Command performAttackingAction() {
-        if (checkLineOfSightToPosition(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition()) && aimed) {
+        // target closest enemy
+        Position nearestEnemy = getClosestEnemy().getComponent(Transform.class).getPosition();
+
+        // if aimed at enemy and line of sight clear: shoot
+        // else travel a path to the enemy
+        if (checkLineOfSightToPosition(tankPos, nearestEnemy) && aimed) {
             return Command.SHOOT;
         }
         else {
-            Queue<Command> path = graph.getPathToLocation(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition());
-            if (path.isEmpty()) {
-                return Command.DOWN;
+            Queue<Command> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy);
+            if (pathToEnemy.isEmpty()) {
+                return null;
             }
-            return path.poll();
+
+            // Is a path from tank -> power-up -> enemy viable?
+            if (!powerupsInRange.isEmpty()) {
+                Position nearPowerup = getClosestPowerup().getTransform().getPosition();
+                Queue<Command> tankToPowerupToEnemy = graph.getPathToLocation(tankPos, nearPowerup);
+                tankToPowerupToEnemy.addAll(graph.getPathToLocation(nearPowerup, nearestEnemy));
+
+                // Viable if path is 1.5x normal path
+                if ((tankToPowerupToEnemy.size() / pathToEnemy.size()) < 1.5) {
+                    pathToEnemy = tankToPowerupToEnemy;
+                }
+            }
+
+            return pathToEnemy.poll();
         }
     }
 
