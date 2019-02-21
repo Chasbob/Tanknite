@@ -45,6 +45,10 @@ public class GameManager extends Component {
         }
     }
 
+    //TODO get this to call the correct commands for the correct tank
+    //get the children for the game object which connects to all the tanks etc.
+    //then look through that list and get the name? then should be able to call the gameobject?
+    //when have correct game object then can do the below
     public void playerInput(String player, Command cmd) {
         var tank = playerMap.get(player);
         switch (cmd) {
@@ -73,6 +77,7 @@ public class GameManager extends Component {
     public TankObject createTank() {
         try {
             return new TankObject(getGameObject().getChildren().get(0),
+                    //TODO make the name here unique so it can be found
                     "Tank",
                     new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
                             ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1)),
