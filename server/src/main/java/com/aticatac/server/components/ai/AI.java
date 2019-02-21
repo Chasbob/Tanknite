@@ -409,6 +409,11 @@ public class AI extends Component {
         return getClosestObject(powerupsInRange);
     }
 
+    /**
+     * Gets the closest ideal power-up to the tank.
+     *
+     * @return The closest ideal power-up to the tank
+     */
     private GameObject getIdealPowerup() {
         ArrayList<GameObject> idealInRange = new ArrayList<GameObject>();
         for (GameObject powerup : powerupsInRange) {
@@ -421,6 +426,14 @@ public class AI extends Component {
         return getClosestObject(idealInRange);
     }
 
+    /**
+     * Gets all of the specified GameObjects in range of the tank.
+     *
+     * @param position Center position to check from
+     * @param range Range of consideration
+     * @param allObjects GameObjects to consider
+     * @return All specified GameObjects in range
+     */
     private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
         for (GameObject enemy : allObjects) {
@@ -432,6 +445,12 @@ public class AI extends Component {
         return inRange;
     }
 
+    /**
+     * Gets the closest specified GameObject to the tank.
+     *
+     * @param objectsInRange GameObjects in range to consider
+     * @return The closest specified GameObject
+     */
     private GameObject getClosestObject(ArrayList<GameObject> objectsInRange) {
         GameObject closestObject = null;
         double distanceToClosestObject = Double.MAX_VALUE;
@@ -445,6 +464,12 @@ public class AI extends Component {
         return closestObject;
     }
 
+    /**
+     * Calculates an angle change to apply to the aiming of the turret.
+     * Change is proportional to error.
+     *
+     * @return An angle change
+     */
     private int getAngleChange() {
         // No enemy to aim at
         if (enemiesInRange.isEmpty()) {
