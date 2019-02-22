@@ -116,77 +116,50 @@ public class TankController extends Component {
     }
 
     /**
-     * Shoot boolean.
-     *
-     * @return the boolean
-     */
-// call method when space bar pressed
-    public boolean shoot() {
-//        // call new shoot method from turretx
-//        // talk to physics?
-//
-//
-//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
-//
-//        if (currentAmmo == 0) return false;
-//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return true;
-
-
-// create bullet object current co ordinatesn where shooting tank is, and move
-        //
-    }
-
-    /**
      * Is shot.
      */
     public void isShot() {
-//        int currentHealth = this.getComponent(Health.class).getHealth();
-//        int newHealth = currentHealth - 10;
-//        this.getComponent(Health.class).setHealth(newHealth);
-//        if (newHealth > 0 && newHealth <=10){
-//            dying();
-//        }
-//        else if (newHealth <= 0){
-//            die();
-//        }
-// part of colliding? Physics calls this method?
+        int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
+        int newHealth = currentHealth - 10;
+        this.getGameObject().getComponent(Health.class).setHealth(newHealth);
+        if (newHealth > 0 && newHealth <=10){
+            dying();
+        }
+        else if (newHealth <= 0){
+            die();
+        }
     }
 
     public void dying(){
-//        // tell physics/renderer etc
+//        // tell physics etc
 //        // can no longer move and will die in 20 seconds
 //        //delay
 //        die();
-
     }
 
 
     /**
      * Die.
      */
-
-    // wheree to have collision with pick up, physics?
-    // change from logic interface calling methods to map calling?
     public void die () {
-        //new AmmoPickUp(this.getComponent(Transform.class).getX(), this.getComponent(Transform.class).getY());
-        // set ammo pick up transform to where tank died
-        //Destroy(this);
-        /*
-        if (map.getNumberOfAliveTanks() == 1){
+        //add a powerup into the data that says that this is a power up with location.
+        //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
+        //Then when this is collided with by a tank add to tank that component
+        GameObject.Destroy(getGameObject());
+
+        //TODO potentially not relevant in here
+        /*if (map.getNumberOfAliveTanks() == 1){
             map.gameFinish();
            }
+
         else map.setNumberOfAliveTanks(map.getNumberOfAliveTanks - 1);
 
 
-
-//            */
-//        if (Map.getNumberOfAliveTanks() == 1){ // in other logic class?
-//            // Map or parent
-//            Map.gameFinish();
-//            // start numberoftanks at 10 and subtract one for each death
-//        }
+        if (Map.getNumberOfAliveTanks() == 1){ // in other logic class?
+           // Map or parent
+            Map.gameFinish();
+            // start numberoftanks at 10 and subtract one for each death
+        }*/
     }
 
 
@@ -194,13 +167,13 @@ public class TankController extends Component {
      * Pick up health.
      */
     public void pickUpHealth () {
-//        int currentHealth = this.getComponent(Health.class).getHealth();
-//        int newHealth = currentHealth + 10;
-//        if (newHealth > maxHealth){
-//            this.getComponent(Health.class).setHealth(maxHealth);
-//        }
-//        else this.getComponent(Health.class).setHealth(newHealth);
-//        // only gain health up to maximum
+        int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
+        int newHealth = currentHealth + 10;
+        if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()){
+            this.getComponent(Health.class).setHealth(maxHealth);
+        }
+        else this.getComponent(Health.class).setHealth(newHealth);
+        // only gain health up to maximum
     }
 
     /**
