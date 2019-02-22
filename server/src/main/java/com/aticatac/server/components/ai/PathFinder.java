@@ -1,6 +1,5 @@
 package com.aticatac.server.components.ai;
 
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 
 import java.util.HashMap;
@@ -12,7 +11,7 @@ import java.util.Queue;
  *
  * @author Dylan
  */
-public class PathFinder {
+class PathFinder {
     /*
         Adapted from: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
 
@@ -21,7 +20,7 @@ public class PathFinder {
      */
     private int separation;
 
-    public PathFinder(int separation) {
+    PathFinder(int separation) {
         this.separation = separation;
     }
 
@@ -75,8 +74,8 @@ public class PathFinder {
     private Queue<Command> convertToCommands(LinkedList<SearchNode> path) {
         LinkedList<Command> steps = new LinkedList<Command>();
         for (int i = 1; i < path.size(); i++) {
-            Position from = path.get(i - 1).getPosition();
-            Position to = path.get(i).getPosition();
+            SearchNode from = path.get(i - 1);
+            SearchNode to = path.get(i);
             Command command = commandToAdd(from, to);
             // Adjust amount needed to reach next node
             for (int j = 0; j < 1; j++) {
@@ -93,7 +92,7 @@ public class PathFinder {
      * @param to The position of the node to travel to
      * @return A command that executes the path
      */
-    private Command commandToAdd(Position from, Position to) {
+    private Command commandToAdd(SearchNode from, SearchNode to) {
         // THESE MIGHT BE WRONG
         if (from.getX() > to.getX()) {
             return Command.RIGHT;

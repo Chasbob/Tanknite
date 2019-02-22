@@ -12,7 +12,7 @@ import java.util.Queue;
  *
  * @author Dylan
  */
-public class Graph {
+class Graph {
     /**
      * A pathfinder that can generate a path in the graph
      */
@@ -32,7 +32,7 @@ public class Graph {
      * @param width      The number of nodes wide
      * @param height     The number of nodes high
      */
-    public Graph(int width, int height, int separation) {
+    Graph(int width, int height, int separation) {
         this.width = width;
         this.height = height;
         this.separation = separation;
