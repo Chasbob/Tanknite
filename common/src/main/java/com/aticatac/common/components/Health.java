@@ -6,7 +6,7 @@ public class Health extends Component {
     private int health = 0;
 
     /**
-     * Constructor for component: Health.
+     * construct for component: Health.
      * @param parent
      */
     public Health(GameObject parent) {

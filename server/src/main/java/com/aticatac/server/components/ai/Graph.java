@@ -7,30 +7,60 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 /**
- * A graph is a collection of connected SearchNodes.
- * Each node in the graph represents a point on the game map that a
+ * A graph is a collection of connected SearchNodes. Each node in the graph represents a point on the game map that a
  * computer controlled tank can move to.
  *
  * @author Dylan
  */
-public class Graph {
-    /** A pathfinder that can generate a path in the graph */
-    private static final PathFinder pf = new PathFinder();
-    /** The nodes that make up the graph */
+class Graph {
+    /**
+     * A pathfinder that can generate a path in the graph
+     */
+    private final PathFinder pf;
+    private final int width;
+    private final int height;
+    private final int separation;
+    /**
+     * The nodes that make up the graph
+     */
     private ArrayList<SearchNode> nodes;
-    private int width;
-    private int height;
 
     /**
      * Creates a new graph by placing and connecting valid nodes.
      *
      * @param separation The distance between two connected nodes
-     * @param width The number of nodes wide
-     * @param height The number of nodes high
+     * @param width      The number of nodes wide
+     * @param height     The number of nodes high
      */
+    Graph(int width, int height, int separation) {
+        this.width = width;
+        this.height = height;
+        this.separation = separation;
+        nodes = new ArrayList<SearchNode>();
+        pf = new PathFinder(separation);
+
+        // Add nodes
+        for (int i = 0; i < width*separation; i += separation) {
+            for (int j = 0; j < height*separation; j += separation) {
+                nodes.add(new SearchNode(i, j));
+            }
+        }
+        // Add connections
+        // don't make connections if connection is invalid (the node thing might be enough though)
+        for (SearchNode node : nodes) {
+            for (SearchNode otherNode : nodes) {
+                if (Math.sqrt(Math.pow(node.getY() - otherNode.getY(), 2) + Math.pow(node.getX() - otherNode.getX(), 2)) == separation) {
+                    node.addConnection(otherNode);
+                }
+            }
+        }
+    }
+    // Makes a graph with excluded nodes
+    /*
     public Graph(int width, int height, int separation, char[][] map) {
         this.width = width;
         this.height = height;
+        this.separation = separation;
         nodes = new ArrayList<SearchNode>();
 
         // Add nodes
@@ -45,38 +75,19 @@ public class Graph {
         // don't make connections if connection is invalid (the node thing might be enough though)
         for (SearchNode node : nodes) {
             for (SearchNode otherNode : nodes) {
-                if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == separation) {
+                if (Math.sqrt(Math.pow(node.getY() - otherNode.getY(), 2) + Math.pow(node.getX() - otherNode.getX(), 2)) == separation) {
                     node.addConnection(otherNode);
                 }
             }
         }
     }
-
-    public Graph(int width, int height, int separation) {
-        nodes = new ArrayList<SearchNode>();
-
-        // Add nodes
-        for (int i = 0; i < width*separation; i += separation) {
-            for (int j = 0; j < height*separation; j += separation) {
-                nodes.add(new SearchNode(i, j));
-            }
-        }
-        // Add connections
-        // don't make connections if connection is invalid (the node thing might be enough though)
-        for (SearchNode node : nodes) {
-            for (SearchNode otherNode : nodes) {
-                if (Math.sqrt(Math.pow(node.getPosition().y - otherNode.getPosition().y, 2) + Math.pow(node.getPosition().x - otherNode.getPosition().x, 2)) == separation) {
-                    node.addConnection(otherNode);
-                }
-            }
-        }
-    }
+    */
 
     /**
      * Uses the pathfinder to generate queue of commands that define a path from one location to another.
      *
      * @param from Start position
-     * @param to Goal position
+     * @param to   Goal position
      * @return A queue of Commands that execute the path
      */
     public Queue<Command> getPathToLocation(Position from, Position to) {
@@ -93,7 +104,7 @@ public class Graph {
         SearchNode nearestNode = null;
         double distanceToNearestNode = Double.MAX_VALUE;
         for (SearchNode node : nodes) {
-            double distance = Math.sqrt(Math.pow(node.getPosition().y - position.y, 2) + Math.pow(node.getPosition().x - position.x, 2));
+            double distance = Math.sqrt(Math.pow(node.getY() - position.getY(), 2) + Math.pow(node.getX() - position.getX(), 2));
             if (distance < distanceToNearestNode) {
                 nearestNode = node;
                 distanceToNearestNode = distance;
@@ -119,5 +130,4 @@ public class Graph {
     public int getHeight() {
         return height;
     }
-
 }

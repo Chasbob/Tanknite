@@ -1,12 +1,12 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.Ammo;
-import com.aticatac.common.components.transform.Transform;
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.Health;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
+import com.aticatac.common.objectsystem.GameObject;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,23 +19,11 @@ import java.util.Random;
  * @author Dylan
  */
 public class AI extends Component {
-    /**
-     * The set of states the AI tank can be in.
-     */
-    private enum State {
-        SEARCHING,
-        ATTACKING,
-        FLEEING,
-        OBTAINING
-    }
-
     private final static int VIEW_RANGE = 6; // some value equivalent to the actual view range that a player would have
-
     private final GameObject tank;
     private final Graph graph;
     private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
     private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
-
     private State state;
     private State prevState;
     private Queue<Command> searchPath;
@@ -55,10 +43,8 @@ public class AI extends Component {
         this.state = State.SEARCHING;
         this.prevState = State.SEARCHING;
         this.searchPath = new LinkedList<>();
-
-        this.aggression = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
-        this.collectiveness = (double)Math.round( (0.5 + Math.random()) * 10) / 10;
-
+        this.aggression = (double) Math.round((0.5 + Math.random()) * 10) / 10;
+        this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
         this.aimAngle = 0; // or whichever direction the tank faces at start
         this.aimed = false;
     }
@@ -75,15 +61,12 @@ public class AI extends Component {
         tankAmmo = tank.getComponent(Ammo.class).getAmmo();
         enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
         powerupsInRange = getPowerupsInRange(tankPos);
-
         // Change aim angle
         aimed = false;
         int angleChange = getAngleChange();
         aimAngle += angleChange;
-
         // Check for a state change
         state = getStateChange();
-
         // Return a decision
         return new Decision(performStateAction(), angleChange);
     }
@@ -100,10 +83,8 @@ public class AI extends Component {
         int attackingUtility = getAttackingUtility();
         int fleeingUtility = getFleeingUtility();
         int obtainingUtility = getObtainingUtility();
-
         // Return state with highest utility
-        int maxUtility = Math.max(Math.max(searchingUtility,attackingUtility),Math.max(fleeingUtility,obtainingUtility));
-
+        int maxUtility = Math.max(Math.max(searchingUtility, attackingUtility), Math.max(fleeingUtility, obtainingUtility));
         if (maxUtility == searchingUtility) {
             return State.SEARCHING;
         }
@@ -140,7 +121,7 @@ public class AI extends Component {
         }
         if (!enemiesInRange.isEmpty()) {
             // An enemy is in range
-            return (int)Math.round(80 * aggression);
+            return (int) Math.round(80 * aggression);
         }
         return 0;
     }
@@ -151,7 +132,7 @@ public class AI extends Component {
      * @return The utility score for the FLEEING state
      */
     private int getFleeingUtility() {
-        if (enemiesInRange.isEmpty() || tankHealth <= 10){
+        if (enemiesInRange.isEmpty() || tankHealth <= 10) {
             // Nothing to flee from || can't move -> can't flee
             return 0;
         }
@@ -159,21 +140,19 @@ public class AI extends Component {
             // Enemies near and tank has no ammo
             return 90;
         }
-
         int closestEnemyHealth = getClosestEnemy().getComponent(Health.class).getHealth();
         if (tankHealth <= 30 && closestEnemyHealth > tankHealth){
-            if (getClearPosition() == null) {
+            if (getClearPositions().isEmpty()) {
                 // Low health and nowhere to run
                 return 0;
             }
             // Low health and can run
-            return (int)Math.round(100 / aggression);
+            return (int) Math.round(100 / aggression);
         }
-        if (tankHealth <= 30 && closestEnemyHealth < tankHealth){
+        if (tankHealth <= 30 && closestEnemyHealth < tankHealth) {
             // More health than enemy
-            return (int)Math.round(10 * aggression);
+            return (int) Math.round(10 * aggression);
         }
-
         return 0;
     }
 
@@ -196,10 +175,12 @@ public class AI extends Component {
             idealPowerup = health powerup;
             return (int)Math.round(100 * collectiveness);
         }
-        if (other power up near + some other condition idk)
+        if (Damage powerup in powerupsInRange) {
             return (int)Math.round(80 * collectiveness)
-        if (ANY power up near)
-            return (int)Math.round(60 * collectiveness)
+        }
+        if (ANY power up near) {
+            return (int)Math.round(50 * collectiveness)
+        }
         */
         return 0;
     }
@@ -225,19 +206,18 @@ public class AI extends Component {
 
     /**
      * Gets a command from the SEARCHING state.
-     *
+     * <p>
      * Travels a path to a clear position on the map.
      *
      * @return A command from the SEARCHING state
      */
     private Command performSearchingAction() {
         // Keep going along the same path if still searching
-        if (prevState == State.SEARCHING && !searchPath.isEmpty()){
+        if (prevState == State.SEARCHING && !searchPath.isEmpty()) {
             return searchPath.poll();
         }
-
         // Make new path if transitioned to searching state or previous path was completed
-        Position goal = getClearPosition(); // there should always be a clear position given we are in the searching state
+        Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
         if (!(goal == null)) {
             searchPath = graph.getPathToLocation(tankPos, goal);
             if (!searchPath.isEmpty()) {
@@ -249,35 +229,57 @@ public class AI extends Component {
 
     /**
      * Gets a command from the ATTACKING state.
-     *
-     * If there is a line of sight to the closest enemy then aim towards it then shoots,
-     * Else travels a path to the enemy.
+     * <p>
+     * If there is a line of sight to the closest enemy then aim towards it then shoots, Else travels a path to the
+     * enemy.
      *
      * @return A command from the ATTACKING state
      */
     private Command performAttackingAction() {
-        if (checkLineOfSightToPosition(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition()) && aimed) {
+        // target closest enemy
+        Position nearestEnemy = getClosestEnemy().getComponent(Transform.class).getPosition();
+
+        // if aimed at enemy and line of sight clear: shoot
+        // else travel a path to the enemy
+        if (checkLineOfSightToPosition(tankPos, nearestEnemy) && aimed) {
             return Command.SHOOT;
         }
         else {
-            Queue<Command> path = graph.getPathToLocation(tankPos, getClosestEnemy().getComponent(Transform.class).getPosition());
-            if (path.isEmpty()) {
-                return Command.DOWN;
+            Queue<Command> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy);
+            if (pathToEnemy.isEmpty()) {
+                return null;
             }
-            return path.poll();
+
+            // Is a path from tank -> power-up -> enemy viable?
+            if (!powerupsInRange.isEmpty()) {
+                Position nearPowerup = getClosestPowerup().getTransform().getPosition();
+
+                Queue<Command> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup);
+                Queue<Command> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy);
+                Queue<Command> tankToPowerupToEnemy = new LinkedList<>();
+                tankToPowerupToEnemy.addAll(tankToPowerup);
+                tankToPowerupToEnemy.addAll(powerupToEnemy);
+
+                // Viable if path is 1.5x normal path
+                if ((tankToPowerupToEnemy.size() / pathToEnemy.size()) < 1.5) {
+                    pathToEnemy = tankToPowerupToEnemy;
+                }
+            }
+
+            return pathToEnemy.poll();
         }
     }
 
     /**
      * Gets a command from the FLEEING state.
-     *
+     * <p>
      * Travels a path to a clear position on the map.
      *
      * @return A command from the FLEEING state
      */
     private Command performFleeingAction() {
         // Pick a position in range of the agent that is clear of enemies and travel there
-        Position goal = getClearPosition();
+        Position goal = getClosestClearPosition();
         if (!(goal == null)) {
             Queue<Command> path = graph.getPathToLocation(tankPos, goal);
             if (!path.isEmpty()) {
@@ -289,27 +291,23 @@ public class AI extends Component {
 
     /**
      * Gets a command from the OBTAINING state.
-     *
+     * <p>
      * Travels a path to a power-up on the map.
      *
      * @return A command from the OBTAINING state
      */
     private Command performObtainingAction() {
         // TODO Get position of (ideal if in range else closest) power-up to collect and travel there
-
         // Keep going along the same path if still obtaining
-        if (prevState == State.OBTAINING && !searchPath.isEmpty()){
+        if (prevState == State.OBTAINING && !searchPath.isEmpty()) {
             return searchPath.poll();
         }
-
         Position powerupLocation = getClosestPowerup().getTransform().getPosition();
-
         // Get ideal power-up if can, else carry on with closest
         GameObject idealPowerup = getIdealPowerup();
         if (idealPowerup != null) {
             powerupLocation = idealPowerup.getTransform().getPosition();
         }
-
         searchPath = graph.getPathToLocation(tankPos, powerupLocation);
         if (searchPath.isEmpty()) {
             return Command.DOWN;
@@ -318,14 +316,14 @@ public class AI extends Component {
     }
 
     /**
-     * Finds a position in range of the tank clear of enemies.
+     * Finds all positions in range of the tank clear of enemies.
      *
-     * @return A position clear of enemies
+     * @return All positions clear of enemies
      */
-    private Position getClearPosition() {
+    private ArrayList<Position> getClearPositions() {
         ArrayList<Position> clearPositions = new ArrayList<Position>();
-        for (double i = tankPos.x - VIEW_RANGE; i < tankPos.x + VIEW_RANGE; i++) {
-            for (double j = tankPos.y - VIEW_RANGE; j < tankPos.y + VIEW_RANGE; j++) {
+        for (double i = tankPos.getX() - VIEW_RANGE; i < tankPos.getX() + VIEW_RANGE; i++) {
+            for (double j = tankPos.getY() - VIEW_RANGE; j < tankPos.getY() + VIEW_RANGE; j++) {
                 // A position outside the map is not valid
                 if (i >= 0 && i < graph.getWidth() && j >= 0 && j < graph.getHeight()) {
                     Position openPos = new Position(i, j);
@@ -335,26 +333,46 @@ public class AI extends Component {
                 }
             }
         }
+        return clearPositions;
+    }
+
+    /**
+     * Finds a random position in range of the tank clear of enemies.
+     *
+     * @return A random position clear of enemies
+     */
+    private Position getRandomClearPosition() {
+        ArrayList<Position> clearPositions = getClearPositions();
         Random rand = new Random();
         return clearPositions.get(rand.nextInt(clearPositions.size()));
     }
 
-    // Useful?
-    private boolean visibleToEnemy(Position from) {
-        for (GameObject enemy : enemiesInRange) {
-            Position enemyPos = enemy.getComponent(Transform.class).getPosition();
-            if (checkLineOfSightToPosition(from, enemyPos)) {
-                return true;
+    /**
+     * Finds the closest position in range of the tank clear of enemies.
+     *
+     * @return The closest position clear of enemies
+     */
+    private Position getClosestClearPosition() {
+        ArrayList<Position> clearPositions = getClearPositions();
+
+        Position closestClearPosition = null;
+        double distanceToClosestPosition = Double.MAX_VALUE;
+        for (Position clearPosition : clearPositions) {
+            double distanceToTank = Math.sqrt(Math.pow(clearPosition.getY() - tankPos.getY(), 2) + Math.pow(clearPosition.getX() - tankPos.getX(), 2));
+            if (distanceToTank < distanceToClosestPosition) {
+                closestClearPosition = clearPosition;
+                distanceToClosestPosition = distanceToTank;
             }
         }
-        return false;
+        return closestClearPosition;
+
     }
 
     /**
      * Checks if there exists a line of sight between two points on the map.
      *
      * @param from Start position
-     * @param to End position
+     * @param to   End position
      * @return True if there is a line of sight between
      */
     private boolean checkLineOfSightToPosition(Position from, Position to) {
@@ -362,7 +380,7 @@ public class AI extends Component {
         // TODO: change to any angle line of sight
         Queue<Command> path = graph.getPathToLocation(from, to);
         Command first = path.peek();
-        while(!path.isEmpty()) {
+        while (!path.isEmpty()) {
             if (path.poll() != first) {
                 return false;
             }
@@ -374,11 +392,11 @@ public class AI extends Component {
      * Gets a list of enemies that are in a given range from a given position.
      *
      * @param position The center position to check from
-     * @param range The range
+     * @param range    The range
      * @return A list of enemies in range of the position
      */
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-        return getGameObjectsInRange(position, range,  new ArrayList<GameObject>()); // TODO: GeT tHiS iNfO
+        return getGameObjectsInRange(position, range, new ArrayList<GameObject>()); // TODO: GeT tHiS iNfO
     }
 
     /**
@@ -409,6 +427,11 @@ public class AI extends Component {
         return getClosestObject(powerupsInRange);
     }
 
+    /**
+     * Gets the closest ideal power-up to the tank.
+     *
+     * @return The closest ideal power-up to the tank
+     */
     private GameObject getIdealPowerup() {
         ArrayList<GameObject> idealInRange = new ArrayList<GameObject>();
         for (GameObject powerup : powerupsInRange) {
@@ -421,22 +444,36 @@ public class AI extends Component {
         return getClosestObject(idealInRange);
     }
 
+    /**
+     * Gets all of the specified GameObjects in range of the tank.
+     *
+     * @param position Center position to check from
+     * @param range Range of consideration
+     * @param allObjects GameObjects to consider
+     * @return All specified GameObjects in range
+     */
     private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
         ArrayList<GameObject> inRange = new ArrayList<GameObject>();
         for (GameObject enemy : allObjects) {
-            if (Math.abs(enemy.getComponent(Transform.class).getPosition().x - position.x) <= range ||
-                    Math.abs(enemy.getComponent(Transform.class).getPosition().y - position.y) <= range) {
+            if (Math.abs(enemy.getTransform().getX() - position.getX()) <= range ||
+                    Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
                 inRange.add(enemy);
             }
         }
         return inRange;
     }
 
+    /**
+     * Gets the closest specified GameObject to the tank.
+     *
+     * @param objectsInRange GameObjects in range to consider
+     * @return The closest specified GameObject
+     */
     private GameObject getClosestObject(ArrayList<GameObject> objectsInRange) {
         GameObject closestObject = null;
         double distanceToClosestObject = Double.MAX_VALUE;
         for (GameObject object : objectsInRange) {
-            double distanceToTank = Math.sqrt(Math.pow(object.getComponent(Transform.class).getPosition().y - tankPos.y, 2) + Math.pow(object.getComponent(Transform.class).getPosition().x - tankPos.x, 2));
+            double distanceToTank = Math.sqrt(Math.pow(object.getComponent(Transform.class).getY() - tankPos.getY(), 2) + Math.pow(object.getComponent(Transform.class).getX() - tankPos.getX(), 2));
             if (distanceToTank < distanceToClosestObject) {
                 closestObject = object;
                 distanceToClosestObject = distanceToTank;
@@ -445,32 +482,41 @@ public class AI extends Component {
         return closestObject;
     }
 
+    /**
+     * Calculates an angle change to apply to the aiming of the turret.
+     * Change is proportional to error.
+     *
+     * @return An angle change
+     */
     private int getAngleChange() {
         // No enemy to aim at
         if (enemiesInRange.isEmpty()) {
             return 0;
         }
-
         Position target = getClosestEnemy().getTransform().getPosition();
-
-        double angle = Math.atan2(target.x - tankPos.x, tankPos.y - target.y);
+        double angle = Math.atan2(target.getX() - tankPos.getX(), tankPos.getY() - target.getY());
         if (angle < 0)
             angle += (Math.PI * 2);
-        int targetAngle = (int)Math.round(Math.toDegrees(angle));
-
+        int targetAngle = (int) Math.round(Math.toDegrees(angle));
         int change = (Math.abs(targetAngle - aimAngle) / 2) + 1;
-
         if (Math.abs(((aimAngle + change) % 360) - targetAngle) < Math.abs(((aimAngle - change) % 360) - targetAngle)) {
             return change;
         }
         if (Math.abs(((aimAngle + change) % 360) - targetAngle) > Math.abs(((aimAngle - change) % 360) - targetAngle)) {
             return -change;
         }
-
         // No change needed -> on target
         aimed = true;
         return 0;
-
     }
 
+    /**
+     * The set of states the AI tank can be in.
+     */
+    private enum State {
+        SEARCHING,
+        ATTACKING,
+        FLEEING,
+        OBTAINING
+    }
 }

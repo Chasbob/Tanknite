@@ -49,7 +49,7 @@ class UpdateListener extends Thread {
         byte[] bytes = new byte[8000];
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
         this.multicastSocket.receive(packet);
-        logger.info("Packet received!");
+        logger.trace("Packet received!");
         Update update = ModelReader.toModel(bytes, Update.class);
         //TODO refactor to use queue all the way down
         this.logger.trace("Player count: " + update.getPlayers().size());

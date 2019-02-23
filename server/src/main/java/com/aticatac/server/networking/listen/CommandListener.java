@@ -23,22 +23,22 @@ public class CommandListener extends Thread {
     @Override
     public void run() {
         super.run();
-        listen();
+        while (!this.isInterrupted()) {
+            listen();
+        }
     }
 
     private void listen() {
         this.logger.trace("Listening");
-        while (!this.isInterrupted()) {
-            try {
-                while (!this.isInterrupted()) {
-                    String json = this.reader.readLine();
-                    CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
-                    this.logger.info("JSON: " + json);
-                    this.queue.add(commandModel);
-                }
-            } catch (IOException | InvalidBytes e) {
-                logger.error(e);
+        try {
+            while (!this.isInterrupted()) {
+                String json = this.reader.readLine();
+                CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
+                this.logger.info("JSON: " + json);
+                this.queue.add(commandModel);
             }
+        } catch (IOException | InvalidBytes e) {
+            logger.error(e);
         }
     }
 }
