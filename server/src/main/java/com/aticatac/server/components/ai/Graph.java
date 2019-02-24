@@ -12,14 +12,13 @@ import java.util.Queue;
  *
  * @author Dylan
  */
-class Graph {
+public class Graph {
     /**
      * A pathfinder that can generate a path in the graph
      */
-    private final PathFinder pf;
+    private final PathFinder pf = new PathFinder();
     private final int width;
     private final int height;
-    private final int separation;
     /**
      * The nodes that make up the graph
      */
@@ -32,12 +31,10 @@ class Graph {
      * @param width      The number of nodes wide
      * @param height     The number of nodes high
      */
-    Graph(int width, int height, int separation) {
+    public Graph(int width, int height, int separation) {
         this.width = width;
         this.height = height;
-        this.separation = separation;
         nodes = new ArrayList<SearchNode>();
-        pf = new PathFinder(separation);
 
         // Add nodes
         for (int i = 0; i < width*separation; i += separation) {
@@ -90,7 +87,7 @@ class Graph {
      * @param to   Goal position
      * @return A queue of Commands that execute the path
      */
-    public Queue<Command> getPathToLocation(Position from, Position to) {
+    public Queue<SearchNode> getPathToLocation(Position from, Position to) {
         return pf.getPathToLocation(getNearestNode(from), getNearestNode(to));
     }
 

@@ -7,6 +7,7 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
+import javafx.geometry.Pos;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ public class AI extends Component {
     private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
     private State state;
     private State prevState;
-    private Queue<Command> searchPath;
+    private Queue<SearchNode> searchPath;
     private ArrayList<GameObject> enemiesInRange;
     private ArrayList<GameObject> powerupsInRange;
     //private Something idealPowerup;
@@ -191,6 +192,10 @@ public class AI extends Component {
      * @return A command from the current state
      */
     private Command performStateAction() {
+        // Poll queue if at node
+        if (!searchPath.isEmpty() && tankPos.getX() == searchPath.peek().getX() && tankPos.getY() == searchPath.peek().getY())
+            searchPath.poll();
+
         switch (state) {
             case SEARCHING:
                 return performSearchingAction();
@@ -214,14 +219,14 @@ public class AI extends Component {
     private Command performSearchingAction() {
         // Keep going along the same path if still searching
         if (prevState == State.SEARCHING && !searchPath.isEmpty()) {
-            return searchPath.poll();
+            return commandToPerform(searchPath.peek());
         }
         // Make new path if transitioned to searching state or previous path was completed
         Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
         if (!(goal == null)) {
             searchPath = graph.getPathToLocation(tankPos, goal);
             if (!searchPath.isEmpty()) {
-                return searchPath.poll();
+                return commandToPerform(searchPath.peek());
             }
         }
         return Command.DOWN;
@@ -245,7 +250,7 @@ public class AI extends Component {
             return Command.SHOOT;
         }
         else {
-            Queue<Command> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy);
+            Queue<SearchNode> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy);
             if (pathToEnemy.isEmpty()) {
                 return null;
             }
@@ -254,9 +259,9 @@ public class AI extends Component {
             if (!powerupsInRange.isEmpty()) {
                 Position nearPowerup = getClosestPowerup().getTransform().getPosition();
 
-                Queue<Command> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup);
-                Queue<Command> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy);
-                Queue<Command> tankToPowerupToEnemy = new LinkedList<>();
+                Queue<SearchNode> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup);
+                Queue<SearchNode> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy);
+                Queue<SearchNode> tankToPowerupToEnemy = new LinkedList<>();
                 tankToPowerupToEnemy.addAll(tankToPowerup);
                 tankToPowerupToEnemy.addAll(powerupToEnemy);
 
@@ -266,7 +271,7 @@ public class AI extends Component {
                 }
             }
 
-            return pathToEnemy.poll();
+            return commandToPerform(pathToEnemy.peek());
         }
     }
 
@@ -281,9 +286,9 @@ public class AI extends Component {
         // Pick a position in range of the agent that is clear of enemies and travel there
         Position goal = getClosestClearPosition();
         if (!(goal == null)) {
-            Queue<Command> path = graph.getPathToLocation(tankPos, goal);
+            Queue<SearchNode> path = graph.getPathToLocation(tankPos, goal);
             if (!path.isEmpty()) {
-                return path.poll();
+                return commandToPerform(path.peek());
             }
         }
         return Command.DOWN;
@@ -300,7 +305,7 @@ public class AI extends Component {
         // TODO Get position of (ideal if in range else closest) power-up to collect and travel there
         // Keep going along the same path if still obtaining
         if (prevState == State.OBTAINING && !searchPath.isEmpty()) {
-            return searchPath.poll();
+            return commandToPerform(searchPath.peek());
         }
         Position powerupLocation = getClosestPowerup().getTransform().getPosition();
         // Get ideal power-up if can, else carry on with closest
@@ -312,7 +317,27 @@ public class AI extends Component {
         if (searchPath.isEmpty()) {
             return Command.DOWN;
         }
-        return searchPath.poll();
+        return commandToPerform(searchPath.peek());
+    }
+
+    /**
+     * Returns the correct command to travel to a node.
+     *
+     * @param node The node to travel to
+     * @return A command that executes the path
+     */
+    private Command commandToPerform(SearchNode node) {
+        // THESE MIGHT BE WRONG
+        if (tankPos.getX() > node.getX()) {
+            return Command.RIGHT;
+        } else if (tankPos.getX() < node.getX()) {
+            return Command.LEFT;
+        } else if (tankPos.getY() > node.getY()) {
+            return Command.UP;
+        } else if (tankPos.getY() < node.getY()) {
+            return Command.DOWN;
+        }
+        return null;
     }
 
     /**
@@ -376,10 +401,10 @@ public class AI extends Component {
      * @return True if there is a line of sight between
      */
     private boolean checkLineOfSightToPosition(Position from, Position to) {
-        // Current: if a path between the positions only contains the same command repeated, there is a line of sight
+        // Currently broken
         // TODO: change to any angle line of sight
-        Queue<Command> path = graph.getPathToLocation(from, to);
-        Command first = path.peek();
+        Queue<SearchNode> path = graph.getPathToLocation(from, to);
+        SearchNode first = path.peek();
         while (!path.isEmpty()) {
             if (path.poll() != first) {
                 return false;
