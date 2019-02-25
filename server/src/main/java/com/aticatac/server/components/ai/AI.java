@@ -7,7 +7,6 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-import javafx.geometry.Pos;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
