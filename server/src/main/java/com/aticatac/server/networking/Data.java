@@ -1,6 +1,9 @@
 package com.aticatac.server.networking;
 
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -15,28 +18,10 @@ public enum Data {
      * Instance data.
      */
     INSTANCE;
-    private InetAddress server;
-    private InetAddress multicast;
-    private List<InterfaceAddress> broadcast = listIPAddresses();
-    private int port = 5500;
-    private int broadcastPort = 5000;
+    private List<InterfaceAddress> broadcast;
 
     Data() {
-        try {
-            server = InetAddress.getLocalHost();
-            multicast = InetAddress.getByName("225.4.5.6");
-        } catch (UnknownHostException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    /**
-     * Gets broadcast port.
-     *
-     * @return the broadcast port
-     */
-    public int getBroadcastPort() {
-        return broadcastPort;
+        this.broadcast = listAddresses();
     }
 
     /**
@@ -48,7 +33,7 @@ public enum Data {
         return broadcast;
     }
 
-    private List<InterfaceAddress> listIPAddresses() {
+    private List<InterfaceAddress> listAddresses() {
         List<InterfaceAddress> output = new ArrayList<>();
         Enumeration<NetworkInterface> net;
         try {
@@ -75,32 +60,5 @@ public enum Data {
             }
         }
         return output;
-    }
-
-    /**
-     * Gets multicast.
-     *
-     * @return the multicast
-     */
-    public InetAddress getMulticast() {
-        return multicast;
-    }
-
-    /**
-     * Gets port.
-     *
-     * @return the port
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Gets server.
-     *
-     * @return the server
-     */
-    public InetAddress getServer() {
-        return server;
     }
 }

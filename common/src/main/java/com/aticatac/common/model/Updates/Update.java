@@ -2,7 +2,6 @@ package com.aticatac.common.model.Updates;
 
 import com.aticatac.common.model.Model;
 import com.aticatac.common.objectsystem.Container;
-
 import java.util.ArrayList;
 
 /**
@@ -14,8 +13,8 @@ public class Update extends Model {
      * The Players.
      */
     ArrayList<String> players;
-    private boolean objectChanged;
-    private ArrayList<Container> obj;
+    //    private boolean objectChanged;
+    private Container rootContainer;
     private boolean playersChanged;
 
     /**
@@ -30,13 +29,22 @@ public class Update extends Model {
         this.playersChanged = true;
     }
 
-    public ArrayList<Container> getObj() {
-        return obj;
+    /**
+     * Gets root container.
+     *
+     * @return the root container
+     */
+    public Container getRootContainer() {
+        return rootContainer;
     }
 
-    public void setObj(ArrayList<Container> obj) {
-        this.obj = obj;
-        this.objectChanged = true;
+    /**
+     * Sets root container.
+     *
+     * @param rootContainer the root container
+     */
+    public void setRootContainer(Container rootContainer) {
+        this.rootContainer = rootContainer;
     }
 
     /**
@@ -78,11 +86,10 @@ public class Update extends Model {
     @Override
     public String toString() {
         String toString = "Update{" +
-                "changed=" + changed +
-                ", obj=" + obj.toString() +
-                ", players=" + players.toString() +
-                ", playersChanged=" + playersChanged +
-                '}';
+            "changed=" + changed +
+            ", players=" + players.toString() +
+            ", playersChanged=" + playersChanged +
+            '}';
         return toString;
     }
 }

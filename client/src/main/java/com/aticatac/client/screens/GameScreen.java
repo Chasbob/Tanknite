@@ -1,17 +1,20 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
-import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -21,8 +24,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-
-import java.util.List;
 
 /**
  * The type Game screen.
@@ -45,7 +46,7 @@ public class GameScreen extends AbstractScreen {
             cam = new OrthographicCamera(getWidth(), getHeight());
             cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
             root = new GameObject("root");
-            //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
+            //ObjectHelper.addRenderer(tank.children.get(2), "img/white.png");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,36 +134,21 @@ public class GameScreen extends AbstractScreen {
         // Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Update update = Screens.INSTANCE.getUpdate();
         renderer.setView(cam);
         renderer.render();
         input();
         batch.begin();
-        if (update.getObj() != null) {
-            this.root = Converter.construct(update.getObj());
-            try {
-                if (root != null) {
-                    List<GameObject> children = this.root.getChildren();
-                    for (var c : children) {
-                        if (c.componentExists(com.aticatac.common.components.Texture.class)) {
-                            ObjectHelper.AddRenderer(c, c.getComponent(com.aticatac.common.components.Texture.class).Texture);
-                            //TODO stop making everything a tank bottom?
-                        }
-                    }
-                    ChildRenderer(root);
-                }
-            } catch (Exception e) {
-                this.getLogger().error("Root position: " + this.root.getTransform().toString());
-            }
+        GameObject c = null;
+        if (Screens.INSTANCE.getRoot() != null) {
+            this.root = Screens.INSTANCE.getRoot();
+        }
+        try {
+            childRenderer(this.root);
+        } catch (InvalidClassInstance | ComponentExistsException e) {
+            this.getLogger().error(e);
         }
         //health bar
-        if (health > 0.6f) {
-            batch.setColor(Color.GREEN);
-        } else if (health < 0.6f && health > 0.2f) {
-            batch.setColor(Color.ORANGE);
-        } else {
-            batch.setColor(Color.RED);
-        }
+        healthBar();
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
         batch.end();
@@ -171,19 +157,50 @@ public class GameScreen extends AbstractScreen {
         super.draw();
     }
 
-    private void ChildRenderer(GameObject g) {
+    private void testRender(String texture, int x, int y) {
+        final GameObject c;
+        try {
+            c = new GameObject("test");
+            c.addComponent(com.aticatac.common.components.Texture.class).setTexture(texture);
+            c.setTransform(x, y);
+            c.addComponent(Renderer.class).setTexture(c.getTexture());
+            renderObject(c);
+        } catch (InvalidClassInstance | ComponentExistsException e) {
+            this.getLogger().error(e);
+        }
+    }
+
+    private void healthBar() {
+        if (health > 0.6f) {
+            batch.setColor(Color.GREEN);
+        } else if (health < 0.6f && health > 0.2f) {
+            batch.setColor(Color.ORANGE);
+        } else {
+            batch.setColor(Color.RED);
+        }
+    }
+
+    private void childRenderer(GameObject g) throws InvalidClassInstance, ComponentExistsException {
+        renderObject(g);
         for (var c : g.getChildren()) {
-            ChildRenderer(c);
-            if (c.componentExists(Renderer.class)) {
-                Position p = c.getComponent(Transform.class).getPosition();
-                Texture t = c.getComponent(Renderer.class).getTexture();
-                batch.draw(new TextureRegion(t),
-                        (float) p.getX(), (float) p.getY(),
-                        t.getWidth() / 2f, t.getHeight() / 2f,
-                        t.getWidth(), t.getHeight(),
-                        1, 1,
-                        (float) c.getComponent(Transform.class).getRotation());
-            }
+            childRenderer(c);
+        }
+    }
+
+    private void renderObject(GameObject c) throws ComponentExistsException, InvalidClassInstance {
+        if (c.hasTexture() && !c.componentExists(Renderer.class)) {
+            c.addComponent(Renderer.class);
+            c.getComponent(Renderer.class).setTexture(c.getTexture());
+        }
+        if (c.componentExists(Renderer.class)) {
+            var transform = c.getComponent(Transform.class);
+            var t = c.getComponent(Renderer.class).getTexture();
+            batch.draw(new TextureRegion(t),
+                (float) transform.getX(), (float) transform.getY(),
+                t.getWidth() / 2f, t.getHeight() / 2f,
+                t.getWidth(), t.getHeight(),
+                1, 1,
+                (float) transform.getRotation());
         }
     }
 

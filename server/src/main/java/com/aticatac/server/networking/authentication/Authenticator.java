@@ -1,47 +1,30 @@
 package com.aticatac.server.networking.authentication;
 
 import com.aticatac.common.model.ClientModel;
-import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Login;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.server.gameManager.Manager;
+import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.networking.Client;
-import com.aticatac.server.networking.Data;
+import com.aticatac.server.networking.Server;
 import com.aticatac.server.networking.listen.CommandListener;
-import org.apache.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.log4j.Logger;
 
 /**
  * The type Authenticator.
  */
 public class Authenticator implements Runnable {
     private final Logger logger;
-    private final ConcurrentHashMap<String, Client> clients;
-    private final BlockingQueue<CommandModel> queue;
     private final PrintStream printer;
     private final BufferedReader reader;
     private boolean authenticated;
 
-    /**
-     * Instantiates a new Authenticator.
-     *
-     * @param client  the client
-     * @param clients the clients
-     * @param queue   the queue
-     *
-     * @throws IOException the io exception
-     */
-    public Authenticator(Socket client, ConcurrentHashMap<String, Client> clients, BlockingQueue<CommandModel> queue) throws IOException {
-        this.clients = clients;
-        this.queue = queue;
+    public Authenticator(Socket client) throws IOException {
         this.logger = Logger.getLogger(getClass());
         this.authenticated = false;
         this.printer = new PrintStream(client.getOutputStream());
@@ -71,12 +54,11 @@ public class Authenticator implements Runnable {
                 break;
             }
         }
-        this.logger.trace("Stopping...");
+        this.logger.warn("Stopping...");
     }
 
     /**
      * @return Login request
-     *
      * @throws IOException  IO exception
      * @throws InvalidBytes InvalidByte exception
      */
@@ -90,7 +72,7 @@ public class Authenticator implements Runnable {
     private boolean clientExists(Login clientModel) {
         //TODO add additional authenticationOLD for existing users.
         // also this is where security layers could be added.
-        return clients.containsKey(clientModel.getId());
+        return Server.ServerData.INSTANCE.getClients().containsKey(clientModel.getId());
     }
 
     /**
@@ -114,7 +96,7 @@ public class Authenticator implements Runnable {
         login.setAuthenticated(true);
         //TODO add correct map id
         login.setMapID(1);
-        login.setMulticast(Data.INSTANCE.getMulticast().getHostAddress());
+        login.setMulticast(Server.ServerData.INSTANCE.getMulticast().getHostAddress());
         this.logger.trace("Setting multicast address: " + login.getMulticast());
         this.printer.println(ModelReader.toJson(login));
         addClient(login);
@@ -127,10 +109,10 @@ public class Authenticator implements Runnable {
      * @param login login details
      */
     private void addClient(Login login) {
-        CommandListener listener = new CommandListener(this.reader, this.queue);
+        CommandListener listener = new CommandListener(this.reader);
         ClientModel model = new ClientModel(login.getId());
         Client client = new Client(listener, model);
         Manager.INSTANCE.addClient(client.getId());
-        this.clients.put(model.getId(), client);
+        Server.ServerData.INSTANCE.getClients().put(model.getId(), client);
     }
 }
