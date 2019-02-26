@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * The type GameObject.
@@ -29,7 +28,7 @@ public class GameObject {
      * @throws InvalidClassInstance     the invalid class instance
      * @throws ComponentExistsException the component exists exception
      */
-    public GameObject(@NotNull Container container)
+    public GameObject(Container container)
         throws InvalidClassInstance, ComponentExistsException {
         this.children = new HashMap<>();
         for (Container child : container.getChildren()) {
