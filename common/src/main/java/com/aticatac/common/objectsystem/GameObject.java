@@ -17,7 +17,7 @@ import java.util.Optional;
 public class GameObject extends AbstractObject {
     private HashMap<Class<?>, Component> components;
     private Optional<GameObject> parent;
-    private List<GameObject> children;
+    public List<GameObject> children;
 
     public Transform transform;
 

@@ -186,9 +186,12 @@ public enum Screens {
         this.logger.warn("Init");
         this.game = game;
         this.isInit = true;
-        getScreen(MainMenuScreen.class).buildStage();
-        this.game.setScreen(getScreen(MainMenuScreen.class));
-        this.currentScreen = MainMenuScreen.class;
+//        getScreen(MainMenuScreen.class).buildStage();
+//        this.game.setScreen(getScreen(MainMenuScreen.class));
+//        this.currentScreen = MainMenuScreen.class;
+        getScreen(GameScreen.class).buildStage();
+        this.game.setScreen(getScreen(GameScreen.class));
+        this.currentScreen = GameScreen.class;
         for (Class key : screens.keySet()) {
             screens.get(key).buildStage();
         }
