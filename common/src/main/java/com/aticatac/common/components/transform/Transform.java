@@ -23,6 +23,10 @@ public class Transform extends Component {
         return position;
     }
 
+    public void setPosition(float x, float y){
+        position = new Position(x, y);
+    }
+
     public double getX(){
         return getPosition().x;
     }

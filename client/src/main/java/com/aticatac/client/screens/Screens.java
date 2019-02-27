@@ -190,11 +190,11 @@ public enum Screens {
 //        this.game.setScreen(getScreen(MainMenuScreen.class));
 //        this.currentScreen = MainMenuScreen.class;
         //getScreen(GameScreen.class).buildStage();
-        this.game.setScreen(getScreen(GameScreen.class));
-        this.currentScreen = GameScreen.class;
         for (Class key : screens.keySet()) {
             screens.get(key).buildStage();
         }
+        this.game.setScreen(getScreen(GameScreen.class));
+        this.currentScreen = GameScreen.class;
         this.logger.warn("End of init");
     }
 
