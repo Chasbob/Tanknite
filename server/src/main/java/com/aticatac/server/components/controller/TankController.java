@@ -4,6 +4,8 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.ServerData;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.components.transform.Transform;
+import com.aticatac.server.components.Ammo;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Health;
 import com.aticatac.common.components.transform.Transform;
@@ -125,15 +127,15 @@ public class TankController extends Component {
      */
 // call method when space bar pressed
     public boolean shoot() {
-//        // call new shoot method from turretx
-//        // talk to physics?
-//
-//
-//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
-//
-//        if (currentAmmo == 0) return false;
-//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
+        // call new shoot method from turretx
+        // talk to physics?
+
+
+        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+
+        if (currentAmmo == 0) return false;
+        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
+        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo - 1);
         return true;
 // create bullet object current co ordinatesn where shooting tank is, and move
         //
@@ -165,13 +167,7 @@ public class TankController extends Component {
      * Die.
      */
     public void die () {
-        //add a powerup into the data that says that this is a power up with location.
-        //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
-        //Then when this is collided with by a tank add to tank that component
         GameObject.destroy(getGameObject());
-
-        //TODO potentially not relevant in here
-        /*if (map.getNumberOfAliveTanks() == 1){
             map.gameFinish();
            }
 
@@ -217,11 +213,6 @@ public class TankController extends Component {
      */
     public void pickUpDamage() {
     }
-    /**
-     * Gets health.
-     */
+
 }
 
-
-/* Method takes command (check branch) and returns boolean of whether possible
- */
