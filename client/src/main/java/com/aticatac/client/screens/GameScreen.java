@@ -16,6 +16,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -143,10 +145,8 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void render(float delta) {
-//        System.out.println("cam x: " + cam.position.x);
-//        System.out.println("cam y: " + cam.position.y);
-//        System.out.println("player x: " + tank.transform.getX());
-//        System.out.println("player y: " + tank.transform.getY());
+        System.out.println("world: " + getWorldCoords().x);
+        System.out.println("screen: " + tank.getComponent(Transform.class).getX());
         //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -214,72 +214,77 @@ public class GameScreen extends AbstractScreen {
             //show the pop up table
             popUpTable.setVisible(true);
         }
+        String direction;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            if(canMoveCam("left")){
+            direction = "left";
+            if(canMoveCam(direction)){
                 if(playerHorizontallyCentered()){
                     //we can move cam
-                    moveCam(-speed, 0);
+                    moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
                 }else{
                     //need to move player
-                    if(canMovePlayer("left")){
-                        movePlayer(speed, 0, 90);
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
                     }
                 }
-            }else if(canMovePlayer("left")){
-                movePlayer(speed, 0, 90);
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            if(canMoveCam("right")){
+            direction = "right";
+            if(canMoveCam(direction)){
                 if(playerHorizontallyCentered()){
                     //we can move cam
-                    moveCam(speed, 0);
+                    moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                 }else{
                     //need to move player
-                    if(canMovePlayer("right")){
-                        movePlayer(-speed, 0, 90);
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                     }
                 }
-            }else if(canMovePlayer("right")){
-                movePlayer(-speed, 0, 90);
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            if(canMoveCam("up")){
+            direction = "up";
+            if(canMoveCam(direction)){
                 if(playerVerticallyCentered()){
                     //we can move cam
-                    moveCam(0, speed);
+                    moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.UP);
                 }else{
                     //need to move player
-                    if(canMovePlayer("up")){
-                        movePlayer(0, -speed, 0);
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.UP);
                     }
                 }
-            }else if(canMovePlayer("up")){
-                movePlayer(0, -speed, 0);
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.UP);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            if(canMoveCam("down")){
+            direction = "down";
+            if(canMoveCam(direction)){
                 if(playerVerticallyCentered()){
                     //we can move cam
-                    moveCam(0, -speed);
+                    moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                 }else{
                     //need to move player
-                    if(canMovePlayer("down")){
-                        movePlayer(0, speed, 0);
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                     }
                 }
-            }else if(canMovePlayer("down")){
-                movePlayer(0, speed, 0);
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             }
         }
@@ -339,9 +344,32 @@ public class GameScreen extends AbstractScreen {
         return false;
     }
 
-    private void movePlayer(float xDistance, float yDistance, int rotation) {
-        tank.children.get(0).getComponent(Transform.class).SetRotation(rotation);
+    private void movePlayer(String direction) {
+        float xDistance = 0;
+        float yDistance = 0;
+        int rotation = 0;
+        switch (direction) {
+            case "left": {
+                xDistance = speed;
+                rotation = 90;
+                break;
+            }
+            case "right": {
+                xDistance = -speed;
+                rotation = 90;
+                break;
+            }
+            case "up": {
+                yDistance = -speed;
+                break;
+            }
+            case "down": {
+                yDistance = speed;
+                break;
+            }
+        }
         tank.getComponent(Transform.class).Transform(xDistance, yDistance);
+        tank.children.get(0).getComponent(Transform.class).SetRotation(rotation);
     }
 
     private boolean canMoveCam(String direction) {
@@ -390,113 +418,39 @@ public class GameScreen extends AbstractScreen {
     /**
      * Center camera to game object.
      */
-    private void moveCam(float xDistance, float yDistance) {
-        // Move camera after player
+    private void moveCam(String direction) {
+        float xDistance = 0;
+        float yDistance = 0;
+        switch (direction) {
+            case "left": {
+                xDistance = -speed;
+                break;
+            }
+            case "right": {
+                xDistance = speed;
+                break;
+            }
+            case "up": {
+                yDistance = speed;
+                break;
+            }
+            case "down": {
+                yDistance = -speed;
+                break;
+            }
+        }
         cam.position.set(cam.position.x + xDistance,cam.position.y + yDistance, 0);
-        cam.update();
     }
 
+    private Vector3 getWorldCoords(){
+        Vector3 v = new Vector3((float)tank.getComponent(Transform.class).getX(), (float)tank.getComponent(Transform.class).getY(), 0);
+        cam.unproject(v);
+        return v;
+    }
 
-
-
-
-
-
-
-    /**
-     * Y lib gdx 2 y transform float.
-     *
-     * @param y the y
-     * @return the float
-     */
-////TODO Convert game co-ord to Transform.class cord
-//    private float YLibGdx2YTransform(float y) {
-//        y = y - cam.viewportHeight;
-//        y = -y;
-//        y = y + cam.viewportWidth / 2f;
-//        return y;
-//    }
-
-    /**
-     * Transform y 2 libgdx float.
-     *
-     * @param y the y
-     * @return the float
-     */
-//    public float TransformY2Libgdx(float y) {
-//        y = y + cam.viewportWidth / 2f;
-//        y = -y;
-//        y = y - cam.viewportHeight;
-//        return y;
-//    }
-
-    /**
-     * X lib gdx 2 x transform float.
-     *
-     * @param x the x
-     * @return the float
-     */
-//    private float XLibGdx2XTransform(float x) {
-//        x = x + cam.viewportWidth / 2f;
-//        return x;
-//    }
-
-//    @Override
-//    public boolean keyDown(int keycode) {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean keyUp(int keycode) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean keyTyped(char character) {
-//        return true;
-//    }
-
-    //@Override
-//    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//        super.touchDown(screenX, screenY, pointer, button);
-//        if (button == input.Buttons.LEFT) {
-//            try {
-//
-//                var newX = XLibGdx2XTransform(screenX);
-//                var newY = YLibGdx2YTransform(screenY);
-//                System.out.println("X:" + newX + "\nY:" + newY);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        if (button == input.Buttons.RIGHT) {
-//        }
-//        return false;
-//    }
-
-//    @Override
-//    public boolean touchDragged(int screenX, int screenY, int pointer) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//        return false;
-//    }
-
-//    @Override
-//    public boolean mouseMoved(int screenX, int screenY) {
-//        var XMouse = XLibGdx2XTransform(screenX);
-//        var YMouse = YLibGdx2YTransform(screenY);
-//        var XTankTop = tank.getChildren().get(1).transform.getX();
-//        var YTankTop = tank.getChildren().get(1).transform.getY();
-//        var X = XMouse - XTankTop;
-//        var Y = YMouse - YTankTop;
-//        var rotation = Math.atan(Y / X);
-////        if (XMouse >= XTankTop)
-////            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) - 90f);
-////        else
-////            tank.getChildren().get(1).transform.SetRotation(Math.toDegrees(rotation) + 90f);
-//        return false;
+//    private Vector3 getScreenCoords(){
+//        //TODO use method for reading in point from server to place tanks
+//        cam.project(v);
+//        return v;
 //    }
 }
