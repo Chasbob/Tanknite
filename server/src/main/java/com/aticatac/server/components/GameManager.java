@@ -7,13 +7,14 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.controller.TankController;
-import com.aticatac.server.gameManager.Manager;
+import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.prefabs.TankObject;
-
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * The type Game manager.
+ */
 public class GameManager extends Component {
     private HashMap<String, GameObject> playerMap = new HashMap<>();
 
@@ -26,14 +27,25 @@ public class GameManager extends Component {
         super(gameObject);
         try {
             new GameObject("Player Container", this.getGameObject());
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            this.logger.error(e);
         }
     }
 
+    /**
+     * Gets player map.
+     *
+     * @return the player map
+     */
     public HashMap<String, GameObject> getPlayerMap() {
         return playerMap;
     }
 
+    /**
+     * Add player.
+     *
+     * @param player the player
+     */
     public void addPlayer(String player) {
         if (!playerMap.containsKey(player)) {
             playerMap.put(player, createTank(player));
@@ -44,6 +56,11 @@ public class GameManager extends Component {
     //count how many times the addPLayer is called.
     //This needs to be called upon the start of the game as all clients shld then be added.
 
+    /**
+     * Remove client.
+     *
+     * @param username the username
+     */
     public void removeClient(String username) {
         playerMap.remove(username);
     }
@@ -52,6 +69,12 @@ public class GameManager extends Component {
     //get the children for the game object which connects to all the tanks etc.
     //then look through that list and get the name? then should be able to call the gameobject?
     //when have correct game object then can do the below
+    /**
+     * Player input.
+     *
+     * @param player the player
+     * @param cmd    the cmd
+     */
     public void playerInput(String player, Command cmd) {
         //Gets the tank that the command came from
         var tank = playerMap.get(player);
@@ -59,41 +82,44 @@ public class GameManager extends Component {
             //TODO set name of tank game object to player id and pass that in to logic.
             case UP:
                 tank.getComponent(TankController.class).moveUp();
-                logger.info("Player: " + player + " sent command: " + cmd);
+                this.logger.trace("Player: " + player + " sent command: " + cmd);
                 break;
             case DOWN:
                 tank.getComponent(TankController.class).moveDown();
-                logger.info("Player: " + player + " sent command: " + cmd);
+                this.logger.trace("Player: " + player + " sent command: " + cmd);
                 break;
             case LEFT:
                 tank.getComponent(TankController.class).moveLeft();
-                logger.info("Player: " + player + " sent command: " + cmd);
+                this.logger.trace("Player: " + player + " sent command: " + cmd);
                 break;
             case RIGHT:
                 tank.getComponent(TankController.class).moveRight();
-                logger.info("Player: " + player + " sent command: " + cmd);
+                this.logger.trace("Player: " + player + " sent command: " + cmd);
                 break;
             case SHOOT:
                 tank.getComponent(TankController.class).shoot();
-                logger.info("Player: " + player + " sent command: " + cmd);
+                this.logger.trace("Player: " + player + " sent command: " + cmd);
+                break;
+            default:
+                this.logger.warn("switched to default case.");
         }
     }
 
     private TankObject createTank(String player) {
         try {
-            return new TankObject(getGameObject().getChildren().get(0),
-                    //TODO make the name here unique so it can be found
-                    "Tank",
-                    new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
-                            ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1)),
-                    100,
-                    30);
+            //todo wft is this
+            Position position;
+            final Manager instance = Manager.INSTANCE;
+            final int xs = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+            final int ys = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+            TankObject tank = new TankObject(getGameObject().getChildren().get(0),
+                player, position = new Position(xs, ys), 100, 30);
             DataServer.INSTANCE.setCoordinates(position, "Tank");
             return tank;
-        } catch (InvalidClassInstance invalidClassInstance) {
-            invalidClassInstance.printStackTrace();
-        } catch (ComponentExistsException e) {
-            e.printStackTrace();
+            //TODO should these exceptions be caught?
+            //TODO would it not make more sense to not add a null to the player map?
+        } catch (InvalidClassInstance | ComponentExistsException e) {
+            this.logger.error(e);
         }
         return null;
     }

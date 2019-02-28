@@ -2,6 +2,7 @@ package com.aticatac.server.networking;
 
 import com.aticatac.common.model.ClientModel;
 import com.aticatac.server.networking.listen.CommandListener;
+import java.io.IOException;
 import org.apache.log4j.Logger;
 
 public class Client {
@@ -15,11 +16,19 @@ public class Client {
         this.commandListener = commandListener;
         this.model = model;
         this.id = this.model.getId();
-        this.commandListener.start();
+        (new Thread(commandListener)).start();
     }
 
     public String getId() {
         return id;
+    }
+
+    void shutdown() {
+        try {
+            this.commandListener.getReader().close();
+        } catch (IOException e) {
+            this.logger.error(e);
+        }
     }
     //TODO add access to threads along with information about client.
 }

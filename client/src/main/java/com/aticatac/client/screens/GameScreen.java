@@ -1,17 +1,20 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
-import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -23,8 +26,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-
-import java.util.List;
 
 /**
  * The type Game screen.
@@ -159,8 +160,40 @@ public class GameScreen extends AbstractScreen {
         //set polling for inputs
         batch.begin();
         input();
-        childRenderer(root);
+        batch.begin();
+        GameObject c = null;
+        if (Screens.INSTANCE.getRoot() != null) {
+            this.root = Screens.INSTANCE.getRoot();
+        }
+        try {
+            childRenderer(this.root);
+        } catch (InvalidClassInstance | ComponentExistsException e) {
+            this.getLogger().error(e);
+        }
         //health bar
+        healthBar();
+        batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
+        batch.setColor(Color.WHITE);
+        batch.end();
+        cam.update();
+        super.act(delta);
+        super.draw();
+    }
+
+    private void testRender(String texture, int x, int y) {
+        final GameObject c;
+        try {
+            c = new GameObject("test");
+            c.addComponent(com.aticatac.common.components.Texture.class).setTexture(texture);
+            c.setTransform(x, y);
+            c.addComponent(Renderer.class).setTexture(c.getTexture());
+            renderObject(c);
+        } catch (InvalidClassInstance | ComponentExistsException e) {
+            this.getLogger().error(e);
+        }
+    }
+
+    private void healthBar() {
         if (health > 0.6f) {
             batch.setColor(Color.GREEN);
         } else if (health < 0.6f && health > 0.2f) {
@@ -175,21 +208,27 @@ public class GameScreen extends AbstractScreen {
         super.draw();
     }
 
-    private void childRenderer(GameObject g) {
+    private void childRenderer(GameObject g) throws InvalidClassInstance, ComponentExistsException {
+        renderObject(g);
         for (var c : g.getChildren()) {
             childRenderer(c);
-            if (c.componentExists(Renderer.class)) {
-                Position p = c.getComponent(Transform.class).getPosition();
-                Texture t = c.getComponent(Renderer.class).getTexture();
-                batch.setColor(Color.CORAL);
-                batch.draw(new TextureRegion(t),
-                        (float) p.x, (float) p.y,
-                        t.getWidth() / 2f, t.getHeight() / 2f,
-                        t.getWidth(), t.getHeight(),
-                        1, 1,
-                        (float) c.getComponent(Transform.class).GetRotation());
-                batch.setColor(Color.WHITE);
-            }
+        }
+    }
+
+    private void renderObject(GameObject c) throws ComponentExistsException, InvalidClassInstance {
+        if (c.hasTexture() && !c.componentExists(Renderer.class)) {
+            c.addComponent(Renderer.class);
+            c.getComponent(Renderer.class).setTexture(c.getTexture());
+        }
+        if (c.componentExists(Renderer.class)) {
+            var transform = c.getComponent(Transform.class);
+            var t = c.getComponent(Renderer.class).getTexture();
+            batch.draw(new TextureRegion(t),
+                (float) transform.getX(), (float) transform.getY(),
+                t.getWidth() / 2f, t.getHeight() / 2f,
+                t.getWidth(), t.getHeight(),
+                1, 1,
+                (float) transform.getRotation());
         }
     }
 

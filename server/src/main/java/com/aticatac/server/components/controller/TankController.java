@@ -63,7 +63,7 @@ public class TankController extends Component {
 //
 //        }
         this.getGameObject().getComponent(Transform.class).applyTransform(-3,0);
-            this.getGameObject().getComponent(Transform.class).setRotation(90);
+            this.getGameObject().getComponent(Transform.class).setRotation(270);
 //            this.getGameObject().getComponent(applyTransform.class).setRotation(90);
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
         //bullet disappears, other collisions have no effect, just stop the current move from happening
@@ -88,7 +88,7 @@ public class TankController extends Component {
 //        }
 
         this.getGameObject().getComponent(Transform.class).applyTransform(3,0);
-            this.getGameObject().getComponent(Transform.class).setRotation(270);
+            this.getGameObject().getComponent(Transform.class).setRotation(90);
         return true;
     }
 

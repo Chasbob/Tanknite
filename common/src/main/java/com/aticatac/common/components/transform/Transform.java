@@ -1,6 +1,7 @@
 package com.aticatac.common.components.transform;
 
 import com.aticatac.common.components.Component;
+import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.GameObject;
 
 /**
@@ -18,6 +19,18 @@ public class Transform extends Component {
     public Transform(GameObject gameObject) {
         super(gameObject);
         this.position = new Position(0, 0);
+    }
+
+    /**
+     * Instantiates a new Transform.
+     *
+     * @param gameObject the game object
+     * @param container  the container
+     */
+    public Transform(GameObject gameObject, Container container) {
+        super(gameObject);
+        this.position = new Position(container.getX(), container.getY());
+        this.rotation = container.getR();
     }
 
     /**
@@ -71,7 +84,7 @@ public class Transform extends Component {
      * @param x the x
      * @param y the y
      */
-//TODO REFACTOR
+//  TODO REFACTOR
     public void setPosition(double x, double y) {
         double deltaX = position.getX() - x;
         double deltaY = position.getY() - y;
@@ -119,6 +132,10 @@ public class Transform extends Component {
         }
     }
 
+    public void setPersonalRotation(double r) {
+        this.rotation = r;
+    }
+
     /**
      * Sets view.
      *
@@ -132,9 +149,13 @@ public class Transform extends Component {
 
     @Override
     public String toString() {
-        return "applyTransform{" +
-                "position=" + position +
-                ", rotation=" + rotation +
-                '}';
+        return "applyTransform{"
+            +
+            "position=" + position
+            +
+            ", rotation=" + rotation
+            +
+            '}'
+            ;
     }
 }
