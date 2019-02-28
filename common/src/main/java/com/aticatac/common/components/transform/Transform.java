@@ -8,7 +8,7 @@ import com.aticatac.common.objectsystem.GameObject;
  * The type Transform.
  */
 public class Transform extends Component {
-    private Position position;
+    private Position  position;
     private double rotation = 0;
 
     /**
@@ -77,6 +77,9 @@ public class Transform extends Component {
 //        this.setPosition(position.getX() + x, position.getY() + y);
 //    }
 
+    public void transform(double x, double y) {
+        this.applyTransform(position.getX() + x, position.getY() + y);
+    }
     /**
      * Sets position.
      *
@@ -85,12 +88,12 @@ public class Transform extends Component {
      */
 //  TODO REFACTOR
     public void applyTransform(double deltaX, double deltaY) {
-        double x = position.getX() + deltaX;
-        double y = position.getY() + deltaY;
-        setTransformWithoutChild(x, y);
+        double x = position.getX() - deltaX;
+        double y = position.getY() - deltaY;
         for (var o : getGameObject().getChildren()) {
-            o.getComponent(Transform.class).applyTransform(deltaX, deltaY);
+            o.getComponent(Transform.class).transform(x, y);
         }
+        setTransformWithoutChild(deltaX, deltaY);
     }
 
     private void setTransformWithoutChild(double x, double y) {

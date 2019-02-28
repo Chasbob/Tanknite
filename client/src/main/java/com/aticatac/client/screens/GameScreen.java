@@ -224,6 +224,8 @@ public class GameScreen extends AbstractScreen {
         }
         if (c.componentExists(Renderer.class)) {
             var transform = c.getComponent(Transform.class);
+            float x = -(float)transform.getX();
+            float y = -(float)transform.getY();
             var t = c.getComponent(Renderer.class).getTexture();
             batch.setColor(Color.CORAL);
             batch.draw(new TextureRegion(t),
@@ -338,7 +340,7 @@ public class GameScreen extends AbstractScreen {
                 Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             }
         }
-//        cam.update();
+       //cam.update();
         //mouseMoved(Gdx.input.getX(), Gdx.input.getY());
     }
 
