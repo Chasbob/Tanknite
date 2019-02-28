@@ -80,17 +80,17 @@ public class Transform extends Component {
     /**
      * Sets position.
      *
-     * @param x the x
-     * @param y the y
+     * @param deltaX the x
+     * @param deltaY the y
      */
 //  TODO REFACTOR
-    public void applyTransform(double x, double y) {
-        double deltaX = position.getX() - x;
-        double deltaY = position.getY() - y;
-        for (var o : getGameObject().getChildren()) {
-            o.getComponent(Transform.class).applyTransform(x, y);
-        }
+    public void applyTransform(double deltaX, double deltaY) {
+        double x = position.getX() + deltaX;
+        double y = position.getY() + deltaY;
         setTransformWithoutChild(x, y);
+        for (var o : getGameObject().getChildren()) {
+            o.getComponent(Transform.class).applyTransform(deltaX, deltaY);
+        }
     }
 
     private void setTransformWithoutChild(double x, double y) {

@@ -10,7 +10,6 @@ import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.prefabs.TankObject;
 import java.util.HashMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The type Game manager.
@@ -64,11 +63,11 @@ public class GameManager extends Component {
     public void removeClient(String username) {
         playerMap.remove(username);
     }
-
     //TODO get this to call the correct commands for the correct tank
     //get the children for the game object which connects to all the tanks etc.
     //then look through that list and get the name? then should be able to call the gameobject?
     //when have correct game object then can do the below
+
     /**
      * Player input.
      *
@@ -110,8 +109,10 @@ public class GameManager extends Component {
             //todo wft is this
             Position position;
             final Manager instance = Manager.INSTANCE;
-            final int xs = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
-            final int ys = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+//            final int xs = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+//            final int ys = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+            final int xs = 320;
+            final int ys = 320;
             TankObject tank = new TankObject(getGameObject().getChildren().get(0),
                 player, position = new Position(xs, ys), 100, 30);
             DataServer.INSTANCE.setCoordinates(position, "Tank");

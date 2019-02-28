@@ -23,7 +23,7 @@ public class TankObject extends GameObject {
         new GameObject("TankBottom", this);
         new GameObject("TankTop", this);
         this.getChildren().get(0).getComponent(Transform.class).setPosition(p.getX(), p.getY());
-        this.getChildren().get(1).getComponent(Transform.class).setPosition(p.getX() + 10, p.getY() + 10);
+        this.getChildren().get(1).getComponent(Transform.class).setPosition(p.getX(), p.getY());
         this.getChildren().get(1).addComponent(Texture.class).setTexture("img/tank.png");
         this.getChildren().get(0).addComponent(Texture.class).setTexture("img/top.png");
         // determine whether ai, put behavioural trees from ai if so

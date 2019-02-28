@@ -9,6 +9,7 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -50,6 +51,7 @@ public class GameScreen extends AbstractScreen {
     private int mapBottom;
     private int mapRight;
     private int mapLeft;
+    private boolean rendered;
 
     /**
      * Instantiates a new Game screen.
@@ -57,6 +59,7 @@ public class GameScreen extends AbstractScreen {
     GameScreen() {
         super();
         try {
+            this.rendered = false;
             root = new GameObject("root");
             tank = new TankObject(root, "Tank", new Position(320, 320), 100, 100);
             ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/tank.png");
@@ -149,8 +152,8 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void render(float delta) {
-        System.out.println("world: " + getWorldCoords().x);
-        System.out.println("screen: " + tank.getComponent(Transform.class).getX());
+//        System.out.println("world: " + getWorldCoords().x);
+//        System.out.println("screen: " + tank.getComponent(Transform.class).getX());x
         //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -159,9 +162,12 @@ public class GameScreen extends AbstractScreen {
         renderer.render();
         //set polling for inputs
         batch.begin();
-        input();
         if (Screens.INSTANCE.getRoot() != null) {
             this.root = Screens.INSTANCE.getRoot();
+            this.tank = this.root.findObject(ObjectType.TANK, this.root);
+            if (this.tank != null) {
+                input();
+            }
         }
         try {
             childRenderer(this.root);
@@ -169,6 +175,7 @@ public class GameScreen extends AbstractScreen {
             this.getLogger().error(e);
         }
         //health bar
+//        batch.setColor(Color.GREEN);
         healthBar();
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
@@ -200,7 +207,6 @@ public class GameScreen extends AbstractScreen {
             batch.setColor(Color.RED);
         }
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
-        batch.setColor(Color.WHITE);
     }
 
     private void childRenderer(GameObject g) throws InvalidClassInstance, ComponentExistsException {
@@ -212,18 +218,25 @@ public class GameScreen extends AbstractScreen {
 
     private void renderObject(GameObject c) throws ComponentExistsException, InvalidClassInstance {
         if (c.hasTexture() && !c.componentExists(Renderer.class)) {
+//            this.rendered = true;
             c.addComponent(Renderer.class);
             c.getComponent(Renderer.class).setTexture(c.getTexture());
         }
         if (c.componentExists(Renderer.class)) {
             var transform = c.getComponent(Transform.class);
             var t = c.getComponent(Renderer.class).getTexture();
+            batch.setColor(Color.CORAL);
             batch.draw(new TextureRegion(t),
                 (float) transform.getX(), (float) transform.getY(),
                 t.getWidth() / 2f, t.getHeight() / 2f,
                 t.getWidth(), t.getHeight(),
                 1, 1,
                 (float) transform.getRotation());
+            batch.setColor(Color.WHITE);
+//            if (c.getObjectType() == ObjectType.TANK) {
+//                cam.position.set((float) c.getTransform().getX(), (float) c.getTransform().getY(), 0);
+//                cam.update();
+//            }
         }
     }
 
@@ -258,16 +271,16 @@ public class GameScreen extends AbstractScreen {
                 if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-                    Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+//                    Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        movePlayer(direction);
+                        //movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                movePlayer(direction);
+                // movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
@@ -276,16 +289,16 @@ public class GameScreen extends AbstractScreen {
                 if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-                    Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
+//                    Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        movePlayer(direction);
+                        //movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                movePlayer(direction);
+                //movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -294,16 +307,16 @@ public class GameScreen extends AbstractScreen {
                 if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-                    Screens.INSTANCE.getClient().sendCommand(Command.UP);
+//                    Screens.INSTANCE.getClient().sendCommand(Command.UP);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        movePlayer(direction);
+                        //movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.UP);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                movePlayer(direction);
+                //movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.UP);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -312,20 +325,20 @@ public class GameScreen extends AbstractScreen {
                 if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-                    Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
+                    //Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        movePlayer(direction);
+                        //movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                movePlayer(direction);
+                //movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             }
         }
-        cam.update();
+//        cam.update();
         //mouseMoved(Gdx.input.getX(), Gdx.input.getY());
     }
 

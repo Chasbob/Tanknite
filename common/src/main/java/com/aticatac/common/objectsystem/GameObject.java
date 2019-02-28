@@ -5,8 +5,6 @@ import com.aticatac.common.components.Texture;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
-import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.ObjectType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -274,6 +272,31 @@ public class GameObject {
      */
     public GameObject findObject(String tag, GameObject gameObject) {
         return gameObject.parent.isPresent() ? findObject(tag, gameObject.parent.get()) : findObjectHelper(tag, gameObject);
+    }
+
+    public GameObject findObject(ObjectType type, GameObject gameObject) {
+        GameObject out;
+        if (gameObject.parent.isPresent()) {
+            out = findObject(type, gameObject.parent.get());
+        } else {
+            out = findObjectHelper(type, gameObject);
+        }
+        return out;
+    }
+
+    private GameObject findObjectHelper(ObjectType t, GameObject g) {
+        GameObject out;
+        if (g.getObjectType() == t) {
+            return g;
+        } else {
+            for (var c : g.children.keySet()) {
+                out = findObjectHelper(t, g.children.get(c));
+                if(out!=null){
+                    return out;
+                }
+            }
+            return null;
+        }
     }
 
     //TODO these may need to be static.
