@@ -1,10 +1,12 @@
-
+package com.aticatac.common.objectsystem;
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.Texture;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
+import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.ObjectType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

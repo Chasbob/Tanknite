@@ -42,12 +42,12 @@ public class Transform extends Component {
         return position;
     }
 
-    public void setPosition(float x, float y){
-        position = new Position(x, y);
+    public void setPosition(Transform transform) {
+        this.setPosition(transform.getX(), transform.getY());
     }
 
-    public double getX(){
-        return getPosition().x;
+    public void setPosition(double x, double y) {
+        position = new Position(x, y);
     }
 
     /**
@@ -67,16 +67,15 @@ public class Transform extends Component {
     public double getY() {
         return this.position.getY();
     }
-
     /**
      * Apply transform.
      *
      * @param x the x
      * @param y the y
      */
-    public void applyTransform(double x, double y) {
-        this.setPosition(position.getX() + x, position.getY() + y);
-    }
+//    public void applyTransform(double x, double y) {
+//        this.setPosition(position.getX() + x, position.getY() + y);
+//    }
 
     /**
      * Sets position.
@@ -85,11 +84,11 @@ public class Transform extends Component {
      * @param y the y
      */
 //  TODO REFACTOR
-    public void setPosition(double x, double y) {
+    public void applyTransform(double x, double y) {
         double deltaX = position.getX() - x;
         double deltaY = position.getY() - y;
         for (var o : getGameObject().getChildren()) {
-            o.getComponent(Transform.class).applyTransform(deltaX, deltaY);
+            o.getComponent(Transform.class).applyTransform(x, y);
         }
         setTransformWithoutChild(x, y);
     }

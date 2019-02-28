@@ -6,9 +6,12 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.*;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
+import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.Physics;
+import com.aticatac.server.components.Time;
+import com.aticatac.server.components.controller.TankController;
 
 public class TankObject extends GameObject {
     //add in a parameter boolean which is ai true or false
@@ -21,8 +24,8 @@ public class TankObject extends GameObject {
         new GameObject("TankTop", this);
         this.getChildren().get(0).getComponent(Transform.class).setPosition(p.getX(), p.getY());
         this.getChildren().get(1).getComponent(Transform.class).setPosition(p.getX() + 10, p.getY() + 10);
-        this.getChildren().get(1).addComponent(Texture.class).setTexture("img/TankTop.png");
-        this.getChildren().get(0).addComponent(Texture.class).setTexture("img/TankBottom.png");
+        this.getChildren().get(1).addComponent(Texture.class).setTexture("img/tank.png");
+        this.getChildren().get(0).addComponent(Texture.class).setTexture("img/top.png");
         // determine whether ai, put behavioural trees from ai if so
         this.addComponent(Health.class).setHealth(health);
         this.addComponent(Ammo.class).setAmmo(ammo);

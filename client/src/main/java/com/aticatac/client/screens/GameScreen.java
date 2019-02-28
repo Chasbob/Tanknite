@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
@@ -8,6 +9,7 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -20,7 +22,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -32,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  */
 public class GameScreen extends AbstractScreen {
     private final SpriteBatch batch;
+    private final float speed = 3.0f;
     private Table popUpTable;
     private GameObject root;
     private GameObject tank;
@@ -42,7 +44,6 @@ public class GameScreen extends AbstractScreen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
-    private final float speed = 3.0f;
     private float cameraHalfWidth;
     private float cameraHalfHeight;
     private int mapTop;
@@ -51,7 +52,6 @@ public class GameScreen extends AbstractScreen {
     private int mapLeft;
 
     /**
-     *
      * Instantiates a new Game screen.
      */
     GameScreen() {
@@ -160,8 +160,6 @@ public class GameScreen extends AbstractScreen {
         //set polling for inputs
         batch.begin();
         input();
-        batch.begin();
-        GameObject c = null;
         if (Screens.INSTANCE.getRoot() != null) {
             this.root = Screens.INSTANCE.getRoot();
         }
@@ -203,9 +201,6 @@ public class GameScreen extends AbstractScreen {
         }
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
-        batch.end();
-        super.act(delta);
-        super.draw();
     }
 
     private void childRenderer(GameObject g) throws InvalidClassInstance, ComponentExistsException {
@@ -259,73 +254,73 @@ public class GameScreen extends AbstractScreen {
         String direction;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             direction = "left";
-            if(canMoveCam(direction)){
-                if(playerHorizontallyCentered()){
+            if (canMoveCam(direction)) {
+                if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
-                }else{
+                } else {
                     //need to move player
-                    if(canMovePlayer(direction)){
+                    if (canMovePlayer(direction)) {
                         movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
                     }
                 }
-            }else if(canMovePlayer(direction)){
+            } else if (canMovePlayer(direction)) {
                 movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             direction = "right";
-            if(canMoveCam(direction)){
-                if(playerHorizontallyCentered()){
+            if (canMoveCam(direction)) {
+                if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
-                }else{
+                } else {
                     //need to move player
-                    if(canMovePlayer(direction)){
+                    if (canMovePlayer(direction)) {
                         movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                     }
                 }
-            }else if(canMovePlayer(direction)){
+            } else if (canMovePlayer(direction)) {
                 movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             direction = "up";
-            if(canMoveCam(direction)){
-                if(playerVerticallyCentered()){
+            if (canMoveCam(direction)) {
+                if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.UP);
-                }else{
+                } else {
                     //need to move player
-                    if(canMovePlayer(direction)){
+                    if (canMovePlayer(direction)) {
                         movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.UP);
                     }
                 }
-            }else if(canMovePlayer(direction)){
+            } else if (canMovePlayer(direction)) {
                 movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.UP);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             direction = "down";
-            if(canMoveCam(direction)){
-                if(playerVerticallyCentered()){
+            if (canMoveCam(direction)) {
+                if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
                     Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
-                }else{
+                } else {
                     //need to move player
-                    if(canMovePlayer(direction)){
+                    if (canMovePlayer(direction)) {
                         movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                     }
                 }
-            }else if(canMovePlayer(direction)){
+            } else if (canMovePlayer(direction)) {
                 movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             }
@@ -336,7 +331,7 @@ public class GameScreen extends AbstractScreen {
 
     private boolean playerHorizontallyCentered() {
         boolean result = false;
-        if(tank.getComponent(Transform.class).getX()==cameraHalfWidth){
+        if (tank.getComponent(Transform.class).getX() == cameraHalfWidth) {
             result = true;
         }
         return result;
@@ -344,40 +339,40 @@ public class GameScreen extends AbstractScreen {
 
     private boolean playerVerticallyCentered() {
         boolean result = false;
-        if(tank.getComponent(Transform.class).getY()==cameraHalfHeight){
+        if (tank.getComponent(Transform.class).getY() == cameraHalfHeight) {
             result = true;
         }
         return result;
     }
 
-    private boolean canMovePlayer(String direction){
+    private boolean canMovePlayer(String direction) {
         switch (direction) {
             case "left": {
-                float tempPlayerX = (float)tank.getComponent(Transform.class).getX() + speed;
-                if (tempPlayerX <= cam.viewportWidth){
+                float tempPlayerX = (float) tank.getComponent(Transform.class).getX() + speed;
+                if (tempPlayerX <= cam.viewportWidth) {
                     return true;
                 }
                 break;
             }
             case "right": {
-                float tempPlayerX = (float)tank.getComponent(Transform.class).getX() - speed;
+                float tempPlayerX = (float) tank.getComponent(Transform.class).getX() - speed;
                 float tankWidth = 32;
-                if(tempPlayerX >= tankWidth){
+                if (tempPlayerX >= tankWidth) {
                     return true;
                 }
                 break;
             }
             case "up": {
-                float tempPlayerY = (float)tank.getComponent(Transform.class).getY() - speed;
+                float tempPlayerY = (float) tank.getComponent(Transform.class).getY() - speed;
                 float tankHeight = 64;
-                if(tempPlayerY >= tankHeight){
+                if (tempPlayerY >= tankHeight) {
                     return true;
                 }
                 break;
             }
             case "down": {
-                float tempPlayerY = (float)tank.getComponent(Transform.class).getY() + speed;
-                if(tempPlayerY <= cam.viewportHeight){
+                float tempPlayerY = (float) tank.getComponent(Transform.class).getY() + speed;
+                if (tempPlayerY <= cam.viewportHeight) {
                     return true;
                 }
                 break;
@@ -410,17 +405,15 @@ public class GameScreen extends AbstractScreen {
                 break;
             }
         }
-        tank.getComponent(Transform.class).Transform(xDistance, yDistance);
-        tank.children.get(0).getComponent(Transform.class).SetRotation(rotation);
+        tank.getComponent(Transform.class).applyTransform(xDistance, yDistance);
+        tank.getChildren().get(0).getComponent(Transform.class).setRotation(rotation);
     }
 
     private boolean canMoveCam(String direction) {
-
         float cameraLeft = cam.position.x - cameraHalfWidth;
         float cameraRight = cam.position.x + cameraHalfWidth;
         float cameraBottom = cam.position.y - cameraHalfHeight;
         float cameraTop = cam.position.y + cameraHalfHeight;
-
         boolean result = false;
         switch (direction) {
             case "left": {
@@ -433,7 +426,7 @@ public class GameScreen extends AbstractScreen {
             }
             case "right": {
                 float tempCameraRight = cameraRight + speed;
-                if (tempCameraRight<= mapRight) {
+                if (tempCameraRight <= mapRight) {
                     result = true;
                 }
                 break;
@@ -454,7 +447,6 @@ public class GameScreen extends AbstractScreen {
             }
         }
         return result;
-
     }
 
     /**
@@ -481,15 +473,14 @@ public class GameScreen extends AbstractScreen {
                 break;
             }
         }
-        cam.position.set(cam.position.x + xDistance,cam.position.y + yDistance, 0);
+        cam.position.set(cam.position.x + xDistance, cam.position.y + yDistance, 0);
     }
 
-    private Vector3 getWorldCoords(){
-        Vector3 v = new Vector3((float)tank.getComponent(Transform.class).getX(), (float)tank.getComponent(Transform.class).getY(), 0);
+    private Vector3 getWorldCoords() {
+        Vector3 v = new Vector3((float) tank.getComponent(Transform.class).getX(), (float) tank.getComponent(Transform.class).getY(), 0);
         cam.unproject(v);
         return v;
     }
-
 //    private Vector3 getScreenCoords(){
 //        //TODO use method for reading in point from server to place tanks
 //        cam.project(v);
