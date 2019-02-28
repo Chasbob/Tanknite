@@ -29,13 +29,12 @@ public class Transform extends Component {
         return position;
     }
 
-    /**
-     * Sets position.
-     *
-     * @param transform the transform
-     */
-    public void setPosition(Transform transform) {
-        setPosition(transform.getX(), transform.getY());
+    public void setPosition(float x, float y){
+        position = new Position(x, y);
+    }
+
+    public double getX(){
+        return getPosition().x;
     }
 
     /**

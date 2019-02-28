@@ -17,6 +17,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -30,35 +32,59 @@ import java.util.List;
 public class GameScreen extends AbstractScreen {
     private final SpriteBatch batch;
     private Table popUpTable;
+    private GameObject root;
+    private GameObject tank;
+    private float health;
+    private Label ammoValue;
+    private Label killCount;
+    private Label playerCount;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
-    private GameObject root;
-    private float health;
+    private final float speed = 3.0f;
+    private float cameraHalfWidth;
+    private float cameraHalfHeight;
+    private int mapTop;
+    private int mapBottom;
+    private int mapRight;
+    private int mapLeft;
 
     /**
+     *
      * Instantiates a new Game screen.
      */
     GameScreen() {
         super();
         try {
-            cam = new OrthographicCamera(getWidth(), getHeight());
-            cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
             root = new GameObject("root");
-            //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
+            tank = new TankObject(root, "Tank", new Position(320, 320), 100, 100);
+            ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/tank.png");
+            ObjectHelper.AddRenderer(tank.getChildren().get(1), "img/top.png");
+//            //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
+            health = 1f;
+            ammoValue = UIFactory.createLabel("30");
+            killCount = UIFactory.createLabel("0");
+            playerCount = UIFactory.createLabel("1");
+            map = new TmxMapLoader().load("maps/map.tmx");
+            renderer = new OrthogonalTiledMapRenderer(map);
+            cam = new OrthographicCamera(getWidth(), getHeight());
+            mapLeft = 0;
+            mapRight = 1920;
+            mapBottom = 0;
+            mapTop = 1920;
+            cameraHalfWidth = cam.viewportWidth * .5f;
+            cameraHalfHeight = cam.viewportHeight * .5f;
+            Gdx.input.setInputProcessor(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        health = 1f;
         batch = new SpriteBatch();
-        Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void buildStage() {
-        //load in map
-        map = new TmxMapLoader().load("maps/map.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map);
+        cam.position.set(1000, 1000, 0);
+        cam.update();
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
@@ -71,9 +97,11 @@ public class GameScreen extends AbstractScreen {
         countTable.defaults().padTop(10).padLeft(10).left();
         Label players = UIFactory.createLabel("player count: ");
         countTable.add(players);
+        countTable.add(playerCount);
         countTable.row();
         Label kills = UIFactory.createLabel("kills: ");
         countTable.add(kills);
+        countTable.add(killCount);
         //create table for kill feed - BOTTOM LEFT
         Table killTable = new Table();
         killTable.setFillParent(true);
@@ -90,6 +118,7 @@ public class GameScreen extends AbstractScreen {
         ammoTable.defaults().padRight(10).padTop(10).padBottom(20).left();
         Label ammo = UIFactory.createLabel("ammo: ");
         ammoTable.add(ammo);
+        ammoTable.add(ammoValue);
         //create pop up table
         popUpTable = new Table();
         rootTable.addActor(popUpTable);
@@ -115,46 +144,22 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
-//        (new Thread(() -> {
-//            //TODO remove testing thread
-//            while (true) {
-////                try {
-//                    Update update = Screens.INSTANCE.getUpdate();
-//                    System.out.println(Converter.construct(update.getObj()));
-////                } catch (InterruptedException e) {
-////                    e.printStackTrace();
-////                }
-//            }
-//        })).start();
     }
 
     @Override
     public void render(float delta) {
-        // Clear screen
+        System.out.println("world: " + getWorldCoords().x);
+        System.out.println("screen: " + tank.getComponent(Transform.class).getX());
+        //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Update update = Screens.INSTANCE.getUpdate();
+        //set cam for renderer and render map
         renderer.setView(cam);
         renderer.render();
-        input();
+        //set polling for inputs
         batch.begin();
-        if (update.getObj() != null) {
-            this.root = Converter.construct(update.getObj());
-            try {
-                if (root != null) {
-                    List<GameObject> children = this.root.getChildren();
-                    for (var c : children) {
-                        if (c.componentExists(com.aticatac.common.components.Texture.class)) {
-                            ObjectHelper.AddRenderer(c, c.getComponent(com.aticatac.common.components.Texture.class).Texture);
-                            //TODO stop making everything a tank bottom?
-                        }
-                    }
-                    ChildRenderer(root);
-                }
-            } catch (Exception e) {
-                this.getLogger().error("Root position: " + this.root.getTransform().toString());
-            }
-        }
+        input();
+        childRenderer(root);
         //health bar
         if (health > 0.6f) {
             batch.setColor(Color.GREEN);
@@ -166,44 +171,34 @@ public class GameScreen extends AbstractScreen {
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
         batch.end();
-        cam.update();
         super.act(delta);
         super.draw();
     }
 
-    private void ChildRenderer(GameObject g) {
+    private void childRenderer(GameObject g) {
         for (var c : g.getChildren()) {
-            ChildRenderer(c);
+            childRenderer(c);
             if (c.componentExists(Renderer.class)) {
                 Position p = c.getComponent(Transform.class).getPosition();
                 Texture t = c.getComponent(Renderer.class).getTexture();
+                batch.setColor(Color.CORAL);
                 batch.draw(new TextureRegion(t),
-                        (float) p.getX(), (float) p.getY(),
+                        (float) p.x, (float) p.y,
                         t.getWidth() / 2f, t.getHeight() / 2f,
                         t.getWidth(), t.getHeight(),
                         1, 1,
-                        (float) c.getComponent(Transform.class).getRotation());
+                        (float) c.getComponent(Transform.class).GetRotation());
+                batch.setColor(Color.WHITE);
             }
         }
     }
 
     @Override
     public void resize(int width, int height) {
-        super.resize(width, height);
-        cam.viewportWidth = width;
-        cam.viewportHeight = height;
-        cam.update();
-    }
-
-    /**
-     * Center camera to game object.
-     *
-     * @param gameObject the game object
-     */
-    private void CenterCameraToGameObject(GameObject gameObject) {
-        Position g = gameObject.getComponent(Transform.class).getPosition();
-        Position r = root.getComponent(Transform.class).getPosition();
-        renderer.setView(cam);
+//        super.resize(width, height);
+//            cam = new OrthographicCamera(width, height);
+//            cam.update();
+//        }
     }
 
     @Override
@@ -211,44 +206,7 @@ public class GameScreen extends AbstractScreen {
         super.dispose();
         map.dispose();
         renderer.dispose();
-    }
-
-    /**
-     * Y lib gdx 2 y transform float.
-     *
-     * @param y the y
-     * @return the float
-     */
-//TODO Convert game co-ord to applyTransform.class cord
-    private float YLibGdx2YTransform(float y) {
-        y = y - cam.viewportHeight;
-        y = -y;
-        y = y + cam.viewportWidth / 2f;
-        return y;
-    }
-
-    /**
-     * applyTransform y 2 libgdx float.
-     *
-     * @param y the y
-     * @return the float
-     */
-    public float TransformY2Libgdx(float y) {
-        y = y + cam.viewportWidth / 2f;
-        y = -y;
-        y = y - cam.viewportHeight;
-        return y;
-    }
-
-    /**
-     * X lib gdx 2 x transform float.
-     *
-     * @param x the x
-     * @return the float
-     */
-    private float XLibGdx2XTransform(float x) {
-        x = x + cam.viewportWidth / 2f;
-        return x;
+        batch.dispose();
     }
 
     /**
@@ -259,73 +217,243 @@ public class GameScreen extends AbstractScreen {
             //show the pop up table
             popUpTable.setVisible(true);
         }
+        String direction;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+            direction = "left";
+            if(canMoveCam(direction)){
+                if(playerHorizontallyCentered()){
+                    //we can move cam
+                    moveCam(direction);
+                    Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+                }else{
+                    //need to move player
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
+                        Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+                    }
+                }
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
+                Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+            }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
+            direction = "right";
+            if(canMoveCam(direction)){
+                if(playerHorizontallyCentered()){
+                    //we can move cam
+                    moveCam(direction);
+                    Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
+                }else{
+                    //need to move player
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
+                        Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
+                    }
+                }
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
+                Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
+            }
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            Screens.INSTANCE.getClient().sendCommand(Command.UP);
+            direction = "up";
+            if(canMoveCam(direction)){
+                if(playerVerticallyCentered()){
+                    //we can move cam
+                    moveCam(direction);
+                    Screens.INSTANCE.getClient().sendCommand(Command.UP);
+                }else{
+                    //need to move player
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
+                        Screens.INSTANCE.getClient().sendCommand(Command.UP);
+                    }
+                }
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
+                Screens.INSTANCE.getClient().sendCommand(Command.UP);
+            }
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
-        }
-        mouseMoved(Gdx.input.getX(), Gdx.input.getY());
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return true;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return true;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        super.touchDown(screenX, screenY, pointer, button);
-        if (button == Input.Buttons.LEFT) {
-            try {
-                var newX = XLibGdx2XTransform(screenX);
-                var newY = YLibGdx2YTransform(screenY);
-                System.out.println("X:" + newX + "\nY:" + newY);
-            } catch (Exception e) {
-                e.printStackTrace();
+            direction = "down";
+            if(canMoveCam(direction)){
+                if(playerVerticallyCentered()){
+                    //we can move cam
+                    moveCam(direction);
+                    Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
+                }else{
+                    //need to move player
+                    if(canMovePlayer(direction)){
+                        movePlayer(direction);
+                        Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
+                    }
+                }
+            }else if(canMovePlayer(direction)){
+                movePlayer(direction);
+                Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             }
         }
-        if (button == Input.Buttons.RIGHT) {
+        cam.update();
+        //mouseMoved(Gdx.input.getX(), Gdx.input.getY());
+    }
+
+    private boolean playerHorizontallyCentered() {
+        boolean result = false;
+        if(tank.getComponent(Transform.class).getX()==cameraHalfWidth){
+            result = true;
+        }
+        return result;
+    }
+
+    private boolean playerVerticallyCentered() {
+        boolean result = false;
+        if(tank.getComponent(Transform.class).getY()==cameraHalfHeight){
+            result = true;
+        }
+        return result;
+    }
+
+    private boolean canMovePlayer(String direction){
+        switch (direction) {
+            case "left": {
+                float tempPlayerX = (float)tank.getComponent(Transform.class).getX() + speed;
+                if (tempPlayerX <= cam.viewportWidth){
+                    return true;
+                }
+                break;
+            }
+            case "right": {
+                float tempPlayerX = (float)tank.getComponent(Transform.class).getX() - speed;
+                float tankWidth = 32;
+                if(tempPlayerX >= tankWidth){
+                    return true;
+                }
+                break;
+            }
+            case "up": {
+                float tempPlayerY = (float)tank.getComponent(Transform.class).getY() - speed;
+                float tankHeight = 64;
+                if(tempPlayerY >= tankHeight){
+                    return true;
+                }
+                break;
+            }
+            case "down": {
+                float tempPlayerY = (float)tank.getComponent(Transform.class).getY() + speed;
+                if(tempPlayerY <= cam.viewportHeight){
+                    return true;
+                }
+                break;
+            }
         }
         return false;
     }
 
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+    private void movePlayer(String direction) {
+        float xDistance = 0;
+        float yDistance = 0;
+        int rotation = 0;
+        switch (direction) {
+            case "left": {
+                xDistance = speed;
+                rotation = 90;
+                break;
+            }
+            case "right": {
+                xDistance = -speed;
+                rotation = 90;
+                break;
+            }
+            case "up": {
+                yDistance = -speed;
+                break;
+            }
+            case "down": {
+                yDistance = speed;
+                break;
+            }
+        }
+        tank.getComponent(Transform.class).Transform(xDistance, yDistance);
+        tank.children.get(0).getComponent(Transform.class).SetRotation(rotation);
     }
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+    private boolean canMoveCam(String direction) {
+
+        float cameraLeft = cam.position.x - cameraHalfWidth;
+        float cameraRight = cam.position.x + cameraHalfWidth;
+        float cameraBottom = cam.position.y - cameraHalfHeight;
+        float cameraTop = cam.position.y + cameraHalfHeight;
+
+        boolean result = false;
+        switch (direction) {
+            case "left": {
+                //can the cam move 3.0 to the left.
+                float tempCameraLeft = cameraLeft - speed;
+                if (tempCameraLeft >= mapLeft) {
+                    result = true;
+                }
+                break;
+            }
+            case "right": {
+                float tempCameraRight = cameraRight + speed;
+                if (tempCameraRight<= mapRight) {
+                    result = true;
+                }
+                break;
+            }
+            case "up": {
+                float tempCameraTop = cameraTop + speed;
+                if (tempCameraTop <= mapTop) {
+                    result = true;
+                }
+                break;
+            }
+            case "down": {
+                float tempCamBottom = cameraBottom - speed;
+                if (tempCamBottom >= mapBottom) {
+                    result = true;
+                }
+                break;
+            }
+        }
+        return result;
+
     }
 
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-//        var XMouse = XLibGdx2XTransform(screenX);
-//        var YMouse = YLibGdx2YTransform(screenY);
-//        var XTankTop = tank.getChildren().get(1).transform.getX();
-//        var YTankTop = tank.getChildren().get(1).transform.getY();
-//        var X = XMouse - XTankTop;
-//        var Y = YMouse - YTankTop;
-//        var rotation = Math.atan(Y / X);
-//        if (XMouse >= XTankTop)
-//            tank.getChildren().get(1).transform.setRotation(Math.toDegrees(rotation) - 90f);
-//        else
-//            tank.getChildren().get(1).transform.setRotation(Math.toDegrees(rotation) + 90f);
-        return false;
+    /**
+     * Center camera to game object.
+     */
+    private void moveCam(String direction) {
+        float xDistance = 0;
+        float yDistance = 0;
+        switch (direction) {
+            case "left": {
+                xDistance = -speed;
+                break;
+            }
+            case "right": {
+                xDistance = speed;
+                break;
+            }
+            case "up": {
+                yDistance = speed;
+                break;
+            }
+            case "down": {
+                yDistance = -speed;
+                break;
+            }
+        }
+        cam.position.set(cam.position.x + xDistance,cam.position.y + yDistance, 0);
     }
+
+    private Vector3 getWorldCoords(){
+        Vector3 v = new Vector3((float)tank.getComponent(Transform.class).getX(), (float)tank.getComponent(Transform.class).getY(), 0);
+        cam.unproject(v);
+        return v;
+    }
+
+//    private Vector3 getScreenCoords(){
+//        //TODO use method for reading in point from server to place tanks
+//        cam.project(v);
+//        return v;
+//    }
 }

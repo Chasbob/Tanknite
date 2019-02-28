@@ -1,4 +1,4 @@
-package com.aticatac.common.objectsystem;
+
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Transform;
@@ -13,13 +13,14 @@ import java.util.Optional;
 /**
  * The type GameObject.
  */
-public class GameObject {
-    private final Transform transform;
-    private final ObjectType objectType;
-    private final String name;
-    private final HashMap<Class<?>, Component> components;
-    private final HashMap<String, GameObject> children;
-    private final Optional<GameObject> parent;
+public class GameObject extends AbstractObject {
+    private HashMap<Class<?>, Component> components;
+    private Optional<GameObject> parent;
+    private List<GameObject> children;
+public class GameObject extends AbstractObject {
+    private HashMap<Class<?>, Component> components;
+    private Optional<GameObject> parent;
+    public List<GameObject> children;
 
     public GameObject(String name) throws InvalidClassInstance, ComponentExistsException {
         this(name, ObjectType.OTHER);
@@ -192,13 +193,12 @@ public class GameObject {
         return null;
     }
 
-    /**
-     * Gets parent.
-     *
-     * @return the parent
-     */
-//Getters and Setters
-    public GameObject getParent() {
+    //Getters and Setters
+    public AbstractObject getParent() {
+    public void findObject(String tag, GameObject gameObject){}
+
+    //Getters and Setters
+    public AbstractObject getParent() {
         return parent.get();
     }
 

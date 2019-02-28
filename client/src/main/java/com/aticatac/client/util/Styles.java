@@ -104,9 +104,9 @@ public enum Styles {
         //load in blank texture for healthbar
         blank = new Texture(Gdx.files.internal("img/white.png"));
         //load in refresh icon
-        Texture refreshTexture = new Texture(Gdx.files.internal("img/refresh.png"));
-        Drawable drawable = new TextureRegionDrawable(new TextureRegion(refreshTexture));
-        refreshIcon = new ImageButton(drawable);
+        //Texture refreshTexture = new Texture(Gdx.files.internal("img/refresh.png"));
+       // Drawable drawable = new TextureRegionDrawable(new TextureRegion(refreshTexture));
+        //refreshIcon = new ImageButton(drawable);
     }
 
     public static Styles getInstance() {
