@@ -6,10 +6,7 @@ import com.badlogic.gdx.Game;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * The type Gdx game.
- */
-public class GDXGame extends Game {
+public class SinglePlayerTest extends Game {
     private BlockingQueue<Update> updates;
 
     @Override
@@ -17,7 +14,7 @@ public class GDXGame extends Game {
         try {
             this.updates = new ArrayBlockingQueue<>(100);
             //TODO show splash screen whilst it loads
-            Screens.INSTANCE.initialize(this,false);
+            Screens.INSTANCE.initialize(this,true);
         } catch (Exception e) {
             e.printStackTrace();
         }

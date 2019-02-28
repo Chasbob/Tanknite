@@ -148,6 +148,36 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
+        (new Thread(() -> {
+            try {
+                float x = 0, y = 0;
+                while (true) {
+                    Thread.sleep(500);
+                    if (Math.abs(x - tank.getTransform().getX()) > 1 || Math.abs(y - tank.getTransform().getY()) > 1) {
+                        this.getLogger().info("tank -> x:" + tank.getTransform().getX() + ", y:" + tank.getTransform().getY());
+                        x = (float) tank.getTransform().getX();
+                        y = (float) tank.getTransform().getY();
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        })).start();
+        (new Thread(() -> {
+            try {
+                float x = 0, y = 0;
+                while (true) {
+                    Thread.sleep(500);
+                    if (Math.abs(x - cam.position.x) > 1 || Math.abs(y - cam.position.y) > 1) {
+                        this.getLogger().info("cam -> x:" + cam.position.x + ", y:" + cam.position.y);
+                        x = cam.position.x;
+                        y = cam.position.y;
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        })).start();
     }
 
     @Override
