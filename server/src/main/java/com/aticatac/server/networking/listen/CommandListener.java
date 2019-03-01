@@ -3,42 +3,54 @@ package com.aticatac.server.networking.listen;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
-import org.apache.log4j.Logger;
-
+import com.aticatac.server.networking.Server;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
+import org.apache.log4j.Logger;
 
-public class CommandListener extends Thread {
-    private final BlockingQueue<CommandModel> queue;
+/**
+ * The type Command listener.
+ */
+public class CommandListener implements Runnable {
     private final Logger logger;
     private final BufferedReader reader;
 
-    public CommandListener(BufferedReader reader, BlockingQueue<CommandModel> queue) {
-        this.queue = queue;
-        this.logger = Logger.getLogger(getClass());
+    /**
+     * Instantiates a new Command listener.
+     *
+     * @param reader the reader
+     */
+    public CommandListener(BufferedReader reader) {
         this.reader = reader;
+        logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void run() {
-        super.run();
-        while (!this.isInterrupted()) {
-            listen();
-        }
+        listen();
+    }
+
+    /**
+     * Gets reader.
+     *
+     * @return the reader
+     */
+    public BufferedReader getReader() {
+        return reader;
     }
 
     private void listen() {
         this.logger.trace("Listening");
-        try {
-            while (!this.isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
                 String json = this.reader.readLine();
                 CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
-                this.logger.info("JSON: " + json);
-                this.queue.add(commandModel);
+                this.logger.trace("JSON: " + json);
+                Server.ServerData.INSTANCE.putCommand(commandModel);
+            } catch (IOException | InvalidBytes e) {
+                this.logger.error(e);
+                return;
             }
-        } catch (IOException | InvalidBytes e) {
-            logger.error(e);
         }
     }
 }

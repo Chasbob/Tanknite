@@ -1,17 +1,24 @@
 package com.aticatac.server.networking;
 
 import com.aticatac.common.model.CommandModel;
-import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.Converter;
-import com.aticatac.server.gameManager.Manager;
+import com.aticatac.common.model.ModelReader;
+import com.aticatac.common.model.Shutdown;
+import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.networking.listen.NewClients;
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.ServerSocket;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import org.apache.log4j.Logger;
 
 /**
  * The type Server.
@@ -20,85 +27,249 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Server extends Thread {
     private final Logger logger;
-    private final ConcurrentHashMap<String, Client> clients;
-    private final BlockingQueue<CommandModel> requests;
-    private final NewClients newClients;
-    private final Updater multicaster;
-    private final Discovery discovery;
+    private final ExecutorService executorService;
+    private final List<Runnable> runnables;
+    private volatile boolean shutdown;
 
     /**
      * Instantiates a new Server.
-     *
-     * @throws IOException the io exception
      */
-    public Server() throws IOException {
+    public Server() {
         //TODO check if additional users are allowed.
         this.logger = Logger.getLogger(getClass());
-        this.clients = new ConcurrentHashMap<>();
-        this.requests = new ArrayBlockingQueue<>(1024); //TODO select an appropriate queue size.
-        newClients = new NewClients(this.clients, this.requests);
-        multicaster = new Updater(Data.INSTANCE.getMulticast(), this.clients);
-        discovery = new Discovery("Server", Data.INSTANCE.getPort());
-    }
-
-    public ConcurrentHashMap<String, Client> getClients() {
-        return clients;
+        executorService = Executors.newFixedThreadPool(20);
+        this.shutdown = false;
+        this.runnables = new CopyOnWriteArrayList<>();
     }
 
     @Override
     public void run() {
+        System.out.println("Run");
         this.logger.trace("Running...");
-        this.multicaster.start();
-        this.newClients.start();
-        this.discovery.start();
-        this.logger.warn("Interrupted");
-        testThreads();
+        try {
+            this.executorService.submit(new Discovery());
+            System.out.println("added discovery");
+            this.executorService.submit(new NewClients());
+            System.out.println("added new clients");
+            this.executorService.submit(new Updater());
+            System.out.println("added updater");
+        } catch (IOException e) {
+            this.logger.error(e);
+            return;
+        }
+        while (!this.shutdown) {
+            try {
+                Manager.INSTANCE.playerInput(ServerData.INSTANCE.popCommand());
+            } catch (InterruptedException e) {
+                this.logger.error(e);
+            }
+        }
+        this.executorService.shutdown();
+        ServerData.INSTANCE.shutdown();
     }
 
     /**
-     * Next command command.
-     *
-     * @return the command
-     *
-     * @throws InterruptedException the interrupted exception
+     * Shutdown.
      */
-    public CommandModel nextCommand() throws InterruptedException {
-        this.logger.warn("Taking command");
-        return this.requests.take();
+    public void shutdown() {
+        this.shutdown = true;
     }
-//    public synchronized void setUpdateModel(Update update) {
-//        //TODO optimise setting new model by calculating a differential
-//        // as to send less data.
-//        this.multicaster.setUpdateModel(update);
-//    }
 
-    private void testThreads() {
-        (new Thread(() -> {
-            int counter = 0;
-            while (true) {
-                try {
-                    Thread.sleep(16);
-                    counter++;
-                    //TODO this sometimes crashes; <null pointer>
-//                    Manager.INSTANCE.getRoot().transform.setPosition(counter, counter++);
-                    ArrayList<Container> containers = Converter.deconstruct(Manager.INSTANCE.getRoot());
-                    this.logger.trace("Containers: " + containers.toString());
-                    this.multicaster.addObject(Manager.INSTANCE.getRoot());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    /**
+     * The enum Server data.
+     */
+    public enum ServerData {
+        /**
+         * Instance server data.
+         */
+        INSTANCE;
+        private final BlockingQueue<CommandModel> requests;
+        private final ConcurrentHashMap<String, Client> clients;
+        private final Logger logger;
+        private ServerSocket serverSocket;
+        private MulticastSocket multicastSocket;
+        private DatagramSocket broadcastSocket;
+        private String id;
+        private boolean singlePlayer;
+        private InetAddress server;
+        private InetAddress multicast;
+        private int port;
+        private int broadcastPort;
+
+        ServerData() {
+            this.requests = new ArrayBlockingQueue<>(1024);
+            this.clients = new ConcurrentHashMap<>();
+            this.port = 5500;
+            this.broadcastPort = 5000;
+            this.logger = Logger.getLogger(ServerData.class);
+            try {
+                this.server = InetAddress.getLocalHost();
+                this.multicast = InetAddress.getByName("225.4.5.6");
+                this.multicastSocket = new MulticastSocket();
+                this.broadcastSocket = new DatagramSocket();
+                this.serverSocket = new ServerSocket(this.port);
+            } catch (IOException e) {
+                this.logger.error(e);
             }
-        })).start();
-        (new Thread(() -> {
-            //TODO remove testing thread
-            while (true) {
-                try {
-//                    System.out.println(this.requests.take());
-                    CommandModel model = this.requests.take();
-                    Manager.INSTANCE.playerInput(model.getId(), model.getCommand());
-                } catch (InterruptedException ignored) {
-                }
+        }
+
+        /**
+         * Broadcast packet.
+         *
+         * @param packet the packet
+         * @throws IOException the io exception
+         */
+        public void broadcastPacket(DatagramPacket packet) throws IOException {
+            this.broadcastSocket.send(packet);
+        }
+
+        /**
+         * Multicast packet.
+         *
+         * @param packet the packet
+         * @throws IOException the io exception
+         */
+        public void multicastPacket(DatagramPacket packet) throws IOException {
+            this.multicastSocket.send(packet);
+        }
+
+        /**
+         * Shutdown.
+         */
+        void shutdown() {
+            for (Client client : clients.values()
+            ) {
+                client.shutdown();
             }
-        })).start();
+            try {
+                byte[] b = ModelReader.toBytes(new Shutdown());
+                final ServerData s = ServerData.INSTANCE;
+                DatagramPacket shutdown = new DatagramPacket(b, b.length, s.getServer(), s.getPort());
+                this.broadcastSocket.send(shutdown);
+                this.serverSocket.close();
+                this.multicastSocket.close();
+                this.broadcastSocket.close();
+            } catch (IOException e) {
+                this.logger.error(e);
+            }
+        }
+
+        /**
+         * Gets server socket.
+         *
+         * @return the server socket
+         */
+        public ServerSocket getServerSocket() {
+            return serverSocket;
+        }
+
+        /**
+         * Gets id.
+         *
+         * @return the id
+         */
+        public String getId() {
+            return id;
+        }
+
+        /**
+         * Sets id.
+         *
+         * @param id the id
+         */
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        /**
+         * Is single player boolean.
+         *
+         * @return the boolean
+         */
+        public boolean isSinglePlayer() {
+            return singlePlayer;
+        }
+
+        /**
+         * Sets single player.
+         *
+         * @param singlePlayer the single player
+         */
+        public void setSinglePlayer(boolean singlePlayer) {
+            this.singlePlayer = singlePlayer;
+        }
+
+        /**
+         * Put command.
+         *
+         * @param commandModel the command model
+         */
+        public void putCommand(CommandModel commandModel) {
+            this.requests.add(commandModel);
+        }
+
+        /**
+         * Add client.
+         *
+         * @param client the client
+         */
+        public void addClient(Client client) {
+            this.clients.put(client.getId(), client);
+        }
+
+        /**
+         * Gets next request.
+         *
+         * @return the next request
+         * @throws InterruptedException the interrupted exception
+         */
+        public CommandModel popCommand() throws InterruptedException {
+            return this.requests.take();
+        }
+
+        /**
+         * Gets clients.
+         *
+         * @return the clients
+         */
+        public ConcurrentHashMap<String, Client> getClients() {
+            return clients;
+        }
+
+        /**
+         * Gets server.
+         *
+         * @return the server
+         */
+        public InetAddress getServer() {
+            return server;
+        }
+
+        /**
+         * Gets multicast.
+         *
+         * @return the multicast
+         */
+        public InetAddress getMulticast() {
+            return multicast;
+        }
+
+        /**
+         * Gets port.
+         *
+         * @return the port
+         */
+        public int getPort() {
+            return port;
+        }
+
+        /**
+         * Gets broadcast port.
+         *
+         * @return the broadcast port
+         */
+        public int getBroadcastPort() {
+            return broadcastPort;
+        }
     }
 }
