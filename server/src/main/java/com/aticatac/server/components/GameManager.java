@@ -8,6 +8,7 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.gameManager.Manager;
+import com.aticatac.server.networking.Data;
 import com.aticatac.server.prefabs.TankObject;
 
 import java.util.HashMap;
@@ -86,10 +87,21 @@ public class GameManager extends Component {
     public TankObject createTank(String player, boolean isAI) {
         try {
             Position position;
+
+            position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+                    ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
+
+            //checks if this is a valid coordinate when generated is not in the map then moves on.
+            while(DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)){
+
+                position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+                        ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
+
+            }
+
             TankObject tank = new TankObject(getGameObject().getChildren().get(0),
                     player,
-                    position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
-                            ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1)),
+                    position,
                     100,
                     30,
                     isAI);

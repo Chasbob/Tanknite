@@ -87,7 +87,6 @@ public class TankController extends Component {
         else {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-            //set occupied co ordinates on server data whenever tank moves
         }
 
 
@@ -110,7 +109,6 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-            //set occupied co ordinates on server data whenever tank moves
         }
 
         return true;
