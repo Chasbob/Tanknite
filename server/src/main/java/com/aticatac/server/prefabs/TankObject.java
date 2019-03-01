@@ -9,6 +9,7 @@ import com.aticatac.server.components.*;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
 
+import java.util.HashMap;
 
 public class TankObject extends GameObject {
 

@@ -68,7 +68,9 @@ public class Physics extends Component {
         double newY = oldY;
 
         //converting the dt from nanoseconds to seconds
-        long dt = (this.getGameObject().getComponent(Time.class).timeDifference()) / 1000000000;
+        float time = this.getGameObject().getComponent(Time.class).timeDifference();
+        //TODO check the time is being divided by enough?
+        float dt = (time)/(10000);
 
         //Set acceleration
         setAcceleration();
@@ -78,13 +80,21 @@ public class Physics extends Component {
             velocity = velocity + (acceleration * dt);
         }
         //Calculates the new coordinates
-        if (direction.equals("up") || direction.equals("down")) {
+        if (direction.equals("down")) {
             //only moving on y coord
             newY = oldY + (velocity * dt);
         }
-        if (direction.equals("left") || direction.equals("right")) {
+        if (direction.equals("up")) {
+            //only moving on y coord
+            newY = oldY - (velocity * dt);
+        }
+        if (direction.equals("left")) {
             //only moving on x coord
             newX = oldX + (velocity * dt);
+        }
+        if (direction.equals("right")) {
+            //only moving on x coord
+            newX = oldX - (velocity * dt);
         }
 
         Position newPosition = new Position(newX, newY);
@@ -215,10 +225,10 @@ public class Physics extends Component {
      */
     //Allows for power ups that increase this, to happen.
     private void setAcceleration() {
-        if (this.getGameObject().getComponent(SpeedPowerUp.class) == null) {
-            acceleration = 0;
-        } else {
+        if (this.getGameObject().componentExists(SpeedPowerUp.class)) {
             acceleration = (gravity * (this.getGameObject().getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
+        } else {
+            acceleration = 0;
         }
     }
 }

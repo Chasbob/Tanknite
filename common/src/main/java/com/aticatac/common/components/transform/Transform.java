@@ -3,80 +3,139 @@ package com.aticatac.common.components.transform;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.objectsystem.GameObject;
 
+/**
+ * The type Transform.
+ */
 public class Transform extends Component {
-    private Position position = new Position(0,0);
-
+    private Position position;
     private double rotation = 0;
 
+    /**
+     * Instantiates a new Component.
+     *
+     * @param gameObject the component parent
+     */
     public Transform(GameObject gameObject) {
         super(gameObject);
-
-//        if (gameObject.parent== null) return;
-//
-//        if(gameObject.parent instanceof GameObject){
-//            Position p = ((GameObject)gameObject.parent).getComponent(TransformModel.class).position;
-//            gameObject.getComponent(TransformModel.class).SetTransform(p.x,p.y);
-//        }
+        this.position = new Position(0, 0);
     }
 
+    /**
+     * Gets position.
+     *
+     * @return the position
+     */
     public Position getPosition() {
         return position;
     }
 
-    public double getX(){
-        return getPosition().x;
+    /**
+     * Sets position.
+     *
+     * @param transform the transform
+     */
+    public void setPosition(Transform transform) {
+        setPosition(transform.getX(), transform.getY());
     }
 
-    public double getY(){
-        return getPosition().y;
+    /**
+     * Gets x.
+     *
+     * @return the x
+     */
+    public double getX() {
+        return this.position.getX();
     }
 
-
-    public void Transform(double x, double y) {
-        this.SetTransform(position.x + x, position.y + y);
+    /**
+     * Gets y.
+     *
+     * @return the y
+     */
+    public double getY() {
+        return this.position.getY();
     }
 
-    public void SetTransform(double x, double y) {
-        double deltaX = position.x-x;
-        double deltaY = position.y-y;
+    /**
+     * Apply transform.
+     *
+     * @param x the x
+     * @param y the y
+     */
+    public void applyTransform(double x, double y) {
+        this.setPosition(position.getX() + x, position.getY() + y);
+    }
 
-        for (var o:getGameObject().getChildren()) {
-            o.getComponent(Transform.class).Transform(deltaX,deltaY);
+    /**
+     * Sets position.
+     *
+     * @param x the x
+     * @param y the y
+     */
+//TODO REFACTOR
+    public void setPosition(double x, double y) {
+        double deltaX = position.getX() - x;
+        double deltaY = position.getY() - y;
+        for (var o : getGameObject().getChildren()) {
+            o.getComponent(Transform.class).applyTransform(deltaX, deltaY);
         }
-
-        SetTransformWithoutChild(x,y);
+        setTransformWithoutChild(x, y);
     }
 
-    public void SetTransformWithoutChild(double x, double y) {
-        position.x = x;
-        position.y = y;
+    private void setTransformWithoutChild(double x, double y) {
+        position.setX(x);
+        position.setY(y);
     }
 
-    public void Forward(double v) {
-        double xFactor = Math.sin(Math.toRadians(GetRotation()));
-        double yFactor = -Math.cos(Math.toRadians(GetRotation()));
-        Transform(v * xFactor, v * yFactor);
+    /**
+     * Forward.
+     *
+     * @param v the v
+     */
+    public void forward(double v) {
+        double xFactor = Math.sin(Math.toRadians(getRotation()));
+        double yFactor = -Math.cos(Math.toRadians(getRotation()));
+        applyTransform(v * xFactor, v * yFactor);
     }
 
-    public void SetRotation(double r) {
-        rotation = r;
-        for (var o:getGameObject().getChildren()) {
-            o.getComponent(Transform.class).SetRotation(r);
-        }
-    }
-
-    public void Rotate(double r) {
-        rotation = rotation + r;
-        SetRotation(rotation);
-    }
-
-    public double GetRotation() {
+    /**
+     * Gets rotation.
+     *
+     * @return the rotation
+     */
+    public double getRotation() {
         return rotation;
     }
 
-    public void SetView(Position p){
+    /**
+     * Sets rotation.
+     *
+     * @param r the r
+     */
+    public void setRotation(double r) {
+        rotation = r;
+        //TODO wrap in public function as to allow different handling
+        for (var o : getGameObject().getChildren()) {
+            o.getComponent(Transform.class).setRotation(r);
+        }
+    }
+
+    /**
+     * Sets view.
+     *
+     * @param p the p
+     */
+    public void setView(Position p) {
         Position pRoot = getGameObject().getComponent(Transform.class).getPosition();
-        Position pDelta = new Position(p.x-pRoot.x,p.y-pRoot.y);
-        getGameObject().getComponent(Transform.class).SetTransform(pDelta.x,pDelta.y);
+        Position pDelta = new Position(p.getX() - pRoot.getX(), p.getY() - pRoot.getY());
+        getGameObject().getComponent(Transform.class).setPosition(pDelta.getX(), pDelta.getY());
+    }
+
+    @Override
+    public String toString() {
+        return "applyTransform{" +
+                "position=" + position +
+                ", rotation=" + rotation +
+                '}';
     }
 }

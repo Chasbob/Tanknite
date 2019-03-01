@@ -41,9 +41,6 @@ public class Time extends Component{
         //calculates the difference between the start and current time
         long timeDifference = currentTime - startTime;
 
-        //Sets the start time to the current so that the next time difference is correct.
-        startTime = currentTime;
-
         return timeDifference;
 
     }
