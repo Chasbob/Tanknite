@@ -97,7 +97,7 @@ public class Graph {
      * @param position The position to get nearest node from
      * @return The nearest node to the given position
      */
-    private SearchNode getNearestNode(Position position) {
+    public SearchNode getNearestNode(Position position) {
         SearchNode nearestNode = null;
         double distanceToNearestNode = Double.MAX_VALUE;
         for (SearchNode node : nodes) {

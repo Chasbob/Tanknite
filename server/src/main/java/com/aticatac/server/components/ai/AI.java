@@ -346,6 +346,17 @@ public class AI extends Component {
      */
     private ArrayList<Position> getClearPositions() {
         ArrayList<Position> clearPositions = new ArrayList<Position>();
+
+        ArrayList<SearchNode> nodes = graph.getNearestNode(tankPos).getDescendantNodes(VIEW_RANGE);
+        for (SearchNode node : nodes) {
+            if (getEnemiesInRange(node.getPosition(), VIEW_RANGE).isEmpty()) {
+                clearPositions.add(node.getPosition());
+            }
+        }
+
+        return clearPositions;
+        /*
+
         for (double i = tankPos.getX() - VIEW_RANGE; i < tankPos.getX() + VIEW_RANGE; i++) {
             for (double j = tankPos.getY() - VIEW_RANGE; j < tankPos.getY() + VIEW_RANGE; j++) {
                 // A position outside the map is not valid
@@ -358,6 +369,7 @@ public class AI extends Component {
             }
         }
         return clearPositions;
+        */
     }
 
     /**
@@ -420,7 +432,7 @@ public class AI extends Component {
      * @return A list of enemies in range of the position
      */
     private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-        return getGameObjectsInRange(position, range, new ArrayList<GameObject>()); // TODO: GeT tHiS iNfO
+        return getGameObjectsInRange(position, range, /*All enemies in game right now*/new ArrayList<GameObject>()); // TODO: GeT tHiS iNfO
     }
 
     /**
@@ -439,7 +451,7 @@ public class AI extends Component {
      * @return A list of power-up in range of the position
      */
     private ArrayList<GameObject> getPowerupsInRange(Position position) {
-        return getGameObjectsInRange(position, VIEW_RANGE, new ArrayList<GameObject>()); // TODO: get this INFO BOI
+        return getGameObjectsInRange(position, VIEW_RANGE, /*All power-ups in game right now*/new ArrayList<GameObject>()); // TODO: get this INFO BOI
     }
 
     /**
@@ -471,8 +483,8 @@ public class AI extends Component {
     /**
      * Gets all of the specified GameObjects in range of the tank.
      *
-     * @param position Center position to check from
-     * @param range Range of consideration
+     * @param position   Center position to check from
+     * @param range      Range of consideration
      * @param allObjects GameObjects to consider
      * @return All specified GameObjects in range
      */
