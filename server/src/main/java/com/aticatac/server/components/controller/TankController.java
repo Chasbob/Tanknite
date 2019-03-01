@@ -136,21 +136,15 @@ public class TankController extends Component {
    */
 // call method when space bar pressed
     public boolean shoot() {
-        // call new shoot method from turretx
-        // talk to physics?
-
-
         int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-
         if (currentAmmo == 0) return false;
-        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
         this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return true;
+        return this.getGameObject().getComponent(TurretController.class).shoot();
+    }
 
 
 // create bullet object current co ordinatesn where shooting tank is, and move
-    //
-  }
+        //
 
   /**
    * Is shot.

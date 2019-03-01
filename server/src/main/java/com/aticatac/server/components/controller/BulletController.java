@@ -48,21 +48,11 @@ public class BulletController extends Component {
                     // TODO: use secind bidimap which stores tanks names and tanks positions
 
                     // get tank using new position from serverData
-                    collidedTankName.getComponent(TankController.class).isShot();
+                    collidedTankName.getGameObject().getComponent(TankController.class).isShot();
                     // TODO: Get correct tank object from tank name
 
                     Destroy(this);
 
-                    // dont need collided(); // work out whether collided with wall or tank etc
-                    //Destroy(this);
-
-
-
-                    //collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
-                    //collidedTank.isShot();
-                    //Destroy(this);
-
-                    collided(); // work out whether collided with wall or tank etc
                 }
             }   // set occupied co ordinates for server data
             else {
@@ -74,13 +64,6 @@ public class BulletController extends Component {
 
     // make a method for bullet to disappear
 
-    public void collided() {
-        collided = true;
-    }
-
-    public boolean getCurrentCollided() {
-        return collided;
-    }
 }
 
 
