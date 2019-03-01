@@ -225,10 +225,10 @@ public class Physics extends Component {
      */
     //Allows for power ups that increase this, to happen.
     private void setAcceleration() {
-        if (this.getGameObject().getComponent(SpeedPowerUp.class) == null) {
-            acceleration = 0;
-        } else {
+        if (this.getGameObject().componentExists(SpeedPowerUp.class)) {
             acceleration = (gravity * (this.getGameObject().getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
+        } else {
+            acceleration = 0;
         }
     }
 }
