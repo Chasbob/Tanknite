@@ -20,7 +20,7 @@ public class TurretController extends Component {
         //TODO shooting
         BulletObject bullet = new BulletObject("bullet", this.getGameObject()); // get name of bullet
         if (this.getGameObject().componentExists(BulletPowerUp.class)){
-            
+
             bullet.getComponent(Damage.class);
         }
         bullet.getComponent(BulletController.class).moveForwards(); // check if tank has bullet power up component and increase damage if does
