@@ -3,6 +3,7 @@ package com.aticatac.server.components.controller;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.server.components.Ammo;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Physics;
 import com.aticatac.common.objectsystem.GameObject;
@@ -122,18 +123,15 @@ public class TankController extends Component {
      */
 // call method when space bar pressed
     public boolean shoot() {
-        
-//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
-//
-//        if (currentAmmo == 0) return false;
-//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return true;
+        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+        if (currentAmmo == 0) return false;
+        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo - 1);
+        return this.getGameObject().getComponent(TurretController.class).shoot();
+    }
 
 
 // create bullet object current co ordinatesn where shooting tank is, and move
         //
-    }
 
     /**
      * Is shot.
