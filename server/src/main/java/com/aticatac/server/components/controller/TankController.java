@@ -5,11 +5,12 @@ import com.aticatac.common.components.ServerData;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.Ammo;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Health;
 import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
+
 // components for server side make in server or import from common?
 // needs component of Physics
 
@@ -49,13 +50,9 @@ public class TankController extends Component {
         Position newPosition = this.gameObject.getComponent(PhysicsManager.class).moveUp();
         if (oldPosition.equals(newPosition)) return false;
         else{
-            parent.getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
-            this.getComponent(Transform.class).SetRotation(0);
-            DataServer.getOccupiedCoordinates(oldPosition, newPosition);
-            // convert to enums, use code before to get key
-            // server data component add to tank
-            // where to set initial tanks occupied co ordinates
-            return true;
+            this.getGameObject().getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setRotation(0);
+            DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
         }
         // TODO, in movement have physics tell if a tank has collided with a power up
         return true;
@@ -63,45 +60,54 @@ public class TankController extends Component {
     return true;
   }
 
-  /**
-   * Move right boolean.
-   *
-   * @return the boolean
-   */
-  // when right arrow/d pressed
-  public boolean moveRight() {
-    this.getGameObject().getComponent(Time.class).startMoving();
-    Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-    Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
-    Position newPosition = (Position) physicsData[1];
-    if (oldPosition.equals(newPosition)) {
-      return false;
-    } else {
-      this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-      this.getGameObject().getComponent(Transform.class).setRotation(90);
-      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+    /**
+     * Move right boolean.
+     *
+     * @return the boolean
+     */
+    // when right arrow/d pressed
+    public boolean moveRight (){
+        Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+        Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
+        Position newPosition = (Position)physicsData[1];
+
+        if (oldPosition.equals(newPosition)) return false;
+
+        else{
+            this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setRotation(90);
+            DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+
+        }
+        //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
+        //bullet disappears, other collisions have no effect, just stop the current move from happening
+        return true;
     }
     //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
     //bullet disappears, other collisions have no effect, just stop the current move from happening
     return true;
   }
 
-  /**
-   * Move left boolean.
-   *
-   * @return the boolean
-   */
-  // when left arrow/a pressed
-  public boolean moveLeft() {
-    this.getGameObject().getComponent(Time.class).startMoving();
-    Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-    Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
-    Position newPosition = (Position) physicsData[1];
-    if (oldPosition.equals(newPosition)) {
-      return false;
-    } else {
-      this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+    /**
+     * Move left boolean.
+     *
+     * @return the boolean
+     */
+    // when left arrow/a pressed
+    public boolean moveLeft (){
+        Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+        Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
+        Position newPosition = (Position)physicsData[1];
+
+        if (oldPosition.equals(newPosition)) return false;
+
+        else{
+            this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setRotation(270);
+            DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+          //set occupied co ordinates on server data whenever tank moves
+        }
+        return true;
     }
     return true;
   }
@@ -120,8 +126,8 @@ public class TankController extends Component {
         if (oldPosition.equals(newPosition)) return false;
 
         else {
-            this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
-            this.getGameObject().getComponent(Transform.class).SetRotation(180);
+            this.getGameObject().getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
         }
         return true;
@@ -136,27 +142,25 @@ public class TankController extends Component {
    */
 // call method when space bar pressed
     public boolean shoot() {
-        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-        if (currentAmmo == 0) return false;
-        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return this.getGameObject().getComponent(TurretController.class).shoot();
+      int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+      if (currentAmmo == 0) return false;
+      this.getGameObject().getComponent(Ammo.class).getAmmo();
+      return this.getGameObject().getComponent(TurretController.class).shoot();
     }
 
-
-// create bullet object current co ordinatesn where shooting tank is, and move
-        //
-
-  /**
-   * Is shot.
-   */
-  public void isShot() {
-    int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
-    int newHealth = currentHealth - 10;
-    this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-    if (newHealth > 0 && newHealth <= 10) {
-      dying();
-    } else if (newHealth <= 0) {
-      die();
+    /**
+     * Is shot.
+     */
+    public void isShot(int damage) {
+        int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
+        int newHealth = currentHealth - damage;
+        this.getGameObject().getComponent(Health.class).setHealth(newHealth);
+        if (newHealth > 0 && newHealth <=10){
+            dying();
+        }
+        else if (newHealth <= 0){
+            die();
+        }
     }
   }
 
