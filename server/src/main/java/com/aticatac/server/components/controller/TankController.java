@@ -5,16 +5,12 @@ import com.aticatac.common.components.ServerData;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
+import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.Ammo;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Health;
-import com.aticatac.common.components.transform.Transform;
-import com.aticatac.server.components.PhysicsManager;
-import com.aticatac.server.components.ServerData;
-import com.aticatac.server.components.model.Map;
-import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
+
 // components for server side make in server or import from common?
 // needs component of Physics
 
@@ -127,10 +123,10 @@ public class TankController extends Component {
      */
 // call method when space bar pressed
     public boolean shoot() {
-        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-        if (currentAmmo == 0) return false;
-        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return this.getGameObject().getComponent(TurretController.class).shoot();
+      int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+      if (currentAmmo == 0) return false;
+      this.getGameObject().getComponent(Ammo.class).getAmmo();
+      return this.getGameObject().getComponent(TurretController.class).shoot();
     }
 
 
@@ -146,9 +142,9 @@ public class TankController extends Component {
     /**
      * Is shot.
      */
-    public void isShot() {
+    public void isShot(int damage) {
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
-        int newHealth = currentHealth - 10;
+        int newHealth = currentHealth - damage;
         this.getGameObject().getComponent(Health.class).setHealth(newHealth);
         if (newHealth > 0 && newHealth <=10){
             dying();

@@ -3,6 +3,7 @@ package com.aticatac.server.prefabs;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.Damage;
 import com.aticatac.server.components.Physics;
 import com.aticatac.server.components.Time;
 import com.aticatac.server.components.controller.BulletController;
@@ -21,5 +22,6 @@ public class BulletObject extends GameObject {
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
         this.addComponent(BulletController.class);
+        this.addComponent(Damage.class);
     }
 }
