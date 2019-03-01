@@ -450,7 +450,7 @@ public class GameScreen extends AbstractScreen {
         cam.project(v);
         //v.x = Math.round(v.x);
         //v.y = Math.round(v.y);
-        System.out.println("screen x: " + v.x);
+        //System.out.println("screen x: " + v.x);
         return v;
     }
 

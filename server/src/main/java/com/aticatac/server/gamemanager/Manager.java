@@ -17,8 +17,8 @@ public enum Manager {
      * Instance manager.
      */
     INSTANCE;
-    private final int min = 0;
-    private final int max = 640;
+    private final int min = 320;
+    private final int max = 1920 - 320;
     private final Logger logger;
     private final HashMap<String, GameObject> playerMap;
     private GameObject root;
