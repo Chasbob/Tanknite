@@ -1,16 +1,13 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.prefabs.TankObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -38,6 +35,7 @@ public class GameScreen extends AbstractScreen {
     private Table popUpTable;
     private GameObject root;
     private GameObject tank;
+    private Vector3 tankScreenCoords;
     private float health;
     private Label ammoValue;
     private Label killCount;
@@ -45,13 +43,13 @@ public class GameScreen extends AbstractScreen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera cam;
+    private boolean camSet;
     private float cameraHalfWidth;
     private float cameraHalfHeight;
     private int mapTop;
     private int mapBottom;
     private int mapRight;
     private int mapLeft;
-    private boolean rendered;
 
     /**
      * Instantiates a new Game screen.
@@ -59,12 +57,6 @@ public class GameScreen extends AbstractScreen {
     GameScreen() {
         super();
         try {
-            this.rendered = false;
-            root = new GameObject("root");
-            tank = new TankObject(root, "Tank", new Position(320, 320), 100, 100);
-            ObjectHelper.AddRenderer(tank.getChildren().get(0), "img/tank.png");
-            ObjectHelper.AddRenderer(tank.getChildren().get(1), "img/top.png");
-//            //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
             health = 1f;
             ammoValue = UIFactory.createLabel("30");
             killCount = UIFactory.createLabel("0");
@@ -72,6 +64,7 @@ public class GameScreen extends AbstractScreen {
             map = new TmxMapLoader().load("maps/map.tmx");
             renderer = new OrthogonalTiledMapRenderer(map);
             cam = new OrthographicCamera(getWidth(), getHeight());
+            camSet = false;
             mapLeft = 0;
             mapRight = 1920;
             mapBottom = 0;
@@ -87,8 +80,6 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void buildStage() {
-        cam.position.set(1000, 1000, 0);
-        cam.update();
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
@@ -148,42 +139,10 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
-        (new Thread(() -> {
-            try {
-                float x = 0, y = 0;
-                while (true) {
-                    Thread.sleep(500);
-                    if (Math.abs(x - tank.getTransform().getX()) > 1 || Math.abs(y - tank.getTransform().getY()) > 1) {
-                        this.getLogger().info("tank -> x:" + tank.getTransform().getX() + ", y:" + tank.getTransform().getY());
-                        x = (float) tank.getTransform().getX();
-                        y = (float) tank.getTransform().getY();
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        })).start();
-        (new Thread(() -> {
-            try {
-                float x = 0, y = 0;
-                while (true) {
-                    Thread.sleep(500);
-                    if (Math.abs(x - cam.position.x) > 1 || Math.abs(y - cam.position.y) > 1) {
-                        this.getLogger().info("cam -> x:" + cam.position.x + ", y:" + cam.position.y);
-                        x = cam.position.x;
-                        y = cam.position.y;
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        })).start();
     }
 
     @Override
     public void render(float delta) {
-//        System.out.println("world: " + getWorldCoords().x);
-//        System.out.println("screen: " + tank.getComponent(Transform.class).getX());x
         //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -196,7 +155,9 @@ public class GameScreen extends AbstractScreen {
             this.root = Screens.INSTANCE.getRoot();
             this.tank = this.root.findObject(ObjectType.TANK, this.root);
             if (this.tank != null) {
+                //if there exists a tank in the game we can poll input.
                 input();
+                cam.update();
             }
         }
         try {
@@ -205,7 +166,6 @@ public class GameScreen extends AbstractScreen {
             this.getLogger().error(e);
         }
         //health bar
-//        batch.setColor(Color.GREEN);
         healthBar();
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
@@ -213,30 +173,6 @@ public class GameScreen extends AbstractScreen {
         cam.update();
         super.act(delta);
         super.draw();
-    }
-
-    private void testRender(String texture, int x, int y) {
-        final GameObject c;
-        try {
-            c = new GameObject("test");
-            c.addComponent(com.aticatac.common.components.Texture.class).setTexture(texture);
-            c.setTransform(x, y);
-            c.addComponent(Renderer.class).setTexture(c.getTexture());
-            renderObject(c);
-        } catch (InvalidClassInstance | ComponentExistsException e) {
-            this.getLogger().error(e);
-        }
-    }
-
-    private void healthBar() {
-        if (health > 0.6f) {
-            batch.setColor(Color.GREEN);
-        } else if (health < 0.6f && health > 0.2f) {
-            batch.setColor(Color.ORANGE);
-        } else {
-            batch.setColor(Color.RED);
-        }
-        batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
     }
 
     private void childRenderer(GameObject g) throws InvalidClassInstance, ComponentExistsException {
@@ -248,44 +184,32 @@ public class GameScreen extends AbstractScreen {
 
     private void renderObject(GameObject c) throws ComponentExistsException, InvalidClassInstance {
         if (c.hasTexture() && !c.componentExists(Renderer.class)) {
-//            this.rendered = true;
             c.addComponent(Renderer.class);
             c.getComponent(Renderer.class).setTexture(c.getTexture());
         }
         if (c.componentExists(Renderer.class)) {
             var transform = c.getComponent(Transform.class);
-            float x = -(float)transform.getX();
-            float y = -(float)transform.getY();
+            if (!camSet){
+                //sets the camera and tank up when tank drops in to map
+                setCam(transform);
+                tankScreenCoords = getScreenCoords(new Vector3((float)transform.getX(), (float) transform.getY(), 0));
+            }
             var t = c.getComponent(Renderer.class).getTexture();
             batch.setColor(Color.CORAL);
             batch.draw(new TextureRegion(t),
-                (float) transform.getX(), (float) transform.getY(),
-                t.getWidth() / 2f, t.getHeight() / 2f,
-                t.getWidth(), t.getHeight(),
-                1, 1,
-                (float) transform.getRotation());
+                    tankScreenCoords.x, tankScreenCoords.y,
+                    t.getWidth() / 2f, t.getHeight() / 2f,
+                    t.getWidth(), t.getHeight(),
+                    1, 1,
+                    (float) transform.getRotation());
             batch.setColor(Color.WHITE);
-//            if (c.getObjectType() == ObjectType.TANK) {
-//                cam.position.set((float) c.getTransform().getX(), (float) c.getTransform().getY(), 0);
-//                cam.update();
-//            }
         }
     }
 
-    @Override
-    public void resize(int width, int height) {
-//        super.resize(width, height);
-//            cam = new OrthographicCamera(width, height);
-//            cam.update();
-//        }
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        map.dispose();
-        renderer.dispose();
-        batch.dispose();
+    private void setCam(Transform transform) {
+        cam.position.set((float)transform.getX(), (float) transform.getY(), 0);
+        camSet = true;
+        cam.update();
     }
 
     /**
@@ -303,17 +227,17 @@ public class GameScreen extends AbstractScreen {
                 if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-//                    Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+                    Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        //movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+                        movePlayerLocal("left");
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                // movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
+                movePlayerLocal("left");
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             direction = "right";
@@ -321,16 +245,16 @@ public class GameScreen extends AbstractScreen {
                 if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-//                    Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
+                    Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        //movePlayer(direction);
+                        movePlayerLocal("right");
                         Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                //movePlayer(direction);
+                movePlayerLocal("right");
                 Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -339,17 +263,17 @@ public class GameScreen extends AbstractScreen {
                 if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-//                    Screens.INSTANCE.getClient().sendCommand(Command.UP);
+                    Screens.INSTANCE.getClient().sendCommand(Command.UP);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        //movePlayer(direction);
                         Screens.INSTANCE.getClient().sendCommand(Command.UP);
+                        movePlayerLocal("up");
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                //movePlayer(direction);
                 Screens.INSTANCE.getClient().sendCommand(Command.UP);
+                movePlayerLocal("up");
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             direction = "down";
@@ -357,26 +281,25 @@ public class GameScreen extends AbstractScreen {
                 if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
-                    //Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
+                    Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        //movePlayer(direction);
+                        movePlayerLocal("down");
                         Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                //movePlayer(direction);
+                movePlayerLocal("down");
                 Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             }
         }
-       //cam.update();
-        //mouseMoved(Gdx.input.getX(), Gdx.input.getY());
     }
 
     private boolean playerHorizontallyCentered() {
         boolean result = false;
-        if (tank.getComponent(Transform.class).getX() == cameraHalfWidth) {
+        //System.out.println("is "+ tankScreenCoords.x+" equal to " + cameraHalfWidth);
+        if (tankScreenCoords.x == cameraHalfWidth) {
             result = true;
         }
         return result;
@@ -384,7 +307,7 @@ public class GameScreen extends AbstractScreen {
 
     private boolean playerVerticallyCentered() {
         boolean result = false;
-        if (tank.getComponent(Transform.class).getY() == cameraHalfHeight) {
+        if (tankScreenCoords.y == cameraHalfHeight) {
             result = true;
         }
         return result;
@@ -393,31 +316,31 @@ public class GameScreen extends AbstractScreen {
     private boolean canMovePlayer(String direction) {
         switch (direction) {
             case "left": {
-                float tempPlayerX = (float) tank.getComponent(Transform.class).getX() + speed;
-                if (tempPlayerX <= cam.viewportWidth) {
+                float tempPlayerX = tankScreenCoords.x - speed;
+                if (tempPlayerX >= 0) {
                     return true;
                 }
                 break;
             }
             case "right": {
-                float tempPlayerX = (float) tank.getComponent(Transform.class).getX() - speed;
                 float tankWidth = 32;
-                if (tempPlayerX >= tankWidth) {
+                float tempPlayerX = tankScreenCoords.x + speed;
+                if (tempPlayerX <= cam.viewportWidth - tankWidth) {
                     return true;
                 }
                 break;
             }
             case "up": {
-                float tempPlayerY = (float) tank.getComponent(Transform.class).getY() - speed;
                 float tankHeight = 64;
-                if (tempPlayerY >= tankHeight) {
+                float tempPlayerY = tankScreenCoords.y + speed;
+                if (tempPlayerY <= cam.viewportHeight - tankHeight) {
                     return true;
                 }
                 break;
             }
             case "down": {
-                float tempPlayerY = (float) tank.getComponent(Transform.class).getY() + speed;
-                if (tempPlayerY <= cam.viewportHeight) {
+                float tempPlayerY = tankScreenCoords.y - speed;
+                if (tempPlayerY > 0) {
                     return true;
                 }
                 break;
@@ -426,32 +349,31 @@ public class GameScreen extends AbstractScreen {
         return false;
     }
 
-    private void movePlayer(String direction) {
+    private void movePlayerLocal(String direction) {
         float xDistance = 0;
         float yDistance = 0;
         int rotation = 0;
         switch (direction) {
             case "left": {
-                xDistance = speed;
-                rotation = 90;
-                break;
-            }
-            case "right": {
                 xDistance = -speed;
                 rotation = 90;
                 break;
             }
-            case "up": {
-                yDistance = -speed;
+            case "right": {
+                xDistance = speed;
+                rotation = 90;
                 break;
             }
-            case "down": {
+            case "up": {
                 yDistance = speed;
                 break;
             }
+            case "down": {
+                yDistance = -speed;
+                break;
+            }
         }
-        tank.getComponent(Transform.class).applyTransform(xDistance, yDistance);
-        tank.getChildren().get(0).getComponent(Transform.class).setRotation(rotation);
+        tankScreenCoords = new Vector3(tankScreenCoords.x + xDistance, tankScreenCoords.y + yDistance, 0);
     }
 
     private boolean canMoveCam(String direction) {
@@ -519,16 +441,35 @@ public class GameScreen extends AbstractScreen {
             }
         }
         cam.position.set(cam.position.x + xDistance, cam.position.y + yDistance, 0);
+        cam.update();
     }
 
-    private Vector3 getWorldCoords() {
-        Vector3 v = new Vector3((float) tank.getComponent(Transform.class).getX(), (float) tank.getComponent(Transform.class).getY(), 0);
-        cam.unproject(v);
+    private Vector3 getScreenCoords(Vector3 worldCoords){
+        //System.out.println("world x: " + worldCoords.x);
+        Vector3 v = worldCoords;
+        cam.project(v);
+        //v.x = Math.round(v.x);
+        //v.y = Math.round(v.y);
+        System.out.println("screen x: " + v.x);
         return v;
     }
-//    private Vector3 getScreenCoords(){
-//        //TODO use method for reading in point from server to place tanks
-//        cam.project(v);
-//        return v;
-//    }
+
+    private void healthBar() {
+        if (health > 0.6f) {
+            batch.setColor(Color.GREEN);
+        } else if (health < 0.6f && health > 0.2f) {
+            batch.setColor(Color.ORANGE);
+        } else {
+            batch.setColor(Color.RED);
+        }
+        batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        map.dispose();
+        renderer.dispose();
+        batch.dispose();
+    }
 }

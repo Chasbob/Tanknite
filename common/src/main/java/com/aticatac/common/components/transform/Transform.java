@@ -122,7 +122,7 @@ public class Transform extends Component {
     }
 
     /**
-     * Sets rotation.
+     * Sets rotation.d
      *
      * @param r the r
      */

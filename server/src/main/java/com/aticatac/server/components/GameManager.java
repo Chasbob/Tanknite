@@ -111,8 +111,8 @@ public class GameManager extends Component {
             final Manager instance = Manager.INSTANCE;
 //            final int xs = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
 //            final int ys = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
-            final int xs = 320;
-            final int ys = 320;
+            final int xs = 1000;
+            final int ys = 1000;
             TankObject tank = new TankObject(getGameObject().getChildren().get(0),
                 player, position = new Position(xs, ys), 100, 30);
             DataServer.INSTANCE.setCoordinates(position, "Tank");
