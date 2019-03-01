@@ -86,9 +86,8 @@ public class GameManager extends Component {
 
     public TankObject createTank(String player, boolean isAI) {
         try {
-            Position position;
 
-            position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+            Position position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
                     ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
 
             //checks if this is a valid coordinate when generated is not in the map then moves on.
