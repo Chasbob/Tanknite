@@ -3,7 +3,6 @@ package com.aticatac.server.components.controller;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
-import com.aticatac.server.components.Ammo;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Physics;
 import com.aticatac.common.objectsystem.GameObject;
@@ -44,7 +43,7 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).SetRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
         }
-        // TODO, in movement have physics tell if a tank has collided with a power up
+
         return true;
     }
 
@@ -111,6 +110,7 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).SetRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+          //set occupied co ordinates on server data whenever tank moves
         }
         return true;
     }
@@ -122,15 +122,12 @@ public class TankController extends Component {
      */
 // call method when space bar pressed
     public boolean shoot() {
-        // call new shoot method from turretx
-        // talk to physics?
-
-
-        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-
-        if (currentAmmo == 0) return false;
-        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo - 1);
+        
+//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
+//
+//        if (currentAmmo == 0) return false;
+//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
+//        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
         return true;
 
 
@@ -172,9 +169,8 @@ public class TankController extends Component {
     public void die () {
         //new AmmoPickUp(this.getComponent(Transform.class).getX(), this.getComponent(Transform.class).getY());
         // set ammo pick up transform to where tank died
-        //Destroy(this);
+        GameObject.Destroy(getGameObject());
         /*
-        // TODO keep number of alive tanks somewhere (gamemanager? Parent of tanks)
         if (map.getNumberOfAliveTanks() == 1){
             map.gameFinish();
            }
@@ -226,5 +222,11 @@ public class TankController extends Component {
 
     }
 
+    /**
+     * Gets health.
+     */
 }
 
+
+/* Method takes command (check branch) and returns boolean of whether possible
+ */
