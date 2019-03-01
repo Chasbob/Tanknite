@@ -1,6 +1,7 @@
 package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
+import com.aticatac.server.components.Health;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 // components for server side make in server or import from common?
@@ -190,9 +191,9 @@ public class TankController extends Component {
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
         int newHealth = currentHealth + 10;
         if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()){
-            this.getComponent(Health.class).setHealth(maxHealth);
+            this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
         }
-        else this.getComponent(Health.class).setHealth(newHealth);
+        else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
         // only gain health up to maximum
     }
 

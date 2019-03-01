@@ -11,12 +11,13 @@ import com.aticatac.server.components.Ammo;
 import com.aticatac.server.components.Health;
 import com.aticatac.server.components.Physics;
 import com.aticatac.server.components.Time;
+import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
 
 public class TankObject extends GameObject {
     //add in a parameter boolean which is ai true or false
     //TODO add in the parameter changes everywhere
-    public TankObject(GameObject parent, String name, Position p, int health, int ammo) throws InvalidClassInstance, ComponentExistsException {
+    public TankObject(GameObject parent, String name, Position p, int health, int ammo, boolean isAI) throws InvalidClassInstance, ComponentExistsException {
         super(name, parent, ObjectType.TANK);
         this.getComponent(Transform.class).setPosition(p.getX(), p.getY());
         new GameObject("TankBottom", this);
