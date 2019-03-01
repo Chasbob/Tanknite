@@ -99,11 +99,11 @@ public class GameManager extends Component {
             }
 
             TankObject tank = new TankObject(getGameObject().getChildren().get(0),
-                    player,
-                    position,
-                    100,
-                    30,
-                    isAI);
+                player,
+                position,
+                100,
+                30,
+                isAI);
 
             DataServer.INSTANCE.setCoordinates(position, "Tank");
             return tank;
