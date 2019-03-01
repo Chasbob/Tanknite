@@ -1,7 +1,6 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.model.Command;
 
 import java.util.ArrayList;
 import java.util.Queue;
@@ -17,8 +16,6 @@ public class Graph {
      * A pathfinder that can generate a path in the graph
      */
     private final PathFinder pf = new PathFinder();
-    private final int width;
-    private final int height;
     /**
      * The nodes that make up the graph
      */
@@ -32,8 +29,6 @@ public class Graph {
      * @param height     The number of nodes high
      */
     public Graph(int width, int height, int separation) {
-        this.width = width;
-        this.height = height;
         nodes = new ArrayList<SearchNode>();
 
         // Add nodes
@@ -43,7 +38,6 @@ public class Graph {
             }
         }
         // Add connections
-        // don't make connections if connection is invalid (the node thing might be enough though)
         for (SearchNode node : nodes) {
             for (SearchNode otherNode : nodes) {
                 if (Math.sqrt(Math.pow(node.getY() - otherNode.getY(), 2) + Math.pow(node.getX() - otherNode.getX(), 2)) == separation) {
@@ -110,21 +104,4 @@ public class Graph {
         return nearestNode;
     }
 
-    /**
-     * Gets the width of the graph.
-     *
-     * @return The width of the graph
-     */
-    public int getWidth() {
-        return width;
-    }
-
-    /**
-     * Gets the height of the graph.
-     *
-     * @return The height of the graph
-     */
-    public int getHeight() {
-        return height;
-    }
 }

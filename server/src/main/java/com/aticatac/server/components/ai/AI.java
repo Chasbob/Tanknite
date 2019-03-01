@@ -349,14 +349,14 @@ public class AI extends Component {
 
         ArrayList<SearchNode> nodes = graph.getNearestNode(tankPos).getDescendantNodes(VIEW_RANGE);
         for (SearchNode node : nodes) {
-            if (getEnemiesInRange(node.getPosition(), VIEW_RANGE).isEmpty()) {
-                clearPositions.add(node.getPosition());
+            if (getEnemiesInRange(node, VIEW_RANGE).isEmpty()) {
+                clearPositions.add(node);
             }
         }
 
         return clearPositions;
         /*
-
+        OLD VERSION
         for (double i = tankPos.getX() - VIEW_RANGE; i < tankPos.getX() + VIEW_RANGE; i++) {
             for (double j = tankPos.getY() - VIEW_RANGE; j < tankPos.getY() + VIEW_RANGE; j++) {
                 // A position outside the map is not valid

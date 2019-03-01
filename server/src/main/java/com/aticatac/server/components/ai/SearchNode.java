@@ -10,11 +10,7 @@ import java.util.ArrayList;
  *
  * @author Dylan
  */
-class SearchNode {
-    /**
-     * The position of this SearchNode
-     */
-    private Position position;
+class SearchNode extends Position {
     /**
      * All the SearchNodes connected to this SearchNode
      */
@@ -27,44 +23,8 @@ class SearchNode {
      * @param y Y co-ordinate position of this SearchNode
      */
     SearchNode(int x, int y) {
-        setPosition(new Position(x, y));
+        super(x, y);
         connectedNodes = new ArrayList<SearchNode>();
-    }
-
-    /**
-     * Gets position.
-     *
-     * @return the position
-     */
-    public Position getPosition() {
-        return this.position;
-    }
-
-    /**
-     * Gets x.
-     *
-     * @return the x
-     */
-    public double getX() {
-        return this.position.getX();
-    }
-
-    /**
-     * Gets y.
-     *
-     * @return the y
-     */
-    public double getY() {
-        return this.position.getY();
-    }
-
-    /**
-     * Sets the position of this SearchNode.
-     *
-     * @param position New position of this SearchNode
-     */
-    public void setPosition(Position position) {
-        this.position = position;
     }
 
     /**

@@ -1,7 +1,5 @@
 package com.aticatac.server.components.ai;
 
-import com.aticatac.common.model.Command;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -46,7 +44,7 @@ class PathFinder {
                 if (closedSet.contains(connectedNode)) {
                     continue;
                 }
-                int tempG = g.get(current) + 1;
+                int tempG = g.get(current) + (int)(Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - connectedNode.getY()));
                 if (!openSet.contains(connectedNode)) {
                     openSet.add(connectedNode);
                 } else if (tempG >= g.get(connectedNode)) {
