@@ -18,7 +18,7 @@ public enum DataServer {
     private BidiMap<Position, String> occupiedCoordinates= new DualHashBidiMap<>();
     DataServer(){
 
-        //anything that needs setting up.
+        //TODO Remove this when the map is added but for now add in coordinates for edges of map
 
     }
 
