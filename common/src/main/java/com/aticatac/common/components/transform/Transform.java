@@ -9,6 +9,8 @@ import com.aticatac.common.objectsystem.GameObject;
  */
 public class Transform extends Component {
     private Position  position;
+    private Position screenPosition;
+    public boolean camMoving;
     private double rotation = 0;
 
     /**
@@ -19,6 +21,8 @@ public class Transform extends Component {
     public Transform(GameObject gameObject) {
         super(gameObject);
         this.position = new Position(0, 0);
+        this.screenPosition = new Position(320, 320);
+        this.camMoving = true;
     }
 
     /**
@@ -31,6 +35,8 @@ public class Transform extends Component {
         super(gameObject);
         this.position = new Position(container.getX(), container.getY());
         this.rotation = container.getR();
+        this.screenPosition = new Position(320, 320);
+        this.camMoving = true;
     }
 
     /**
@@ -67,15 +73,6 @@ public class Transform extends Component {
     public double getY() {
         return this.position.getY();
     }
-    /**
-     * Apply transform.
-     *
-     * @param x the x
-     * @param y the y
-     */
-//    public void applyTransform(double x, double y) {
-//        this.setPosition(position.getX() + x, position.getY() + y);
-//    }
 
     public void transform(double x, double y) {
         this.applyTransform(position.getX() + x, position.getY() + y);
@@ -86,8 +83,8 @@ public class Transform extends Component {
      * @param deltaX the x
      * @param deltaY the y
      */
-//  TODO REFACTOR
-    public void applyTransform(double deltaX, double deltaY) {
+
+    private void applyTransform(double deltaX, double deltaY) {
         double x = position.getX() - deltaX;
         double y = position.getY() - deltaY;
         for (var o : getGameObject().getChildren()) {
@@ -97,8 +94,15 @@ public class Transform extends Component {
     }
 
     private void setTransformWithoutChild(double x, double y) {
+        float xChange = (float) (x - position.getX());
+        float yChange = (float) (y - position.getY());
         position.setX(x);
         position.setY(y);
+        if (!camMoving) {
+            //change the screen position.
+            screenPosition.setX(screenPosition.getX() + xChange);
+            screenPosition.setY(screenPosition.getY() + yChange);
+        }
     }
 
     /**
@@ -160,4 +164,9 @@ public class Transform extends Component {
             '}'
             ;
     }
+
+    public Position getScreenPosition() {
+        return screenPosition;
+    }
+
 }

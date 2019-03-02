@@ -8,6 +8,7 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.components.controller.TankController;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -35,7 +36,6 @@ public class GameScreen extends AbstractScreen {
     private Table popUpTable;
     private GameObject root;
     private GameObject tank;
-    private Vector3 tankScreenCoords;
     private float health;
     private Label ammoValue;
     private Label killCount;
@@ -192,12 +192,12 @@ public class GameScreen extends AbstractScreen {
             if (!camSet){
                 //sets the camera and tank up when tank drops in to map
                 setCam(transform);
-                tankScreenCoords = getScreenCoords(new Vector3((float)transform.getX(), (float) transform.getY(), 0));
             }
             var t = c.getComponent(Renderer.class).getTexture();
+            var sp = transform.getScreenPosition();
             batch.setColor(Color.CORAL);
             batch.draw(new TextureRegion(t),
-                    tankScreenCoords.x, tankScreenCoords.y,
+                    (float)sp.getX(), (float)sp.getY(),
                     t.getWidth() / 2f, t.getHeight() / 2f,
                     t.getWidth(), t.getHeight(),
                     1, 1,
@@ -227,17 +227,18 @@ public class GameScreen extends AbstractScreen {
                 if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
+                    tank.getComponent(Transform.class).camMoving = true;
                     Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
+                        tank.getComponent(Transform.class).camMoving = false;
                         Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
-                        movePlayerLocal("left");
                     }
                 }
             } else if (canMovePlayer(direction)) {
+                tank.getComponent(Transform.class).camMoving = false;
                 Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
-                movePlayerLocal("left");
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             direction = "right";
@@ -245,16 +246,17 @@ public class GameScreen extends AbstractScreen {
                 if (playerHorizontallyCentered()) {
                     //we can move cam
                     moveCam(direction);
+                    tank.getComponent(Transform.class).camMoving = true;
                     Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        movePlayerLocal("right");
+                        tank.getComponent(Transform.class).camMoving = false;
                         Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                movePlayerLocal("right");
+                tank.getComponent(Transform.class).camMoving = false;
                 Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -263,17 +265,18 @@ public class GameScreen extends AbstractScreen {
                 if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
+                    tank.getComponent(Transform.class).camMoving = true;
                     Screens.INSTANCE.getClient().sendCommand(Command.UP);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
+                        tank.getComponent(Transform.class).camMoving = false;
                         Screens.INSTANCE.getClient().sendCommand(Command.UP);
-                        movePlayerLocal("up");
                     }
                 }
             } else if (canMovePlayer(direction)) {
+                tank.getComponent(Transform.class).camMoving = false;
                 Screens.INSTANCE.getClient().sendCommand(Command.UP);
-                movePlayerLocal("up");
             }
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             direction = "down";
@@ -281,16 +284,17 @@ public class GameScreen extends AbstractScreen {
                 if (playerVerticallyCentered()) {
                     //we can move cam
                     moveCam(direction);
+                    tank.getComponent(Transform.class).camMoving = true;
                     Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                 } else {
                     //need to move player
                     if (canMovePlayer(direction)) {
-                        movePlayerLocal("down");
+                        tank.getComponent(Transform.class).camMoving = false;
                         Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
                     }
                 }
             } else if (canMovePlayer(direction)) {
-                movePlayerLocal("down");
+                tank.getComponent(Transform.class).camMoving = false;
                 Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
             }
         }
@@ -298,8 +302,8 @@ public class GameScreen extends AbstractScreen {
 
     private boolean playerHorizontallyCentered() {
         boolean result = false;
-        //System.out.println("is "+ tankScreenCoords.x+" equal to " + cameraHalfWidth);
-        if (tankScreenCoords.x == cameraHalfWidth) {
+
+        if (tank.getComponent(Transform.class).getScreenPosition().getX() == cameraHalfWidth) {
             result = true;
         }
         return result;
@@ -307,16 +311,18 @@ public class GameScreen extends AbstractScreen {
 
     private boolean playerVerticallyCentered() {
         boolean result = false;
-        if (tankScreenCoords.y == cameraHalfHeight) {
+        if (tank.getComponent(Transform.class).getScreenPosition().getY() == cameraHalfHeight) {
             result = true;
         }
         return result;
     }
 
     private boolean canMovePlayer(String direction) {
+        float x = (float) tank.getComponent(Transform.class).getScreenPosition().getX();
+        float y = (float) tank.getComponent(Transform.class).getScreenPosition().getY();
         switch (direction) {
             case "left": {
-                float tempPlayerX = tankScreenCoords.x - speed;
+                float tempPlayerX = x - speed;
                 if (tempPlayerX >= 0) {
                     return true;
                 }
@@ -324,7 +330,7 @@ public class GameScreen extends AbstractScreen {
             }
             case "right": {
                 float tankWidth = 32;
-                float tempPlayerX = tankScreenCoords.x + speed;
+                float tempPlayerX = x + speed;
                 if (tempPlayerX <= cam.viewportWidth - tankWidth) {
                     return true;
                 }
@@ -332,14 +338,14 @@ public class GameScreen extends AbstractScreen {
             }
             case "up": {
                 float tankHeight = 64;
-                float tempPlayerY = tankScreenCoords.y + speed;
+                float tempPlayerY = y + speed;
                 if (tempPlayerY <= cam.viewportHeight - tankHeight) {
                     return true;
                 }
                 break;
             }
             case "down": {
-                float tempPlayerY = tankScreenCoords.y - speed;
+                float tempPlayerY = y - speed;
                 if (tempPlayerY > 0) {
                     return true;
                 }
@@ -347,33 +353,6 @@ public class GameScreen extends AbstractScreen {
             }
         }
         return false;
-    }
-
-    private void movePlayerLocal(String direction) {
-        float xDistance = 0;
-        float yDistance = 0;
-        int rotation = 0;
-        switch (direction) {
-            case "left": {
-                xDistance = -speed;
-                rotation = 90;
-                break;
-            }
-            case "right": {
-                xDistance = speed;
-                rotation = 90;
-                break;
-            }
-            case "up": {
-                yDistance = speed;
-                break;
-            }
-            case "down": {
-                yDistance = -speed;
-                break;
-            }
-        }
-        tankScreenCoords = new Vector3(tankScreenCoords.x + xDistance, tankScreenCoords.y + yDistance, 0);
     }
 
     private boolean canMoveCam(String direction) {
@@ -442,16 +421,6 @@ public class GameScreen extends AbstractScreen {
         }
         cam.position.set(cam.position.x + xDistance, cam.position.y + yDistance, 0);
         cam.update();
-    }
-
-    private Vector3 getScreenCoords(Vector3 worldCoords){
-        //System.out.println("world x: " + worldCoords.x);
-        Vector3 v = worldCoords;
-        cam.project(v);
-        //v.x = Math.round(v.x);
-        //v.y = Math.round(v.y);
-        //System.out.println("screen x: " + v.x);
-        return v;
     }
 
     private void healthBar() {
