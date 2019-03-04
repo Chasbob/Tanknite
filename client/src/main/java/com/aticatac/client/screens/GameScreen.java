@@ -1,19 +1,19 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.objectsystem.Renderer;
+import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.controller.TankController;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,7 +21,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -32,7 +31,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  */
 public class GameScreen extends AbstractScreen {
     private final SpriteBatch batch;
-    private final float speed = 3.0f;
+    private final SpriteBatch tanks;
+    private final int maxX;
+    private final int maxY;
     private Table popUpTable;
     private GameObject root;
     private GameObject tank;
@@ -42,44 +43,39 @@ public class GameScreen extends AbstractScreen {
     private Label playerCount;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
-    private OrthographicCamera cam;
-    private boolean camSet;
-    private float cameraHalfWidth;
-    private float cameraHalfHeight;
-    private int mapTop;
-    private int mapBottom;
-    private int mapRight;
-    private int mapLeft;
+    private Camera camera;
+    private Position playerPos;
+    private Label fpsValue;
+    private Label tankXY;
 
     /**
      * Instantiates a new Game screen.
      */
     GameScreen() {
         super();
+        maxX = 1920;
+        maxY = 1920;
         try {
             health = 1f;
             ammoValue = UIFactory.createLabel("30");
             killCount = UIFactory.createLabel("0");
             playerCount = UIFactory.createLabel("1");
+            fpsValue = UIFactory.createLabel("");
+            tankXY = UIFactory.createLabel("");
             map = new TmxMapLoader().load("maps/map.tmx");
             renderer = new OrthogonalTiledMapRenderer(map);
-            cam = new OrthographicCamera(getWidth(), getHeight());
-            camSet = false;
-            mapLeft = 0;
-            mapRight = 1920;
-            mapBottom = 0;
-            mapTop = 1920;
-            cameraHalfWidth = cam.viewportWidth * .5f;
-            cameraHalfHeight = cam.viewportHeight * .5f;
+            this.camera = new Camera(maxX, maxY, getWidth(), getHeight());
             Gdx.input.setInputProcessor(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
         batch = new SpriteBatch();
+        tanks = new SpriteBatch();
     }
 
     @Override
     public void buildStage() {
+        Gdx.graphics.setVSync(false);
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
@@ -114,6 +110,18 @@ public class GameScreen extends AbstractScreen {
         Label ammo = UIFactory.createLabel("ammo: ");
         ammoTable.add(ammo);
         ammoTable.add(ammoValue);
+        Table statsTable = new Table();
+        statsTable.setFillParent(true);
+        rootTable.addActor(statsTable);
+        statsTable.top().right();
+        statsTable.defaults().padRight(10).padTop(10).padBottom(20).left();
+        Label fps = UIFactory.createLabel("FPS: ");
+        Label tank = UIFactory.createLabel("TANK: ");
+        statsTable.add(tank);
+        statsTable.add(tankXY);
+        statsTable.row();
+        statsTable.add(fps);
+        statsTable.add(this.fpsValue);
         //create pop up table
         popUpTable = new Table();
         rootTable.addActor(popUpTable);
@@ -139,38 +147,64 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
+        new Thread(() -> {
+            try {
+                while (true) {
+                    Thread.sleep(300);
+                    this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
+                    tankXY.setText(this.tank.getTransform().getX() + ", " + this.tank.getTransform().getY());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        (new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(16);
+                    backgroundInput();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        })).start();
     }
 
     @Override
     public void render(float delta) {
+        super.render(delta);
+        //TODO figure out why it flickers when going side to side.
         //clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //set cam for renderer and render map
-        renderer.setView(cam);
-        renderer.render();
-        //set polling for inputs
-        batch.begin();
         if (Screens.INSTANCE.getRoot() != null) {
             this.root = Screens.INSTANCE.getRoot();
             this.tank = this.root.findObject(ObjectType.TANK, this.root);
             if (this.tank != null) {
-                //if there exists a tank in the game we can poll input.
-                input();
-                cam.update();
+                this.playerPos = tank.getTransform().getPosition();
+                this.playerPos.setX(1920 - this.playerPos.getX());
+                this.playerPos.setY(1920 - this.playerPos.getY());
+                this.camera.setPosititon((float) playerPos.getX(), (float) playerPos.getY());
             }
         }
+        renderer.setView(this.camera.getCamera());
+        renderer.render();
+        this.camera.update();
+        tanks.setProjectionMatrix(this.camera.getCamera().combined);
         try {
-            childRenderer(this.root);
+            tanks.begin();
+            childRenderer(this.tank);
+            tanks.end();
         } catch (InvalidClassInstance | ComponentExistsException e) {
-            this.getLogger().error(e);
+            logger.error(e);
         }
+        batch.begin();
         //health bar
         healthBar();
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
         batch.end();
-        cam.update();
         super.act(delta);
         super.draw();
     }
@@ -188,239 +222,27 @@ public class GameScreen extends AbstractScreen {
             c.getComponent(Renderer.class).setTexture(c.getTexture());
         }
         if (c.componentExists(Renderer.class)) {
-            var transform = c.getComponent(Transform.class);
-            if (!camSet){
-                //sets the camera and tank up when tank drops in to map
-                setCam(transform);
-            }
-            var t = c.getComponent(Renderer.class).getTexture();
-            var sp = transform.getScreenPosition();
-            batch.setColor(Color.CORAL);
-            batch.draw(new TextureRegion(t),
-                    (float)sp.getX(), (float)sp.getY(),
-                    t.getWidth() / 2f, t.getHeight() / 2f,
-                    t.getWidth(), t.getHeight(),
-                    1, 1,
-                    (float) transform.getRotation());
-            batch.setColor(Color.WHITE);
+//            var t = ;
+            var pos = c.getComponent(Transform.class).getPosition();
+            tanks.setColor(Color.CORAL);
+            tanks.draw(c.getComponent(Renderer.class).getTexture(), 1920 - (float) pos.getX(), 1920 - (float) pos.getY());
         }
     }
 
-    private void setCam(Transform transform) {
-        cam.position.set((float)transform.getX(), (float) transform.getY(), 0);
-        camSet = true;
-        cam.update();
-    }
-
-    /**
-     * input.
-     */
-    private void input() {
+    private void backgroundInput() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             //show the pop up table
             popUpTable.setVisible(true);
         }
-        String direction;
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            direction = "left";
-            if (canMoveCam(direction)) {
-                if (playerHorizontallyCentered()) {
-                    //we can move cam
-                    moveCam(direction);
-                    tank.getComponent(Transform.class).camMoving = true;
-                    Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
-                } else {
-                    //need to move player
-                    if (canMovePlayer(direction)) {
-                        tank.getComponent(Transform.class).camMoving = false;
-                        Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
-                    }
-                }
-            } else if (canMovePlayer(direction)) {
-                tank.getComponent(Transform.class).camMoving = false;
-                Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
-            }
+            Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            direction = "right";
-            if (canMoveCam(direction)) {
-                if (playerHorizontallyCentered()) {
-                    //we can move cam
-                    moveCam(direction);
-                    tank.getComponent(Transform.class).camMoving = true;
-                    Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
-                } else {
-                    //need to move player
-                    if (canMovePlayer(direction)) {
-                        tank.getComponent(Transform.class).camMoving = false;
-                        Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
-                    }
-                }
-            } else if (canMovePlayer(direction)) {
-                tank.getComponent(Transform.class).camMoving = false;
-                Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
-            }
+            Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            direction = "up";
-            if (canMoveCam(direction)) {
-                if (playerVerticallyCentered()) {
-                    //we can move cam
-                    moveCam(direction);
-                    tank.getComponent(Transform.class).camMoving = true;
-                    Screens.INSTANCE.getClient().sendCommand(Command.UP);
-                } else {
-                    //need to move player
-                    if (canMovePlayer(direction)) {
-                        tank.getComponent(Transform.class).camMoving = false;
-                        Screens.INSTANCE.getClient().sendCommand(Command.UP);
-                    }
-                }
-            } else if (canMovePlayer(direction)) {
-                tank.getComponent(Transform.class).camMoving = false;
-                Screens.INSTANCE.getClient().sendCommand(Command.UP);
-            }
+            Screens.INSTANCE.getClient().sendCommand(Command.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            direction = "down";
-            if (canMoveCam(direction)) {
-                if (playerVerticallyCentered()) {
-                    //we can move cam
-                    moveCam(direction);
-                    tank.getComponent(Transform.class).camMoving = true;
-                    Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
-                } else {
-                    //need to move player
-                    if (canMovePlayer(direction)) {
-                        tank.getComponent(Transform.class).camMoving = false;
-                        Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
-                    }
-                }
-            } else if (canMovePlayer(direction)) {
-                tank.getComponent(Transform.class).camMoving = false;
-                Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
-            }
+            Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
         }
-    }
-
-    private boolean playerHorizontallyCentered() {
-        boolean result = false;
-
-        if (tank.getComponent(Transform.class).getScreenPosition().getX() == cameraHalfWidth) {
-            result = true;
-        }
-        return result;
-    }
-
-    private boolean playerVerticallyCentered() {
-        boolean result = false;
-        if (tank.getComponent(Transform.class).getScreenPosition().getY() == cameraHalfHeight) {
-            result = true;
-        }
-        return result;
-    }
-
-    private boolean canMovePlayer(String direction) {
-        float x = (float) tank.getComponent(Transform.class).getScreenPosition().getX();
-        float y = (float) tank.getComponent(Transform.class).getScreenPosition().getY();
-        switch (direction) {
-            case "left": {
-                float tempPlayerX = x - speed;
-                if (tempPlayerX >= 0) {
-                    return true;
-                }
-                break;
-            }
-            case "right": {
-                float tankWidth = 32;
-                float tempPlayerX = x + speed;
-                if (tempPlayerX <= cam.viewportWidth - tankWidth) {
-                    return true;
-                }
-                break;
-            }
-            case "up": {
-                float tankHeight = 64;
-                float tempPlayerY = y + speed;
-                if (tempPlayerY <= cam.viewportHeight - tankHeight) {
-                    return true;
-                }
-                break;
-            }
-            case "down": {
-                float tempPlayerY = y - speed;
-                if (tempPlayerY > 0) {
-                    return true;
-                }
-                break;
-            }
-        }
-        return false;
-    }
-
-    private boolean canMoveCam(String direction) {
-        float cameraLeft = cam.position.x - cameraHalfWidth;
-        float cameraRight = cam.position.x + cameraHalfWidth;
-        float cameraBottom = cam.position.y - cameraHalfHeight;
-        float cameraTop = cam.position.y + cameraHalfHeight;
-        boolean result = false;
-        switch (direction) {
-            case "left": {
-                //can the cam move 3.0 to the left.
-                float tempCameraLeft = cameraLeft - speed;
-                if (tempCameraLeft >= mapLeft) {
-                    result = true;
-                }
-                break;
-            }
-            case "right": {
-                float tempCameraRight = cameraRight + speed;
-                if (tempCameraRight <= mapRight) {
-                    result = true;
-                }
-                break;
-            }
-            case "up": {
-                float tempCameraTop = cameraTop + speed;
-                if (tempCameraTop <= mapTop) {
-                    result = true;
-                }
-                break;
-            }
-            case "down": {
-                float tempCamBottom = cameraBottom - speed;
-                if (tempCamBottom >= mapBottom) {
-                    result = true;
-                }
-                break;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Center camera to game object.
-     */
-    private void moveCam(String direction) {
-        float xDistance = 0;
-        float yDistance = 0;
-        switch (direction) {
-            case "left": {
-                xDistance = -speed;
-                break;
-            }
-            case "right": {
-                xDistance = speed;
-                break;
-            }
-            case "up": {
-                yDistance = speed;
-                break;
-            }
-            case "down": {
-                yDistance = -speed;
-                break;
-            }
-        }
-        cam.position.set(cam.position.x + xDistance, cam.position.y + yDistance, 0);
-        cam.update();
     }
 
     private void healthBar() {

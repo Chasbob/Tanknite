@@ -74,7 +74,9 @@ public enum Screens {
 
     public GameObject getRoot() {
         try {
-            this.root = new GameObject(this.update.getRootContainer());
+            if (this.update.getRootContainer() != null) {
+                this.root = new GameObject(this.update.getRootContainer());
+            }
         } catch (InvalidClassInstance | ComponentExistsException e) {
             this.logger.error(e);
         }

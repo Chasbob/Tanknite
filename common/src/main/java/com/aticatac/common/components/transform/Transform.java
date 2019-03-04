@@ -8,9 +8,7 @@ import com.aticatac.common.objectsystem.GameObject;
  * The type Transform.
  */
 public class Transform extends Component {
-    private Position  position;
-    private Position screenPosition;
-    public boolean camMoving;
+    private Position position;
     private double rotation = 0;
 
     /**
@@ -21,8 +19,6 @@ public class Transform extends Component {
     public Transform(GameObject gameObject) {
         super(gameObject);
         this.position = new Position(0, 0);
-        this.screenPosition = new Position(320, 320);
-        this.camMoving = true;
     }
 
     /**
@@ -35,8 +31,6 @@ public class Transform extends Component {
         super(gameObject);
         this.position = new Position(container.getX(), container.getY());
         this.rotation = container.getR();
-        this.screenPosition = new Position(320, 320);
-        this.camMoving = true;
     }
 
     /**
@@ -48,13 +42,17 @@ public class Transform extends Component {
         return position;
     }
 
+    /**
+     * Sets position.
+     *
+     * @param transform the transform
+     */
     public void setPosition(Transform transform) {
-        this.setPosition(transform.getX(), transform.getY());
+        this.setPosition(transform.getRelativeX(), transform.getRelativeY());
     }
-
-    public void setPosition(double x, double y) {
-        position = new Position(x, y);
-    }
+//    public void setPosition(double x, double y) {
+//        position = new Position(x, y);
+//    }
 
     /**
      * Gets x.
@@ -62,7 +60,36 @@ public class Transform extends Component {
      * @return the x
      */
     public double getX() {
+        if (this.getGameObject().hasParent()) {
+            GameObject parent = this.getGameObject().getParent();
+            if (parent.componentExists(Transform.class)) {
+                Transform transform = parent.getTransform();
+                double x = transform.getX();
+                return x + this.position.getX();
+            }
+        }
+//        else {
+//            return getRelativeX();
+//        }
+        return getRelativeX();
+    }
+
+    /**
+     * Gets relative x.
+     *
+     * @return the relative x
+     */
+    public double getRelativeX() {
         return this.position.getX();
+    }
+
+    /**
+     * Gets relative y.
+     *
+     * @return the relative y
+     */
+    public double getRelativeY() {
+        return this.position.getY();
     }
 
     /**
@@ -71,49 +98,32 @@ public class Transform extends Component {
      * @return the y
      */
     public double getY() {
-        return this.position.getY();
+        if (this.getGameObject().hasParent()) {
+            return this.getGameObject().getParent().getTransform().getY() + this.position.getY();
+        } else {
+            return getRelativeY();
+        }
     }
 
+    /**
+     * Transform.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public void transform(double x, double y) {
-        this.applyTransform(position.getX() + x, position.getY() + y);
+        this.setPosition(this.getRelativeX() + x, this.getRelativeY() + y);
     }
+
     /**
      * Sets position.
      *
-     * @param deltaX the x
-     * @param deltaY the y
+     * @param x the x
+     * @param y the y
      */
-
-    private void applyTransform(double deltaX, double deltaY) {
-        double x = position.getX() - deltaX;
-        double y = position.getY() - deltaY;
-        for (var o : getGameObject().getChildren()) {
-            o.getComponent(Transform.class).transform(x, y);
-        }
-        setTransformWithoutChild(deltaX, deltaY);
-    }
-
-    private void setTransformWithoutChild(double x, double y) {
-        float xChange = (float) (x - position.getX());
-        float yChange = (float) (y - position.getY());
+    public void setPosition(double x, double y) {
         position.setX(x);
         position.setY(y);
-        if (!camMoving) {
-            //change the screen position.
-            screenPosition.setX(screenPosition.getX() + xChange);
-            screenPosition.setY(screenPosition.getY() + yChange);
-        }
-    }
-
-    /**
-     * Forward.
-     *
-     * @param v the v
-     */
-    public void forward(double v) {
-        double xFactor = Math.sin(Math.toRadians(getRotation()));
-        double yFactor = -Math.cos(Math.toRadians(getRotation()));
-        applyTransform(v * xFactor, v * yFactor);
     }
 
     /**
@@ -132,41 +142,21 @@ public class Transform extends Component {
      */
     public void setRotation(double r) {
         rotation = r;
-        //TODO wrap in public function as to allow different handling
-        for (var o : getGameObject().getChildren()) {
-            o.getComponent(Transform.class).setRotation(r);
-        }
-    }
-
-    public void setPersonalRotation(double r) {
-        this.rotation = r;
-    }
-
-    /**
-     * Sets view.
-     *
-     * @param p the p
-     */
-    public void setView(Position p) {
-        Position pRoot = getGameObject().getComponent(Transform.class).getPosition();
-        Position pDelta = new Position(p.getX() - pRoot.getX(), p.getY() - pRoot.getY());
-        getGameObject().getComponent(Transform.class).setPosition(pDelta.getX(), pDelta.getY());
     }
 
     @Override
     public String toString() {
-        return "applyTransform{"
-            +
-            "position=" + position
-            +
-            ", rotation=" + rotation
-            +
-            '}'
-            ;
+        return "setPosition{"
+        +
+        "position=" + position
+        +
+        ", rotation=" + rotation
+        +
+        '}'
+        ;
     }
-
-    public Position getScreenPosition() {
-        return screenPosition;
-    }
-
+//
+//    public Position getScreenPosition() {
+//        return screenPosition;
+//    }
 }
