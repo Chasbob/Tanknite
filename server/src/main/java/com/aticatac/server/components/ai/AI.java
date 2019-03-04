@@ -19,7 +19,7 @@ import java.util.Random;
  * @author Dylan
  */
 public class AI extends Component {
-    private final static int VIEW_RANGE = 6; // some value equivalent to the actual view range that a player would have
+    private final static int VIEW_RANGE = 500; // some value equivalent to the actual view range that a player would have
     private final GameObject tank;
     private final Graph graph;
     private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
@@ -347,7 +347,7 @@ public class AI extends Component {
     private ArrayList<Position> getClearPositions() {
         ArrayList<Position> clearPositions = new ArrayList<Position>();
 
-        ArrayList<SearchNode> nodes = graph.getNearestNode(tankPos).getDescendantNodes(VIEW_RANGE);
+        ArrayList<SearchNode> nodes = graph.getNodesInRange(tankPos, VIEW_RANGE);
         for (SearchNode node : nodes) {
             if (getEnemiesInRange(node, VIEW_RANGE).isEmpty()) {
                 clearPositions.add(node);

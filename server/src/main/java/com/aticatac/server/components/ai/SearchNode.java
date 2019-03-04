@@ -22,7 +22,7 @@ class SearchNode extends Position {
      * @param x X co-ordinate position of this SearchNode
      * @param y Y co-ordinate position of this SearchNode
      */
-    SearchNode(int x, int y) {
+    SearchNode(double x, double y) {
         super(x, y);
         connectedNodes = new ArrayList<SearchNode>();
     }
@@ -36,6 +36,7 @@ class SearchNode extends Position {
         return connectedNodes;
     }
 
+    /*
     public ArrayList<SearchNode> getDescendantNodes(int depth) {
         if (depth == 1) {
             return getConnectedNodes();
@@ -46,6 +47,7 @@ class SearchNode extends Position {
         }
         return descendants;
     }
+    */
 
     /**
      * Adds a connection to another SearchNode.
