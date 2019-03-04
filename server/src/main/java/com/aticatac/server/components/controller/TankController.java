@@ -155,8 +155,8 @@ public class TankController extends Component {
     }
 
     public void dying() {
-//        // tell physics/renderer etc
 //        // can no longer move and will die in 20 seconds
+        //Physics will check the health and prevent it moving if less than 10
 //        //delay
 //        die();
     }
@@ -165,7 +165,17 @@ public class TankController extends Component {
      * Die.
      */
     public void die () {
-        GameObject.destroy(getGameObject());
+
+        //remove it from data coordinates
+        DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
+
+        //add a powerup into the data that says that this is a power up with location.
+        //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
+        //Then when this is collided with by a tank add to tank that component
+        GameObject.Destroy(getGameObject());
+
+        //TODO potentially not relevant in here
+        /*if (map.getNumberOfAliveTanks() == 1){
             map.gameFinish();
            }
 
@@ -183,6 +193,9 @@ public class TankController extends Component {
      * Pick up health.
      */
     public void pickUpHealth () {
+
+        //add the component to the tank then remove it after certain time
+
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
         int newHealth = currentHealth + 10;
         if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()){
@@ -204,12 +217,18 @@ public class TankController extends Component {
      * Pick up speed.
      */
     public void pickUpSpeed() {
+
+        //add the component to the tank then remove it after certain time
+
     }
 
     /**
      * Pick up damage.
      */
     public void pickUpDamage() {
+
+        //add the component to the tank then remove it after certain time
+
     }
 
 }
