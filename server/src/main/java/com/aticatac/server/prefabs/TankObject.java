@@ -35,6 +35,7 @@ public class TankObject extends GameObject {
         this.addComponent(TankController.class);
         this.addComponent(Acceleration.class);
 
+
         if(isAI){
             this.addComponent(AI.class);
         }

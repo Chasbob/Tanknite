@@ -29,6 +29,7 @@ public class TankController extends Component {
      */
     //physics manager will return a value. 0 = no collision, any other will mean collision.
     //else set position to new transform
+    // ammo, health, damage, speed
     public boolean moveUp() {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
@@ -39,6 +40,24 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            if (physicsData[0] == "ammo"){
+              pickUpAmmo();
+              // destroy powerup object too
+            }
+            if (physicsData[0] == "health"){
+              pickUpHealth();
+
+            }
+            if (physicsData[0] == "speed"){
+              pickUpSpeed();
+
+            }
+            if (physicsData[0] == "damage"){
+              pickUpDamage();
+
+            }
+
+
         }
         return true;
     }
