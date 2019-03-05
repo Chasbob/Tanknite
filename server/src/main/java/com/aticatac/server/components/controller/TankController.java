@@ -1,7 +1,6 @@
 package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
-import com.aticatac.common.components.ServerData;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
@@ -129,16 +128,6 @@ public class TankController extends Component {
       return this.getGameObject().getComponent(TurretController.class).shoot();
     }
 
-
-        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-
-        if (currentAmmo == 0) return false;
-        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return true;
-// create bullet object current co ordinatesn where shooting tank is, and move
-        //
-
     /**
      * Is shot.
      */
@@ -171,7 +160,7 @@ public class TankController extends Component {
 
         //add a powerup into the data that says that this is a power up with location.
         //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
-        GameObject.Destroy(getGameObject());
+        GameObject.destroy(getGameObject());
 
         //TODO potentially not relevant in here
         //Check if the number of tanks alive is 1, if so end the game

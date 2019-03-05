@@ -8,9 +8,8 @@ import com.aticatac.server.components.Damage;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Physics;
 
-import static com.aticatac.common.objectsystem.GameObject.Destroy;
+import static com.aticatac.common.objectsystem.GameObject.destroy;
 import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.ServerData;
 
 
 /**
@@ -27,37 +26,27 @@ public class BulletController extends Component {
     super(gameObject);
   }
 
-    /**
-     * Move forwards.
-     */
+  /**
+   * Move forwards.
+   */
 
   public void moveForwards() {
     while (true) {
       //Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-      Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).GetRotation());
+      Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
       Position newPosition = (Position) physicsData[1];
       int collisionType = (Integer) physicsData[0];
       //0 nothing, 1 is a wall, 2 is a tank
       if (collisionType != 0) {
         if (collisionType == 1) {
-          GameObject.Destroy(getGameObject());
+          GameObject.destroy(getGameObject());
         } else {
 
-          GameObject collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
-          collidedTankName.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
-          GameObject.Destroy(getGameObject());
-
-                    Destroy(this);
-
-
         }
-    }
-    // physics handles bullet collision
+      }
 
-    // make a method for bullet to disappear
+    }
+
+  }
 
 }
-
-
-
-
