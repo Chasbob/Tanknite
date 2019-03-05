@@ -2,6 +2,8 @@ package com.aticatac.server.networking;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * The type Main.
  *
@@ -16,7 +18,11 @@ public class Main {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        Server server = new Server();
-        server.run();
+        try {
+            Server server = new Server();
+            server.run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

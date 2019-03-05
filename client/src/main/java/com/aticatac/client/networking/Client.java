@@ -90,6 +90,6 @@ public class Client {
         this.logger.trace("Writing command to output stream.");
         String json = ModelReader.toJson(commandModel);
         this.printer.println(json);
-        this.logger.trace("Sent command: " + command);
+        this.logger.info("Sent command: " + command);
     }
 }

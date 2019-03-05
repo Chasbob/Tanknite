@@ -3,54 +3,42 @@ package com.aticatac.server.networking.listen;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.server.networking.Server;
-import java.io.BufferedReader;
-import java.io.IOException;
 import org.apache.log4j.Logger;
 
-/**
- * The type Command listener.
- */
-public class CommandListener implements Runnable {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+
+public class CommandListener extends Thread {
+    private final BlockingQueue<CommandModel> queue;
     private final Logger logger;
     private final BufferedReader reader;
 
-    /**
-     * Instantiates a new Command listener.
-     *
-     * @param reader the reader
-     */
-    public CommandListener(BufferedReader reader) {
+    public CommandListener(BufferedReader reader, BlockingQueue<CommandModel> queue) {
+        this.queue = queue;
+        this.logger = Logger.getLogger(getClass());
         this.reader = reader;
-        logger = Logger.getLogger(getClass());
     }
 
     @Override
     public void run() {
-        listen();
-    }
-
-    /**
-     * Gets reader.
-     *
-     * @return the reader
-     */
-    public BufferedReader getReader() {
-        return reader;
+        super.run();
+        while (!this.isInterrupted()) {
+            listen();
+        }
     }
 
     private void listen() {
         this.logger.trace("Listening");
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
+        try {
+            while (!this.isInterrupted()) {
                 String json = this.reader.readLine();
                 CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
-                this.logger.trace("JSON: " + json);
-                Server.ServerData.INSTANCE.putCommand(commandModel);
-            } catch (IOException | InvalidBytes e) {
-                this.logger.error(e);
-                return;
+                this.logger.info("JSON: " + json);
+                this.queue.add(commandModel);
             }
+        } catch (IOException | InvalidBytes e) {
+            logger.error(e);
         }
     }
 }
