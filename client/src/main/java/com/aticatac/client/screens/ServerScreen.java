@@ -82,13 +82,13 @@ public class ServerScreen extends AbstractScreen {
         TextButton joinButton = UIFactory.createStartButton("Join");
         buttonTable.add(joinButton).padRight(50);
         joinButton.addListener(UIFactory.newListenerEvent(() -> {
-                    if (serverSelected) {
-                        //TODO show lobby of currentServer
-                        currentServer.setStyle(Styles.INSTANCE.getButtonStyle());
-                        Screens.INSTANCE.showScreen(UsernameScreen.class);
-                    }
-                    return false;
-                }
+            if (serverSelected) {
+                //TODO show lobby of currentServer
+                currentServer.setStyle(Styles.INSTANCE.getButtonStyle());
+                Screens.INSTANCE.showScreen(UsernameScreen.class);
+            }
+            return false;
+        }
         ));
         dataTable.addActor(buttonTable);
         //add table to store all current open servers
@@ -106,31 +106,16 @@ public class ServerScreen extends AbstractScreen {
         TextButton backButton = UIFactory.createBackButton("back");
         backTable.add(backButton).bottom().padBottom(10);
         backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
-//        //create refresh button table
-//        Table refreshButtonTable = new Table();
-//        serverDetailsTable.add(refreshButtonTable);
-//        //refreshButtonTable.debug();
-//        //add refresh button
-//        ImageButton refreshButton = Styles.getInstance().getRefreshButton();
-//        refreshButtonTable.add(refreshButton).padLeft(30);
-//        refreshButton.addListener(UIFactory.newListenerEvent(()->{
-//                    UIFactory.getServers(serversTable);
-//                    return false;
-//                }
-//        ));
-//        //add label table
-//        Table labelTable = new Table();
-//        serverDetailsTable.addActor(labelTable);
-//        labelTable.center();
-        //add labels to serverDetailsTable
-        TextButton refreshButton = UIFactory.createStartButton("Refresh");
-        //refreshButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
-        refreshButton.addListener(UIFactory.newListenerEvent(()->{
+        new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(500);
                     UIFactory.getServers(serversTable);
-                    return false;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-        ));
-        buttonTable.add(refreshButton);
+            }
+        }).start();
     }
 
     @Override

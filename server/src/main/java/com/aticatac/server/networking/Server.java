@@ -12,10 +12,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
@@ -28,7 +26,6 @@ import org.apache.log4j.Logger;
 public class Server extends Thread {
     private final Logger logger;
     private final ExecutorService executorService;
-    private final List<Runnable> runnables;
     private volatile boolean shutdown;
 
     /**
@@ -39,7 +36,6 @@ public class Server extends Thread {
         this.logger = Logger.getLogger(getClass());
         executorService = Executors.newFixedThreadPool(20);
         this.shutdown = false;
-        this.runnables = new CopyOnWriteArrayList<>();
     }
 
     @Override

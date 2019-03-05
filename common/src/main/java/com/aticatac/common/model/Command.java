@@ -1,7 +1,7 @@
 package com.aticatac.common.model;
 
 public enum Command {
-    UP, DOWN, LEFT, RIGHT, SHOOT;
+    UP, DOWN, LEFT, RIGHT, SHOOT,QUIT,START;
 
     public int commandToInt(Command command) {
         switch (command) {

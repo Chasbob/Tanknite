@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.common.model.Command;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -43,6 +44,10 @@ public class LobbyScreen extends AbstractScreen {
         startTable.top().padTop(100);
         TextButton startButton = UIFactory.createStartButton("Start");
         startTable.add(startButton);
+        startButton.addListener(UIFactory.newListenerEvent(() -> {
+            Screens.INSTANCE.getClient().sendCommand(Command.START);
+            return true;
+        }));
         startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
         dataTable.addActor(startTable);
         //add table to store players joining server

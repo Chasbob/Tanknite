@@ -207,7 +207,9 @@ public class GameScreen extends AbstractScreen {
         this.camera.update();
         tanks.setProjectionMatrix(this.camera.getCamera().combined);
         try {
-            tanks.begin();
+            if (this.root != null) {
+                tanks.begin();
+            }
             childRenderer(this.root);
             tanks.end();
         } catch (InvalidClassInstance | ComponentExistsException e) {

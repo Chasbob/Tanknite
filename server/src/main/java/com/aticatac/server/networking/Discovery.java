@@ -44,7 +44,7 @@ public class Discovery implements Runnable {
         this.logger.trace("Running...");
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(100);
                 broadcast();
             } catch (InterruptedException | IOException e) {
                 this.logger.error(e);
