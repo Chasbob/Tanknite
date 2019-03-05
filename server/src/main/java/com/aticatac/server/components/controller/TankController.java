@@ -7,7 +7,6 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 // components for server side make in server or import from common?
 // needs component of Physics
-
 /**
  * The type TankController.
  */
@@ -20,6 +19,7 @@ public class TankController extends Component {
     public TankController(GameObject gameObject) {
         super(gameObject);
     }
+
     //when sound plays check all tanks in that area and play noise to all those players
 
     /**
@@ -30,7 +30,6 @@ public class TankController extends Component {
     //physics manager will return a value. 0 = no collision, any other will mean collision.
     //else set position to new transform
     public boolean moveUp() {
-        this.getGameObject().getComponent(Time.class).startMoving();
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
         Position newPosition = (Position) physicsData[1];
@@ -50,8 +49,7 @@ public class TankController extends Component {
      * @return the boolean
      */
     // when right arrow/d pressed
-    public boolean moveRight() {
-        this.getGameObject().getComponent(Time.class).startMoving();
+    public boolean moveRight (){
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
         Position newPosition = (Position)physicsData[1];
@@ -75,15 +73,17 @@ public class TankController extends Component {
      * @return the boolean
      */
     // when left arrow/a pressed
-    public boolean moveLeft() {
-        this.getGameObject().getComponent(Time.class).startMoving();
+    public boolean moveLeft (){
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
         Position newPosition = (Position) physicsData[1];
         if (oldPosition.equals(newPosition)) return false;
-        else {
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+
+        else{
+            this.getGameObject().getComponent(Transform.class).SetPosition(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+          //set occupied co ordinates on server data whenever tank moves
         }
 
 
@@ -96,40 +96,27 @@ public class TankController extends Component {
      * @return the boolean
      */
 // when down arrow/s pressed
-    public boolean moveDown() {
-        this.getGameObject().getComponent(Time.class).startMoving();
+    public boolean moveDown () {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
-        Position newPosition = (Position) physicsData[1];
+        Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
+
         else {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+          //set occupied co ordinates on server data whenever tank moves
         }
-
         return true;
     }
 
-    /**
-     * Shoot boolean.
-     *
-     * @return the boolean
-     */
-// call method when space bar pressed
     public boolean shoot() {
-//        // call new shoot method from turretx
-//        // talk to physics?
-//
-//
-//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
-//
-//        if (currentAmmo == 0) return false;
-//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return true;
-// create bullet object current co ordinatesn where shooting tank is, and move
-        //
+      int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+      if (currentAmmo == 0) return false;
+      this.getGameObject().getComponent(Ammo.class).getAmmo();
+      return this.getGameObject().getComponent(TurretController.class).shoot();
     }
 
     /**
@@ -150,38 +137,36 @@ public class TankController extends Component {
     public void dying() {
 //        // tell physics/renderer etc
 //        // can no longer move and will die in 20 seconds
+        //Physics will check the health and prevent it moving if less than 10
 //        //delay
 //        die();
     }
+
 
     /**
      * Die.
      */
     public void die () {
+
+        //remove it from data coordinates
+        DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
+
         //add a powerup into the data that says that this is a power up with location.
         //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
-        //Then when this is collided with by a tank add to tank that component
         GameObject.Destroy(getGameObject());
 
         //TODO potentially not relevant in here
-        /*if (map.getNumberOfAliveTanks() == 1){
-            map.gameFinish();
-           }
+        //Check if the number of tanks alive is 1, if so end the game
+        //if not then remove this tank from number of tanks on the map
 
-        else map.setNumberOfAliveTanks(map.getNumberOfAliveTanks - 1);
-
-
-        if (Map.getNumberOfAliveTanks() == 1){ // in other logic class?
-           // Map or parent
-            Map.gameFinish();
-            // start numberoftanks at 10 and subtract one for each death
-        }*/
     }
+
 
     /**
      * Pick up health.
      */
     public void pickUpHealth () {
+
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
         int newHealth = currentHealth + 10;
         if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()){
@@ -194,28 +179,38 @@ public class TankController extends Component {
     /**
      * Pick up ammo.
      */
+
     public void pickUpAmmo() {
-//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo + 10);
+
+        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo + 10);
+
+
     }
 
     /**
      * Pick up speed.
      */
     public void pickUpSpeed() {
+
+       this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(true);
+       //make this a thread which waits for certain time then
+        // this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(false);
+
+
     }
+
 
     /**
      * Pick up damage.
      */
-    public void pickUpDamage() {
-      // set BulletDamage to true for 20 secs
+    public void pickUpDamage () {
+
+        //this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
+        //make this a thread which waits for certain time then
+        // this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(false);
+
     }
-    /**
-     * Gets health.
-     */
+
+
 }
-
-
-/* Method takes command (check branch) and returns boolean of whether possible
- */
