@@ -2,17 +2,18 @@ package com.aticatac.common.objectsystem;
 
 import com.aticatac.common.components.Texture;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * The type Container.
  */
 public class Container {
-    private final String texture;
-    private final double x;
-    private final double y;
-    private final double r;
-    private final ArrayList<Container> children;
-    private final String id;
+    private String texture;
+    private double x;
+    private double y;
+    private double r;
+    private final HashMap<String,Container> children;
+    private String id;
     private final ObjectType objectType;
 
     /**
@@ -31,9 +32,9 @@ public class Container {
         this.x = g.getTransform().getX();
         this.y = g.getTransform().getY();
         this.r = g.getTransform().getRotation();
-        this.children = new ArrayList<>();
+        this.children = new HashMap<>();
         for (GameObject child : g.getChildren()) {
-            this.children.add(new Container(child));
+            this.children.put(id,new Container(child));
         }
     }
 
@@ -91,7 +92,7 @@ public class Container {
      * @return the children
      */
     public ArrayList<Container> getChildren() {
-        return children;
+        return new ArrayList<>(children.values());
     }
 
     /**
@@ -110,5 +111,35 @@ public class Container {
      */
     public ObjectType getObjectType() {
         return objectType;
+    }
+
+    public void update(GameObject g){
+        this.id = g.getName();
+        if (g.componentExists(Texture.class)) {
+            this.texture = g.getComponent(Texture.class).getTexture();
+        } else {
+            this.texture = "";
+        }
+        this.x = g.getTransform().getX();
+        this.y = g.getTransform().getY();
+        this.r = g.getTransform().getRotation();
+
+        var childrenLocal = new HashMap<>(children);
+        for (GameObject child : g.getChildren()) {
+            if(children.containsKey(child.getName())) {
+                //Child exists
+                childrenLocal.remove(child.getName());
+                children.get(child.getName()).update(child);
+            }else{
+                //Child doesnt exist
+                this.children.put(id,new Container(child));
+            }
+        }
+
+        if(!childrenLocal.isEmpty()){
+            for (var childName: childrenLocal.keySet()){
+                children.remove(childName);
+            }
+        }
     }
 }
