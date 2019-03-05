@@ -41,7 +41,7 @@ public class TankController extends Component {
         else{
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
-            DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            powerUpCheck(oldPosition, physicsData, newPosition);
         }
         return true;
     }
@@ -63,12 +63,32 @@ public class TankController extends Component {
         else{
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(90);
-            DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            powerUpCheck(oldPosition, physicsData, newPosition);
 
         }
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
         //bullet disappears, other collisions have no effect, just stop the current move from happening
         return true;
+    }
+
+    private void powerUpCheck(Position oldPosition, Object[] physicsData, Position newPosition) {
+        DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+        if (physicsData[0] == "ammo"){
+            pickUpAmmo();
+            // destroy powerup object too
+        }
+        if (physicsData[0] == "health"){
+            pickUpHealth();
+
+        }
+        if (physicsData[0] == "speed"){
+            pickUpSpeed();
+
+        }
+        if (physicsData[0] == "damage"){
+            pickUpDamage();
+
+        }
     }
 
     /**
@@ -87,7 +107,7 @@ public class TankController extends Component {
         else{
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(270);
-            DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            powerUpCheck(oldPosition, physicsData, newPosition);
         }
 
 
@@ -109,7 +129,7 @@ public class TankController extends Component {
         else {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(180);
-            DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            powerUpCheck(oldPosition, physicsData, newPosition);
         }
 
         return true;
@@ -208,7 +228,7 @@ public class TankController extends Component {
     /**
      * Pick up damage.
      */
-    public void pickUpNewBullet() {
+    public void pickUpDamage() {
 
         this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
         //make this a thread which waits for certain time then
