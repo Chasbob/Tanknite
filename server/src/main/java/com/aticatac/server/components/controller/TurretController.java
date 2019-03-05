@@ -17,11 +17,16 @@ public class TurretController extends Component {
     }
 
     public boolean shoot () {
+
         //TODO shooting
+
+        //create a bullet object
         BulletObject bullet = new BulletObject("bullet", this.getGameObject()); // get name of bullet
+
         if (this.getGameObject().componentExists(BulletPowerUp.class)){
             bullet.getComponent(Damage.class).setDamage(20);
         }
+
         bullet.getComponent(BulletController.class).moveForwards(); // check if tank has bullet power up component and increase damage if does
         //moves forwards until collision happens then it will be destroyed.
         //constantly check if collided() method is returning true
