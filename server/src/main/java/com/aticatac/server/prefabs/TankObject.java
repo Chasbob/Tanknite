@@ -1,19 +1,18 @@
 package com.aticatac.server.prefabs;
 
+import com.aticatac.common.components.Texture;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-<<<<<<<<< Temporary merge branch 1
 import com.aticatac.common.objectsystem.ObjectType;
-=========
->>>>>>>>> Temporary merge branch 2
-import com.aticatac.server.components.*;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.Physics;
+import com.aticatac.server.components.Time;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
-
-import java.util.HashMap;
 
 public class TankObject extends GameObject {
     //add in a parameter boolean which is ai true or false

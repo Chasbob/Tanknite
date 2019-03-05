@@ -1,17 +1,20 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.networking.Client;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Game;
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.log4j.Logger;
 
 /**
  * The enum Screens.
@@ -21,7 +24,6 @@ public enum Screens {
      * Instance screens.
      */
     INSTANCE;
-
     private final Logger logger;
     private final HashMap<Class, AbstractScreen> screens;
     private Update update;
@@ -35,6 +37,8 @@ public enum Screens {
     private boolean singleplayer;
     private boolean updatePlayers;
     private Client client;
+    private GameObject root;
+
     Screens() {
         try {
             //TODO don't hard code the port.
@@ -54,17 +58,29 @@ public enum Screens {
         screens.put(SplashScreen.class, new SplashScreen());
         screens.put(UsernameScreen.class, new UsernameScreen());
         logger = Logger.getLogger(getClass());
-//        this.updates = new ArrayBlockingQueue<>(1024);
+        //this.updates = new ArrayBlockingQueue<>(1024);
         this.update = new Update(true);
         this.clients = new ArrayList<>();
     }
 
-    public Update getUpdate() {
-        return update;
-    }
-
     public void setUpdate(Update update) {
         this.update = update;
+        try {
+            this.root = new GameObject(this.update.getRootContainer());
+        } catch (InvalidClassInstance | ComponentExistsException e) {
+            this.logger.error(e);
+        }
+    }
+
+    public GameObject getRoot() {
+        try {
+            if (this.update.getRootContainer() != null) {
+                this.root = new GameObject(this.update.getRootContainer());
+            }
+        } catch (InvalidClassInstance | ComponentExistsException e) {
+            this.logger.error(e);
+        }
+        return this.root;
     }
 
     public ArrayList<String> getClients() {
@@ -151,18 +167,28 @@ public enum Screens {
      * @param game the game
      */
 // Initialization with the game class
-    public void initialize(Game game) {
+    public void initialize(Game game, boolean test) {
         this.client = new Client();
         this.logger.warn("Initializing...");
         this.game = game;
         this.isInit = true;
-        getScreen(MainMenuScreen.class).buildStage();
         this.game.setScreen(getScreen(MainMenuScreen.class));
         this.currentScreen = MainMenuScreen.class;
         for (Class key : screens.keySet()) {
             screens.get(key).buildStage();
         }
-        this.logger.warn("End of initialize.");
+        this.logger.warn("End of init");
+        if (test) {
+            try {
+                Screens.INSTANCE.setSingleplayer(true);
+                Server server = new Server();
+                server.start();
+                boolean accepted = Screens.INSTANCE.getClient().connect(Screens.INSTANCE.getLocalhost(), "test");
+                Screens.INSTANCE.showScreen(GameScreen.class);
+            } catch (IOException | InvalidBytes e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

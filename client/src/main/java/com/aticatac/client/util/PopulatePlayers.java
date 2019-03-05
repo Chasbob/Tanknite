@@ -37,7 +37,7 @@ public class PopulatePlayers extends Thread {
         this.logger.trace("Listing...");
         //TODO
         ArrayList<String> players;
-        players = new ArrayList<>(Screens.INSTANCE.getUpdate().getPlayers());
+        players = new ArrayList<>(Screens.INSTANCE.getClients());
         this.logger.trace("Players: " + players.toString());
         this.playerTable.clearChildren();
         this.logger.trace("Got update! " + players.size());

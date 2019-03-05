@@ -29,8 +29,8 @@ public class TankController extends Component {
      */
     //physics manager will return a value. 0 = no collision, any other will mean collision.
     //else set position to new transform
-    // ammo, health, damage, speed
     public boolean moveUp() {
+        this.getGameObject().getComponent(Time.class).startMoving();
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
         Position newPosition = (Position) physicsData[1];
@@ -68,7 +68,8 @@ public class TankController extends Component {
      * @return the boolean
      */
     // when right arrow/d pressed
-    public boolean moveRight (){
+    public boolean moveRight() {
+        this.getGameObject().getComponent(Time.class).startMoving();
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
         Position newPosition = (Position)physicsData[1];
@@ -92,17 +93,16 @@ public class TankController extends Component {
      * @return the boolean
      */
     // when left arrow/a pressed
-    public boolean moveLeft (){
+    public boolean moveLeft() {
+        this.getGameObject().getComponent(Time.class).startMoving();
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
         Position newPosition = (Position) physicsData[1];
         if (oldPosition.equals(newPosition)) return false;
-
-        else{
+        else {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-          //set occupied co ordinates on server data whenever tank moves
         }
 
 
@@ -115,19 +115,18 @@ public class TankController extends Component {
      * @return the boolean
      */
 // when down arrow/s pressed
-    public boolean moveDown () {
+    public boolean moveDown() {
+        this.getGameObject().getComponent(Time.class).startMoving();
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
-        Position newPosition = (Position)physicsData[1];
-
+        Position newPosition = (Position) physicsData[1];
         if (oldPosition.equals(newPosition)) return false;
-
         else {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-          //set occupied co ordinates on server data whenever tank moves
         }
+
         return true;
     }
 
@@ -161,7 +160,6 @@ public class TankController extends Component {
 //        die();
     }
 
-
     /**
      * Die.
      */
@@ -172,7 +170,8 @@ public class TankController extends Component {
 
         //add a powerup into the data that says that this is a power up with location.
         //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
-        GameObject.Destroy(getGameObject());
+        //Then when this is collided with by a tank add to tank that component
+        GameObject.destroy(getGameObject());
 
         //TODO potentially not relevant in here
         //Check if the number of tanks alive is 1, if so end the game

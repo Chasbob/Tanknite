@@ -2,8 +2,11 @@ package com.aticatac.common.components;
 
 import com.aticatac.common.objectsystem.GameObject;
 
+/**
+ * The type Texture.
+ */
 public class Texture extends Component {
-    public String Texture;
+    private String texture;
 
     /**
      * Instantiates a new Component.
@@ -12,12 +15,31 @@ public class Texture extends Component {
      */
     public Texture(GameObject gameObject) {
         super(gameObject);
+        this.setTexture("");
+    }
+
+    /**
+     * Gets texture.
+     *
+     * @return the texture
+     */
+    public String getTexture() {
+        return texture;
+    }
+
+    /**
+     * Sets texture.
+     *
+     * @param texture the texture
+     */
+    public void setTexture(String texture) {
+        this.texture = texture;
     }
 
     @Override
     public String toString() {
-        return "Texture{" +
-                "Texture='" + Texture + '\'' +
-                '}';
+        return "texture{" +
+            "texture='" + texture + '\'' +
+            '}';
     }
 }
