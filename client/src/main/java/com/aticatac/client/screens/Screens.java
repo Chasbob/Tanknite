@@ -7,6 +7,7 @@ import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Game;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -73,7 +74,9 @@ public enum Screens {
 
     public GameObject getRoot() {
         try {
-            this.root = new GameObject(this.update.getRootContainer());
+            if (this.update.getRootContainer() != null) {
+                this.root = new GameObject(this.update.getRootContainer());
+            }
         } catch (InvalidClassInstance | ComponentExistsException e) {
             this.logger.error(e);
         }
@@ -164,7 +167,7 @@ public enum Screens {
      * @param game the game
      */
 // Initialization with the game class
-    public void initialize(Game game) {
+    public void initialize(Game game, boolean test) {
         this.client = new Client();
         this.logger.warn("Initializing...");
         this.game = game;
@@ -175,6 +178,17 @@ public enum Screens {
             screens.get(key).buildStage();
         }
         this.logger.warn("End of init");
+        if (test) {
+            try {
+                Screens.INSTANCE.setSingleplayer(true);
+                Server server = new Server();
+                server.start();
+                boolean accepted = Screens.INSTANCE.getClient().connect(Screens.INSTANCE.getLocalhost(), "test");
+                Screens.INSTANCE.showScreen(GameScreen.class);
+            } catch (IOException | InvalidBytes e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**

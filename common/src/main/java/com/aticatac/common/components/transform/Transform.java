@@ -42,13 +42,17 @@ public class Transform extends Component {
         return position;
     }
 
+    /**
+     * Sets position.
+     *
+     * @param transform the transform
+     */
     public void setPosition(Transform transform) {
-        this.setPosition(transform.getX(), transform.getY());
+        this.setPosition(transform.getRelativeX(), transform.getRelativeY());
     }
-
-    public void setPosition(double x, double y) {
-        position = new Position(x, y);
-    }
+//    public void setPosition(double x, double y) {
+//        position = new Position(x, y);
+//    }
 
     /**
      * Gets x.
@@ -56,7 +60,36 @@ public class Transform extends Component {
      * @return the x
      */
     public double getX() {
+        if (this.getGameObject().hasParent()) {
+            GameObject parent = this.getGameObject().getParent();
+            if (parent.componentExists(Transform.class)) {
+                Transform transform = parent.getTransform();
+                double x = transform.getX();
+                return x + this.position.getX();
+            }
+        }
+//        else {
+//            return getRelativeX();
+//        }
+        return getRelativeX();
+    }
+
+    /**
+     * Gets relative x.
+     *
+     * @return the relative x
+     */
+    public double getRelativeX() {
         return this.position.getX();
+    }
+
+    /**
+     * Gets relative y.
+     *
+     * @return the relative y
+     */
+    public double getRelativeY() {
+        return this.position.getY();
     }
 
     /**
@@ -65,17 +98,22 @@ public class Transform extends Component {
      * @return the y
      */
     public double getY() {
-        return this.position.getY();
+        if (this.getGameObject().hasParent()) {
+            return this.getGameObject().getParent().getTransform().getY() + this.position.getY();
+        } else {
+            return getRelativeY();
+        }
     }
+
     /**
-     * Apply transform.
+     * Transform.
      *
      * @param x the x
      * @param y the y
      */
-//    public void applyTransform(double x, double y) {
-//        this.setPosition(position.getX() + x, position.getY() + y);
-//    }
+    public void transform(double x, double y) {
+        this.setPosition(this.getRelativeX() + x, this.getRelativeY() + y);
+    }
 
     /**
      * Sets position.
@@ -83,30 +121,9 @@ public class Transform extends Component {
      * @param x the x
      * @param y the y
      */
-//  TODO REFACTOR
-    public void applyTransform(double x, double y) {
-        double deltaX = position.getX() - x;
-        double deltaY = position.getY() - y;
-        for (var o : getGameObject().getChildren()) {
-            o.getComponent(Transform.class).applyTransform(x, y);
-        }
-        setTransformWithoutChild(x, y);
-    }
-
-    private void setTransformWithoutChild(double x, double y) {
+    public void setPosition(double x, double y) {
         position.setX(x);
         position.setY(y);
-    }
-
-    /**
-     * Forward.
-     *
-     * @param v the v
-     */
-    public void forward(double v) {
-        double xFactor = Math.sin(Math.toRadians(getRotation()));
-        double yFactor = -Math.cos(Math.toRadians(getRotation()));
-        applyTransform(v * xFactor, v * yFactor);
     }
 
     /**
@@ -119,42 +136,27 @@ public class Transform extends Component {
     }
 
     /**
-     * Sets rotation.
+     * Sets rotation.d
      *
      * @param r the r
      */
     public void setRotation(double r) {
         rotation = r;
-        //TODO wrap in public function as to allow different handling
-        for (var o : getGameObject().getChildren()) {
-            o.getComponent(Transform.class).setRotation(r);
-        }
-    }
-
-    public void setPersonalRotation(double r) {
-        this.rotation = r;
-    }
-
-    /**
-     * Sets view.
-     *
-     * @param p the p
-     */
-    public void setView(Position p) {
-        Position pRoot = getGameObject().getComponent(Transform.class).getPosition();
-        Position pDelta = new Position(p.getX() - pRoot.getX(), p.getY() - pRoot.getY());
-        getGameObject().getComponent(Transform.class).setPosition(pDelta.getX(), pDelta.getY());
     }
 
     @Override
     public String toString() {
-        return "applyTransform{"
-            +
-            "position=" + position
-            +
-            ", rotation=" + rotation
-            +
-            '}'
-            ;
+        return "setPosition{"
+        +
+        "position=" + position
+        +
+        ", rotation=" + rotation
+        +
+        '}'
+        ;
     }
+//
+//    public Position getScreenPosition() {
+//        return screenPosition;
+//    }
 }

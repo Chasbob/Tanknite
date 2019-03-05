@@ -5,8 +5,6 @@ import com.aticatac.common.components.Texture;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
-import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.ObjectType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +29,7 @@ public class GameObject {
      * @throws ComponentExistsException the component exists exception
      */
     public GameObject(Container container)
-        throws InvalidClassInstance, ComponentExistsException {
+    throws InvalidClassInstance, ComponentExistsException {
         this.children = new HashMap<>();
         for (Container child : container.getChildren()) {
             this.children.put(child.getId(), new GameObject(child, this));
@@ -40,7 +38,7 @@ public class GameObject {
         this.components = new HashMap<>();
         this.addComponent(Transform.class);
         this.getComponent(Transform.class).setPosition(transform);
-        this.getComponent(Transform.class).setPersonalRotation(container.getR());
+        this.getComponent(Transform.class).setRotation(container.getR());
         this.name = container.getId();
         this.objectType = container.getObjectType();
         this.parent = Optional.empty();
@@ -59,7 +57,7 @@ public class GameObject {
      * @throws ComponentExistsException the component exists exception
      */
     public GameObject(Container container, GameObject parent)
-        throws InvalidClassInstance, ComponentExistsException {
+    throws InvalidClassInstance, ComponentExistsException {
         this.components = new HashMap<>();
         this.children = new HashMap<>();
         this.parent = Optional.of(parent);
@@ -98,7 +96,7 @@ public class GameObject {
      * @throws ComponentExistsException the component exists exception
      */
     public GameObject(String name, ObjectType objectType)
-        throws InvalidClassInstance, ComponentExistsException {
+    throws InvalidClassInstance, ComponentExistsException {
         this.name = name;
         this.children = new HashMap<>();
         this.components = new HashMap<>();
@@ -116,7 +114,7 @@ public class GameObject {
      * @throws ComponentExistsException the component exists exception
      */
     public GameObject(String name, GameObject parent)
-        throws InvalidClassInstance, ComponentExistsException {
+    throws InvalidClassInstance, ComponentExistsException {
         this(name, parent, ObjectType.OTHER);
     }
 
@@ -130,7 +128,7 @@ public class GameObject {
      * @throws ComponentExistsException the component exists exception
      */
     public GameObject(String name, GameObject parent, ObjectType objectType)
-        throws InvalidClassInstance, ComponentExistsException {
+    throws InvalidClassInstance, ComponentExistsException {
         this.parent = Optional.of(parent);
         this.name = name;
         this.children = new HashMap<>();
@@ -146,6 +144,10 @@ public class GameObject {
      * @param g the g
      */
     public static void destroy(GameObject g) {
+    }
+
+    public boolean hasParent() {
+        return this.parent.isPresent();
     }
 
     /**
@@ -194,7 +196,7 @@ public class GameObject {
      * @throws InvalidClassInstance     the invalid class instance
      */
     public <T extends Component> T addComponent(Class<T> type)
-        throws ComponentExistsException, InvalidClassInstance {
+    throws ComponentExistsException, InvalidClassInstance {
         if (componentExists(type)) {
             throw new ComponentExistsException(type.getName() + "exists");
         }
@@ -276,6 +278,31 @@ public class GameObject {
         return gameObject.parent.isPresent() ? findObject(tag, gameObject.parent.get()) : findObjectHelper(tag, gameObject);
     }
 
+    public GameObject findObject(ObjectType type, GameObject gameObject) {
+        GameObject out;
+        if (gameObject.parent.isPresent()) {
+            out = findObject(type, gameObject.parent.get());
+        } else {
+            out = findObjectHelper(type, gameObject);
+        }
+        return out;
+    }
+
+    private GameObject findObjectHelper(ObjectType t, GameObject g) {
+        GameObject out;
+        if (g.getObjectType() == t) {
+            return g;
+        } else {
+            for (var c : g.children.keySet()) {
+                out = findObjectHelper(t, g.children.get(c));
+                if (out != null) {
+                    return out;
+                }
+            }
+            return null;
+        }
+    }
+
     //TODO these may need to be static.
     private GameObject findObjectHelper(String t, GameObject g) {
         if (g.name.equals(t)) {
@@ -304,7 +331,7 @@ public class GameObject {
     public List<GameObject> getChildren() {
         ArrayList<GameObject> output = new ArrayList<>();
         for (String key :
-            this.children.keySet()) {
+        this.children.keySet()) {
             output.add(this.children.get(key));
         }
         return output;
@@ -316,7 +343,12 @@ public class GameObject {
      * @return the transform
      */
     public Transform getTransform() {
-        return this.getComponent(Transform.class);
+        if (this.componentExists(Transform.class)) {
+            return this.getComponent(Transform.class);
+        } else {
+            System.out.println("No Transform!");
+            return this.getComponent(Transform.class);
+        }
     }
 
     /**
@@ -341,16 +373,16 @@ public class GameObject {
     @Override
     public String toString() {
         return "GameObject{"
-            +
-            "transform="
-            +
-            ", name='"
-            +
-            name
-            +
-            '\''
-            +
-            '}'
-            ;
+        +
+        "transform="
+        +
+        ", name='"
+        +
+        name
+        +
+        '\''
+        +
+        '}'
+        ;
     }
 }

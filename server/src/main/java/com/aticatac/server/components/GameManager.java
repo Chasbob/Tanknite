@@ -6,9 +6,11 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.prefabs.TankObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -17,6 +19,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class GameManager extends Component {
     private HashMap<String, GameObject> playerMap = new HashMap<>();
+    private ArrayList<Float> playerXS;
+    private ArrayList<Float> playerYS;
 
     /**
      * Instantiates a new Component.
@@ -26,7 +30,9 @@ public class GameManager extends Component {
     public GameManager(GameObject gameObject) {
         super(gameObject);
         try {
-            new GameObject("Player Container", this.getGameObject());
+            new GameObject("Player Container", this.getGameObject(), ObjectType.PLAYER_CONTAINER);
+            this.playerXS = new ArrayList<>();
+            this.playerYS = new ArrayList<>();
         } catch (Exception e) {
             this.logger.error(e);
         }
@@ -64,11 +70,11 @@ public class GameManager extends Component {
     public void removeClient(String username) {
         playerMap.remove(username);
     }
-
     //TODO get this to call the correct commands for the correct tank
     //get the children for the game object which connects to all the tanks etc.
     //then look through that list and get the name? then should be able to call the gameobject?
     //when have correct game object then can do the below
+
     /**
      * Player input.
      *
@@ -107,13 +113,24 @@ public class GameManager extends Component {
 
     private TankObject createTank(String player) {
         try {
-            //todo wft is this
             Position position;
             final Manager instance = Manager.INSTANCE;
-            final int xs = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
-            final int ys = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+            boolean taken = true;
+            float xs = 0;
+            float ys = 0;
+            //TODO add a method to ensure tanks dont spawn in to close
+            while (taken) {
+                xs = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+                ys = ThreadLocalRandom.current().nextInt(instance.getMin(), instance.getMax() + 1);
+                if (!(playerXS.contains(xs) && playerYS.contains(ys))) {
+                    taken = false;
+                    playerXS.add(xs);
+                    playerYS.add(ys);
+                    System.out.println("x" + xs);
+                }
+            }
             TankObject tank = new TankObject(getGameObject().getChildren().get(0),
-                player, position = new Position(xs, ys), 100, 30);
+            player, position = new Position(xs, ys), 100, 30);
             DataServer.INSTANCE.setCoordinates(position, "Tank");
             return tank;
             //TODO should these exceptions be caught?
