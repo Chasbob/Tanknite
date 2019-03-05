@@ -23,8 +23,14 @@ public class TurretController extends Component {
         //TODO shooting
 
         //create a bullet object
-        BulletObject bullet = new BulletObject("bullet", this.getGameObject()); // get name of bullet
-        if (this.getGameObject().getComponent(BulletDamage.class).getPowerUpExists()){
+        BulletObject bullet = null; // get name of bullet
+        try {
+            bullet = new BulletObject("bullet", this.getGameObject());
+        } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+            invalidClassInstance.printStackTrace();
+        }
+
+        if (this.getGameObject().componentExists(BulletPowerUp.class)){
             bullet.getComponent(Damage.class).setDamage(20);
         }
 
