@@ -20,4 +20,14 @@ public class Health extends Component {
         this.health = health;
     }
 
+    public int getMaxHealth(){
+
+        return maxhealth;
+    }
+
+    private void setMaxHealth(int health){
+
+        this.health = health;
+    }
+
 }
