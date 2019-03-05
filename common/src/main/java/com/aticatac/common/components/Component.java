@@ -1,14 +1,12 @@
 package com.aticatac.common.components;
 
 import com.aticatac.common.objectsystem.GameObject;
-
-import java.io.Serializable;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 /**
  * The type Component.
  */
-public abstract class Component extends Thread implements Serializable {
+public abstract class Component {
     public final Logger logger;
     /**
      * The Component parent.
@@ -22,7 +20,7 @@ public abstract class Component extends Thread implements Serializable {
      */
     public Component(GameObject gameObject) {
         this.gameObject = gameObject;
-        this.logger = Logger.getLogger(getName());
+        this.logger = Logger.getLogger(getClass());
     }
 
     /**

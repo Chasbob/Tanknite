@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  * The type Abstract screen.
  */
 abstract class AbstractScreen extends Stage implements Screen {
-    private final Logger logger;
+    protected final Logger logger;
     private Class prevScreen;
 
     /**
@@ -21,15 +21,6 @@ abstract class AbstractScreen extends Stage implements Screen {
         super(new StretchViewport(640, 640));
 //        this.prevScreen = (Class<T>) MainMenuScreen.class;
         logger = Logger.getLogger(getClass());
-    }
-
-    /**
-     * Gets logger.
-     *
-     * @return the logger
-     */
-    public Logger getLogger() {
-        return logger;
     }
 
     /**
