@@ -68,8 +68,6 @@ public class TankController extends Component {
               pickUpDamage();
 
             }
-
-
         }
         // TODO, in movement have physics tell if a tank has collided with a power up
         return true;
@@ -94,6 +92,22 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(90);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            if (physicsData[0] == "ammo"){
+                pickUpAmmo();
+                // destroy powerup object too
+            }
+            if (physicsData[0] == "health"){
+                pickUpHealth();
+
+            }
+            if (physicsData[0] == "speed"){
+                pickUpSpeed();
+
+            }
+            if (physicsData[0] == "damage"){
+                pickUpDamage();
+
+            }
 
         }
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
@@ -122,7 +136,22 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-          //set occupied co ordinates on server data whenever tank moves
+            if (physicsData[0] == "ammo"){
+                pickUpAmmo();
+                // destroy powerup object too
+            }
+            if (physicsData[0] == "health"){
+                pickUpHealth();
+
+            }
+            if (physicsData[0] == "speed"){
+                pickUpSpeed();
+
+            }
+            if (physicsData[0] == "damage"){
+                pickUpDamage();
+
+            }
         }
         return true;
     }
@@ -146,6 +175,22 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            if (physicsData[0] == "ammo"){
+                pickUpAmmo();
+                // destroy powerup object too
+            }
+            if (physicsData[0] == "health"){
+                pickUpHealth();
+
+            }
+            if (physicsData[0] == "speed"){
+                pickUpSpeed();
+
+            }
+            if (physicsData[0] == "damage"){
+                pickUpDamage();
+
+            }
         }
         return true;
     }

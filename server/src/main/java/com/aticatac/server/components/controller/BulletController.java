@@ -39,12 +39,12 @@ public class BulletController extends Component {
       //0 nothing, 1 is a wall, 2 is a tank
       if (collisionType != 0) {
         if (collisionType == 1) {
-          GameObject.Destroy(getGameObject());
+          GameObject.destroy(getGameObject());
         } else {
 
           GameObject collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
           collidedTankName.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
-          GameObject.Destroy(getGameObject());
+          GameObject.destroy(getGameObject());
 
                     Destroy(this);
 
