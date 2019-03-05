@@ -43,6 +43,7 @@ public class TankController extends Component {
      */
     //physics manager now returns transform, so if new transform = old transform collision has happened,
     //else set position to new transform
+    // ammo, health, damage, speed
     public boolean moveUp() {
         Position oldPosition = this.gameObject.getComponent(Transform.class).getPosition();
         Position newPosition = this.gameObject.getComponent(PhysicsManager.class).moveUp();
@@ -51,6 +52,24 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+            if (physicsData[0] == "ammo"){
+              pickUpAmmo();
+              // destroy powerup object too
+            }
+            if (physicsData[0] == "health"){
+              pickUpHealth();
+
+            }
+            if (physicsData[0] == "speed"){
+              pickUpSpeed();
+
+            }
+            if (physicsData[0] == "damage"){
+              pickUpDamage();
+
+            }
+
+
         }
         // TODO, in movement have physics tell if a tank has collided with a power up
         return true;
