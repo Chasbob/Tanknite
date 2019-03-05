@@ -6,10 +6,7 @@ import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.DataServer;
-import com.aticatac.server.components.Health;
-import com.aticatac.server.components.Physics;
+import com.aticatac.server.components.*;
 
 // components for server side make in server or import from common?
 // needs component of Physics
@@ -41,7 +38,8 @@ public class TankController extends Component {
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
         Position newPosition = (Position) physicsData[1];
         if (oldPosition.equals(newPosition)) return false;
-        else {
+
+        else{
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
@@ -86,8 +84,10 @@ public class TankController extends Component {
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
         Position newPosition = (Position) physicsData[1];
         if (oldPosition.equals(newPosition)) return false;
-        else {
+
+        else{
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
         }
 
@@ -190,7 +190,7 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
         }
         else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-
+        // only gain health up to maximum
     }
 
     /**
@@ -221,9 +221,11 @@ public class TankController extends Component {
      */
     public void pickUpNewBullet() {
 
-        //20 damage for certain amount of time
+        //this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
+        //make this a thread which waits for certain time then
+        // this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(false);
 
     }
 
-}
 
+}
