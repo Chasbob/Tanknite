@@ -76,7 +76,6 @@ public class Physics extends Component {
 
         //converting the dt from nanoseconds to seconds
         float time = this.getGameObject().getComponent(Time.class).timeDifference();
-        //TODO check the time is being divided by enough?
         float dt = (time)/(10000);
 
         //Set acceleration
@@ -215,8 +214,8 @@ public class Physics extends Component {
      */
     //Allows for power ups that increase this, to happen.
     private void setAcceleration() {
-        if (this.getGameObject().componentExists(SpeedPowerUp.class)) {
-            acceleration = (gravity * (this.getGameObject().getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
+        if (this.getGameObject().getComponent(Acceleration.class).getPowerUpExists()) {
+            acceleration = (gravity * (this.getGameObject().getComponent(Acceleration.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
         } else {
             acceleration = 0;
         }
