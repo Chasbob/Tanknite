@@ -30,7 +30,7 @@ public class TurretController extends Component {
             invalidClassInstance.printStackTrace();
         }
 
-        if (this.getGameObject().componentExists(BulletPowerUp.class)){
+        if (this.getGameObject().getComponent(BulletDamage.class).getPowerUpExists()){
             bullet.getComponent(Damage.class).setDamage(20);
         }
 
