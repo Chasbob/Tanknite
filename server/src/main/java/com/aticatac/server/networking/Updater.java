@@ -29,7 +29,7 @@ public class Updater implements Runnable {
 
     private void updateClientNames() {
         for (String client :
-            Server.ServerData.INSTANCE.getClients().keySet()) {
+        Server.ServerData.INSTANCE.getClients().keySet()) {
             if (!this.update.getPlayers().contains(client)) {
                 this.logger.info("Adding: " + client + " to clientNames.");
                 this.update.addPlayer(client);
@@ -58,6 +58,7 @@ public class Updater implements Runnable {
     public void run() {
         this.logger.trace("Running...");
         while (!Thread.currentThread().isInterrupted()) {
+            double stime = System.nanoTime();
             try {
                 updateClientNames();
                 this.update.setRootContainer(new Container(Manager.INSTANCE.getRoot()));
@@ -76,6 +77,13 @@ public class Updater implements Runnable {
                 this.logger.error(e);
                 return;
             }
+            while (System.nanoTime() - stime < 1000000000 / 60) {
+                try {
+                    Thread.sleep(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         this.logger.warn("Finished!");
     }
@@ -87,6 +95,7 @@ public class Updater implements Runnable {
         this.logger.trace("Broadcasting...");
         this.logger.trace("Player count: " + this.update.getPlayers().size());
         byte[] bytes = ModelReader.toBytes(update);
+        this.logger.warn(bytes.length);
         final Server.ServerData s = Server.ServerData.INSTANCE;
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length, s.getServer(), s.getPort());
         this.logger.trace("Packet: " + packet.getAddress().toString() + ":" + packet.getPort());

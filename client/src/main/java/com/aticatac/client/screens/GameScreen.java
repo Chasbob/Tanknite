@@ -189,8 +189,8 @@ public class GameScreen extends AbstractScreen {
         super.render(delta);
         //TODO figure out why it flickers when going side to side.
         //clear screen
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        Gdx.gl.glClearColor(0, 0, 0, 1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         //set cam for renderer and render map
         if (Screens.INSTANCE.getRoot() != null) {
             this.root = Screens.INSTANCE.getRoot();
@@ -209,9 +209,9 @@ public class GameScreen extends AbstractScreen {
         try {
             if (this.root != null) {
                 tanks.begin();
+                childRenderer(this.root);
+                tanks.end();
             }
-            childRenderer(this.root);
-            tanks.end();
         } catch (InvalidClassInstance | ComponentExistsException e) {
             logger.error(e);
         }
@@ -250,12 +250,16 @@ public class GameScreen extends AbstractScreen {
             popUpTable.setVisible(true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+//            System.out.println("A");
             Screens.INSTANCE.getClient().sendCommand(Command.LEFT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+//            System.out.println("D");
             Screens.INSTANCE.getClient().sendCommand(Command.RIGHT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+//            System.out.println("W");
             Screens.INSTANCE.getClient().sendCommand(Command.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+//            System.out.println("S");
             Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
         }
     }
