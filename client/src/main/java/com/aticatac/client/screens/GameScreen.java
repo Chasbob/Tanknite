@@ -152,7 +152,9 @@ public class GameScreen extends AbstractScreen {
                 while (true) {
                     Thread.sleep(300);
                     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
-                    tankXY.setText(this.tank.getTransform().getX() + ", " + this.tank.getTransform().getY());
+                    if (this.tank != null) {
+                        tankXY.setText(this.tank.getTransform().getX() + ", " + this.tank.getTransform().getY());
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

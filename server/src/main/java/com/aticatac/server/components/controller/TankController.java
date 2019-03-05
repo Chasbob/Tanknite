@@ -164,7 +164,7 @@ public class TankController extends Component {
         //add a powerup into the data that says that this is a power up with location.
         //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
         //Then when this is collided with by a tank add to tank that component
-        GameObject.Destroy(getGameObject());
+        GameObject.destroy(getGameObject());
 
         //TODO potentially not relevant in here
         /*if (map.getNumberOfAliveTanks() == 1){
