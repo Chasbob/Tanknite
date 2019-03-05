@@ -135,9 +135,9 @@ public class TankController extends Component {
     /**
      * Is shot.
      */
-    public void isShot() {
+    public void isShot(int damage) {
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
-        int newHealth = currentHealth - 10;
+        int newHealth = currentHealth - damage;
         this.getGameObject().getComponent(Health.class).setHealth(newHealth);
         if (newHealth > 0 && newHealth <=10){
             dying();
@@ -209,6 +209,7 @@ public class TankController extends Component {
      * Pick up damage.
      */
     public void pickUpDamage() {
+      // set BulletDamage to true for 20 secs
     }
     /**
      * Gets health.
