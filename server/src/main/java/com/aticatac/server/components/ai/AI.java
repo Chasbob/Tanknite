@@ -330,13 +330,13 @@ public class AI extends Component {
      */
     private Command commandToPerform(SearchNode node) {
         // THESE MIGHT BE WRONG
-        if (tankPos.getX() > node.getX()) {
+        if (tankPos.getX() < node.getX()) {
             return Command.RIGHT;
-        } else if (tankPos.getX() < node.getX()) {
+        } else if (tankPos.getX() > node.getX()) {
             return Command.LEFT;
-        } else if (tankPos.getY() > node.getY()) {
-            return Command.UP;
         } else if (tankPos.getY() < node.getY()) {
+            return Command.UP;
+        } else if (tankPos.getY() > node.getY()) {
             return Command.DOWN;
         }
         return null;

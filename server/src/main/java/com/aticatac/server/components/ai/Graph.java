@@ -21,53 +21,48 @@ public class Graph {
     /**
      * The nodes that make up the graph
      */
-    private HashMap<Position, SearchNode> nodes;
+    private ArrayList<SearchNode> nodes;
 
-    /**
-     * Creates a new graph by placing and connecting valid nodes.
-     *
-     * @param separation The distance between two connected nodes
-     * @param width      The number of nodes wide
-     * @param height     The number of nodes high
-     * @param xOffset    The x position offset
-     * @param yOffset    The y position offset
-     */
+
+//    /**
+//     * Creates a new graph by placing and connecting valid nodes.
+//     *
+//     * @param separation The distance between two connected nodes
+//     * @param width      The number of nodes wide
+//     * @param height     The number of nodes high
+//     * @param xOffset    The x position offset
+//     * @param yOffset    The y position offset
+//     */
+//    public Graph(int width, int height, int separation, double xOffset, double yOffset) {
+//        nodes = new HashMap<>();
+//
+//        // Add nodes
+//        for (double i = 0 + xOffset; i < width*separation + xOffset; i += separation) {
+//            for (double j = 0 + yOffset; j < height*separation + yOffset; j += separation) {
+//                if (true /* TODO space is not a wall */)
+//                    nodes.put(new Position(i, j), new SearchNode(i, j));
+//            }
+//        }
+//        // Add connections
+//        for (SearchNode node : nodes.values()) {
+//            if (node.getY() < height*separation + yOffset - separation)
+//                node.addConnection(nodes.get(new Position(node.getX(), node.getY() + separation)));
+//            if (node.getY() > yOffset)
+//                node.addConnection(nodes.get(new Position(node.getX(), node.getY() - separation)));
+//            if (node.getX() < width*separation + xOffset - separation)
+//                node.addConnection(nodes.get(new Position(node.getX() + separation, node.getY())));
+//            if (node.getX() > xOffset)
+//                node.addConnection(nodes.get(new Position(node.getX() - separation, node.getY())));
+//        }
+//    }
+
     public Graph(int width, int height, int separation, double xOffset, double yOffset) {
-        nodes = new HashMap<>();
+        nodes = new ArrayList<SearchNode>();
 
         // Add nodes
         for (double i = 0 + xOffset; i < width*separation + xOffset; i += separation) {
             for (double j = 0 + yOffset; j < height*separation + yOffset; j += separation) {
-                if (true /* TODO space is not a wall */)
-                    nodes.put(new Position(i, j), new SearchNode(i, j));
-            }
-        }
-        // Add connections
-        for (SearchNode node : nodes.values()) {
-            if (node.getY() < height*separation + yOffset - separation)
-                node.addConnection(nodes.get(new Position(node.getX(), node.getY() + separation)));
-            if (node.getY() > yOffset)
-                node.addConnection(nodes.get(new Position(node.getX(), node.getY() - separation)));
-            if (node.getX() < width*separation + xOffset - separation)
-                node.addConnection(nodes.get(new Position(node.getX() + separation, node.getY())));
-            if (node.getX() > xOffset)
-                node.addConnection(nodes.get(new Position(node.getX() - separation, node.getY())));
-        }
-    }
-    // Makes a graph with excluded nodes
-    /*
-    public Graph(int width, int height, int separation, char[][] map) {
-        this.width = width;
-        this.height = height;
-        this.separation = separation;
-        nodes = new ArrayList<SearchNode>();
-
-        // Add nodes
-        for (int i = 0; i < width*separation; i += separation) {
-            for (int j = 0; j < height*separation; j += separation) {
-                if (map[i][j] != 'w') { // w for wall, or something
-                    nodes.add(new SearchNode(i, j));
-                }
+                nodes.add(new SearchNode(i, j));
             }
         }
         // Add connections
@@ -80,7 +75,6 @@ public class Graph {
             }
         }
     }
-    */
 
     /**
      * Uses the pathfinder to generate queue of commands that define a path from one location to another.
@@ -102,7 +96,7 @@ public class Graph {
     public SearchNode getNearestNode(Position position) {
         SearchNode nearestNode = null;
         double distanceToNearestNode = Double.MAX_VALUE;
-        for (SearchNode node : nodes.values()) {
+        for (SearchNode node : nodes) {
             double distance = Math.sqrt(Math.pow(node.getY() - position.getY(), 2) + Math.pow(node.getX() - position.getX(), 2));
             if (distance < distanceToNearestNode) {
                 nearestNode = node;
@@ -120,10 +114,10 @@ public class Graph {
      * @return All the SearchNodes in range
      */
     public ArrayList<SearchNode> getNodesInRange(Position position, int range) {
+        SearchNode nodeAt = getNearestNode(position);
         ArrayList<SearchNode> inRange = new ArrayList<SearchNode>();
-        for (SearchNode node : nodes.values()) {
-            if (Math.abs(node.getX() - position.getX()) <= range ||
-                    Math.abs(node.getY() - position.getY()) <= range) {
+        for (SearchNode node : nodes) {
+            if ((Math.abs(node.getX() - position.getX()) <= range || Math.abs(node.getY() - position.getY()) <= range) && !node.equals(nodeAt)) {
                 inRange.add(node);
             }
         }
