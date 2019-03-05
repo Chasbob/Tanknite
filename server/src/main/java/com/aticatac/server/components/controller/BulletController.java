@@ -13,9 +13,6 @@ import com.aticatac.server.components.ServerData;
  */
 public class BulletController extends Component {
 
-  private int damage = 10; // or just have special case when shooting with powerup?
-  private boolean collided = false;
-
   /**
    * Instantiates a new Component.
    *
@@ -38,12 +35,13 @@ public class BulletController extends Component {
       //0 nothing, 1 is a wall, 2 is a tank
       if (collisionType != 0) {
         if (collisionType == 1) {
-          Destroy(this);
+          GameObject.Destroy(getGameObject());
         } else {
 
-          String collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
-          collidedTankName.getGameObject().getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
-          Destroy(this);
+          GameObject collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
+          collidedTankName.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
+          GameObject.Destroy(getGameObject());
+
 
 
         }
