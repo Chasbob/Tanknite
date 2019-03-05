@@ -4,7 +4,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.BulletPowerUp;
+import com.aticatac.server.components.BulletDamage;
 import com.aticatac.server.components.Damage;
 import com.aticatac.server.prefabs.BulletObject;
 
@@ -24,8 +24,7 @@ public class TurretController extends Component {
 
         //create a bullet object
         BulletObject bullet = new BulletObject("bullet", this.getGameObject()); // get name of bullet
-
-        if (this.getGameObject().componentExists(BulletPowerUp.class)){
+        if (this.getGameObject().getComponent(BulletDamage.class).getPowerUpExists()){
             bullet.getComponent(Damage.class).setDamage(20);
         }
 
