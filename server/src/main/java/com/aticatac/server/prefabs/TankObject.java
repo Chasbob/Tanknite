@@ -7,10 +7,7 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
-import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
+import com.aticatac.server.components.*;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
 
@@ -32,6 +29,7 @@ public class TankObject extends GameObject {
         this.addComponent(Physics.class);
         this.addComponent(Time.class);
         this.addComponent(TankController.class);
+        this.addComponent(Acceleration.class);
 
         if(isAI){
             this.addComponent(AI.class);

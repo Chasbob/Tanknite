@@ -2,12 +2,9 @@ package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
-import com.aticatac.server.components.DataServer;
-import com.aticatac.server.components.Health;
+import com.aticatac.server.components.*;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
 // components for server side make in server or import from common?
 // needs component of Physics
 
@@ -167,22 +164,12 @@ public class TankController extends Component {
 
         //add a powerup into the data that says that this is a power up with location.
         //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
-        //Then when this is collided with by a tank add to tank that component
         GameObject.Destroy(getGameObject());
 
         //TODO potentially not relevant in here
-        /*if (map.getNumberOfAliveTanks() == 1){
-            map.gameFinish();
-           }
+        //Check if the number of tanks alive is 1, if so end the game
+        //if not then remove this tank from number of tanks on the map
 
-        else map.setNumberOfAliveTanks(map.getNumberOfAliveTanks - 1);
-
-
-        if (Map.getNumberOfAliveTanks() == 1){ // in other logic class?
-           // Map or parent
-            Map.gameFinish();
-            // start numberoftanks at 10 and subtract one for each death
-        }*/
     }
 
     /**
@@ -190,23 +177,24 @@ public class TankController extends Component {
      */
     public void pickUpHealth () {
 
-        //add the component to the tank then remove it after certain time
-
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
         int newHealth = currentHealth + 10;
         if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()){
             this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
         }
         else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-        // only gain health up to maximum
+
     }
 
     /**
      * Pick up ammo.
      */
     public void pickUpAmmo() {
-//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo + 10);
+
+        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo + 10);
+
+
     }
 
     /**
@@ -214,23 +202,22 @@ public class TankController extends Component {
      */
     public void pickUpSpeed() {
 
-        //add the component to the tank then remove it after certain time
+       this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(true);
+       //make this a thread which waits for certain time then
+        // this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(false);
 
     }
+
 
     /**
      * Pick up damage.
      */
-    public void pickUpDamage() {
+    public void pickUpNewBullet() {
 
-        //add the component to the tank then remove it after certain time
+        //20 damage for certain amount of time
+
+
 
     }
-    /**
-     * Gets health.
-     */
+
 }
-
-
-/* Method takes command (check branch) and returns boolean of whether possible
- */
