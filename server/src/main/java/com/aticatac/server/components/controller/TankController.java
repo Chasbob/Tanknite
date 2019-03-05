@@ -80,7 +80,7 @@ public class TankController extends Component {
         if (oldPosition.equals(newPosition)) return false;
 
         else{
-            this.getGameObject().getComponent(Transform.class).SetPosition(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
           //set occupied co ordinates on server data whenever tank moves

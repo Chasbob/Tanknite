@@ -47,7 +47,7 @@ public class BulletController extends Component {
         }
       }   // set occupied co ordinates for server data
       else {
-        this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       }
     }
   }
