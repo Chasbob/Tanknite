@@ -64,4 +64,13 @@ public enum DataServer {
 
     }
 
+    /**
+     *
+     * @param key
+     */
+    public void deleteCoordinates(Position key){
+
+        occupiedCoordinates.remove(key);
+    }
+
 }

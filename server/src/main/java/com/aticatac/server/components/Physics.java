@@ -59,6 +59,13 @@ public class Physics extends Component {
         //the position for this tank.
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
 
+        //If the health is below 10 then tank cannot move
+        if((this.getGameObject().getComponent(Health.class).getHealth()) <= 10){
+
+            Object[] cannotMove = {"none", position};
+            return cannotMove;
+        }
+
         //Old Positions
         double oldX = position.getX();
         double oldY = position.getY();
@@ -69,7 +76,6 @@ public class Physics extends Component {
 
         //converting the dt from nanoseconds to seconds
         float time = this.getGameObject().getComponent(Time.class).timeDifference();
-        //TODO check the time is being divided by enough?
         float dt = (time)/(10000);
 
         //Set acceleration
@@ -179,23 +185,6 @@ public class Physics extends Component {
         BidiMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
         String collisionType;
-        // other object = 1, tank = 2, nothing = 0
-
-//        //checks for collisions with
-//        for (int i = 0; i < occupiedCoordinates.size(); i++) {
-//            //Checks if new position is already occupied
-//            //Checks the occupied coordinate isn't the current position.
-//            if (newPosition == occupiedCoordinates.get(i) && occupiedCoordinates.get(i) != oldPosition) {
-//
-//                collisionType = 1;
-//                //Returning a collision type and also the position
-//                Object[] returnPosition = new Object[2];
-//                returnPosition[0] = collisionType;
-//                returnPosition[1] = newPosition;
-//
-//                return returnPosition;
-//            }
-//        }
 
         //Below can be the only part of this that is checked and will then return the type that it is
         if(occupiedCoordinates.containsKey(newPosition)){
@@ -225,8 +214,8 @@ public class Physics extends Component {
      */
     //Allows for power ups that increase this, to happen.
     private void setAcceleration() {
-        if (this.getGameObject().componentExists(SpeedPowerUp.class)) {
-            acceleration = (gravity * (this.getGameObject().getComponent(SpeedPowerUp.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
+        if (this.getGameObject().getComponent(Acceleration.class).getPowerUpExists()) {
+            acceleration = (gravity * (this.getGameObject().getComponent(Acceleration.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
         } else {
             acceleration = 0;
         }
