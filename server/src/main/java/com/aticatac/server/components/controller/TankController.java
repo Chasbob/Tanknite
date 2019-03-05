@@ -7,6 +7,8 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.server.components.*;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.*;
+
 // components for server side make in server or import from common?
 // needs component of Physics
 
@@ -46,7 +48,7 @@ public class TankController extends Component {
         Position newPosition = this.gameObject.getComponent(PhysicsManager.class).moveUp();
         if (oldPosition.equals(newPosition)) return false;
         else{
-            this.getGameObject().getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
         }
@@ -70,7 +72,7 @@ public class TankController extends Component {
         if (oldPosition.equals(newPosition)) return false;
 
         else{
-            this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(90);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
 
@@ -98,7 +100,7 @@ public class TankController extends Component {
         if (oldPosition.equals(newPosition)) return false;
 
         else{
-            this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
           //set occupied co ordinates on server data whenever tank moves
@@ -202,7 +204,7 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
         }
         else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-
+        // only gain health up to maximum
     }
     // only gain health up to maximum
   }
@@ -235,10 +237,11 @@ public class TankController extends Component {
      */
     public void pickUpNewBullet() {
 
-        //20 damage for certain amount of time
-
-
+        //this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
+        //make this a thread which waits for certain time then
+        // this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(false);
 
     }
+
 
 }
