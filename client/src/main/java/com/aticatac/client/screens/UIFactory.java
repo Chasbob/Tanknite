@@ -127,7 +127,7 @@ public class UIFactory {
      * @return the label
      */
     public static Label createLabel(String text) {
-            return new Label(text, Styles.INSTANCE.getLabelStyle());
+        return new Label(text, Styles.INSTANCE.getLabelStyle());
     }
 
     public static Label createGameLabel(String text) {

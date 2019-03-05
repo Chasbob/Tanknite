@@ -2,34 +2,47 @@ package com.aticatac.server.networking;
 
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
-import com.aticatac.server.gamemanager.Manager;
+import com.aticatac.common.objectsystem.Converter;
+import com.aticatac.common.objectsystem.GameObject;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
-import org.apache.log4j.Logger;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type EmptyUpdate.
  *
  * @author Charles de Freitas
  */
-public class Updater implements Runnable {
+public class Updater extends Thread {
+    private final MulticastSocket multicastSocket;
+    private final InetAddress address;
     private final Logger logger;
+    private ConcurrentHashMap<String, Client> clients;
     private Update update;
     private boolean changes;
 
     /**
-     * Instantiates a new Updater.
+     * Instantiates a new EmptyUpdate.
+     *
+     * @param address the address
+     * @throws IOException the io exception
      */
-    Updater() {
+    Updater(InetAddress address, ConcurrentHashMap<String, Client> clients) throws IOException {
         this.logger = Logger.getLogger(getClass());
+        this.address = address;
+        this.multicastSocket = new MulticastSocket();
         this.update = new Update(true);
         this.changes = true;
+        this.clients = clients;
     }
 
     private void updateClientNames() {
         for (String client :
-            Server.ServerData.INSTANCE.getClients().keySet()) {
+                this.clients.keySet()) {
             if (!this.update.getPlayers().contains(client)) {
                 this.logger.info("Adding: " + client + " to clientNames.");
                 this.update.addPlayer(client);
@@ -37,11 +50,14 @@ public class Updater implements Runnable {
             }
         }
     }
-    /**
-     * Add object.
-     *
-     * @param objects the objects
-     */
+
+    public void addObject(GameObject objects) {
+        try {
+            this.update.setObj(Converter.deconstruct(objects));
+        } catch (Exception unchecked) {
+            unchecked.printStackTrace();
+        }
+    }
     /**
      * Add client.
      *
@@ -53,14 +69,24 @@ public class Updater implements Runnable {
             this.changes = true;
         }
     }
+//    /**
+//     * Sets update model.
+//     *
+//     * @param update the update model
+//     */
+//    synchronized void setUpdateModel(Update update) {
+//        //TODO optimise setting new model by calculating a differential
+//        // as to send less data.
+//        this.update = update;
+//    }
 
     @Override
     public void run() {
         this.logger.trace("Running...");
-        while (!Thread.currentThread().isInterrupted()) {
+        super.run();
+        while (!this.isInterrupted()) {
             try {
                 updateClientNames();
-                this.update.setRootContainer(new Container(Manager.INSTANCE.getRoot()));
                 if (this.changes) {
                     this.logger.info("Changes detected.");
                     this.logger.trace("players: " + this.update.getPlayers().toString());
@@ -72,24 +98,28 @@ public class Updater implements Runnable {
                     this.logger.trace("Broadcasting no changes.");
                     broadcast(this.update);
                 }
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    this.logger.error(e);
+//                }
             } catch (IOException e) {
                 this.logger.error(e);
-                return;
             }
         }
-        this.logger.warn("Finished!");
-    }
-
-    private void updateObjects() {
     }
 
     private void broadcast(Update update) throws IOException {
         this.logger.trace("Broadcasting...");
         this.logger.trace("Player count: " + this.update.getPlayers().size());
         byte[] bytes = ModelReader.toBytes(update);
-        final Server.ServerData s = Server.ServerData.INSTANCE;
-        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, s.getServer(), s.getPort());
+        DatagramPacket packet = new DatagramPacket(bytes, bytes.length, this.address, Data.INSTANCE.getPort());
         this.logger.trace("Packet: " + packet.getAddress().toString() + ":" + packet.getPort());
-        s.multicastPacket(packet);
+        try {
+            this.multicastSocket.send(packet);
+        } catch (IOException e) {
+            this.logger.error("EmptyUpdate failed!");
+            this.logger.error(e);
+        }
     }
 }

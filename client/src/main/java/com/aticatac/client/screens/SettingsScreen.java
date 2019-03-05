@@ -20,12 +20,6 @@ public class SettingsScreen extends AbstractScreen {
         Table rootTable = new Table();
         rootTable.setFillParent(true);
         addActor(rootTable);
-        //create table to store setting toggles
-        Table toggleTable = new Table();
-        toggleTable.setFillParent(true);
-        rootTable.addActor(toggleTable);
-        TextButton soundButton = UIFactory.createButton("Toggle Sound");
-        toggleTable.add(soundButton);
         //create table to store back button
         Table backTable = new Table();
         backTable.setFillParent(true);

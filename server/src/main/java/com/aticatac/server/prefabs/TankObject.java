@@ -34,5 +34,8 @@ public class TankObject extends GameObject {
         if(isAI){
             this.addComponent(AI.class);
         }
+
+
+
     }
 }

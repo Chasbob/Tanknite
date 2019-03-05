@@ -1,21 +1,17 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.objectsystem.ObjectHelper;
 import com.aticatac.client.objectsystem.Renderer;
-import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
+import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Converter;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.objectsystem.ObjectType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -26,56 +22,43 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.util.List;
+
 /**
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
     private final SpriteBatch batch;
-    private final SpriteBatch tanks;
-    private final int maxX;
-    private final int maxY;
     private Table popUpTable;
-    private GameObject root;
-    private GameObject tank;
-    private float health;
-    private Label ammoValue;
-    private Label killCount;
-    private Label playerCount;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
-    private Camera camera;
-    private Position playerPos;
-    private Label fpsValue;
-    private Label tankXY;
+    private OrthographicCamera cam;
+    private GameObject root;
+    private float health;
 
     /**
      * Instantiates a new Game screen.
      */
     GameScreen() {
         super();
-        maxX = 1920;
-        maxY = 1920;
         try {
-            health = 1f;
-            ammoValue = UIFactory.createLabel("30");
-            killCount = UIFactory.createLabel("0");
-            playerCount = UIFactory.createLabel("1");
-            fpsValue = UIFactory.createLabel("");
-            tankXY = UIFactory.createLabel("");
-            map = new TmxMapLoader().load("maps/map.tmx");
-            renderer = new OrthogonalTiledMapRenderer(map);
-            this.camera = new Camera(maxX, maxY, getWidth(), getHeight());
-            Gdx.input.setInputProcessor(this);
+            cam = new OrthographicCamera(getWidth(), getHeight());
+            cam.position.set(getWidth() / 2f, getHeight() / 2f, cam.position.z);
+            root = new GameObject("root");
+            //ObjectHelper.AddRenderer(tank.children.get(2), "img/white.png");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        health = 1f;
         batch = new SpriteBatch();
-        tanks = new SpriteBatch();
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void buildStage() {
-        Gdx.graphics.setVSync(false);
+        //load in map
+        map = new TmxMapLoader().load("maps/map.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map);
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
@@ -88,11 +71,9 @@ public class GameScreen extends AbstractScreen {
         countTable.defaults().padTop(10).padLeft(10).left();
         Label players = UIFactory.createLabel("player count: ");
         countTable.add(players);
-        countTable.add(playerCount);
         countTable.row();
         Label kills = UIFactory.createLabel("kills: ");
         countTable.add(kills);
-        countTable.add(killCount);
         //create table for kill feed - BOTTOM LEFT
         Table killTable = new Table();
         killTable.setFillParent(true);
@@ -109,19 +90,6 @@ public class GameScreen extends AbstractScreen {
         ammoTable.defaults().padRight(10).padTop(10).padBottom(20).left();
         Label ammo = UIFactory.createLabel("ammo: ");
         ammoTable.add(ammo);
-        ammoTable.add(ammoValue);
-        Table statsTable = new Table();
-        statsTable.setFillParent(true);
-        rootTable.addActor(statsTable);
-        statsTable.top().right();
-        statsTable.defaults().padRight(10).padTop(10).padBottom(20).left();
-        Label fps = UIFactory.createLabel("FPS: ");
-        Label tank = UIFactory.createLabel("TANK: ");
-        statsTable.add(tank);
-        statsTable.add(tankXY);
-        statsTable.row();
-        statsTable.add(fps);
-        statsTable.add(this.fpsValue);
         //create pop up table
         popUpTable = new Table();
         rootTable.addActor(popUpTable);
@@ -147,91 +115,146 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
-        new Thread(() -> {
-            try {
-                while (true) {
-                    Thread.sleep(300);
-                    this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
-                    if (this.tank != null) {
-                        tankXY.setText(this.tank.getTransform().getX() + ", " + this.tank.getTransform().getY());
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-        (new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    Thread.sleep(16);
-                    backgroundInput();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        })).start();
+//        (new Thread(() -> {
+//            //TODO remove testing thread
+//            while (true) {
+////                try {
+//                    Update update = Screens.INSTANCE.getUpdate();
+//                    System.out.println(Converter.construct(update.getObj()));
+////                } catch (InterruptedException e) {
+////                    e.printStackTrace();
+////                }
+//            }
+//        })).start();
     }
 
     @Override
     public void render(float delta) {
-        super.render(delta);
-        //TODO figure out why it flickers when going side to side.
-        //clear screen
+        // Clear screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //set cam for renderer and render map
-        if (Screens.INSTANCE.getRoot() != null) {
-            this.root = Screens.INSTANCE.getRoot();
-            this.tank = this.root.findObject(ObjectType.TANK, this.root);
-            if (this.tank != null) {
-                this.playerPos = tank.getTransform().getPosition();
-                this.playerPos.setX(1920 - this.playerPos.getX());
-                this.playerPos.setY(1920 - this.playerPos.getY());
-                this.camera.setPosititon((float) playerPos.getX(), (float) playerPos.getY());
+        Update update = Screens.INSTANCE.getUpdate();
+        renderer.setView(cam);
+        renderer.render();
+        input();
+        batch.begin();
+        if (update.getObj() != null) {
+            this.root = Converter.construct(update.getObj());
+            try {
+                if (root != null) {
+                    List<GameObject> children = this.root.getChildren();
+                    for (var c : children) {
+                        if (c.componentExists(com.aticatac.common.components.Texture.class)) {
+                            ObjectHelper.AddRenderer(c, c.getComponent(com.aticatac.common.components.Texture.class).Texture);
+                            //TODO stop making everything a tank bottom?
+                        }
+                    }
+                    ChildRenderer(root);
+                }
+            } catch (Exception e) {
+                this.getLogger().error("Root position: " + this.root.getTransform().toString());
             }
         }
-        renderer.setView(this.camera.getCamera());
-        renderer.render();
-        this.camera.update();
-        tanks.setProjectionMatrix(this.camera.getCamera().combined);
-        try {
-            tanks.begin();
-            childRenderer(this.tank);
-            tanks.end();
-        } catch (InvalidClassInstance | ComponentExistsException e) {
-            logger.error(e);
-        }
-        batch.begin();
         //health bar
-        healthBar();
+        if (health > 0.6f) {
+            batch.setColor(Color.GREEN);
+        } else if (health < 0.6f && health > 0.2f) {
+            batch.setColor(Color.ORANGE);
+        } else {
+            batch.setColor(Color.RED);
+        }
         batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
         batch.setColor(Color.WHITE);
         batch.end();
+        cam.update();
         super.act(delta);
         super.draw();
     }
 
-    private void childRenderer(GameObject g) throws InvalidClassInstance, ComponentExistsException {
-        renderObject(g);
+    private void ChildRenderer(GameObject g) {
         for (var c : g.getChildren()) {
-            childRenderer(c);
+            ChildRenderer(c);
+            if (c.componentExists(Renderer.class)) {
+                Position p = c.getComponent(Transform.class).getPosition();
+                Texture t = c.getComponent(Renderer.class).getTexture();
+                batch.draw(new TextureRegion(t),
+                        (float) p.getX(), (float) p.getY(),
+                        t.getWidth() / 2f, t.getHeight() / 2f,
+                        t.getWidth(), t.getHeight(),
+                        1, 1,
+                        (float) c.getComponent(Transform.class).getRotation());
+            }
         }
     }
 
-    private void renderObject(GameObject c) throws ComponentExistsException, InvalidClassInstance {
-        if (c.hasTexture() && !c.componentExists(Renderer.class)) {
-            c.addComponent(Renderer.class);
-            c.getComponent(Renderer.class).setTexture(c.getTexture());
-        }
-        if (c.componentExists(Renderer.class)) {
-//            var t = ;
-            var pos = c.getComponent(Transform.class).getPosition();
-            tanks.setColor(Color.CORAL);
-            tanks.draw(c.getComponent(Renderer.class).getTexture(), 1920 - (float) pos.getX(), 1920 - (float) pos.getY());
-        }
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        cam.viewportWidth = width;
+        cam.viewportHeight = height;
+        cam.update();
     }
 
-    private void backgroundInput() {
+    /**
+     * Center camera to game object.
+     *
+     * @param gameObject the game object
+     */
+    private void CenterCameraToGameObject(GameObject gameObject) {
+        Position g = gameObject.getComponent(Transform.class).getPosition();
+        Position r = root.getComponent(Transform.class).getPosition();
+        renderer.setView(cam);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        map.dispose();
+        renderer.dispose();
+    }
+
+    /**
+     * Y lib gdx 2 y transform float.
+     *
+     * @param y the y
+     * @return the float
+     */
+//TODO Convert game co-ord to applyTransform.class cord
+    private float YLibGdx2YTransform(float y) {
+        y = y - cam.viewportHeight;
+        y = -y;
+        y = y + cam.viewportWidth / 2f;
+        return y;
+    }
+
+    /**
+     * applyTransform y 2 libgdx float.
+     *
+     * @param y the y
+     * @return the float
+     */
+    public float TransformY2Libgdx(float y) {
+        y = y + cam.viewportWidth / 2f;
+        y = -y;
+        y = y - cam.viewportHeight;
+        return y;
+    }
+
+    /**
+     * X lib gdx 2 x transform float.
+     *
+     * @param x the x
+     * @return the float
+     */
+    private float XLibGdx2XTransform(float x) {
+        x = x + cam.viewportWidth / 2f;
+        return x;
+    }
+
+    /**
+     * input.
+     */
+    private void input() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             //show the pop up table
             popUpTable.setVisible(true);
@@ -245,24 +268,64 @@ public class GameScreen extends AbstractScreen {
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             Screens.INSTANCE.getClient().sendCommand(Command.DOWN);
         }
-    }
-
-    private void healthBar() {
-        if (health > 0.6f) {
-            batch.setColor(Color.GREEN);
-        } else if (health < 0.6f && health > 0.2f) {
-            batch.setColor(Color.ORANGE);
-        } else {
-            batch.setColor(Color.RED);
-        }
-        batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
+        mouseMoved(Gdx.input.getX(), Gdx.input.getY());
     }
 
     @Override
-    public void dispose() {
-        super.dispose();
-        map.dispose();
-        renderer.dispose();
-        batch.dispose();
+    public boolean keyDown(int keycode) {
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return true;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        super.touchDown(screenX, screenY, pointer, button);
+        if (button == Input.Buttons.LEFT) {
+            try {
+                var newX = XLibGdx2XTransform(screenX);
+                var newY = YLibGdx2YTransform(screenY);
+                System.out.println("X:" + newX + "\nY:" + newY);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (button == Input.Buttons.RIGHT) {
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+//        var XMouse = XLibGdx2XTransform(screenX);
+//        var YMouse = YLibGdx2YTransform(screenY);
+//        var XTankTop = tank.getChildren().get(1).transform.getX();
+//        var YTankTop = tank.getChildren().get(1).transform.getY();
+//        var X = XMouse - XTankTop;
+//        var Y = YMouse - YTankTop;
+//        var rotation = Math.atan(Y / X);
+//        if (XMouse >= XTankTop)
+//            tank.getChildren().get(1).transform.setRotation(Math.toDegrees(rotation) - 90f);
+//        else
+//            tank.getChildren().get(1).transform.setRotation(Math.toDegrees(rotation) + 90f);
+        return false;
     }
 }

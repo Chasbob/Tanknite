@@ -3,6 +3,7 @@ package com.aticatac.client.game;
 import com.aticatac.client.screens.Screens;
 import com.aticatac.common.model.Updates.Update;
 import com.badlogic.gdx.Game;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -17,7 +18,7 @@ public class GDXGame extends Game {
         try {
             this.updates = new ArrayBlockingQueue<>(100);
             //TODO show splash screen whilst it loads
-            Screens.INSTANCE.initialize(this,false);
+            Screens.INSTANCE.initialize(this);
         } catch (Exception e) {
             e.printStackTrace();
         }

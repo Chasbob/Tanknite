@@ -1,5 +1,7 @@
 package com.aticatac.server.components.ai;
 
+import com.aticatac.common.model.Command;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -16,6 +18,11 @@ class PathFinder {
         g score = the cost of the path from the start node to the current node
         f score = g + an estimate of the cost from the current node to the goal node
      */
+    private int separation;
+
+    PathFinder(int separation) {
+        this.separation = separation;
+    }
 
     /**
      * Uses A* search to find a path from one node to another.
@@ -24,7 +31,7 @@ class PathFinder {
      * @param goal  The node to end at
      * @return A queue of commands that define a path from the start node to the goal node
      */
-    public Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
+    public Queue<Command> getPathToLocation(SearchNode start, SearchNode goal) {
         LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
         LinkedList<SearchNode> openSet = new LinkedList<SearchNode>();
         openSet.add(start);
@@ -36,7 +43,7 @@ class PathFinder {
         while (!openSet.isEmpty()) {
             SearchNode current = getLowestFScoreNode(openSet, f);
             if (current.equals(goal)) {
-                return reconstructPath(cameFrom, current);
+                return convertToCommands(reconstructPath(cameFrom, current));
             }
             openSet.remove(current);
             closedSet.add(current);
@@ -44,7 +51,7 @@ class PathFinder {
                 if (closedSet.contains(connectedNode)) {
                     continue;
                 }
-                int tempG = g.get(current) + (int)(Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - connectedNode.getY()));
+                int tempG = g.get(current) + 1;
                 if (!openSet.contains(connectedNode)) {
                     openSet.add(connectedNode);
                 } else if (tempG >= g.get(connectedNode)) {
@@ -59,13 +66,54 @@ class PathFinder {
     }
 
     /**
+     * Converts a path of SearchNodes to a queue of Commands that execute the path
+     *
+     * @param path The path to convert
+     * @return A queue of Commands
+     */
+    private Queue<Command> convertToCommands(LinkedList<SearchNode> path) {
+        LinkedList<Command> steps = new LinkedList<Command>();
+        for (int i = 1; i < path.size(); i++) {
+            SearchNode from = path.get(i - 1);
+            SearchNode to = path.get(i);
+            Command command = commandToAdd(from, to);
+            // Adjust amount needed to reach next node
+            for (int j = 0; j < 1; j++) {
+                steps.add(command);
+            }
+        }
+        return steps;
+    }
+
+    /**
+     * Returns the correct command to travel from one node to another.
+     *
+     * @param from The position of the node to travel from
+     * @param to The position of the node to travel to
+     * @return A command that executes the path
+     */
+    private Command commandToAdd(SearchNode from, SearchNode to) {
+        // THESE MIGHT BE WRONG
+        if (from.getX() > to.getX()) {
+            return Command.RIGHT;
+        } else if (from.getX() < to.getX()) {
+            return Command.LEFT;
+        } else if (from.getY() > to.getY()) {
+            return Command.UP;
+        } else if (from.getY() < to.getY()) {
+            return Command.DOWN;
+        }
+        return null;
+    }
+
+    /**
      * Reconstructs the final path when the goal node is reached.
      *
      * @param cameFrom A mapping from node to node, defining for a node which node was previous
      * @param current  The current node
      * @return The final path from the start to goal node
      */
-    private Queue<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
+    private LinkedList<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
         LinkedList<SearchNode> totalPath = new LinkedList<SearchNode>();
         totalPath.add(current);
         while (cameFrom.containsKey(current)) {
