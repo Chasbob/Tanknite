@@ -24,7 +24,7 @@ class PathFinder {
      * @param goal  The node to end at
      * @return A queue of commands that define a path from the start node to the goal node
      */
-    public Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
+    public Queue<SearchNode> getPathToLocation(SearchNode goal, SearchNode start) {
         LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
         LinkedList<SearchNode> openSet = new LinkedList<SearchNode>();
         openSet.add(start);
