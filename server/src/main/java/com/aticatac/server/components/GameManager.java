@@ -35,6 +35,7 @@ public class GameManager extends Component {
     public void addPlayer(String player) {
         if (!playerMap.containsKey(player)) {
             playerMap.put(player, createTank(player, false));
+            playerMap.put(player + "AI", createTank(player + "AI", true));
         }
     }
 

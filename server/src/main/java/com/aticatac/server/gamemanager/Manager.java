@@ -6,7 +6,6 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.GameManager;
-import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 /**
@@ -20,12 +19,10 @@ public enum Manager {
     private final int min = 320;
     private final int max = 1920 - 320;
     private final Logger logger;
-    private final HashMap<String, GameObject> playerMap;
     private GameObject root;
 
     Manager() {
         this.logger = Logger.getLogger(getClass());
-        playerMap = new HashMap<>();
         try {
             this.root = new GameObject("Root");
             this.root.addComponent(GameManager.class);

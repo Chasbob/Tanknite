@@ -1,5 +1,6 @@
 package com.aticatac.server.networking.listen;
 
+import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
@@ -47,6 +48,9 @@ public class CommandListener implements Runnable {
                 CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
                 this.logger.trace("JSON: " + json);
                 Server.ServerData.INSTANCE.putCommand(commandModel);
+                if (commandModel.getCommand() == Command.QUIT) {
+                    Thread.currentThread().interrupt();
+                }
             } catch (IOException | InvalidBytes e) {
                 this.logger.error(e);
                 return;

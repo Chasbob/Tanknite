@@ -39,7 +39,6 @@ public class TankController extends Component {
         Position newPosition = (Position) physicsData[1];
         if (oldPosition.equals(newPosition)) return false;
         else {
-            System.out.println("new coordinates:" + newPosition.getX() +" "+ newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);

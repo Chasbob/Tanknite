@@ -65,6 +65,7 @@ public class GameScreen extends AbstractScreen {
             map = new TmxMapLoader().load("maps/map.tmx");
             renderer = new OrthogonalTiledMapRenderer(map);
             this.camera = new Camera(maxX, maxY, getWidth(), getHeight());
+            this.playerPos = new Position(maxX / 2f, maxY / 2f);
             Gdx.input.setInputProcessor(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,8 +75,15 @@ public class GameScreen extends AbstractScreen {
     }
 
     @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        this.camera.getCamera().viewportHeight = height;
+        this.camera.getCamera().viewportWidth = width;
+    }
+
+    @Override
     public void buildStage() {
-        Gdx.graphics.setVSync(false);
+        Gdx.graphics.setVSync(true);
         //create root table
         Table rootTable = new Table();
         rootTable.setFillParent(true);
@@ -146,6 +154,10 @@ public class GameScreen extends AbstractScreen {
         TextButton quitButton = UIFactory.createBackButton("quit");
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+        quitButton.addListener(UIFactory.newListenerEvent(() -> {
+            Screens.INSTANCE.getClient().quit();
+            return true;
+        }));
         popUpTable.add(quitButton);
         new Thread(() -> {
             try {
@@ -153,7 +165,7 @@ public class GameScreen extends AbstractScreen {
                     Thread.sleep(300);
                     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
                     if (this.tank != null) {
-                        tankXY.setText(this.tank.getTransform().getX() + ", " + this.tank.getTransform().getY());
+                        tankXY.setText(Math.round(this.tank.getTransform().getX()) + ", " + Math.round(this.tank.getTransform().getY()));
                     }
                 }
             } catch (InterruptedException e) {
@@ -163,7 +175,7 @@ public class GameScreen extends AbstractScreen {
         (new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Thread.sleep(16);
+                    Thread.sleep(30);
                     backgroundInput();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -187,16 +199,16 @@ public class GameScreen extends AbstractScreen {
                 this.playerPos = tank.getTransform().getPosition();
                 this.playerPos.setX(1920 - this.playerPos.getX());
                 this.playerPos.setY(1920 - this.playerPos.getY());
-                this.camera.setPosititon((float) playerPos.getX(), (float) playerPos.getY());
             }
         }
+        this.camera.setPosititon((float) playerPos.getX(), (float) playerPos.getY());
         renderer.setView(this.camera.getCamera());
         renderer.render();
         this.camera.update();
         tanks.setProjectionMatrix(this.camera.getCamera().combined);
         try {
             tanks.begin();
-            childRenderer(this.tank);
+            childRenderer(this.root);
             tanks.end();
         } catch (InvalidClassInstance | ComponentExistsException e) {
             logger.error(e);
@@ -224,7 +236,6 @@ public class GameScreen extends AbstractScreen {
             c.getComponent(Renderer.class).setTexture(c.getTexture());
         }
         if (c.componentExists(Renderer.class)) {
-//            var t = ;
             var pos = c.getComponent(Transform.class).getPosition();
             tanks.setColor(Color.CORAL);
             tanks.draw(c.getComponent(Renderer.class).getTexture(), 1920 - (float) pos.getX(), 1920 - (float) pos.getY());

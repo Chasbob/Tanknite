@@ -4,11 +4,10 @@ import com.aticatac.client.screens.Screens;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
+import org.apache.log4j.Logger;
 
 /**
  * The type Update listener.
@@ -33,7 +32,7 @@ class UpdateListener extends Thread {
     public void run() {
         logger.trace("Running...");
         super.run();
-        while (!this.isInterrupted()) {
+        while (!this.isInterrupted() ) {
             try {
                 listen();
             } catch (IOException e) {
@@ -57,5 +56,10 @@ class UpdateListener extends Thread {
             Screens.INSTANCE.setUpdate(update);
             this.logger.trace("added update to queue.");
         }
+    }
+
+    public void quit() {
+        multicastSocket.close();
+        this.interrupt();
     }
 }

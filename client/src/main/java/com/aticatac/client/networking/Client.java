@@ -1,9 +1,11 @@
 package com.aticatac.client.networking;
 
-import com.aticatac.common.model.*;
+import com.aticatac.common.model.Command;
+import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
-import org.apache.log4j.Logger;
-
+import com.aticatac.common.model.Login;
+import com.aticatac.common.model.ModelReader;
+import com.aticatac.common.model.ServerInformation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +13,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import org.apache.log4j.Logger;
 
 /**
  * The type Client.
@@ -22,6 +25,7 @@ public class Client {
     private String id;
     private PrintStream printer;
     private boolean connected;
+    private UpdateListener updateListener;
 
     /**
      * Instantiates a new Client.
@@ -37,7 +41,6 @@ public class Client {
      *
      * @param server the server
      * @param id     the id
-     *
      * @throws IOException  the io exception
      * @throws InvalidBytes the invalid bytes
      */
@@ -71,9 +74,16 @@ public class Client {
         this.logger.trace("Joining multicast: " + address + ":" + port);
         MulticastSocket multicastSocket = new MulticastSocket(port);
         multicastSocket.joinGroup(address);
-        UpdateListener updateListener = new UpdateListener(multicastSocket);
+        updateListener = new UpdateListener(multicastSocket);
         updateListener.start();
         this.logger.trace("Started update listener!");
+    }
+
+    public void quit() {
+        this.logger.warn("Quitting...");
+        sendCommand(Command.QUIT);
+        updateListener.quit();
+        printer.close();
     }
 
     /**

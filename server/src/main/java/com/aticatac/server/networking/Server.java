@@ -1,5 +1,6 @@
 package com.aticatac.server.networking;
 
+import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
@@ -12,9 +13,8 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,28 +44,34 @@ public class Server extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Run");
         this.logger.trace("Running...");
         try {
             this.executorService.submit(new Discovery());
-            System.out.println("added discovery");
+            this.logger.trace("added discovery");
             this.executorService.submit(new NewClients());
-            System.out.println("added new clients");
+            this.logger.trace("added new clients");
             this.executorService.submit(new Updater());
-            System.out.println("added updater");
+            this.logger.trace("added updater");
         } catch (IOException e) {
             this.logger.error(e);
             return;
         }
-        while (!this.shutdown) {
-            try {
-                Manager.INSTANCE.playerInput(ServerData.INSTANCE.popCommand());
-            } catch (InterruptedException e) {
-                this.logger.error(e);
+        new Thread(() -> {
+            while (!this.shutdown) {
+                CommandModel current = ServerData.INSTANCE.popCommand();
+                if (current != null) {
+                    if (current.getCommand() == Command.QUIT) {
+                        ServerData.INSTANCE.removeClient(current.getId());
+                        this.logger.info("Removing " + current.getId());
+                        this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
+                    } else {
+                        Manager.INSTANCE.playerInput(current);
+                    }
+                }
             }
-        }
-        this.executorService.shutdown();
-        ServerData.INSTANCE.shutdown();
+            this.executorService.shutdown();
+            ServerData.INSTANCE.shutdown();
+        }).start();
     }
 
     /**
@@ -83,7 +89,7 @@ public class Server extends Thread {
          * Instance server data.
          */
         INSTANCE;
-        private final BlockingQueue<CommandModel> requests;
+        private final ConcurrentLinkedQueue<CommandModel> requests;
         private final ConcurrentHashMap<String, Client> clients;
         private final Logger logger;
         private ServerSocket serverSocket;
@@ -97,7 +103,7 @@ public class Server extends Thread {
         private int broadcastPort;
 
         ServerData() {
-            this.requests = new ArrayBlockingQueue<>(1024);
+            this.requests = new ConcurrentLinkedQueue<>();
             this.clients = new ConcurrentHashMap<>();
             this.port = 5500;
             this.broadcastPort = 5000;
@@ -111,6 +117,11 @@ public class Server extends Thread {
             } catch (IOException e) {
                 this.logger.error(e);
             }
+        }
+
+        public void removeClient(String id) {
+            clients.get(id).shutdown();
+            clients.remove(id);
         }
 
         /**
@@ -221,10 +232,9 @@ public class Server extends Thread {
          * Gets next request.
          *
          * @return the next request
-         * @throws InterruptedException the interrupted exception
          */
-        public CommandModel popCommand() throws InterruptedException {
-            return this.requests.take();
+        public CommandModel popCommand() {
+            return this.requests.poll();
         }
 
         /**
