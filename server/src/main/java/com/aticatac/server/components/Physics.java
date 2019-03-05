@@ -181,7 +181,7 @@ public class Physics extends Component {
      *
      */
     private Object[] collision(Position newPosition, Position oldPosition) {
-//        ArrayList<Position> occupiedCoordinates = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinates();
+
         BidiMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
         String collisionType;

@@ -15,6 +15,9 @@ public enum DataServer {
 
     INSTANCE;
 
+    //TODO add power ups into this and the walls
+    //ammo, health, damage, speed, <-for the power ups
+
     private BidiMap<Position, String> occupiedCoordinates= new DualHashBidiMap<>();
     DataServer(){
 

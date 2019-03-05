@@ -221,7 +221,7 @@ public class TankController extends Component {
      */
     public void pickUpNewBullet() {
 
-        //this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
+        this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
         //make this a thread which waits for certain time then
         // this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(false);
 
