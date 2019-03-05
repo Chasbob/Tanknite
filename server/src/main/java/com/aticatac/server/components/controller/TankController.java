@@ -2,12 +2,15 @@ package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
-import com.aticatac.server.components.*;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.DataServer;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.Physics;
+
 // components for server side make in server or import from common?
 // needs component of Physics
-
 /**
  * The type TankController.
  */
@@ -20,6 +23,7 @@ public class TankController extends Component {
     public TankController(GameObject gameObject) {
         super(gameObject);
     }
+
     //when sound plays check all tanks in that area and play noise to all those players
 
     /**
@@ -30,17 +34,18 @@ public class TankController extends Component {
     //physics manager will return a value. 0 = no collision, any other will mean collision.
     //else set position to new transform
     public boolean moveUp() {
-        this.getGameObject().getComponent(Time.class).startMoving();
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
-        Position newPosition = (Position) physicsData[1];
+        Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
-        else {
-            System.out.println("new coordinates:" + newPosition.getX() +" "+ newPosition.getY());
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+
+        else{
+            this.getGameObject().getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
         }
+
         return true;
     }
 
@@ -50,8 +55,7 @@ public class TankController extends Component {
      * @return the boolean
      */
     // when right arrow/d pressed
-    public boolean moveRight() {
-        this.getGameObject().getComponent(Time.class).startMoving();
+    public boolean moveRight (){
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
         Position newPosition = (Position)physicsData[1];
@@ -59,7 +63,7 @@ public class TankController extends Component {
         if (oldPosition.equals(newPosition)) return false;
 
         else{
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(90);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
 
@@ -75,18 +79,19 @@ public class TankController extends Component {
      * @return the boolean
      */
     // when left arrow/a pressed
-    public boolean moveLeft() {
-        this.getGameObject().getComponent(Time.class).startMoving();
+    public boolean moveLeft (){
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
-        Position newPosition = (Position) physicsData[1];
+        Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
-        else {
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+
+        else{
+            this.getGameObject().getComponent(Transform.class).SetTransform(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+          //set occupied co ordinates on server data whenever tank moves
         }
-
-
         return true;
     }
 
@@ -96,48 +101,35 @@ public class TankController extends Component {
      * @return the boolean
      */
 // when down arrow/s pressed
-    public boolean moveDown() {
-        this.getGameObject().getComponent(Time.class).startMoving();
+    public boolean moveDown () {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
         Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
-        Position newPosition = (Position) physicsData[1];
+        Position newPosition = (Position)physicsData[1];
+
         if (oldPosition.equals(newPosition)) return false;
+
         else {
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+            this.getGameObject().getComponent(Transform.class).setTransform(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+          //set occupied co ordinates on server data whenever tank moves
         }
-
         return true;
     }
 
-    /**
-     * Shoot boolean.
-     *
-     * @return the boolean
-     */
-// call method when space bar pressed
     public boolean shoot() {
-//        // call new shoot method from turretx
-//        // talk to physics?
-//
-//
-//        int currentAmmo = this.getComponent(Ammo.class).getAmmo();
-//
-//        if (currentAmmo == 0) return false;
-//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
-        return true;
-// create bullet object current co ordinatesn where shooting tank is, and move
-        //
+      int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+      if (currentAmmo == 0) return false;
+      this.getGameObject().getComponent(Ammo.class).getAmmo();
+      return this.getGameObject().getComponent(TurretController.class).shoot();
     }
 
     /**
      * Is shot.
      */
-    public void isShot() {
+    public void isShot(int damage) {
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
-        int newHealth = currentHealth - 10;
+        int newHealth = currentHealth - damage;
         this.getGameObject().getComponent(Health.class).setHealth(newHealth);
         if (newHealth > 0 && newHealth <=10){
             dying();
@@ -153,6 +145,7 @@ public class TankController extends Component {
 //        //delay
 //        die();
     }
+
 
     /**
      * Die.
@@ -172,6 +165,7 @@ public class TankController extends Component {
 
     }
 
+
     /**
      * Pick up health.
      */
@@ -180,10 +174,10 @@ public class TankController extends Component {
         int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
         int newHealth = currentHealth + 10;
         if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()){
-            this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
+            this.getComponent(Health.class).setHealth(maxHealth);
         }
-        else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-
+        else this.getComponent(Health.class).setHealth(newHealth);
+        // only gain health up to maximum
     }
 
     /**
@@ -212,7 +206,10 @@ public class TankController extends Component {
     /**
      * Pick up damage.
      */
-    public void pickUpNewBullet() {
+    public void pickUpDamage () {
+
+    }
+
 
         //20 damage for certain amount of time
 

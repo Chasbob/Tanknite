@@ -1,8 +1,10 @@
 package com.aticatac.server.components.controller;
 
-import com.aticatac.common.components.Ammo;
 import com.aticatac.common.components.Component;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.BulletPowerUp;
+import com.aticatac.server.components.Damage;
+import com.aticatac.server.prefabs.BulletObject;
 
 public class TurretController extends Component {
     /**
@@ -16,17 +18,14 @@ public class TurretController extends Component {
 
     public boolean shoot () {
         //TODO shooting
-        BulletController bullet = new BulletController(this.getGameObject());
-        bullet.moveForwards();
+        BulletObject bullet = new BulletObject("bullet", this.getGameObject()); // get name of bullet
+        if (this.getGameObject().componentExists(BulletPowerUp.class)){
+            bullet.getComponent(Damage.class).setDamage(20);
+        }
+        bullet.getComponent(BulletController.class).moveForwards(); // check if tank has bullet power up component and increase damage if does
         //moves forwards until collision happens then it will be destroyed.
         //constantly check if collided() method is returning true
 
-
-        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-//
-//        if (currentAmmo == 0) return false;
-//        return this.findObject(TurretController,) // get turret for this particular tank, and call shoot method in it
-//        this.getComponent(Ammo.class).setAmmo(currentAmmo - 1);
 
         return true;
     }
