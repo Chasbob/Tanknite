@@ -12,9 +12,12 @@ import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
 
 public class TankObject extends GameObject {
-    public TankObject(GameObject parent, String name, Position p, int health, int ammo, boolean isAI) throws InvalidClassInstance, ComponentExistsException {
-        super(name, parent);
-        this.getComponent(Transform.class).setPosition(p.getX(), p.getY());
+
+    public TankObject (GameObject Parent, String name, Position p,int health,int ammo, boolean isAI) throws InvalidClassInstance, ComponentExistsException {
+        super(name, Parent);
+
+        this.getComponent(Transform.class).setPosition(p.x, p.y);
+
         new GameObject("TankBottom", this);
         new GameObject("TankTop", this);
         this.getChildren().get(0).getComponent(Transform.class).setPosition(p.getX(), p.getY());

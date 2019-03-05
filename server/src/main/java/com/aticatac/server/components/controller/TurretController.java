@@ -1,6 +1,8 @@
 package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.BulletPowerUp;
 import com.aticatac.server.components.Damage;
