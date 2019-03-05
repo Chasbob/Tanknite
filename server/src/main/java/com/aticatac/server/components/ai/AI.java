@@ -65,6 +65,13 @@ public class AI extends Component {
         aimed = false;
         int angleChange = getAngleChange();
         aimAngle += angleChange;
+        // Poll search path if close enough to node
+        double threshold = 3;
+        if (!searchPath.isEmpty()) {
+            if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold && Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
+                searchPath.poll();
+            }
+        }
         // Check for a state change
         state = getStateChange();
         // Return a decision
@@ -191,10 +198,6 @@ public class AI extends Component {
      * @return A command from the current state
      */
     private Command performStateAction() {
-        // Poll queue if at node
-        if (!searchPath.isEmpty() && tankPos.getX() == searchPath.peek().getX() && tankPos.getY() == searchPath.peek().getY())
-            searchPath.poll();
-
         switch (state) {
             case SEARCHING:
                 return performSearchingAction();
@@ -349,7 +352,7 @@ public class AI extends Component {
 
         ArrayList<SearchNode> nodes = graph.getNodesInRange(tankPos, VIEW_RANGE);
         for (SearchNode node : nodes) {
-            if (getEnemiesInRange(node, VIEW_RANGE).isEmpty()) {
+            if (getEnemiesInRange(node, VIEW_RANGE / 4).isEmpty()) {
                 clearPositions.add(node);
             }
         }

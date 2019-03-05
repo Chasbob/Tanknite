@@ -38,8 +38,8 @@ public class Graph {
         // Add nodes
         for (double i = 0 + xOffset; i < width*separation + xOffset; i += separation) {
             for (double j = 0 + yOffset; j < height*separation + yOffset; j += separation) {
-                // TODO: dont place node on wall
-                nodes.put(new Position(i, j), new SearchNode(i, j));
+                if (true /* TODO space is not a wall */)
+                    nodes.put(new Position(i, j), new SearchNode(i, j));
             }
         }
         // Add connections
@@ -113,11 +113,11 @@ public class Graph {
     }
 
     /**
-     * Gets all the nodes in a specified range centered on a given position
+     * Gets all the SearchNodes in a specified range centered on a given position
      *
      * @param position  Center position to check from
      * @param range     Range of consideration
-     * @return
+     * @return All the SearchNodes in range
      */
     public ArrayList<SearchNode> getNodesInRange(Position position, int range) {
         ArrayList<SearchNode> inRange = new ArrayList<SearchNode>();
