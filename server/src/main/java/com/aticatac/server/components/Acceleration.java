@@ -15,6 +15,7 @@ public class Acceleration extends Component {
     /**The Friction Coefficient that this power up provides*/
     private int frictionCoefficient = 0;
 
+    /***/
     private boolean powerUpExists = false;
 
     /**
