@@ -32,7 +32,7 @@ public class Container {
         this.y = g.getTransform().getY();
         this.r = g.getTransform().getRotation();
         this.children = new ArrayList<>();
-        for (GameObject child : g.getChildren()) {
+        for (GameObject child : g.getChildren().values()) {
             this.children.add(new Container(child));
         }
     }

@@ -7,7 +7,6 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -278,6 +277,18 @@ public class GameObject {
         return gameObject.parent.isPresent() ? findObject(tag, gameObject.parent.get()) : findObjectHelper(tag, gameObject);
     }
 
+    public ArrayList<GameObject> getTextured() {
+        ArrayList<GameObject> out = new ArrayList<>();
+        for (GameObject c :
+        this.children.values()) {
+            if (c.componentExists(Texture.class)) {
+                out.add(c);
+            }
+            out.addAll(c.getTextured());
+        }
+        return out;
+    }
+
     public GameObject findObject(ObjectType type, GameObject gameObject) {
         GameObject out;
         if (gameObject.parent.isPresent()) {
@@ -328,13 +339,8 @@ public class GameObject {
      *
      * @return the children
      */
-    public List<GameObject> getChildren() {
-        ArrayList<GameObject> output = new ArrayList<>();
-        for (String key :
-        this.children.keySet()) {
-            output.add(this.children.get(key));
-        }
-        return output;
+    public HashMap<String, GameObject> getChildren() {
+        return children;
     }
 
     /**

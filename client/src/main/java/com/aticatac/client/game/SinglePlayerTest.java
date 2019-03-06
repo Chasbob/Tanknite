@@ -14,7 +14,7 @@ public class SinglePlayerTest extends Game {
         try {
             this.updates = new ArrayBlockingQueue<>(100);
             //TODO show splash screen whilst it loads
-            Screens.INSTANCE.initialize(this,true);
+            Screens.INSTANCE.initialize(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
