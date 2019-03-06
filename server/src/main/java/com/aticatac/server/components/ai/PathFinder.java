@@ -1,5 +1,6 @@
 package com.aticatac.server.components.ai;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -24,7 +25,7 @@ class PathFinder {
      * @param goal  The node to end at
      * @return A queue of commands that define a path from the start node to the goal node
      */
-    public Queue<SearchNode> getPathToLocation(SearchNode goal, SearchNode start) {
+    public Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
         LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
         LinkedList<SearchNode> openSet = new LinkedList<SearchNode>();
         openSet.add(start);
@@ -72,6 +73,7 @@ class PathFinder {
             current = cameFrom.get(current);
             totalPath.add(current);
         }
+        Collections.reverse(totalPath);
         return totalPath;
     }
 
@@ -82,7 +84,7 @@ class PathFinder {
      * @param f       A mapping from search nodes to f score
      * @return The node with the lowest f score from the set of open nodes
      */
-    private SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Double> f) {
+    SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Double> f) {
         double lowestScore = Double.MAX_VALUE;
         SearchNode lowestScoreNode = openSet.get(0);
         for (SearchNode node : openSet) {

@@ -1,12 +1,13 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.objectsystem.GameObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Queue;
-
+// Things left TODO:
+//  - not placing nodes at wrong places
 /**
  * A graph is a collection of connected SearchNodes. Each node in the graph represents a point on the game map that a
  * computer controlled tank can move to.
@@ -21,58 +22,47 @@ public class Graph {
     /**
      * The nodes that make up the graph
      */
-    private ArrayList<SearchNode> nodes;
+    private final HashMap<String, SearchNode> nodes;
+    /**
+     * Physical attributes of the graph
+     */
+    private final double xStart, xEnd, yStart, yEnd, separation;
 
 
-//    /**
-//     * Creates a new graph by placing and connecting valid nodes.
-//     *
-//     * @param separation The distance between two connected nodes
-//     * @param width      The number of nodes wide
-//     * @param height     The number of nodes high
-//     * @param xOffset    The x position offset
-//     * @param yOffset    The y position offset
-//     */
-//    public Graph(int width, int height, int separation, double xOffset, double yOffset) {
-//        nodes = new HashMap<>();
-//
-//        // Add nodes
-//        for (double i = 0 + xOffset; i < width*separation + xOffset; i += separation) {
-//            for (double j = 0 + yOffset; j < height*separation + yOffset; j += separation) {
-//                if (true /* TODO space is not a wall */)
-//                    nodes.put(new Position(i, j), new SearchNode(i, j));
-//            }
-//        }
-//        // Add connections
-//        for (SearchNode node : nodes.values()) {
-//            if (node.getY() < height*separation + yOffset - separation)
-//                node.addConnection(nodes.get(new Position(node.getX(), node.getY() + separation)));
-//            if (node.getY() > yOffset)
-//                node.addConnection(nodes.get(new Position(node.getX(), node.getY() - separation)));
-//            if (node.getX() < width*separation + xOffset - separation)
-//                node.addConnection(nodes.get(new Position(node.getX() + separation, node.getY())));
-//            if (node.getX() > xOffset)
-//                node.addConnection(nodes.get(new Position(node.getX() - separation, node.getY())));
-//        }
-//    }
-
-    public Graph(int width, int height, int separation, double xOffset, double yOffset) {
-        nodes = new ArrayList<SearchNode>();
-
+    /**
+     * Creates a new graph by placing and connecting valid nodes.
+     *
+     * @param separation The distance between two connected nodes
+     * @param width      The number of nodes wide
+     * @param height     The number of nodes high
+     * @param xOffset    The x position offset
+     * @param yOffset    The y position offset
+     */
+    public Graph(int width, int height, double separation, double xOffset, double yOffset) {
+        // Set attributes
+        nodes = new HashMap<>();
+        this.separation = separation;
+        xStart = xOffset;
+        xEnd = width*separation + xOffset;
+        yStart = yOffset;
+        yEnd = height*separation + yOffset;
         // Add nodes
-        for (double i = 0 + xOffset; i < width*separation + xOffset; i += separation) {
-            for (double j = 0 + yOffset; j < height*separation + yOffset; j += separation) {
-                nodes.add(new SearchNode(i, j));
+        for (double i = xStart; i < xEnd; i += separation) {
+            for (double j = yStart; j < yEnd; j += separation) {
+                if (true /* TODO space is not a wall */)
+                    nodes.put(i + "-" + j, new SearchNode(i, j));
             }
         }
         // Add connections
-        // don't make connections if connection is invalid (the node thing might be enough though)
-        for (SearchNode node : nodes) {
-            for (SearchNode otherNode : nodes) {
-                if (Math.sqrt(Math.pow(node.getY() - otherNode.getY(), 2) + Math.pow(node.getX() - otherNode.getX(), 2)) == separation) {
-                    node.addConnection(otherNode);
-                }
-            }
+        for (SearchNode node : nodes.values()) {
+            if (node.getY() < yEnd - separation)
+                node.addConnection(nodes.get(node.getX() + "-" + (node.getY() + separation)));
+            if (node.getY() > yStart)
+                node.addConnection(nodes.get(node.getX() + "-" + (node.getY() - separation)));
+            if (node.getX() < xEnd - separation)
+                node.addConnection(nodes.get((node.getX() + separation) + "-" + node.getY()));
+            if (node.getX() > xStart)
+                node.addConnection(nodes.get((node.getX() - separation) + "-" + node.getY()));
         }
     }
 
@@ -94,16 +84,51 @@ public class Graph {
      * @return The nearest node to the given position
      */
     public SearchNode getNearestNode(Position position) {
-        SearchNode nearestNode = null;
-        double distanceToNearestNode = Double.MAX_VALUE;
-        for (SearchNode node : nodes) {
-            double distance = Math.sqrt(Math.pow(node.getY() - position.getY(), 2) + Math.pow(node.getX() - position.getX(), 2));
-            if (distance < distanceToNearestNode) {
-                nearestNode = node;
-                distanceToNearestNode = distance;
+        //hahaha
+        SearchNode start = nodes.get(xStart+"-"+yStart);
+        LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
+        LinkedList<SearchNode> openSet = new LinkedList<SearchNode>();
+        openSet.add(start);
+        HashMap cameFrom = new HashMap<SearchNode, SearchNode>();
+        HashMap<SearchNode, Integer> g = new HashMap<SearchNode, Integer>();
+        g.put(start, 0);
+        HashMap<SearchNode, Double> f = new HashMap<SearchNode, Double>();
+        f.put(start, Math.pow(start.getY() - position.getY(), 2) + Math.pow(start.getX() - position.getX(), 2));
+        while (!openSet.isEmpty()) {
+            SearchNode current = pf.getLowestFScoreNode(openSet, f);
+            if (Math.sqrt(Math.pow(current.getY() - position.getY(), 2) + Math.pow(current.getX() - position.getX(), 2)) < separation) {
+                return current;
+            }
+            openSet.remove(current);
+            closedSet.add(current);
+            for (SearchNode connectedNode : current.getConnectedNodes()) {
+                if (closedSet.contains(connectedNode)) {
+                    continue;
+                }
+                int tempG = g.get(current) + (int)(Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - connectedNode.getY()));
+                if (!openSet.contains(connectedNode)) {
+                    openSet.add(connectedNode);
+                } else if (tempG >= g.get(connectedNode)) {
+                    continue;
+                }
+                cameFrom.put(connectedNode, current);
+                g.put(connectedNode, tempG);
+                f.put(connectedNode, g.get(connectedNode) + Math.sqrt(Math.pow(connectedNode.getY() - position.getY(), 2) + Math.pow(connectedNode.getX() - position.getX(), 2)));
             }
         }
-        return nearestNode;
+        return null;
+//        SearchNode nearestNode = null;
+//        double distanceToNearestNode = Double.MAX_VALUE;
+//        for (SearchNode node : nodes.values()) {
+//            double distance = Math.sqrt(Math.pow(node.getY() - position.getY(), 2) + Math.pow(node.getX() - position.getX(), 2));
+//            if (distance < distanceToNearestNode) {
+//                nearestNode = node;
+//                distanceToNearestNode = distance;
+//            }
+//            if (distanceToNearestNode < separation)
+//                return nearestNode;
+//        }
+//        return nearestNode;
     }
 
     /**
@@ -114,11 +139,13 @@ public class Graph {
      * @return All the SearchNodes in range
      */
     public ArrayList<SearchNode> getNodesInRange(Position position, int range) {
+        ArrayList<SearchNode> inRange = new ArrayList<>();
         SearchNode nodeAt = getNearestNode(position);
-        ArrayList<SearchNode> inRange = new ArrayList<SearchNode>();
-        for (SearchNode node : nodes) {
-            if ((Math.abs(node.getX() - position.getX()) <= range || Math.abs(node.getY() - position.getY()) <= range) && !node.equals(nodeAt)) {
-                inRange.add(node);
+        for (double i = nodeAt.getX() - (range - (range % separation)); i < nodeAt.getX() + (range - (range % separation)); i += separation) {
+            for (double j = nodeAt.getY() - (range - (range % separation)); j < nodeAt.getY() + (range - (range % separation)); j += separation) {
+                if (i >= xStart && i < xEnd && j >= yStart && j < yEnd && !(nodeAt.getX() == i && nodeAt.getY() == j)) {
+                    inRange.add(nodes.get(i + "-" + j));
+                }
             }
         }
         return inRange;

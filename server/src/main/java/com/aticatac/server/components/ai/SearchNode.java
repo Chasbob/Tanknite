@@ -36,19 +36,6 @@ class SearchNode extends Position {
         return connectedNodes;
     }
 
-    /*
-    public ArrayList<SearchNode> getDescendantNodes(int depth) {
-        if (depth == 1) {
-            return getConnectedNodes();
-        }
-        ArrayList<SearchNode> descendants = new ArrayList<>();
-        for (SearchNode node : getConnectedNodes()) {
-            descendants.addAll(getDescendantNodes(depth - 1));
-        }
-        return descendants;
-    }
-    */
-
     /**
      * Adds a connection to another SearchNode.
      *

@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
-
+// Things left TODO:
+//  - line of sight
+//  - powerup stuff
+//  - getting information, all enemies, all powerups
 /**
  * AI
  *
@@ -26,7 +29,7 @@ public class AI extends Component {
     private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
     private State state;
     private State prevState;
-    private Queue<SearchNode> searchPath;
+    private Queue<SearchNode> searchPath; // current path being executed
     private ArrayList<GameObject> enemiesInRange;
     private ArrayList<GameObject> powerupsInRange;
     //private Something idealPowerup;
@@ -349,30 +352,13 @@ public class AI extends Component {
      */
     private ArrayList<Position> getClearPositions() {
         ArrayList<Position> clearPositions = new ArrayList<Position>();
-
         ArrayList<SearchNode> nodes = graph.getNodesInRange(tankPos, VIEW_RANGE);
         for (SearchNode node : nodes) {
             if (getEnemiesInRange(node, VIEW_RANGE / 4).isEmpty()) {
                 clearPositions.add(node);
             }
         }
-
         return clearPositions;
-        /*
-        OLD VERSION
-        for (double i = tankPos.getX() - VIEW_RANGE; i < tankPos.getX() + VIEW_RANGE; i++) {
-            for (double j = tankPos.getY() - VIEW_RANGE; j < tankPos.getY() + VIEW_RANGE; j++) {
-                // A position outside the map is not valid
-                if (i >= 0 && i < graph.getWidth() && j >= 0 && j < graph.getHeight()) {
-                    Position openPos = new Position(i, j);
-                    if (getEnemiesInRange(openPos, 4).isEmpty()) {
-                        clearPositions.add(openPos);
-                    }
-                }
-            }
-        }
-        return clearPositions;
-        */
     }
 
     /**
@@ -397,7 +383,7 @@ public class AI extends Component {
         Position closestClearPosition = null;
         double distanceToClosestPosition = Double.MAX_VALUE;
         for (Position clearPosition : clearPositions) {
-            double distanceToTank = Math.sqrt(Math.pow(clearPosition.getY() - tankPos.getY(), 2) + Math.pow(clearPosition.getX() - tankPos.getX(), 2));
+            double distanceToTank = Math.pow(clearPosition.getY() - tankPos.getY(), 2) + Math.pow(clearPosition.getX() - tankPos.getX(), 2);
             if (distanceToTank < distanceToClosestPosition) {
                 closestClearPosition = clearPosition;
                 distanceToClosestPosition = distanceToTank;
@@ -512,7 +498,7 @@ public class AI extends Component {
         GameObject closestObject = null;
         double distanceToClosestObject = Double.MAX_VALUE;
         for (GameObject object : objectsInRange) {
-            double distanceToTank = Math.sqrt(Math.pow(object.getComponent(Transform.class).getY() - tankPos.getY(), 2) + Math.pow(object.getComponent(Transform.class).getX() - tankPos.getX(), 2));
+            double distanceToTank = Math.pow(object.getComponent(Transform.class).getY() - tankPos.getY(), 2) + Math.pow(object.getComponent(Transform.class).getX() - tankPos.getX(), 2);
             if (distanceToTank < distanceToClosestObject) {
                 closestObject = object;
                 distanceToClosestObject = distanceToTank;
