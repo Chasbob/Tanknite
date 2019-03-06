@@ -147,17 +147,17 @@ public class GameScreen extends AbstractScreen {
         //TODO add proper exiting of server
         quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
         popUpTable.add(quitButton);
-        new Thread(() -> {
-            try {
-                while (true) {
-                    Thread.sleep(300);
-                    this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
-                    tankXY.setText(this.tank.getTransform().getX() + ", " + this.tank.getTransform().getY());
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+//        new Thread(() -> {
+//            try {
+//                while (true) {
+//                    Thread.sleep(300);
+//                    this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
+//                    tankXY.setText(this.tank.getTransform().getX() + ", " + this.tank.getTransform().getY());
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
         (new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 try {

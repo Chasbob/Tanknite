@@ -10,8 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Main menu screen.
  */
 public class MainMenuScreen extends AbstractScreen {
-//    private List<TextButton> widgetList;
-//    private HashMap<String, Widget> widgetHashMap;
 
     /**
      * Instantiates a new Main menu screen.
@@ -19,9 +17,6 @@ public class MainMenuScreen extends AbstractScreen {
     MainMenuScreen() {
         super();
     }
-//    public List<TextButton> getWidgetList() {
-//        return widgetList;
-//    }
 
     @Override
     public void buildStage() {
