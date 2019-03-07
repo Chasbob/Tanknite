@@ -15,11 +15,12 @@ public class Acceleration extends Component {
     /**The Friction Coefficient that this power up provides*/
     private int frictionCoefficient = 0;
 
+    /**Power up exists check*/
     private boolean powerUpExists = false;
 
     /**
-     * Creates a new SpeedPowerUp with a parent.
-     * @param componentParent The parent of the SpeedPowerUp.
+     * Creates a new Acceleration component with a parent.
+     * @param componentParent The parent of the Acceleration component
      */
     public Acceleration (GameObject componentParent) {
         super(componentParent);
@@ -36,8 +37,8 @@ public class Acceleration extends Component {
 
 
     /**
-     *
-     * @return
+     * Gets it the power up exists
+     * @return boolean whether power up exists or not
      */
     public boolean getPowerUpExists(){
 
@@ -47,8 +48,8 @@ public class Acceleration extends Component {
 
 
     /**
-     *
-     * @param exists
+     *Sets whether the power up exists or not
+     * @param exists boolean true if the power up exists, false if not.
      */
     public void setPowerUpExists(boolean exists){
 
