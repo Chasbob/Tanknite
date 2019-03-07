@@ -42,7 +42,12 @@ public class Updater implements Runnable {
     while (!Thread.currentThread().isInterrupted()) {
       double stime = System.nanoTime();
       updatePlayers();
-      tcpBroadcast();
+//      tcpBroadcast();
+      try {
+        broadcast();
+      } catch (IOException e) {
+        this.logger.error(e);
+      }
 //      try {
 ////        this.update.setRootContainer(new Container(Manager.INSTANCE.getRoot()));
 //        if (this.changes) {
