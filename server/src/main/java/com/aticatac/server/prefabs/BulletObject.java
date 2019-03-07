@@ -6,6 +6,7 @@ import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.Damage;
 import com.aticatac.server.components.Physics;
 import com.aticatac.server.components.Time;
+import com.aticatac.server.components.controller.BulletController;
 
 public class BulletObject extends GameObject {
     /**

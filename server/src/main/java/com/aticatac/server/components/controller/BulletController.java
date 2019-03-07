@@ -31,14 +31,15 @@ public class BulletController extends Component {
       //Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
       Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
       Position newPosition = (Position) physicsData[1];
-      int collisionType = (Integer) physicsData[0];
-      //0 nothing, 1 is a wall, 2-5 are ppwerups, oterwise a tank id
+      String collisionType = (String) physicsData[0];
       // TODO: Check whether not ammo, not health, not wall etc to work out whether tank, then store tank id in bidimap so can call isShoot on that
-      if (collisionType != 0 && collisionType != 2 && collisionType != 3 && collisionType != 4 && collisionType != 5) {
-        if (collisionType == 1) {
+      if (!(collisionType.equals("none")) && !(collisionType.equals("health")) && !(collisionType.equals("speed")) && !(collisionType.equals("ammo")) && !(collisionType.equals("damage"))){
+        if (collisionType.equals("wall")) {
           GameObject.destroy(getGameObject());
         } else {
           // collided with tank
+          // might need to disallow usernames 0-5?
+          // TODO: check when tanks created, if the objects are named after username, need a way to access
           // String collidedTankName = collisionType;
           //GameObject collidedTankName = DataServer.INSTANCE.getOccupiedCoordinates();
 

@@ -142,13 +142,13 @@ public class TankController extends Component {
 
 
   public void powerUpChecker(String powerUpId) {
-    if (powerUpId == "ammo") {
+    if (powerUpId.equals("ammo")) {
       pickUpAmmo();
-    } else if (powerUpId == "health") {
+    } else if (powerUpId.equals("health")) {
       pickUpHealth();
-    } else if (powerUpId == "speed") {
+    } else if (powerUpId.equals("speed")) {
       pickUpSpeed();
-    } else if (powerUpId == "damage") {
+    } else if (powerUpId.equals("damage")) {
       pickUpDamage();
     }
   }
