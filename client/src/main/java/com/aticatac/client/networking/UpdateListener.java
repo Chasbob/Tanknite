@@ -55,6 +55,9 @@ class UpdateListener extends Thread {
     //TODO refactor to use queue all the way down
     this.logger.trace("Player count: " + update.getPlayers().size());
     if (update.isChanged()) {
+      if (this.queue.size() > 5) {
+        this.queue.clear();
+      }
       this.queue.add(update);
       this.logger.trace("added update to queue.");
     }
