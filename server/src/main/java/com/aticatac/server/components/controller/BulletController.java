@@ -4,12 +4,8 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.Damage;
+import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Physics;
-
-import static com.aticatac.common.objectsystem.GameObject.Destroy;
-import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.ServerData;
 
 
 /**
@@ -41,10 +37,12 @@ public class BulletController extends Component {
         if (collisionType == 1) {
           GameObject.destroy(getGameObject());
         } else {
+          //GameObject collidedTankName = DataServer.INSTANCE.getOccupiedCoordinates();
 
-          GameObject collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
-          collidedTankName.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
+          //GameObject collidedTankName = this.getGameObject().getComponent(DataServer.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
+          //collidedTankName.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
           GameObject.destroy(getGameObject());
+          // copy bullet controller from physics
 
                     Destroy(this);
 
