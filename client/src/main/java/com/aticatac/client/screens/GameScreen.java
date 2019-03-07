@@ -204,9 +204,9 @@ public class GameScreen extends AbstractScreen {
         this.direction.setText("LEFT");
       }
     }
+    this.camera.update();
     renderer.setView(this.camera.getCamera());
     renderer.render();
-    this.camera.update();
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
     tanks.begin();
     for (int i = 0; i < update.getPlayers().values().size(); i++) {
