@@ -4,7 +4,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.DataServer;
+import com.aticatac.server.components.Damage;
 import com.aticatac.server.components.Physics;
 
 
@@ -36,28 +36,28 @@ public class BulletController extends Component {
       if (!(collisionType.equals("none")) && !(collisionType.equals("health")) && !(collisionType.equals("speed")) && !(collisionType.equals("ammo")) && !(collisionType.equals("damage"))){
         if (collisionType.equals("wall")) {
           GameObject.destroy(getGameObject());
+          return;
         } else {
           // collided with tank
-          // might need to disallow usernames 0-5?
           // TODO: check when tanks created, if the objects are named after username, need a way to access
-          // String collidedTankName = collisionType;
+          String collidedTankName = collisionType;
           //GameObject collidedTankName = DataServer.INSTANCE.getOccupiedCoordinates();
 
-          //GameObject collidedTankName = this.getGameObject().getComponent(DataServer.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
-          //collidedTankName.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
+          //GameObject collidedTankName = this.getGameObject().getComponent(DataServer.class).getOccupiedCoordinatesTank().getKey(newPosition);
+          // TODO: Work out how to get tank gsme object from username string
+          GameObject collidedTank = collidedTankName.findObject("collidedTankName"); // wait for second argument to be removed
+          collidedTankName.getGameObject().getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
           GameObject.destroy(getGameObject());
-          // copy bullet controller from physics
+          return;
+
 
 
         }
-      }   // set occupied co ordinates for server data
+      }
       else {
         this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY()); // Hasnt collided
       }
     }
-    // physics handles bullet collision
-
-    // make a method for bullet to disappear
   }
 
 }
