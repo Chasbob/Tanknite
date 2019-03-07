@@ -49,12 +49,23 @@ public enum Data {
     logger = Logger.getLogger(getClass());
   }
 
+  /**
+   * Next update update.
+   *
+   * @return the update
+   */
   public Update nextUpdate() {
     return client.nextUpdate();
   }
-public String getID(){
+
+  /**
+   * Gets id.
+   *
+   * @return the id
+   */
+  public String getID() {
     return this.client.getId();
-}
+  }
 
   /**
    * Gets clients.

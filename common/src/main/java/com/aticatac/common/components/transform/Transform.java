@@ -8,7 +8,7 @@ import com.aticatac.common.objectsystem.GameObject;
  */
 public class Transform extends Component {
   private Position position;
-  private double rotation = 0;
+  private int rotation = 0;
 
   /**
    * Instantiates a new Component.
@@ -46,12 +46,12 @@ public class Transform extends Component {
    *
    * @return the x
    */
-  public double getX() {
+  public int getX() {
     if (this.getGameObject().hasParent()) {
       GameObject parent = this.getGameObject().getParent();
       if (parent.componentExists(Transform.class)) {
         Transform transform = parent.getTransform();
-        double x = transform.getX();
+        int x = transform.getX();
         return x + this.position.getX();
       }
     }
@@ -66,7 +66,7 @@ public class Transform extends Component {
    *
    * @return the relative x
    */
-  public double getRelativeX() {
+  public int getRelativeX() {
     return this.position.getX();
   }
 
@@ -75,7 +75,7 @@ public class Transform extends Component {
    *
    * @return the relative y
    */
-  public double getRelativeY() {
+  public int getRelativeY() {
     return this.position.getY();
   }
 
@@ -84,7 +84,7 @@ public class Transform extends Component {
    *
    * @return the y
    */
-  public double getY() {
+  public int getY() {
     if (this.getGameObject().hasParent()) {
       return this.getGameObject().getParent().getTransform().getY() + this.position.getY();
     } else {
@@ -98,7 +98,7 @@ public class Transform extends Component {
    * @param x the x
    * @param y the y
    */
-  public void transform(double x, double y) {
+  public void transform(int x, int y) {
     this.setPosition(this.getRelativeX() + x, this.getRelativeY() + y);
   }
 
@@ -108,7 +108,7 @@ public class Transform extends Component {
    * @param x the x
    * @param y the y
    */
-  public void setPosition(double x, double y) {
+  public void setPosition(int x, int y) {
     position.setX(x);
     position.setY(y);
   }
@@ -118,7 +118,7 @@ public class Transform extends Component {
    *
    * @return the rotation
    */
-  public double getRotation() {
+  public int getRotation() {
     return rotation;
   }
 
@@ -127,7 +127,7 @@ public class Transform extends Component {
    *
    * @param r the r
    */
-  public void setRotation(double r) {
+  public void setRotation(int r) {
     rotation = r;
   }
 

@@ -36,6 +36,11 @@ public class Client {
     queue = new ConcurrentLinkedQueue<>();
   }
 
+  /**
+   * Next update update.
+   *
+   * @return the update
+   */
   public Update nextUpdate() {
     return this.queue.poll();
   }

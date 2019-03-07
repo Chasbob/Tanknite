@@ -198,7 +198,7 @@ public class GameObject {
    *
    * @param rotation the rotation
    */
-  public void setRotation(double rotation) {
+  public void setRotation(int rotation) {
     this.getComponent(Transform.class).setRotation(rotation);
   }
 
@@ -317,7 +317,7 @@ public class GameObject {
    * @param x the x
    * @param y the y
    */
-  public void setTransform(double x, double y) {
+  public void setTransform(int x, int y) {
     this.getComponent(Transform.class).setPosition(x, y);
   }
 

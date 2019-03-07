@@ -7,12 +7,12 @@ import com.aticatac.common.objectsystem.GameObject;
  *
  */
 public class BulletPowerUp extends Component {
-
-    /**
-     * Creates a new bullet power up with a parent
-     * @param gameObject
-     */
-    public BulletPowerUp(GameObject gameObject) {
-        super(gameObject);
-    }
+  /**
+   * Creates a new bullet power up with a parent
+   *
+   * @param gameObject
+   */
+  public BulletPowerUp(GameObject gameObject) {
+    super(gameObject);
+  }
 }

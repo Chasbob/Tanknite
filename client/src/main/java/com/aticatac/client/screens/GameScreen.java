@@ -31,6 +31,9 @@ public class GameScreen extends AbstractScreen {
   private final SpriteBatch tanks;
   private final int maxX;
   private final int maxY;
+  /**
+   * The Update.
+   */
   Update update;
   private Table popUpTable;
   private GameObject root;
@@ -67,7 +70,7 @@ public class GameScreen extends AbstractScreen {
       tankTexture = new Texture("img/tank.png");
       renderer = new OrthogonalTiledMapRenderer(map);
       this.camera = new Camera(maxX, maxY, getWidth(), getHeight());
-      this.playerPos = new Position(maxX / 2f, maxY / 2f);
+      this.playerPos = new Position(maxX / 2, maxY / 2);
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();

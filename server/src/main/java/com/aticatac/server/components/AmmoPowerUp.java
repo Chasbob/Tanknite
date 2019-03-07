@@ -6,14 +6,13 @@ import com.aticatac.common.objectsystem.GameObject;
 /**
  *
  */
-
 public class AmmoPowerUp extends Component {
-
-    /**
-     * Creates a new ammo power up with a parent
-     * @param gameObject
-     */
-    public AmmoPowerUp(GameObject gameObject) {
-        super(gameObject);
-    }
+  /**
+   * Creates a new ammo power up with a parent
+   *
+   * @param gameObject
+   */
+  public AmmoPowerUp(GameObject gameObject) {
+    super(gameObject);
+  }
 }

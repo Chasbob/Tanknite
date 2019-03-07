@@ -10,9 +10,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
 import java.util.ArrayList;
 
+/**
+ * The type List servers.
+ */
 public class ListServers extends Thread {
   private final Table serversTable;
 
+  /**
+   * Instantiates a new List servers.
+   *
+   * @param serverTable the server table
+   */
   public ListServers(Table serverTable) {
     this.serversTable = serverTable;
   }

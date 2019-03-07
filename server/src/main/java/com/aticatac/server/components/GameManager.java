@@ -11,7 +11,6 @@ import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.prefabs.TankObject;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.log4j.Level;
 
 public class GameManager extends Component {
   private HashMap<String, GameObject> playerMap = new HashMap<>();
@@ -36,7 +35,8 @@ public class GameManager extends Component {
   public void addPlayer(String player) {
     if (!playerMap.containsKey(player)) {
       playerMap.put(player, createTank(player, false));
-      playerMap.put(player + "AI", createTank(player + "AI", true));
+      Position p = playerMap.get(player).getTransform().getPosition();
+      playerMap.put(player + "AI", createTank(player + "AI", true, p.getX(), p.getY() + 40));
     }
   }
 
@@ -98,10 +98,25 @@ public class GameManager extends Component {
       isAI);
       DataServer.INSTANCE.setCoordinates(position, "Tank");
       return tank;
-    } catch (InvalidClassInstance invalidClassInstance) {
-      invalidClassInstance.printStackTrace();
-    } catch (ComponentExistsException e) {
-      e.printStackTrace();
+    } catch (InvalidClassInstance | ComponentExistsException e) {
+      this.logger.error(e);
+    }
+    return null;
+  }
+
+  public TankObject createTank(String player, boolean isAI, int x, int y) {
+    try {
+      Position position = new Position(x, y);
+      TankObject tank = new TankObject(getGameObject().getChildren().get("Player Container"),
+      player,
+      position,
+      100,
+      30,
+      isAI);
+      DataServer.INSTANCE.setCoordinates(position, "Tank");
+      return tank;
+    } catch (InvalidClassInstance | ComponentExistsException e) {
+      this.logger.error(e);
     }
     return null;
   }
