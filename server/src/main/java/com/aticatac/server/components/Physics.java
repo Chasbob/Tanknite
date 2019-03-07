@@ -197,7 +197,7 @@ public class Physics extends Component {
             //Returning a collision type and also the position
             Object[] returnPosition = new Object[2];
             returnPosition[0] = collisionType;
-            returnPosition[1] = newPosition;
+            returnPosition[1] = oldPosition;
 
             return returnPosition;
         }

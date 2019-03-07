@@ -18,10 +18,33 @@ public enum DataServer {
     //TODO add power ups into this and the walls
     //ammo, health, damage, speed, <-for the power ups
 
+    /***/
     private BidiMap<Position, String> occupiedCoordinates= new DualHashBidiMap<>();
+
+    /**
+     *
+     */
     DataServer(){
 
-        //TODO Remove this when the map is added but for now add in coordinates for edges of map
+
+        //for loop that creates a position then sets it as a wall:
+        for(int i=0; i<1921; i++){
+
+            Position position = new Position(i, 0);
+
+            setCoordinates(position, "wall");
+
+        }
+
+
+        for(int j=0; j<1921; j++){
+
+            Position position = new Position(0, j);
+
+            setCoordinates(position, "wall");
+
+        }
+
 
     }
 
@@ -59,7 +82,7 @@ public enum DataServer {
      * @param type
      * @param newPosition
      */
-    //only called when the tanks are first put into the map.
+    //only called when the objects are first put into the map.
     public void setCoordinates(Position newPosition, String type) {
 
         occupiedCoordinates.put(newPosition, type);
