@@ -67,10 +67,8 @@ public class Physics extends Component {
         double newX = oldX;
         double newY = oldY;
 
-        //converting the dt from nanoseconds to seconds
-        float time = this.getGameObject().getComponent(Time.class).timeDifference();
-        //TODO check the time is being divided by enough?
-        float dt = (time)/(10000);
+        //change in time for calculations
+        double dt = 1;
 
         //Set acceleration
         setAcceleration();
@@ -151,8 +149,8 @@ public class Physics extends Component {
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
         double xCoord = position.getX();
         double yCoord = position.getY();
-        //converting the dt from nanoseconds to seconds
-        long dt = (this.getGameObject().getComponent(Time.class).timeDifference()) / 1000000000;
+        //change in time for calculations
+        double dt = 1;
         //Distance it moves is the change in time * the above velocity
         double distance = dt * velocity;
         //distance travelled in x direction is cos theta * distance
