@@ -6,7 +6,7 @@ import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container2;
+import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.GameObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -190,7 +190,7 @@ public class GameScreen extends AbstractScreen {
     if (newUpdate != null) {
       update = newUpdate;
     }
-    Container2 player = update.getMe(Data.INSTANCE.getID());
+    Container player = update.getMe(Data.INSTANCE.getID());
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
       this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
@@ -223,7 +223,7 @@ public class GameScreen extends AbstractScreen {
     super.draw();
   }
 
-  private void renderContainer(Container2 c) {
+  private void renderContainer(Container c) {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }

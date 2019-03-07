@@ -1,13 +1,11 @@
 package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container2;
+import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.GameObject;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -27,15 +25,15 @@ public enum Data {
   private final Logger logger;
   private Update update;
   private ArrayList<String> clients;
-  private HashMap<String, Container2> players;
+  private HashMap<String, Container> players;
   private ServerInformation localhost;
   private ServerInformation currentInformation;
   private boolean singleplayer;
   private boolean updatePlayers;
   private Client client;
   private GameObject root;
-  private Container2 playerPos;
-  private ArrayList<Container2> playerList;
+  private Container playerPos;
+  private ArrayList<Container> playerList;
 
   Data() {
     client = new Client();
@@ -72,7 +70,7 @@ public String getID(){
    *
    * @return the players
    */
-  public ArrayList<Container2> getPlayers() {
+  public ArrayList<Container> getPlayers() {
     return new ArrayList<>(players.values());
   }
 
@@ -91,7 +89,7 @@ public String getID(){
    * @param i the
    * @return the player
    */
-  public Container2 getPlayer(int i) {
+  public Container getPlayer(int i) {
     return this.playerList.get(i);
   }
 
@@ -100,7 +98,7 @@ public String getID(){
    *
    * @return the player pos
    */
-  public Container2 getPlayerPos() {
+  public Container getPlayerPos() {
     return playerPos;
   }
 
@@ -131,7 +129,7 @@ public String getID(){
    *
    * @return the me
    */
-  public Container2 getMe() {
+  public Container getMe() {
     return this.players.get(this.client.getId());
   }
 

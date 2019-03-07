@@ -1,7 +1,7 @@
 package com.aticatac.common.model.Updates;
 
 import com.aticatac.common.model.Model;
-import com.aticatac.common.objectsystem.Container2;
+import com.aticatac.common.objectsystem.Container;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -13,7 +13,7 @@ public class Update extends Model {
   /**
    * The Players.
    */
-  LinkedHashMap<String, Container2> players;
+  LinkedHashMap<String, Container> players;
   //    private boolean objectChanged;
 //  private Container rootContainer;
   private boolean playersChanged;
@@ -30,11 +30,11 @@ public class Update extends Model {
     this.playersChanged = true;
   }
 
-  public Container2 getI(int i) {
+  public Container getI(int i) {
     return this.players.get(this.players.keySet().toArray()[i]);
   }
 
-  public Container2 getMe(String id) {
+  public Container getMe(String id) {
     return players.getOrDefault(id, null);
   }
 
@@ -43,11 +43,11 @@ public class Update extends Model {
    *
    * @return the players
    */
-  public HashMap<String, Container2> getPlayers() {
+  public HashMap<String, Container> getPlayers() {
     return players;
   }
 
-  public void addPlayer(Container2 c) {
+  public void addPlayer(Container c) {
     this.players.put(c.getId(), c);
   }
 
