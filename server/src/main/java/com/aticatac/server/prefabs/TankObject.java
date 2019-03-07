@@ -30,6 +30,7 @@ public class TankObject extends GameObject {
         this.addComponent(Time.class);
         this.addComponent(TankController.class);
         this.addComponent(Acceleration.class);
+        // add turret controller as component if not going to have turret object?
 
 
         if(isAI){

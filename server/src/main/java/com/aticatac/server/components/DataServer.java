@@ -11,7 +11,7 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
  * @author Claire Fletcher
  */
 
-public enum DataServer {
+public enum  DataServer {
 
     INSTANCE;
 
