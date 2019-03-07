@@ -8,6 +8,7 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.common.objectsystem.ObjectType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -50,6 +51,7 @@ public class GameScreen extends AbstractScreen {
   private Label tankXY;
   private Texture tankTexture;
   private Label direction;
+  private Container player;
 
   /**
    * Instantiates a new Game screen.
@@ -60,6 +62,7 @@ public class GameScreen extends AbstractScreen {
     maxY = 1920;
     try {
       health = 1f;
+      player = new Container(new GameObject("__", ObjectType.OTHER));
       ammoValue = UIFactory.createLabel("30");
       killCount = UIFactory.createLabel("0");
       playerCount = UIFactory.createLabel("1");
@@ -192,8 +195,8 @@ public class GameScreen extends AbstractScreen {
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
       update = newUpdate;
+      player = update.getMe(Data.INSTANCE.getID());
     }
-    Container player = update.getMe(Data.INSTANCE.getID());
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
       this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));

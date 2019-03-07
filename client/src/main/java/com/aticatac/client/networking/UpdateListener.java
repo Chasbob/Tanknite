@@ -40,11 +40,11 @@ class UpdateListener extends Thread {
     super.run();
     while (!this.isInterrupted()) {
       try {
-//        listen();
         if (this.queue.size() > 5) {
           this.queue.clear();
         }
-        tcpListen();
+        listen();
+//        tcpListen();
       } catch (IOException e) {
         logger.error(e);
       } catch (InvalidBytes invalidBytes) {
@@ -71,9 +71,6 @@ class UpdateListener extends Thread {
     this.logger.trace("Player count: " + update.getPlayers().size());
     if (update.isChanged()) {
       //todo figure out what to do instead of clearing.
-      if (this.queue.size() > 5) {
-        this.queue.clear();
-      }
       this.queue.add(update);
       this.logger.trace("added update to queue.");
     }
