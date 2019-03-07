@@ -21,23 +21,23 @@ public class Physics extends Component {
     /**
      * The gravity acting for all objects
      */
-    private static double gravity = 9.81;
+    private static int gravity = 10;
     /**
      * The mass of this object
      */
-    private double objectMass = 10;
+    private int objectMass = 10;
     /**
      * The thrust for this tank
      */
-    private double thrust = 10;
+    private int thrust = 10;
     /**
      * The acceleration for this tank
      */
-    private double acceleration;
+    private int acceleration;
     /**
      * The velocity for this tank
      */
-    private double velocity = 10;
+    private int velocity = 10;
 
     /**
      * Creates a new Physics with a parent.
@@ -67,15 +67,15 @@ public class Physics extends Component {
         }
 
         //Old Positions
-        double oldX = position.getX();
-        double oldY = position.getY();
+        int oldX = position.getX();
+        int oldY = position.getY();
 
         //new proposed positions
-        double newX = oldX;
-        double newY = oldY;
+        int newX = oldX;
+        int newY = oldY;
 
         //change in time for calculations
-        double dt = 1;
+        int dt = 1;
 
         //Set acceleration
         setAcceleration();
@@ -154,19 +154,19 @@ public class Physics extends Component {
      */
     public Object[] bulletMove(double rotation) {
         Position position = this.getGameObject().getComponent(Transform.class).getPosition();
-        double xCoord = position.getX();
-        double yCoord = position.getY();
+        int xCoord = position.getX();
+        int yCoord = position.getY();
         //converting the dt from nanoseconds to seconds
-        long dt = 1;
+        int dt = 1;
         //Distance it moves is the change in time * the above velocity
-        double distance = dt * velocity;
+        int distance = dt * velocity;
         //distance travelled in x direction is cos theta * distance
-        double distanceX = distance * Math.cos(rotation);
+        int distanceX = distance * (int) Math.round(Math.cos(rotation));
         //distance travelled in y direction is sin theta * distance
-        double distanceY = distance * Math.sin(rotation);
+        int distanceY = distance * (int) Math.round(Math.sin(rotation));
         //then add those to the original x and y
-        double newX = xCoord + distanceX;
-        double newY = yCoord + distanceY;
+        int newX = xCoord + distanceX;
+        int newY = yCoord + distanceY;
 
         Position newPosition = new Position(newX, newY);
 

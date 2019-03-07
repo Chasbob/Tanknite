@@ -52,6 +52,7 @@ public class TankController extends Component {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(0);
       DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
       powerUpChecker(powerUpId);
     }
@@ -77,6 +78,7 @@ public class TankController extends Component {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(90);
       DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
       powerUpChecker(powerUpId);
 
@@ -106,6 +108,7 @@ public class TankController extends Component {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(270);
       DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
       powerUpChecker(powerUpId);
     }
@@ -130,6 +133,7 @@ public class TankController extends Component {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(180);
       DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
       powerUpChecker(powerUpId);
     }
@@ -188,7 +192,7 @@ public class TankController extends Component {
 
     //remove it from data coordinates
     // delete co ord from wherever, but DataServer no longer has a deleteCoordinates method?
-    //DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
+    DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
 
     //add a powerup into the data that says that this is a power up with location.
     //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
