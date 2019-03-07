@@ -22,9 +22,9 @@ public class BulletController extends Component {
     super(gameObject);
   }
 
-    /**
-     * Move forwards.
-     */
+  /**
+   * Move forwards.
+   */
 
   public void moveForwards() {
     while (true) {
@@ -37,8 +37,7 @@ public class BulletController extends Component {
       if (collisionType != 0 && collisionType != 2 && collisionType != 3 && collisionType != 4 && collisionType != 5) {
         if (collisionType == 1) {
           GameObject.destroy(getGameObject());
-        }
-        else {
+        } else {
           // collided with tank
           // String collidedTankName = collisionType;
           //GameObject collidedTankName = DataServer.INSTANCE.getOccupiedCoordinates();
@@ -47,8 +46,6 @@ public class BulletController extends Component {
           //collidedTankName.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
           GameObject.destroy(getGameObject());
           // copy bullet controller from physics
-
-                    Destroy(this);
 
 
         }
@@ -60,6 +57,7 @@ public class BulletController extends Component {
     // physics handles bullet collision
 
     // make a method for bullet to disappear
+  }
 
 }
 

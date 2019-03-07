@@ -9,37 +9,37 @@ import com.aticatac.server.components.Damage;
 import com.aticatac.server.prefabs.BulletObject;
 
 public class TurretController extends Component {
-    /**
-     * Instantiates a new Component.
-     *
-     * @param gameObject the component parent
-     */
-    public TurretController(GameObject gameObject) {
-        super(gameObject);
+  /**
+   * Instantiates a new Component.
+   *
+   * @param gameObject the component parent
+   */
+  public TurretController(GameObject gameObject) {
+    super(gameObject);
+  }
+
+  public boolean shoot() {
+
+    //TODO shooting
+
+    //create a bullet object
+    BulletObject bullet = null; // get name of bullet
+    try {
+      bullet = new BulletObject("bullet", this.getGameObject());
+    } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+      invalidClassInstance.printStackTrace();
     }
 
-    public boolean shoot () {
-
-        //TODO shooting
-
-        //create a bullet object
-        BulletObject bullet = null; // get name of bullet
-        try {
-            bullet = new BulletObject("bullet", this.getGameObject());
-        } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
-            invalidClassInstance.printStackTrace();
-        }
-
-        if (this.getGameObject().getComponent(BulletDamage.class).getPowerUpExists()){
-            bullet.getComponent(Damage.class).setDamage(20);
-        }
-
-        bullet.getComponent(BulletController.class).moveForwards(); // check if tank has bullet power up component and increase damage if does
-        //moves forwards until collision happens then it will be destroyed.
-        //constantly check if collided() method is returning true
-
-
-        return true;
+    if (this.getGameObject().getComponent(BulletDamage.class).getPowerUpExists()) {
+      bullet.getComponent(Damage.class).setDamage(20);
     }
+
+    bullet.getComponent(BulletController.class).moveForwards(); // check if tank has bullet power up component and increase damage if does
+    //moves forwards until collision happens then it will be destroyed.
+    //constantly check if collided() method is returning true
+
+
+    return true;
+  }
 
 }
