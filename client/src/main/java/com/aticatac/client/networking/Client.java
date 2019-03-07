@@ -26,6 +26,7 @@ public class Client {
   private final ModelReader modelReader;
   private String id;
   private PrintStream printer;
+  private BufferedReader reader;
   private boolean connected;
   private UpdateListener updateListener;
 
@@ -38,11 +39,6 @@ public class Client {
     this.modelReader = new ModelReader();
   }
 
-  /**
-   * Next update update.
-   *
-   * @return the update
-   */
   public Update nextUpdate() {
     return this.queue.poll();
   }
@@ -73,7 +69,7 @@ public class Client {
     this.logger.info("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
     Socket socket = new Socket(server.getAddress(), server.getPort());
     this.logger.trace("Connected to server at " + socket.getInetAddress());
-    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     this.printer = new PrintStream(socket.getOutputStream());
     this.printer.println(modelReader.toJson(login));
     String json = reader.readLine();
@@ -95,7 +91,7 @@ public class Client {
     this.logger.trace("Joining multicast: " + address + ":" + port);
     MulticastSocket multicastSocket = new MulticastSocket(port);
     multicastSocket.joinGroup(address);
-    updateListener = new UpdateListener(multicastSocket, queue);
+    updateListener = new UpdateListener(multicastSocket, queue,this.reader);
     updateListener.start();
     this.logger.trace("Started update listener!");
   }
