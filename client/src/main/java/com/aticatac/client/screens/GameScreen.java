@@ -1,13 +1,9 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.objectsystem.Renderer;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.components.transform.Transform;
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container2;
@@ -50,6 +46,7 @@ public class GameScreen extends AbstractScreen {
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
+  private Label direction;
 
   /**
    * Instantiates a new Game screen.
@@ -65,6 +62,7 @@ public class GameScreen extends AbstractScreen {
       playerCount = UIFactory.createLabel("1");
       fpsValue = UIFactory.createLabel("");
       tankXY = UIFactory.createLabel("");
+      direction = UIFactory.createLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("img/tank.png");
       renderer = new OrthogonalTiledMapRenderer(map);
@@ -134,6 +132,10 @@ public class GameScreen extends AbstractScreen {
     statsTable.row();
     statsTable.add(fps);
     statsTable.add(this.fpsValue);
+    statsTable.row();
+    Label direction = UIFactory.createLabel("DIRECTION:");
+    statsTable.add(direction);
+    statsTable.add(this.direction);
     //create pop up table
     popUpTable = new Table();
     rootTable.addActor(popUpTable);
@@ -191,6 +193,16 @@ public class GameScreen extends AbstractScreen {
     Container2 player = update.getMe(Data.INSTANCE.getID());
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
+      this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
+      if (player.getR() == 0) {
+        this.direction.setText("UP");
+      } else if (player.getR() == 90) {
+        this.direction.setText("RIGHT");
+      } else if (player.getR() == 180) {
+        this.direction.setText("DOWN");
+      } else if (player.getR() == 270) {
+        this.direction.setText("LEFT");
+      }
     }
     renderer.setView(this.camera.getCamera());
     renderer.render();
@@ -216,25 +228,6 @@ public class GameScreen extends AbstractScreen {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
     tanks.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
-  }
-
-  private void childRenderer(GameObject g) throws InvalidClassInstance, ComponentExistsException {
-    renderObject(g);
-    for (var c : g.getChildren().values()) {
-      childRenderer(c);
-    }
-  }
-
-  private void renderObject(GameObject c) throws ComponentExistsException, InvalidClassInstance {
-    if (c.hasTexture() && !c.componentExists(Renderer.class)) {
-      c.addComponent(Renderer.class);
-      c.getComponent(Renderer.class).setTexture(c.getTexture());
-    }
-    if (c.componentExists(Renderer.class)) {
-      var pos = c.getComponent(Transform.class).getPosition();
-      tanks.setColor(Color.CORAL);
-      tanks.draw(c.getComponent(Renderer.class).getTexture(), maxX - (float) pos.getX(), maxY - (float) pos.getY());
-    }
   }
 
   private void backgroundInput() {
