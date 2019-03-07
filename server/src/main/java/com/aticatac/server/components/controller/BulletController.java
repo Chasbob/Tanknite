@@ -31,11 +31,15 @@ public class BulletController extends Component {
       Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
       Position newPosition = (Position) physicsData[1];
       int collisionType = (Integer) physicsData[0];
-      //0 nothing, 1 is a wall, 2 is a tank
-      if (collisionType != 0) {
+      //0 nothing, 1 is a wall, 2-5 are ppwerups, oterwise a tank id
+      // TODO: Check whether not ammo, not health, not wall etc to work out whether tank, then store tank id in bidimap so can call isShoot on that
+      if (collisionType != 0 && collisionType != 2 && collisionType != 3 && collisionType != 4 && collisionType != 5) {
         if (collisionType == 1) {
           GameObject.destroy(getGameObject());
-        } else {
+        }
+        else {
+          // collided with tank
+          // String collidedTankName = collisionType;
           //GameObject collidedTankName = DataServer.INSTANCE.getOccupiedCoordinates();
 
           //GameObject collidedTankName = this.getGameObject().getComponent(DataServer.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
@@ -48,7 +52,7 @@ public class BulletController extends Component {
         }
       }   // set occupied co ordinates for server data
       else {
-        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY()); // Hasnt collided
       }
     }
   }

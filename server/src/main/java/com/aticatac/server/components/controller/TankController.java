@@ -130,7 +130,7 @@ public class TankController extends Component {
         else if (powerUpId == "speed"){
             pickUpSpeed();
         }
-        else if (powerUpId == "damage"){
+        else if (powerUpId == "damage") {
             pickUpDamage();
         }
     }
