@@ -27,10 +27,10 @@ public class Graph {
    * Physical attributes of the graph
    */
   private final int xStart;
-  private final double xEnd;
+  private final int xEnd;
   private final int yStart;
-  private final double yEnd;
-  private final double separation;
+  private final int yEnd;
+  private final int separation;
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
@@ -113,7 +113,7 @@ public class Graph {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + (int) (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - connectedNode.getY()));
+        int tempG = g.get(current) + (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - current.getY()));
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
@@ -149,9 +149,9 @@ public class Graph {
   public ArrayList<SearchNode> getNodesInRange(Position position, int range) {
     ArrayList<SearchNode> inRange = new ArrayList<>();
     SearchNode nodeAt = getNearestNode(position);
-    for (double i = nodeAt.getX() - (range - (range % separation)); i < nodeAt.getX() + (range - (range % separation)); i += separation) {
-      for (double j = nodeAt.getY() - (range - (range % separation)); j < nodeAt.getY() + (range - (range % separation)); j += separation) {
-        if (i >= xStart && i < xEnd && j >= yStart && j < yEnd && !(nodeAt.getX() == i && nodeAt.getY() == j)) {
+    for (int i = nodeAt.getX() - (range - (range % separation)); i < nodeAt.getX() + (range - (range % separation)); i += separation) {
+      for (int j = nodeAt.getY() - (range - (range % separation)); j < nodeAt.getY() + (range - (range % separation)); j += separation) {
+        if (i >= xStart && i < xEnd && j >= yStart && j < yEnd && !(nodeAt.getX() == i && nodeAt.getY() == j) && nodes.containsKey(i + "-" + j)) {
           inRange.add(nodes.get(i + "-" + j));
         }
       }
