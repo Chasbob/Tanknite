@@ -22,9 +22,9 @@ public class TankObject extends GameObject {
         this.getComponent(Transform.class).setPosition(p.getX(), p.getY());
         new GameObject("TankBottom", this);
         new GameObject("TankTop", this);
-        this.getChildren().get(1).getComponent(Transform.class).setPosition(10, 10);
-        this.getChildren().get(0).addComponent(Texture.class).setTexture("img/tank.png");
-        this.getChildren().get(1).addComponent(Texture.class).setTexture("img/top.png");
+        this.getChildren().get("TankTop").getComponent(Transform.class).setPosition(-14, 0);
+        this.getChildren().get("TankBottom").addComponent(Texture.class).setTexture("img/tank.png");
+        this.getChildren().get("TankTop").addComponent(Texture.class).setTexture("img/top.png");
         // determine whether ai, put behavioural trees from ai if so
         this.addComponent(Health.class).setHealth(health);
         this.addComponent(Ammo.class).setAmmo(ammo);

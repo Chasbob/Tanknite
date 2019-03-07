@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.Data;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -37,7 +38,7 @@ public class MultiplayerScreen extends AbstractScreen {
             //TODO consider how the server will be stopped.
             Server server = new Server();
             server.start();
-            Screens.INSTANCE.setSingleplayer(true);
+            Data.INSTANCE.setSingleplayer(false);
             return false;
         }));
         hostButton.addListener(UIFactory.newChangeScreenEvent(UsernameScreen.class));

@@ -39,10 +39,10 @@ public class AI extends Component {
     private int aimAngle;
     private boolean aimed;
 
-    public AI(GameObject parent, Graph graph) {
+    public AI(GameObject parent) {
         super(parent);
         this.tank = parent;
-        this.graph = graph;
+        this.graph = new Graph(10,10,10,0,0);
         this.state = State.SEARCHING;
         this.prevState = State.SEARCHING;
         this.searchPath = new LinkedList<>();

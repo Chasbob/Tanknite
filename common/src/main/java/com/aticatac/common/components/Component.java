@@ -35,4 +35,6 @@ public abstract class Component {
     public void setGameObject(GameObject gameObject) {
         this.gameObject = gameObject;
     }
+
+//    public abstract void update(Component c);
 }

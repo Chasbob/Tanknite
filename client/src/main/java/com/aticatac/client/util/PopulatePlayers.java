@@ -1,12 +1,10 @@
 package com.aticatac.client.util;
 
-import com.aticatac.client.screens.Screens;
 import com.aticatac.client.screens.UIFactory;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 public class PopulatePlayers extends Thread {
     private final Table playerTable;
@@ -37,7 +35,7 @@ public class PopulatePlayers extends Thread {
         this.logger.trace("Listing...");
         //TODO
         ArrayList<String> players;
-        players = new ArrayList<>(Screens.INSTANCE.getClients());
+        players = new ArrayList<>(Data.INSTANCE.getClients());
         this.logger.trace("Players: " + players.toString());
         this.playerTable.clearChildren();
         this.logger.trace("Got update! " + players.size());
