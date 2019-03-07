@@ -9,8 +9,8 @@ public class BulletDamage extends Component{
     private boolean powerUpExists = false;
 
     /**
-     *
-     * @param gameObject
+     * Creates a new bulletdamage constructor with a parent
+     * @param gameObject the parent of the bullet damage component
      */
     public BulletDamage(GameObject gameObject) {
 

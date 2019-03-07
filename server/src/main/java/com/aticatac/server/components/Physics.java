@@ -74,9 +74,8 @@ public class Physics extends Component {
         double newX = oldX;
         double newY = oldY;
 
-        //converting the dt from nanoseconds to seconds
-        float time = this.getGameObject().getComponent(Time.class).timeDifference();
-        float dt = (time)/(10000);
+        //change in time for calculations
+        double dt = 1;
 
         //Set acceleration
         setAcceleration();
@@ -158,7 +157,7 @@ public class Physics extends Component {
         double xCoord = position.getX();
         double yCoord = position.getY();
         //converting the dt from nanoseconds to seconds
-        long dt = (this.getGameObject().getComponent(Time.class).timeDifference()) / 1000000000;
+        long dt = 1;
         //Distance it moves is the change in time * the above velocity
         double distance = dt * velocity;
         //distance travelled in x direction is cos theta * distance
@@ -178,7 +177,11 @@ public class Physics extends Component {
     }
 
     /**
+     * Collision method to check if objects have collided
      *
+     * @param newPosition The previous position of the tank
+     * @param oldPosition The new calculates position of the tank
+     * @return An array of the collision type and the new position
      */
     private Object[] collision(Position newPosition, Position oldPosition) {
 
@@ -214,6 +217,7 @@ public class Physics extends Component {
      */
     //Allows for power ups that increase this, to happen.
     private void setAcceleration() {
+
         if (this.getGameObject().getComponent(Acceleration.class).getPowerUpExists()) {
             acceleration = (gravity * (this.getGameObject().getComponent(Acceleration.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
         } else {
