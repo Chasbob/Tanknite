@@ -29,7 +29,7 @@ public class BulletController extends Component {
   public void moveForwards() {
     while (true) {
       //Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-      Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).GetRotation());
+      Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
       Position newPosition = (Position) physicsData[1];
       int collisionType = (Integer) physicsData[0];
       //0 nothing, 1 is a wall, 2 is a tank

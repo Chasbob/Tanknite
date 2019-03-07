@@ -52,22 +52,8 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(0);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-            if (physicsData[0] == "ammo"){
-              pickUpAmmo();
-              // destroy powerup object too
-            }
-            if (physicsData[0] == "health"){
-              pickUpHealth();
-
-            }
-            if (physicsData[0] == "speed"){
-              pickUpSpeed();
-
-            }
-            if (physicsData[0] == "damage"){
-              pickUpDamage();
-
-            }
+            String powerUpId = (String) physicsData[0];
+            powerUpChecker(powerUpId);
         }
         // TODO, in movement have physics tell if a tank has collided with a power up
         return true;
@@ -92,22 +78,8 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(90);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-            if (physicsData[0] == "ammo"){
-                pickUpAmmo();
-                // destroy powerup object too
-            }
-            if (physicsData[0] == "health"){
-                pickUpHealth();
-
-            }
-            if (physicsData[0] == "speed"){
-                pickUpSpeed();
-
-            }
-            if (physicsData[0] == "damage"){
-                pickUpDamage();
-
-            }
+            String powerUpId = (String) physicsData[0];
+            powerUpChecker(powerUpId);
 
         }
         //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
@@ -136,22 +108,8 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(270);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-            if (physicsData[0] == "ammo"){
-                pickUpAmmo();
-                // destroy powerup object too
-            }
-            if (physicsData[0] == "health"){
-                pickUpHealth();
-
-            }
-            if (physicsData[0] == "speed"){
-                pickUpSpeed();
-
-            }
-            if (physicsData[0] == "damage"){
-                pickUpDamage();
-
-            }
+            String powerUpId = (String) physicsData[0];
+            powerUpChecker(powerUpId);
         }
         return true;
     }
@@ -175,34 +133,29 @@ public class TankController extends Component {
             this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
             this.getGameObject().getComponent(Transform.class).setRotation(180);
             DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-            if (physicsData[0] == "ammo"){
-                pickUpAmmo();
-                // destroy powerup object too
-            }
-            if (physicsData[0] == "health"){
-                pickUpHealth();
-
-            }
-            if (physicsData[0] == "speed"){
-                pickUpSpeed();
-
-            }
-            if (physicsData[0] == "damage"){
-                pickUpDamage();
-
-            }
+            String powerUpId = (String) physicsData[0];
+            powerUpChecker(powerUpId);
         }
         return true;
     }
     return true;
   }
 
-  /**
-   * Shoot boolean.
-   *
-   * @return the boolean
-   */
-// call method when space bar pressed
+    public void powerUpChecker(String powerUpId){
+        if (powerUpId == "ammo"){
+            pickUpAmmo();
+        }
+        else if (powerUpId == "health"){
+            pickUpHealth();
+        }
+        else if (powerUpId == "speed"){
+            pickUpSpeed();
+        }
+        else if (powerUpId == "damage"){
+            pickUpDamage();
+        }
+    }
+
     public boolean shoot() {
       int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
       if (currentAmmo == 0) return false;
