@@ -36,8 +36,6 @@ public class GameScreen extends AbstractScreen {
    */
   private Update update;
   private Table popUpTable;
-  private GameObject root;
-  private GameObject tank;
   private float health;
   private Label ammoValue;
   private Label killCount;
