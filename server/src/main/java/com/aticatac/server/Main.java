@@ -7,7 +7,7 @@ public class Main {
   public static void main(String[] args) {
     Server server;
     Logger logger = Logger.getLogger(Main.class);
-    server = new Server();
+    server = new Server(false, "Solo server");
     server.start();
   }
 }

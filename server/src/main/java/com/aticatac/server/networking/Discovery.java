@@ -20,8 +20,12 @@ public class Discovery implements Runnable {
 
   /**
    * Instantiates a new Discovery.
+   *
+   * @param name the name
+   * @throws IOException the io exception
    */
-  Discovery() throws IOException {
+  Discovery(String name) throws IOException {
+    this.name = name;
     this.modelReader = new ModelReader();
     this.packets = buildPackets(Server.ServerData.INSTANCE.getId());
     this.logger = Logger.getLogger(Discovery.class);

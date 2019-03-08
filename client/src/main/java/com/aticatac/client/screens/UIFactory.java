@@ -1,12 +1,9 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.ListServers;
 import com.aticatac.client.util.PopulatePlayers;
 import com.aticatac.client.util.ServerButton;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -59,15 +56,14 @@ public class UIFactory {
   public static TextButton createButton(String text) {
     return new TextButton(text, Styles.INSTANCE.getButtonStyle());
   }
-
   /**
    * Gets servers.
    *
    * @param serversTable the servers table
    */
-  public static void getServers(Table serversTable) {
-    (new ListServers(serversTable)).start();
-  }
+//  public static void getServers(Table serversTable) {
+//    (new ListServers(serversTable)).start();
+//  }
 
   /**
    * Create error label label.
@@ -173,8 +169,8 @@ public class UIFactory {
         try {
           result = func.call();
           //addition of sound
-          Sound tank = Gdx.audio.newSound(Gdx.files.internal("audio/Humvee-Stephan_Schutze-1064024548.mp3"));
-          tank.play();
+//          Sound tank = Gdx.audio.newSound(Gdx.files.internal("audio/Humvee-Stephan_Schutze-1064024548.mp3"));
+//          tank.play();
         } catch (Exception e) {
           e.printStackTrace();
         }
