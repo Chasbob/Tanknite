@@ -34,10 +34,8 @@ public class GameScreen extends AbstractScreen {
   /**
    * The Update.
    */
-  Update update;
+  private Update update;
   private Table popUpTable;
-  private GameObject root;
-  private GameObject tank;
   private float health;
   private Label ammoValue;
   private Label killCount;
@@ -45,7 +43,6 @@ public class GameScreen extends AbstractScreen {
   private TiledMap map;
   private OrthogonalTiledMapRenderer renderer;
   private Camera camera;
-  private Position playerPos;
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
@@ -70,7 +67,6 @@ public class GameScreen extends AbstractScreen {
       tankTexture = new Texture("img/tank.png");
       renderer = new OrthogonalTiledMapRenderer(map);
       this.camera = new Camera(maxX, maxY, getWidth(), getHeight());
-      this.playerPos = new Position(maxX / 2, maxY / 2);
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();
@@ -188,7 +184,6 @@ public class GameScreen extends AbstractScreen {
     super.render(delta);
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     //TODO figure out why it flickers when going side to side.
-    //
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
       update = newUpdate;
@@ -212,6 +207,7 @@ public class GameScreen extends AbstractScreen {
     renderer.render();
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
     tanks.begin();
+    tanks.setColor(Color.CORAL);
     for (int i = 0; i < update.getPlayers().values().size(); i++) {
       renderContainer(update.getI(i));
     }
@@ -240,14 +236,11 @@ public class GameScreen extends AbstractScreen {
     }
     if (Gdx.input.isKeyPressed(Input.Keys.A)) {
       Data.INSTANCE.sendCommand(Command.LEFT);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+    }else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
       Data.INSTANCE.sendCommand(Command.RIGHT);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+    }else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
       Data.INSTANCE.sendCommand(Command.UP);
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+    }else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
       Data.INSTANCE.sendCommand(Command.DOWN);
     }
   }
