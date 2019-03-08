@@ -55,7 +55,6 @@ public class GameScreen extends AbstractScreen {
    */
   GameScreen() {
     super();
-    System.out.println();
     maxX = 1920;
     maxY = 1920;
     try {
@@ -212,8 +211,10 @@ public class GameScreen extends AbstractScreen {
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
     tanks.begin();
     tanks.setColor(Color.CORAL);
-    for (int i = 0; i < update.getPlayers().values().size(); i++) {
-      renderContainer(update.getI(i));
+    if (update != null) {
+      for (int i = 0; i < update.getPlayers().values().size(); i++) {
+        renderContainer(update.getI(i));
+      }
     }
     tanks.end();
     batch.begin();
@@ -266,5 +267,16 @@ public class GameScreen extends AbstractScreen {
     map.dispose();
     renderer.dispose();
     batch.dispose();
+  }
+
+  @Override
+  public void refresh() {
+    health = 1;
+    ammoValue = UIFactory.createLabel("30");
+    killCount = UIFactory.createLabel("0");
+    playerCount = UIFactory.createLabel("1");
+    tankXY = UIFactory.createLabel("");
+    direction = UIFactory.createLabel("");
+    popUpTable.setVisible(false);
   }
 }
