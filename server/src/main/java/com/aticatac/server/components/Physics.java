@@ -84,34 +84,36 @@ public class Physics extends Component {
         if (acceleration != 0) {
             velocity = velocity + (acceleration * dt);
         }
+
+        // travelling
+        double movement = velocity*dt;
+
         //Calculates the new coordinates
         if (direction.equals("down")) {
             //only moving on y coord
-            newY = oldY + (velocity * dt);
+            newY = oldY + (movement);
         }
         if (direction.equals("up")) {
             //only moving on y coord
-            newY = oldY - (velocity * dt);
+            newY = oldY - (movement);
         }
         if (direction.equals("left")) {
             //only moving on x coord
-            newX = oldX + (velocity * dt);
+            newX = oldX + (movement);
         }
         if (direction.equals("right")) {
             //only moving on x coord
-            newX = oldX - (velocity * dt);
+            newX = oldX - (movement);
         }
 
         Position newPosition = new Position(newX, newY);
 
         //Returning a collision type and also the position
-        return collision(newPosition, position);
+        return collision(newPosition, position, direction);
 
     }
 
-    /**
-     * Checks if object can move forwards and returns new position
-     *
+     /**
      * @return Position of the object
      */
     public Object[] moveUp() {
@@ -171,7 +173,7 @@ public class Physics extends Component {
         Position newPosition = new Position(newX, newY);
 
         //Returning a collision type and also the position
-        Object[] returnPosition = collision(newPosition, position);
+        Object[] returnPosition = collision(newPosition, position, "bullet");
 
         return returnPosition;
     }
@@ -183,20 +185,74 @@ public class Physics extends Component {
      * @param oldPosition The new calculates position of the tank
      * @return An array of the collision type and the new position
      */
-    private Object[] collision(Position newPosition, Position oldPosition) {
+    //TODO new bullet collision method
+    private Object[] collision(Position newPosition, Position oldPosition, String direction) {
 
+        //string for what has been collided with
+        String collisionType;
+
+        //creates and sets the new box coords based on the new position
+        ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+        //removes the old positions
+        this.getGameObject().getComponent(CollisionBox.class).removeBoxfromData(box);
+        //sets the new positions
+        this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(newPosition);
+        //gets new position box
+        box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+
+
+        //map of the coordinates that are occupied
         BidiMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+
+
+        //checks the box collision coords against the occupied
+        for(int i=0; i<box.size(); i++){
+
+            Position position = box.get(i);
+            Object[] returnPosition = getCollisionArray(position, oldPosition, occupiedCoordinates);
+            if(returnPosition != null){
+                //sets the box positions back to the old ones and puts that back into the data server
+                this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(oldPosition);
+                this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
+                return returnPosition;
+            }
+            else {
+                //adds the new positions into the dataserver
+                //TODO Fix this line
+                //this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
+            }
+
+        }
+
+
+        //checks the position of the tank against the occupied coordinates
+        Object[] returnPosition = getCollisionArray(newPosition, oldPosition, occupiedCoordinates);
+        if (returnPosition != null) return returnPosition;
+
+
+        //else:
+        collisionType = "none";
+
+        //Returning a collision type and also the position
+        Object[] noCollision = new Object[2];
+        noCollision[0] = collisionType;
+        noCollision[1] = newPosition;
+
+        return noCollision;
+    }
+
+    private Object[] getCollisionArray(Position newPosition, Position oldPosition, BidiMap<Position, String> occupiedCoordinates) {
 
         String collisionType;
 
-        //Below can be the only part of this that is checked and will then return the type that it is
-        double changeY = newPosition.getY() - oldPosition.getY();
-        double changeX = newPosition.getX() - oldPosition.getX();
-
-        //needs to check if there is anything there from the old position to the new position.
         if(occupiedCoordinates.containsKey(newPosition)){
 
             collisionType = occupiedCoordinates.get(newPosition);
+
+            //checks the coordinate is not itself
+            if(collisionType.equals(this.getGameObject().getName())){
+                return null;
+            }
 
             //Returning a collision type and also the position
             Object[] returnPosition = new Object[2];
@@ -205,15 +261,7 @@ public class Physics extends Component {
 
             return returnPosition;
         }
-
-        collisionType = "none";
-
-        //Returning a collision type and also the position
-        Object[] returnPosition = new Object[2];
-        returnPosition[0] = collisionType;
-        returnPosition[1] = newPosition;
-
-        return returnPosition;
+        return null;
     }
 
     /**

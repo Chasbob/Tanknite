@@ -73,44 +73,4 @@ public class Position {
                 '}';
     }
 
-
-    //paramaters for the box
- /*   public void setCollisionBox(Position tankPosition) {
-
-        double lowerY = tankPosition.getY() - 16;
-        double lowerX = tankPosition.getX() - 16;
-
-        double higherY = tankPosition.getY() + 16;
-        double higherX = tankPosition.getX() + 16;
-
-        for (int x = 0; x < 33; x++) {
-
-            Position position = new Position(lowerX + x, lowerY);
-            DataServer.INSTANCE.setCoordinates(position, "tank");
-
-        }
-
-        for (int y = 0; y < 33; y++) {
-
-            Position position = new Position(lowerX, lowerY + y);
-            DataServer.INSTANCE.setCoordinates(position, "tank");
-
-        }
-
-        for (int x = 0; x < 33; x++) {
-
-            Position position = new Position(lowerX + x, higherY);
-            DataServer.INSTANCE.setCoordinates(position, "tank");
-
-        }
-
-        for (int y = 0; y < 33; y++) {
-
-            Position position = new Position(higherX, higherY + y);
-            DataServer.INSTANCE.setCoordinates(position, "tank");
-
-        }
-
-    }*/
-
 }

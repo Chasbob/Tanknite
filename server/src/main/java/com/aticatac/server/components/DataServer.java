@@ -18,14 +18,23 @@ public enum DataServer {
     //TODO add power ups into this and the walls
     //ammo, health, damage, speed, <-for the power ups
 
-    /***/
+    /**Map of the occupied coordinates on map*/
     private BidiMap<Position, String> occupiedCoordinates= new DualHashBidiMap<>();
+
+
+    /**Map of the tiles*/
+    //each tile is 32x32
+    int[][] map = new int[60][60];
+
 
     /**
      *
      */
     DataServer(){
 
+
+        //create the array map
+       // map = {};
 
     }
 
