@@ -59,7 +59,6 @@ public class UsernameScreen extends AbstractScreen {
         }
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-        Data.INSTANCE.setCurrentInformation(Data.INSTANCE.getLocalhost());
         boolean accepted = Data.INSTANCE.connect(textField.getText(), false);
         if (accepted) {
           refresh();

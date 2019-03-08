@@ -13,9 +13,11 @@ import java.util.concurrent.Callable;
  * The type Broadcast listener.
  */
 class BroadcastListener implements Callable<ServerInformation> {
+  private DatagramSocket socket;
   private final ModelReader modelReader;
 
-  BroadcastListener() {
+  public BroadcastListener(DatagramSocket socket) {
+    this.socket = socket;
     modelReader = new ModelReader();
   }
 
@@ -25,7 +27,7 @@ class BroadcastListener implements Callable<ServerInformation> {
   }
 
   private ServerInformation listen() throws IOException, InvalidBytes {
-    DatagramSocket socket = new DatagramSocket(CommonData.INSTANCE.getDiscoveryPort());
+
     byte[] bytes = new byte[1000];
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     socket.receive(packet);

@@ -91,7 +91,7 @@ public class Client {
     this.logger.trace("Joining multicast: " + address + ":" + port);
     MulticastSocket multicastSocket = new MulticastSocket(port);
     multicastSocket.joinGroup(address);
-    updateListener = new UpdateListener(multicastSocket, queue,this.reader);
+    updateListener = new UpdateListener(multicastSocket, queue, this.reader);
     updateListener.start();
     this.logger.trace("Started update listener!");
   }

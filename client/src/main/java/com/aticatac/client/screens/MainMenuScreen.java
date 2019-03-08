@@ -37,7 +37,7 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton singlePlayerButton = UIFactory.createButton("single player");
     singlePlayerButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
-      Server server = new Server();
+      Server server = new Server(true, "SinglePlayer");
       server.start();
       return false;
     }));
