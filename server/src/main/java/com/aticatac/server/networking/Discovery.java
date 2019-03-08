@@ -16,11 +16,16 @@ import org.apache.log4j.Logger;
 public class Discovery implements Runnable {
   private final List<DatagramPacket> packets;
   private final Logger logger;
+  private final String name;
 
   /**
    * Instantiates a new Discovery.
+   *
+   * @param name the name
+   * @throws IOException the io exception
    */
-  Discovery() throws IOException {
+  Discovery(String name) throws IOException {
+    this.name = name;
     this.packets = buildPackets(Server.ServerData.INSTANCE.getId());
     this.logger = Logger.getLogger(Discovery.class);
   }
