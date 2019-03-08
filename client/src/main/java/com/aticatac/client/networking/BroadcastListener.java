@@ -13,13 +13,19 @@ import java.util.concurrent.Callable;
  * The type Broadcast listener.
  */
 class BroadcastListener implements Callable<ServerInformation> {
+  private DatagramSocket socket;
+
+  public BroadcastListener(DatagramSocket socket) {
+    this.socket = socket;
+  }
+
   @Override
   public ServerInformation call() throws Exception {
     return listen();
   }
 
   private ServerInformation listen() throws IOException, InvalidBytes {
-    DatagramSocket socket = new DatagramSocket(CommonData.INSTANCE.getDiscoveryPort());
+
     byte[] bytes = new byte[1000];
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     socket.receive(packet);

@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Username screen.
@@ -56,7 +57,6 @@ public class UsernameScreen extends AbstractScreen {
         }
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-        Data.INSTANCE.setCurrentInformation(Data.INSTANCE.getLocalhost());
         boolean accepted = Data.INSTANCE.connect(textField.getText(), false);
         if (accepted) {
           nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
@@ -75,12 +75,13 @@ public class UsernameScreen extends AbstractScreen {
     rootTable.addActor(backTable);
     backTable.bottom();
     //create back button
-    TextButton backButton = UIFactory.createBackButton("quit");
+    TextButton backButton = getQuit();
     backTable.add(backButton).bottom().padBottom(10);
-//        backButton.addListener(UIFactory.newListenerEvent(() -> {
-//            Screens.INSTANCE.setSingleplayer(false);
-//            return false;
-//        }));
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+  }
+
+  @NotNull
+  private TextButton getQuit() {
+    return UIFactory.createBackButton("quit");
   }
 }
