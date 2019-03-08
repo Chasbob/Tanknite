@@ -4,6 +4,7 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
+import com.aticatac.server.components.ServerData;
 import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.networking.listen.NewClients;
 import java.io.IOException;
@@ -26,24 +27,33 @@ import org.apache.log4j.Logger;
 public class Server extends Thread {
   private final Logger logger;
   private final ExecutorService executorService;
+  private final String name;
   private volatile boolean shutdown;
 
   /**
    * Instantiates a new Server.
+   *
+   * @param singleplayer the singleplayer
+   * @param name
    */
-  public Server() {
+  public Server(boolean singleplayer, String name) {
+    ServerData.INSTANCE.setSinglePlayer(singleplayer);
+    ServerData.INSTANCE.setId(name);
     //TODO check if additional users are allowed.
     this.logger = Logger.getLogger(getClass());
     executorService = Executors.newFixedThreadPool(20);
     this.shutdown = false;
+    this.name = name;
   }
 
   @Override
   public void run() {
     this.logger.trace("Running...");
     try {
-      this.executorService.submit(new Discovery());
-      this.logger.trace("added discovery");
+      if (!ServerData.INSTANCE.isSinglePlayer()) {
+        this.executorService.submit(new Discovery(this.name));
+        this.logger.trace("added discovery");
+      }
       this.executorService.submit(new NewClients());
       this.logger.trace("added new clients");
       this.executorService.submit(new Updater());
@@ -57,9 +67,13 @@ public class Server extends Thread {
         CommandModel current = ServerData.INSTANCE.popCommand();
         if (current != null) {
           if (current.getCommand() == Command.QUIT) {
+            //todo shutdown client
             ServerData.INSTANCE.removeClient(current.getId());
             this.logger.info("Removing " + current.getId());
             this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
+            if (ServerData.INSTANCE.getClients().size() == 0) {
+              shutdown();
+            }
           } else {
             Manager.INSTANCE.playerInput(current);
           }
@@ -115,6 +129,11 @@ public class Server extends Thread {
       }
     }
 
+    /**
+     * Remove client.
+     *
+     * @param id the id
+     */
     public void removeClient(String id) {
       clients.get(id).shutdown();
       clients.remove(id);
@@ -204,6 +223,11 @@ public class Server extends Thread {
      */
     public void setSinglePlayer(boolean singlePlayer) {
       this.singlePlayer = singlePlayer;
+      try {
+        this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName("127.0.0.1"));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     /**

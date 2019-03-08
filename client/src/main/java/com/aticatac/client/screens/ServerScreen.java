@@ -1,5 +1,7 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.Data;
+import com.aticatac.client.util.ListServers;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 public class ServerScreen extends AbstractScreen {
   private Boolean serverSelected;
   private TextButton currentServer;
+  private ListServers listServers;
 
   /**
    * Instantiates a new Server screen.
@@ -93,7 +96,22 @@ public class ServerScreen extends AbstractScreen {
     serversTable.setFillParent(true);
     serversTable.defaults().pad(10).width(450);
     serversTable.top().padTop(150);
-    UIFactory.getServers(serversTable);
+    listServers = new ListServers(serversTable);
+    listServers.update();
+    new Thread(() -> {
+      while (!Thread.currentThread().isInterrupted()) {
+        double nanoTime = System.nanoTime();
+        this.logger.trace("Updating servers...");
+        listServers.update();
+        while (Math.abs(System.nanoTime() - nanoTime) < 1000000000 / 10) {
+          try {
+            Thread.sleep(0);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }).start();
     dataTable.addActor(serversTable);
     //create table to store back button
     Table backTable = new Table();
@@ -105,9 +123,9 @@ public class ServerScreen extends AbstractScreen {
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     //add labels to serverDetailsTable
     TextButton refreshButton = UIFactory.createStartButton("Refresh");
-    //refreshButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
+    refreshButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
     refreshButton.addListener(UIFactory.newListenerEvent(() -> {
-      UIFactory.getServers(serversTable);
+      listServers.update();
       return false;
     }
     ));

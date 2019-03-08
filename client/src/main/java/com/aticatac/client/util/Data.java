@@ -6,13 +6,13 @@ import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.GameObject;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Contract;
 
 /**
  * The enum Data.
@@ -29,17 +29,17 @@ public enum Data {
   private ServerInformation localhost;
   private ServerInformation currentInformation;
   private boolean singleplayer;
-  private boolean updatePlayers;
   private Client client;
-  private GameObject root;
   private Container playerPos;
   private ArrayList<Container> playerList;
+  private boolean serverSelected;
 
   Data() {
     client = new Client();
+    serverSelected = false;
     try {
       //TODO don't hard code the port.
-      this.localhost = new ServerInformation("localhost", InetAddress.getLocalHost(), 5500);
+      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), 5500);
     } catch (UnknownHostException e) {
       e.printStackTrace();
     }
@@ -128,11 +128,6 @@ public enum Data {
     }
     this.playerPos = this.players.get(client.getId());
     this.playerList = getPlayers();
-//    try {
-//      this.root = new GameObject(this.update.getRootContainer());
-//    } catch (InvalidClassInstance | ComponentExistsException e) {
-//      this.logger.error(e);
-//    }
   }
 
   /**
@@ -153,6 +148,10 @@ public enum Data {
     return currentInformation;
   }
 
+  public boolean isServerSelected() {
+    return serverSelected;
+  }
+
   /**
    * Sets current information.
    *
@@ -160,22 +159,27 @@ public enum Data {
    */
   public void setCurrentInformation(ServerInformation currentInformation) {
     this.currentInformation = currentInformation;
+    this.serverSelected = true;
   }
 
   /**
    * Connect boolean.
    *
    * @param id           the id
-   * @param singleplayer the singleplayer
+   * @param singlePlayer the singleplayer
    * @return the boolean
    * @throws IOException  the io exception
    * @throws InvalidBytes the invalid bytes
    */
-  public boolean connect(String id, boolean singleplayer) throws IOException, InvalidBytes {
-    if (singleplayer) {
+  public boolean connect(String id, boolean singlePlayer) throws IOException, InvalidBytes {
+    if (singlePlayer) {
       return this.client.connect(this.localhost, id);
     } else {
-      return this.client.connect(this.currentInformation, id);
+      if (this.currentInformation != null) {
+        return this.client.connect(this.currentInformation, id);
+      } else {
+        return false;
+      }
     }
   }
 
@@ -184,6 +188,7 @@ public enum Data {
    *
    * @return the localhost
    */
+  @Contract(pure = true)
   public ServerInformation getLocalhost() {
     return localhost;
   }
@@ -209,6 +214,7 @@ public enum Data {
    *
    * @return the singleplayer
    */
+  @Contract(pure = true)
   public boolean getSingleplayer() {
     return singleplayer;
   }
