@@ -9,26 +9,27 @@ import com.aticatac.common.objectsystem.GameObject;
  *
  * @author Claire Fletcher
  */
-
 public class SpeedPowerUp extends Component {
+  /**
+   * The Friction Coefficient that this power up provides
+   */
+  private int frictionCoefficient = 0;
 
-    /**The Friction Coefficient that this power up provides*/
-    private int frictionCoefficient = 0;
+  /**
+   * Creates a new SpeedPowerUp with a parent.
+   *
+   * @param componentParent The parent of the SpeedPowerUp.
+   */
+  public SpeedPowerUp(GameObject componentParent) {
+    super(componentParent);
+  }
 
-    /**
-     * Creates a new SpeedPowerUp with a parent.
-     * @param componentParent The parent of the SpeedPowerUp.
-     */
-    public SpeedPowerUp (GameObject componentParent) {
-        super(componentParent);
-    }
-
-    /**
-     * gets acceleration.
-     * @return The frictionCoefficient.
-     */
-    int getFrictionCoefficient(){
-        return frictionCoefficient;
-    }
-
+  /**
+   * gets acceleration.
+   *
+   * @return The frictionCoefficient.
+   */
+  int getFrictionCoefficient() {
+    return frictionCoefficient;
+  }
 }

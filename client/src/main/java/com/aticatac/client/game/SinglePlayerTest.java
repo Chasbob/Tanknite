@@ -6,26 +6,29 @@ import com.badlogic.gdx.Game;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * The type Single player test.
+ */
 public class SinglePlayerTest extends Game {
-    private BlockingQueue<Update> updates;
+  private BlockingQueue<Update> updates;
 
-    @Override
-    public void create() {
-        try {
-            this.updates = new ArrayBlockingQueue<>(100);
-            //TODO show splash screen whilst it loads
-            Screens.INSTANCE.initialize(this,true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+  @Override
+  public void create() {
+    try {
+      this.updates = new ArrayBlockingQueue<>(100);
+      //TODO show splash screen whilst it loads
+      Screens.INSTANCE.initialize(this);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    @Override
-    public void dispose() {
-    }
+  @Override
+  public void dispose() {
+  }
 
-    @Override
-    public void resize(int width, int height) {
-        super.resize(width, height);
-    }
+  @Override
+  public void resize(int width, int height) {
+    super.resize(width, height);
+  }
 }
