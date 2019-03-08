@@ -14,15 +14,15 @@ import com.aticatac.server.components.*;
  * The type TankController.
  */
 public class TankController extends Component {
-    /**
-     * Instantiates a new Component.
-     *
-     * @param gameObject the component parent
-     */
-    public TankController(GameObject gameObject) {
-        super(gameObject);
-    }
-    //when sound plays check all tanks in that area and play noise to all those players
+  /**
+   * Instantiates a new Component.
+   *
+   * @param gameObject the component parent
+   */
+  public TankController(GameObject gameObject) {
+    super(gameObject);
+  }
+  //when sound plays check all tanks in that area and play noise to all those players
 
     /**
      * call method when up arrow/w pressed
@@ -46,6 +46,8 @@ public class TankController extends Component {
         }
         return true;
     }
+    return true;
+  }
 
     /**
      * Move right boolean.
@@ -72,6 +74,10 @@ public class TankController extends Component {
         //bullet disappears, other collisions have no effect, just stop the current move from happening
         return true;
     }
+    //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
+    //bullet disappears, other collisions have no effect, just stop the current move from happening
+    return true;
+  }
 
     private void powerUpCheck(Position oldPosition, Object[] physicsData, Position newPosition) {
         DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
@@ -116,12 +122,14 @@ public class TankController extends Component {
 
         return true;
     }
+    return true;
+  }
 
-    /**
-     * Move backwards boolean.
-     *
-     * @return the boolean
-     */
+  /**
+   * Move backwards boolean.
+   *
+   * @return the boolean
+   */
 // when down arrow/s pressed
     public boolean moveDown() {
         Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
@@ -138,12 +146,14 @@ public class TankController extends Component {
 
         return true;
     }
+    return true;
+  }
 
-    /**
-     * Shoot boolean.
-     *
-     * @return the boolean
-     */
+  /**
+   * Shoot boolean.
+   *
+   * @return the boolean
+   */
 // call method when space bar pressed
     public boolean shoot() {
       int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
@@ -166,13 +176,14 @@ public class TankController extends Component {
             die();
         }
     }
+  }
 
     public void dying() {
 //        // can no longer move and will die in 20 seconds
         //Physics will check the health and prevent it moving if less than 10
 //        //delay
 //        die();
-    }
+  }
 
     /**
      * Die.
@@ -205,6 +216,8 @@ public class TankController extends Component {
         else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
         // only gain health up to maximum
     }
+    // only gain health up to maximum
+  }
 
     /**
      * Pick up ammo.

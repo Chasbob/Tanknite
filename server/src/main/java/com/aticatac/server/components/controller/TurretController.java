@@ -9,14 +9,14 @@ import com.aticatac.server.components.Damage;
 import com.aticatac.server.prefabs.BulletObject;
 
 public class TurretController extends Component {
-    /**
-     * Instantiates a new Component.
-     *
-     * @param gameObject the component parent
-     */
-    public TurretController(GameObject gameObject) {
-        super(gameObject);
-    }
+  /**
+   * Instantiates a new Component.
+   *
+   * @param gameObject the component parent
+   */
+  public TurretController(GameObject gameObject) {
+    super(gameObject);
+  }
 
     public boolean shoot () {
 

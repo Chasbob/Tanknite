@@ -16,6 +16,8 @@ import com.aticatac.server.components.Physics;
  * The type BulletController.
  */
 public class BulletController extends Component {
+  private int damage = 10; // or just have special case when shooting with powerup?
+  private boolean collided = false;
 
   /**
    * Instantiates a new Component.

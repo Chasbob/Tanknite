@@ -80,7 +80,8 @@ dockerCompose {
 //    dockerComposeWorkingDirectory = '/path/where/docker-compose/is/invoked/from'
     dockerComposeStopTimeout = java.time.Duration.ofSeconds(20)
     // time before docker-compose sends SIGTERM to the running containers after the composeDown task has been started
-    environment.put 'version', "$version"    // Pass environment variable to 'docker-compose' for substitution in compose file
+    environment.put 'version', "$version"
+    // Pass environment variable to 'docker-compose' for substitution in compose file
 }
 
 

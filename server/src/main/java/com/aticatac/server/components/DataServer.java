@@ -4,16 +4,16 @@ import com.aticatac.common.components.transform.Position;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
-
 /**
- *
- *
  * @author Claire Fletcher
  */
-
 public enum DataServer {
+  INSTANCE;
+  private BidiMap<Position, String> occupiedCoordinates = new DualHashBidiMap<>();
 
-    INSTANCE;
+  DataServer() {
+    //TODO Remove this when the map is added but for now add in coordinates for edges of map
+  }
 
     //TODO add power ups into this and the walls
     //ammo, health, damage, speed, <-for the power ups
@@ -34,6 +34,7 @@ public enum DataServer {
         
 
     }
+  }
 
 
     /**

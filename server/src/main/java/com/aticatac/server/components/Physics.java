@@ -4,10 +4,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-
 import org.apache.commons.collections4.BidiMap;
-
-import java.util.ArrayList;
 
 /**
  * Physics component will control the physics for the objects in the game. It will consider the new positions of
@@ -15,7 +12,6 @@ import java.util.ArrayList;
  * TransformModel and will be altered by the logic, not this component.
  *
  * @author Claire Fletcher
- *
  */
 public class Physics extends Component {
     /**
@@ -39,14 +35,14 @@ public class Physics extends Component {
      */
     private double velocity = 10;
 
-    /**
-     * Creates a new Physics with a parent.
-     *
-     * @param gameObject the game object
-     */
-    public Physics(GameObject gameObject) {
-        super(gameObject);
-    }
+  /**
+   * Creates a new Physics with a parent.
+   *
+   * @param gameObject the game object
+   */
+  public Physics(GameObject gameObject) {
+    super(gameObject);
+  }
 
 
     /**
@@ -119,34 +115,22 @@ public class Physics extends Component {
     public Object[] moveUp() {
         return move("up");
     }
-
-    /**
-     * Checks if object can move backwards and returns new position
-     *
-     * @return Position of the object
-     */
-    public Object[] moveDown() {
-        return move("down");
+    if (direction.equals("up")) {
+      //only moving on y coord
+      newY = oldY - (velocity * dt);
     }
-
-    /**
-     * Checks if object can move left and returns new position
-     *
-     * @return Position of the object
-     */
-    public Object[] moveLeft() {
-        return move("left");
+    if (direction.equals("left")) {
+      //only moving on x coord
+      newX = oldX + (velocity * dt);
     }
-
-    /**
-     * Checks if object can more right and returns new position
-     *
-     * @return Position of the object
-     */
-    public Object[] moveRight() {
-        return move("right");
+    if (direction.equals("right")) {
+      //only moving on x coord
+      newX = oldX - (velocity * dt);
     }
-    //Test bullet calculation with bearings
+    Position newPosition = new Position(newX, newY);
+    //Returning a collision type and also the position
+    return collision(newPosition, position);
+  }
 
     /**
      * BulletController move position.
@@ -170,13 +154,27 @@ public class Physics extends Component {
         double newX = xCoord + distanceX;
         double newY = yCoord + distanceY;
 
-        Position newPosition = new Position(newX, newY);
+  /**
+   * Checks if object can move backwards and returns new position
+   *
+   * @return Position of the object
+   */
+  public Object[] moveDown() {
+    return move("down");
+  }
 
         //Returning a collision type and also the position
         Object[] returnPosition = collision(newPosition, position, "bullet");
 
-        return returnPosition;
-    }
+  /**
+   * Checks if object can more right and returns new position
+   *
+   * @return Position of the object
+   */
+  public Object[] moveRight() {
+    return move("right");
+  }
+  //Test bullet calculation with bearings
 
     /**
      * Collision method to check if objects have collided
@@ -262,6 +260,13 @@ public class Physics extends Component {
         }
         return null;
     }
+    collisionType = "none";
+    //Returning a collision type and also the position
+    Object[] returnPosition = new Object[2];
+    returnPosition[0] = collisionType;
+    returnPosition[1] = newPosition;
+    return returnPosition;
+  }
 
     /**
      * Sets acceleration for the object.
@@ -275,4 +280,5 @@ public class Physics extends Component {
             acceleration = 0;
         }
     }
+  }
 }
