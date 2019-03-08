@@ -3,7 +3,6 @@ package com.aticatac.client.screens;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -210,8 +209,10 @@ public class GameScreen extends AbstractScreen {
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
     tanks.begin();
     tanks.setColor(Color.CORAL);
-    for (int i = 0; i < update.getPlayers().values().size(); i++) {
-      renderContainer(update.getI(i));
+    if (update != null) {
+      for (int i = 0; i < update.getPlayers().values().size(); i++) {
+        renderContainer(update.getI(i));
+      }
     }
     tanks.end();
     batch.begin();
@@ -238,11 +239,11 @@ public class GameScreen extends AbstractScreen {
     }
     if (Gdx.input.isKeyPressed(Input.Keys.A)) {
       Data.INSTANCE.sendCommand(Command.LEFT);
-    }else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+    } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
       Data.INSTANCE.sendCommand(Command.RIGHT);
-    }else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+    } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
       Data.INSTANCE.sendCommand(Command.UP);
-    }else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+    } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
       Data.INSTANCE.sendCommand(Command.DOWN);
     }
   }
@@ -267,7 +268,7 @@ public class GameScreen extends AbstractScreen {
   }
 
   @Override
-  public void refresh(){
+  public void refresh() {
     health = 1;
     ammoValue = UIFactory.createLabel("30");
     killCount = UIFactory.createLabel("0");
