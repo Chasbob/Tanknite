@@ -8,7 +8,6 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.server.components.*;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.*;
 import com.aticatac.server.powerupobjects.AmmoObject;
 
 // components for server side make in server or import from common?
@@ -54,12 +53,10 @@ public class TankController extends Component {
     else {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(0);
-      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
-      powerUpChecker(powerUpId);
+      powerUpChecker(powerUpId, newPosition);
+      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
     }
-    // TODO, in movement have physics tell if a tank has collided with a power up
     return true;
   }
 
@@ -80,19 +77,12 @@ public class TankController extends Component {
     else {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(90);
-      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
-      powerUpChecker(powerUpId);
-
+      powerUpChecker(powerUpId, newPosition);
+      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
     }
-    //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
-    //bullet disappears, other collisions have no effect, just stop the current move from happening
     return true;
   }
-  //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
-  //bullet disappears, other collisions have no effect, just stop the current move from happening
-
 
   /**
    * Move left boolean.
@@ -110,10 +100,9 @@ public class TankController extends Component {
     else {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(270);
-      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
-      powerUpChecker(powerUpId);
+      powerUpChecker(powerUpId, newPosition);
+      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
     }
     return true;
   }
@@ -124,7 +113,7 @@ public class TankController extends Component {
    *
    * @return the boolean
    */
-// when down arrow/s pressed
+
   public boolean moveDown() {
     Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
     Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
@@ -135,29 +124,31 @@ public class TankController extends Component {
     else {
       this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
       this.getGameObject().getComponent(Transform.class).setRotation(180);
-      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
-      DataServer.INSTANCE.deleteCoordinates(oldPosition);
       String powerUpId = (String) physicsData[0];
-      powerUpChecker(powerUpId);
+      powerUpChecker(powerUpId, newPosition);
+      DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
     }
     return true;
   }
 
 
-  public void powerUpChecker(String powerUpId) {
+  public void powerUpChecker(String powerUpId, Position position) {
     switch (powerUpId){
       case "ammo":
         pickUpAmmo();
-        // TODO: Destroy each power up, and remove from occupiedCoordinates in DataServer after picked up
+        DataServer.INSTANCE.deleteCoordinates(position);
         break;
       case "health":
         pickUpHealth();
+        DataServer.INSTANCE.deleteCoordinates(position);
         break;
       case "speed":
         pickUpSpeed();
+        DataServer.INSTANCE.deleteCoordinates(position);
         break;
       case "damage":
         pickUpDamage();
+        DataServer.INSTANCE.deleteCoordinates(position);
         break;
     }
   }
@@ -185,7 +176,7 @@ public class TankController extends Component {
 
   public void dying() {
     try {
-      Thread.sleep( 20000);
+      Thread.sleep(20000);
     }
     catch (InterruptedException ex){
       Thread.currentThread().interrupt();
@@ -250,7 +241,7 @@ public class TankController extends Component {
 
     this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(true);
     try {
-      Thread.sleep( 20000);
+      Thread.sleep(20000);
     }
     catch (InterruptedException ex){
       Thread.currentThread().interrupt();
@@ -265,7 +256,7 @@ public class TankController extends Component {
   public void pickUpDamage() {
     this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
     try {
-      Thread.sleep( 20000);
+      Thread.sleep(20000);
     }
     catch (InterruptedException ex){
       Thread.currentThread().interrupt();

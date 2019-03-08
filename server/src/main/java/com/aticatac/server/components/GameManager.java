@@ -96,7 +96,7 @@ public class GameManager extends Component {
       100,
       30,
       isAI);
-      DataServer.INSTANCE.setCoordinates(position, "Tank");
+      DataServer.INSTANCE.setCoordinates(position, player);
       return tank;
     } catch (InvalidClassInstance | ComponentExistsException e) {
       this.logger.error(e);
@@ -113,7 +113,7 @@ public class GameManager extends Component {
       100,
       30,
       isAI);
-      DataServer.INSTANCE.setCoordinates(position, "Tank");
+      DataServer.INSTANCE.setCoordinates(position, player);
       return tank;
     } catch (InvalidClassInstance | ComponentExistsException e) {
       this.logger.error(e);

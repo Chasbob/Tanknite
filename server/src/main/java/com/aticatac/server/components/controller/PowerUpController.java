@@ -11,10 +11,8 @@ import com.aticatac.server.powerupobjects.AmmoObject;
 import com.aticatac.server.powerupobjects.DamageObject;
 import com.aticatac.server.powerupobjects.HealthObject;
 import com.aticatac.server.powerupobjects.SpeedObject;
-import com.aticatac.server.prefabs.BulletObject;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class PowerUpController extends Component{
 
