@@ -536,7 +536,7 @@ public class AI extends Component {
   }
 
   /**
-   * The set of states the AI tank can be in.
+   * The set of behavior states the AI tank can be in.
    */
   private enum State {
     /**

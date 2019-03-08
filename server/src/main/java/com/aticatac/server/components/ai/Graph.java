@@ -1,10 +1,10 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 // Things left TODO:
 //  - not placing nodes at wrong places
 
@@ -23,60 +23,34 @@ public class Graph {
    * The nodes that make up the graph
    */
   private final HashMap<String, SearchNode> nodes;
-  private final int separation;
+  private final int separation = 32;
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
    *
-   * @param separation The distance between two connected nodes
-   * @param width      The number of nodes wide
-   * @param height     The number of nodes high
-   * @param xOffset    The x position offset
-   * @param yOffset    The y position offset
    */
-  public Graph(int width, int height, int separation, int xOffset, int yOffset, int[][] map) {
+  public Graph() {
     // Set attributes
     nodes = new HashMap<>();
-    this.separation = separation;
     // Add nodes
+    String[][] map;
+    try {
+       map = convertTMXFileToIntArray();
+    } catch (FileNotFoundException e) {
+      System.out.println("Yo where'd the file go");
+      return;
+    }
     int x, y;
     x = 0;
-    for (int i = xOffset; i < width * separation + xOffset; i += separation) {
+    for (int i = 0; i < map.length * separation; i += separation) {
       y = 0;
-      for (int j = yOffset; j < height * separation + yOffset; j += separation) {
-        if (map[x][y] == 0 /* TODO space is not a wall */) {
+      for (int j = 0; j < map.length * separation; j += separation) {
+        if (map[x][y].equals("0")) {
           nodes.put(i + "-" + j, new SearchNode(i, j));
         }
         y++;
       }
       x++;
-    }
-    // Add connections
-    for (SearchNode node : nodes.values()) {
-      if (nodes.containsKey(node.getX() + "-" + (node.getY() + separation))) {
-        node.addConnection(nodes.get(node.getX() + "-" + (node.getY() + separation)));
-      }
-      if (nodes.containsKey(node.getX() + "-" + (node.getY() - separation))) {
-        node.addConnection(nodes.get(node.getX() + "-" + (node.getY() - separation)));
-      }
-      if (nodes.containsKey((node.getX() + separation) + "-" + node.getY())) {
-        node.addConnection(nodes.get((node.getX() + separation) + "-" + node.getY()));
-      }
-      if (nodes.containsKey((node.getX() - separation) + "-" + node.getY())) {
-        node.addConnection(nodes.get((node.getX() - separation) + "-" + node.getY()));
-      }
-    }
-  }
-
-  public Graph(int width, int height, int separation, int xOffset, int yOffset){
-    // Set attributes
-    nodes = new HashMap<>();
-    this.separation = separation;
-    // Add nodes
-    for (int i = xOffset; i < width * separation + xOffset; i += separation) {
-      for (int j = yOffset; j < height * separation + yOffset; j += separation) {
-        nodes.put(i + "-" + j, new SearchNode(i, j));
-      }
     }
     // Add connections
     for (SearchNode node : nodes.values()) {
@@ -120,10 +94,10 @@ public class Graph {
     HashMap<SearchNode, Integer> g = new HashMap<>();
     g.put(start, 0);
     HashMap<SearchNode, Double> f = new HashMap<>();
-    f.put(start, Math.sqrt(Math.pow(start.getY() - position.getY(),2) + Math.pow(start.getX() - position.getX(),2)));
+    f.put(start, pf.euclideanDistance(start, position));
     while (!openSet.isEmpty()) {
       SearchNode current = pf.getLowestFScoreNode(openSet, f);
-      if (Math.sqrt(Math.pow(current.getY() - position.getY(),2) + Math.pow(current.getX() - position.getX(),2)) < separation) {
+      if (pf.euclideanDistance(current, position) < separation) {
         return current;
       }
       openSet.remove(current);
@@ -132,14 +106,14 @@ public class Graph {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - current.getY()));
+        int tempG = g.get(current) + pf.manhattanDistance(connectedNode, current);
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
           continue;
         }
         g.put(connectedNode, tempG);
-        f.put(connectedNode, g.get(connectedNode) + Math.sqrt(Math.pow(connectedNode.getY() - position.getY(),2) + Math.pow(connectedNode.getX() - position.getX(),2)));
+        f.put(connectedNode, g.get(connectedNode) + pf.euclideanDistance(connectedNode, position));
       }
     }
     return null;
@@ -163,5 +137,19 @@ public class Graph {
       }
     }
     return inRange;
+  }
+
+  private String[][] convertTMXFileToIntArray() throws FileNotFoundException {
+    Scanner s = new Scanner(new File("C:\\Users\\dylan\\IdeaProjects\\aticatac\\client\\src\\main\\resources\\maps\\map.tmx"));
+    for (int i = 0; i < 70; i++) // map starts at line 71
+      s.nextLine();
+    String[][] map = new String[60][60];
+    for (int i = 0; i < 60; i++) {
+      ArrayList<String> line = new ArrayList<>(Arrays.asList(s.nextLine().split(",")));
+      Collections.reverse(line);
+      String[] lineArray = new String[60];
+      map[i] = line.toArray(lineArray);
+    }
+    return map;
   }
 }

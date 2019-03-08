@@ -1,5 +1,7 @@
 package com.aticatac.server.components.ai;
 
+import com.aticatac.common.components.transform.Position;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,7 +35,7 @@ class PathFinder {
     HashMap<SearchNode, Integer> g = new HashMap<>();
     g.put(start, 0);
     HashMap<SearchNode, Double> f = new HashMap<>();
-    f.put(start, costEstimate(start, goal));
+    f.put(start, euclideanDistance(start, goal));
     while (!openSet.isEmpty()) {
       SearchNode current = getLowestFScoreNode(openSet, f);
       if (current.equals(goal)) {
@@ -45,7 +47,7 @@ class PathFinder {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - current.getY()));
+        int tempG = g.get(current) + manhattanDistance(connectedNode, current);
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
@@ -53,7 +55,7 @@ class PathFinder {
         }
         cameFrom.put(connectedNode, current);
         g.put(connectedNode, tempG);
-        f.put(connectedNode, g.get(connectedNode) + costEstimate(connectedNode, goal));
+        f.put(connectedNode, g.get(connectedNode) + euclideanDistance(connectedNode, goal));
       }
     }
     return null;
@@ -97,14 +99,24 @@ class PathFinder {
   }
 
   /**
-   * Calculates a cost estimate for travelling from one node to another using euclidean distance. Used as a heuristic
-   * for A* search.
+   * Calculates euclidean distance between two points. Used as a heuristic for A* search.
    *
-   * @param from Node to start from
-   * @param to   Node to end on
-   * @return An estimate for the cost of travelling from one node to another
+   * @param from Start position
+   * @param to   End position
+   * @return Euclidean distance between two points
    */
-  private double costEstimate(SearchNode from, SearchNode to) {
+  double euclideanDistance(Position from, Position to) {
     return Math.sqrt(Math.pow(from.getY() - to.getY(), 2) + Math.pow(from.getX() - to.getX(), 2));
+  }
+
+  /**
+   * Calculates manhattan distance between two points.
+   *
+   * @param from Start position
+   * @param to   End position
+   * @return Manhattan distance between two points
+   */
+  int manhattanDistance(Position from, Position to) {
+    return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
   }
 }
