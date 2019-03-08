@@ -142,14 +142,20 @@ public class TankController extends Component {
 
 
   public void powerUpChecker(String powerUpId) {
-    if (powerUpId.equals("ammo")) {
-      pickUpAmmo();
-    } else if (powerUpId.equals("health")) {
-      pickUpHealth();
-    } else if (powerUpId.equals("speed")) {
-      pickUpSpeed();
-    } else if (powerUpId.equals("damage")) {
-      pickUpDamage();
+    switch (powerUpId){
+      case "ammo":
+        pickUpAmmo();
+        // TODO: Destroy each power up, and remove from occupiedCoordinates in DataServer after picked up
+        break;
+      case "health":
+        pickUpHealth();
+        break;
+      case "speed":
+        pickUpSpeed();
+        break;
+      case "damage":
+        pickUpDamage();
+        break;
     }
   }
 

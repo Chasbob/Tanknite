@@ -39,20 +39,17 @@ public class BulletController extends Component {
           return;
         } else {
           // collided with tank
-          // TODO: check when tanks created, if the objects are named after username, need a way to access
+          // TODO: check when tanks created, if the objects are named after username, (and prevent usernames "none", "health" etc)
           String collidedTankName = collisionType;
           //GameObject collidedTankName = DataServer.INSTANCE.getOccupiedCoordinates();
 
           //GameObject collidedTankName = this.getGameObject().getComponent(DataServer.class).getOccupiedCoordinatesTank().getKey(newPosition);
           // TODO: Work out how to get tank gsme object from username string
-          GameObject collidedTank = this.getGameObject().findObject("collidedTankName", TankObject);
+          GameObject collidedTank = this.getGameObject().findObject(collidedTankName, TankObject);
           collidedTank.isShot(this.getGameObject().getComponent(Damage.class).getDamage());
           //collidedTankName.getGameObject().getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
           GameObject.destroy(getGameObject());
           return;
-
-
-
         }
       }
       else {

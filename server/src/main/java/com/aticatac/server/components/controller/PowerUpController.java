@@ -82,16 +82,15 @@ public class PowerUpController extends Component{
 
   }
   // need to return powerUp?
-  public void createPowerUp (String powerUp){
-    if (powerUp.equals("health")){
-
-//          while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)) {
-//            position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
-//                ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
-//          } // TODO: check co ordinate is unoccupied and set as occupied position in DataServer
-
-
-  }
+//  public void createPowerUp (String powerUp){
+//
+////          while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)) {
+////            position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+////                ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
+////          } // TODO: check co ordinate is unoccupied and set as occupied position in DataServer
+//
+//
+//  }
 
 
 
