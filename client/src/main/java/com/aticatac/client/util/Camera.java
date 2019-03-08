@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import org.apache.log4j.Logger;
 
 /**
@@ -17,9 +18,9 @@ public class Camera {
   private final float height;
   private final Logger logger;
   private OrthographicCamera camera;
-  private FillViewport viewport;
+  private Viewport viewport;
 
-  public FillViewport getViewport() {
+  public Viewport getViewport() {
     return viewport;
   }
 
@@ -37,7 +38,7 @@ public class Camera {
     this.width = width;
     this.height = height;
     this.camera = new OrthographicCamera();
-    this.viewport = new FillViewport(width, height, camera);
+    this.viewport = new ExtendViewport(width, height, camera);
     this.viewport.apply(true);
     logger = Logger.getLogger(getClass());
     this.camera.setToOrtho(false);

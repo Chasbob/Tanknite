@@ -53,7 +53,6 @@ public class GameScreen extends AbstractScreen {
    */
   GameScreen() {
     super();
-    System.out.println();
     maxX = 1920;
     maxY = 1920;
     try {
@@ -80,7 +79,6 @@ public class GameScreen extends AbstractScreen {
   public void resize(int width, int height) {
     super.resize(width, height);
     this.camera.getViewport().update(width, height);
-    //this.camera.getCamera().zoom = 0.5f;
   }
 
   @Override
@@ -162,6 +160,7 @@ public class GameScreen extends AbstractScreen {
     quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     quitButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.quit();
+      refresh();
       return true;
     }));
     popUpTable.add(quitButton);
@@ -262,5 +261,16 @@ public class GameScreen extends AbstractScreen {
     map.dispose();
     renderer.dispose();
     batch.dispose();
+  }
+
+  @Override
+  public void refresh(){
+    health = 1;
+    ammoValue = UIFactory.createLabel("30");
+    killCount = UIFactory.createLabel("0");
+    playerCount = UIFactory.createLabel("1");
+    tankXY = UIFactory.createLabel("");
+    direction = UIFactory.createLabel("");
+    popUpTable.setVisible(false);
   }
 }

@@ -11,6 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
+
+  private TextField textField;
+  private Label nameTakenLabel;
   /**
    * Instantiates a new Username screen.
    */
@@ -35,11 +38,11 @@ public class UsernameScreen extends AbstractScreen {
     usernameTable.add(guidanceLabel);
     usernameTable.row();
     //create error label
-    Label nameTakenLabel = UIFactory.createErrorLabel("Name Taken");
+    nameTakenLabel = UIFactory.createErrorLabel("Name Taken");
     usernameTable.add(nameTakenLabel);
     usernameTable.row();
     //create text field
-    TextField textField = UIFactory.createTextField("");
+    textField = UIFactory.createTextField("");
     usernameTable.add(textField);
     //create button for submit
     TextButton submitButton = UIFactory.createButton("Submit");
@@ -49,7 +52,7 @@ public class UsernameScreen extends AbstractScreen {
       if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
         boolean accepted = Data.INSTANCE.connect(textField.getText(), true);
         if (accepted) {
-          nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+          refresh();
           Screens.INSTANCE.showScreen(GameScreen.class);
         } else {
           nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
@@ -59,7 +62,7 @@ public class UsernameScreen extends AbstractScreen {
         Data.INSTANCE.setCurrentInformation(Data.INSTANCE.getLocalhost());
         boolean accepted = Data.INSTANCE.connect(textField.getText(), false);
         if (accepted) {
-          nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+          refresh();
           Screens.INSTANCE.showScreen(LobbyScreen.class);
         } else {
           nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
@@ -77,10 +80,12 @@ public class UsernameScreen extends AbstractScreen {
     //create back button
     TextButton backButton = UIFactory.createBackButton("quit");
     backTable.add(backButton).bottom().padBottom(10);
-//        backButton.addListener(UIFactory.newListenerEvent(() -> {
-//            Screens.INSTANCE.setSingleplayer(false);
-//            return false;
-//        }));
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+  }
+
+  @Override
+  public void refresh() {
+    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+    textField.setText("");
   }
 }

@@ -67,4 +67,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     buttonTable.add(exitButton);
   }
+
+  @Override
+  public void refresh() { }
 }
