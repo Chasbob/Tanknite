@@ -350,7 +350,7 @@ public class AI extends Component {
    * @return All positions clear of enemies
    */
   private ArrayList<Position> getClearPositions() {
-    ArrayList<Position> clearPositions = new ArrayList<Position>();
+    ArrayList<Position> clearPositions = new ArrayList<>();
     ArrayList<SearchNode> nodes = graph.getNodesInRange(tankPos, VIEW_RANGE);
     for (SearchNode node : nodes) {
       if (getEnemiesInRange(node, VIEW_RANGE / 4).isEmpty()) {
@@ -418,7 +418,7 @@ public class AI extends Component {
    * @return A list of enemies in range of the position
    */
   private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-    return getGameObjectsInRange(position, range, /*All enemies in game right now*/new ArrayList<GameObject>()); // TODO: GeT tHiS iNfO
+    return getGameObjectsInRange(position, range, /*All enemies in game right now*/new ArrayList<>()); // TODO: GeT tHiS iNfO
   }
 
   /**
@@ -437,7 +437,7 @@ public class AI extends Component {
    * @return A list of power-up in range of the position
    */
   private ArrayList<GameObject> getPowerupsInRange(Position position) {
-    return getGameObjectsInRange(position, VIEW_RANGE, /*All power-ups in game right now*/new ArrayList<GameObject>()); // TODO: get this INFO BOI
+    return getGameObjectsInRange(position, VIEW_RANGE, /*All power-ups in game right now*/new ArrayList<>()); // TODO: get this INFO BOI
   }
 
   /**
@@ -455,7 +455,7 @@ public class AI extends Component {
    * @return The closest ideal power-up to the tank
    */
   private GameObject getIdealPowerup() {
-    ArrayList<GameObject> idealInRange = new ArrayList<GameObject>();
+    ArrayList<GameObject> idealInRange = new ArrayList<>();
     for (GameObject powerup : powerupsInRange) {
             /*
             if (powerup == idealPowerup) {
@@ -475,7 +475,7 @@ public class AI extends Component {
    * @return All specified GameObjects in range
    */
   private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
-    ArrayList<GameObject> inRange = new ArrayList<GameObject>();
+    ArrayList<GameObject> inRange = new ArrayList<>();
     for (GameObject enemy : allObjects) {
       if (Math.abs(enemy.getTransform().getX() - position.getX()) <= range ||
       Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {

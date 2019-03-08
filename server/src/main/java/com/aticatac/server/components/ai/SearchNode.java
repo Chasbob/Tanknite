@@ -23,7 +23,7 @@ class SearchNode extends Position {
    */
   SearchNode(int x, int y) {
     super(x, y);
-    connectedNodes = new ArrayList<SearchNode>();
+    connectedNodes = new ArrayList<>();
   }
 
   /**
@@ -31,7 +31,7 @@ class SearchNode extends Position {
    *
    * @return An ArrayList of the connected SearchNodes
    */
-  public ArrayList<SearchNode> getConnectedNodes() {
+  ArrayList<SearchNode> getConnectedNodes() {
     return connectedNodes;
   }
 
@@ -40,7 +40,7 @@ class SearchNode extends Position {
    *
    * @param node The SearchNode to connect to
    */
-  public void addConnection(SearchNode node) {
+  void addConnection(SearchNode node) {
     connectedNodes.add(node);
   }
 }
