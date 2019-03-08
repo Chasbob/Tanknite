@@ -1,12 +1,15 @@
 package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.server.components.*;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.*;
+import com.aticatac.server.powerupobjects.AmmoObject;
 
 // components for server side make in server or import from common?
 // needs component of Physics
@@ -181,10 +184,13 @@ public class TankController extends Component {
   }
 
   public void dying() {
-//        // can no longer move and will die in 20 seconds
-    //Physics will check the health and prevent it moving if less than 10
-//        //delay
-//        die();
+    try {
+      Thread.sleep( 20000);
+    }
+    catch (InterruptedException ex){
+      Thread.currentThread().interrupt();
+    }
+  die();
   }
 
 
@@ -192,19 +198,22 @@ public class TankController extends Component {
    * Die.
    */
 
-  // wheree to have collision with pick up, physics?
-  // change from logic interface calling methods to map calling?
   public void die() {
 
-    //remove it from data coordinates
-    // delete co ord from wherever, but DataServer no longer has a deleteCoordinates method?
     DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
 
     //add a powerup into the data that says that this is a power up with location.
     //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
+    // TODO: Create ammo power up here when tank dies, and add co ordinates of it to DataServer
+    AmmoObject ammoPowerUp = null; // get name of powerUp
+    try {
+      ammoPowerUp = new AmmoObject("ammoPowerUp", this.getGameObject());
+    } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+      invalidClassInstance.printStackTrace();
+    }
     GameObject.destroy(getGameObject());
 
-    //TODO potentially not relevant in here
+    //TODO: potentially not relevant in here
     //Check if the number of tanks alive is 1, if so end the game
     //if not then remove this tank from number of tanks on the map
 
@@ -222,7 +231,6 @@ public class TankController extends Component {
     } else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
     // only gain health up to maximum
   }
-  // only gain health up to maximum
 
   /**
    * Pick up ammo.
@@ -241,9 +249,13 @@ public class TankController extends Component {
   public void pickUpSpeed() {
 
     this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(true);
-    //make this a thread which waits for certain time then
-    // this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(false);
-
+    try {
+      Thread.sleep( 20000);
+    }
+    catch (InterruptedException ex){
+      Thread.currentThread().interrupt();
+    }
+    this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(false);
   }
 
 
@@ -252,7 +264,13 @@ public class TankController extends Component {
    */
   public void pickUpDamage() {
     this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
-    // set BulletDamage to true for 20 secs, then set to false
+    try {
+      Thread.sleep( 20000);
+    }
+    catch (InterruptedException ex){
+      Thread.currentThread().interrupt();
+    }
+    this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(false);
   }
 
 

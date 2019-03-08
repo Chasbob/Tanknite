@@ -30,7 +30,7 @@ public class TankObject extends GameObject {
     this.addComponent(Physics.class);
     this.addComponent(Time.class);
     this.addComponent(TankController.class);
-    this.addComponent(TurretController.class); // Have TurretController in TankObject rather than a TurretObject
+    this.addComponent(TurretController.class); // Have TurretController in TankObject rather than a TurretObject?
     if (isAI) {
       this.addComponent(AI.class);
     }

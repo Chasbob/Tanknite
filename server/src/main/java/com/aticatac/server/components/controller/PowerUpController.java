@@ -36,14 +36,13 @@ public class PowerUpController extends Component{
       catch (InterruptedException ex){
         Thread.currentThread().interrupt();
       }
-
       int powerUpId = new Random().nextInt(4);
 
       switch (powerUpId) {
         case 0:
           HealthObject healthPowerUp = null; // get name of powerUp
           try {
-            healthPowerUp = new HealthObject("powerUp", this.getGameObject());
+            healthPowerUp = new HealthObject("healthPowerUp", this.getGameObject());
           } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
             invalidClassInstance.printStackTrace();
           }
@@ -52,7 +51,7 @@ public class PowerUpController extends Component{
         case 1:
           AmmoObject ammoPowerUp = null; // get name of powerUp
           try {
-            ammoPowerUp = new AmmoObject("powerUp", this.getGameObject());
+            ammoPowerUp = new AmmoObject("ammoPowerUp", this.getGameObject());
           } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
             invalidClassInstance.printStackTrace();
           }
@@ -61,7 +60,7 @@ public class PowerUpController extends Component{
         case 2:
           DamageObject damagePowerUp = null; // get name of powerUp
           try {
-            damagePowerUp = new DamageObject("powerUp", this.getGameObject());
+            damagePowerUp = new DamageObject("damagePowerUp", this.getGameObject());
           } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
             invalidClassInstance.printStackTrace();
           }
@@ -70,7 +69,7 @@ public class PowerUpController extends Component{
         case 3:
           SpeedObject speedPowerUp = null; // get name of powerUp
           try {
-            speedPowerUp = new SpeedObject("powerUp", this.getGameObject());
+            speedPowerUp = new SpeedObject("speedPowerUp", this.getGameObject());
           } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
             invalidClassInstance.printStackTrace();
           }
@@ -94,7 +93,7 @@ public class PowerUpController extends Component{
 
 
 
-  //created as component for map before game starts
+  //created as component for map before game starts, and have spawnPowerUps() method called
   // TODO: Have power ups actually be created as gameObjects
   //after set time, picks random powerup, creates object of it and decides co ordinates of it on the map
 
