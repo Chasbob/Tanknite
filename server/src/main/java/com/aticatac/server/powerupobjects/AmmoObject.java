@@ -1,4 +1,4 @@
-package com.aticatac.server.PowerUpObjects;
+package com.aticatac.server.powerupobjects;
 
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;

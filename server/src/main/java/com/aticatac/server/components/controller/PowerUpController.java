@@ -2,9 +2,16 @@ package com.aticatac.server.components.controller;
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.gamemanager.Manager;
+import com.aticatac.server.powerupobjects.AmmoObject;
+import com.aticatac.server.powerupobjects.DamageObject;
+import com.aticatac.server.powerupobjects.HealthObject;
+import com.aticatac.server.powerupobjects.SpeedObject;
+import com.aticatac.server.prefabs.BulletObject;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -16,7 +23,7 @@ public class PowerUpController extends Component{
 
   }
 
-  public void createPowerUps(){
+  public void spawnPowerUps(){
 
     while (true) {
 
@@ -31,28 +38,57 @@ public class PowerUpController extends Component{
       }
 
       int powerUpId = new Random().nextInt(4);
+
       switch (powerUpId) {
         case 0:
-//          while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)) {
-//            position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
-//                ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
-//          } // TODO: set as occupied position in DataServer
+          HealthObject healthPowerUp = null; // get name of powerUp
+          try {
+            healthPowerUp = new HealthObject("powerUp", this.getGameObject());
+          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+            invalidClassInstance.printStackTrace();
+          }
           break;
 
         case 1:
-          // create ammo
+          AmmoObject ammoPowerUp = null; // get name of powerUp
+          try {
+            ammoPowerUp = new AmmoObject("powerUp", this.getGameObject());
+          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+            invalidClassInstance.printStackTrace();
+          }
           break;
 
         case 2:
-          // create bullet damage
+          DamageObject damagePowerUp = null; // get name of powerUp
+          try {
+            damagePowerUp = new DamageObject("powerUp", this.getGameObject());
+          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+            invalidClassInstance.printStackTrace();
+          }
           break;
 
         case 3:
-          // create speed
+          SpeedObject speedPowerUp = null; // get name of powerUp
+          try {
+            speedPowerUp = new SpeedObject("powerUp", this.getGameObject());
+          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+            invalidClassInstance.printStackTrace();
+          }
           break;
       }
     }
 
+
+
+  }
+  // need to return powerUp?
+  public void createPowerUp (String powerUp){
+    if (powerUp.equals("health")){
+
+//          while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)) {
+//            position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+//                ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
+//          } // TODO: check co ordinate is unoccupied and set as occupied position in DataServer
 
 
   }
