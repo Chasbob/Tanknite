@@ -32,6 +32,8 @@ abstract class AbstractScreen extends Stage implements Screen {
 //Subclasses must load actors in this method
   public abstract void buildStage();
 
+  public abstract void refresh();
+
   @Override
   public void show() {
     Gdx.input.setInputProcessor(this);

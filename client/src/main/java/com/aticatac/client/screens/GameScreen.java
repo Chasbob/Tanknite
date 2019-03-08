@@ -55,6 +55,7 @@ public class GameScreen extends AbstractScreen {
    */
   GameScreen() {
     super();
+    System.out.println();
     maxX = 1920;
     maxY = 1920;
     try {
@@ -186,13 +187,12 @@ public class GameScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
-    //TODO figure out why it flickers when going side to side.
-    //
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
       update = newUpdate;
       player = update.getMe(Data.INSTANCE.getID());
     }
+    Container player = update.getMe(Data.INSTANCE.getID());
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
       this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));

@@ -57,4 +57,9 @@ public class MultiplayerScreen extends AbstractScreen {
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
   }
+
+  @Override
+  public void refresh() {
+
+  }
 }
