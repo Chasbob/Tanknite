@@ -10,6 +10,7 @@ import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.components.*;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
+import com.aticatac.server.components.controller.TurretController;
 
 
 public class TankObject extends GameObject {
@@ -29,6 +30,7 @@ public class TankObject extends GameObject {
     this.addComponent(Physics.class);
     this.addComponent(Time.class);
     this.addComponent(TankController.class);
+    this.addComponent(TurretController.class); // Have TurretController in TankObject rather than a TurretObject
     if (isAI) {
       this.addComponent(AI.class);
     }

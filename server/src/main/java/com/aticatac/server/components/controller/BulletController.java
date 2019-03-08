@@ -6,6 +6,7 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.Damage;
 import com.aticatac.server.components.Physics;
+import com.aticatac.server.prefabs.TankObject;
 
 
 /**
@@ -32,7 +33,6 @@ public class BulletController extends Component {
       Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
       Position newPosition = (Position) physicsData[1];
       String collisionType = (String) physicsData[0];
-      // TODO: Check whether not ammo, not health, not wall etc to work out whether tank, then store tank id in bidimap so can call isShoot on that
       if (!(collisionType.equals("none")) && !(collisionType.equals("health")) && !(collisionType.equals("speed")) && !(collisionType.equals("ammo")) && !(collisionType.equals("damage"))){
         if (collisionType.equals("wall")) {
           GameObject.destroy(getGameObject());
@@ -45,8 +45,9 @@ public class BulletController extends Component {
 
           //GameObject collidedTankName = this.getGameObject().getComponent(DataServer.class).getOccupiedCoordinatesTank().getKey(newPosition);
           // TODO: Work out how to get tank gsme object from username string
-          GameObject collidedTank = collidedTankName.findObject("collidedTankName"); // wait for second argument to be removed
-          collidedTankName.getGameObject().getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
+          GameObject collidedTank = this.getGameObject().findObject("collidedTankName", TankObject);
+          collidedTank.isShot(this.getGameObject().getComponent(Damage.class).getDamage());
+          //collidedTankName.getGameObject().getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
           GameObject.destroy(getGameObject());
           return;
 
