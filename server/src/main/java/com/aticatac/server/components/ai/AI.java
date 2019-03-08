@@ -1,8 +1,8 @@
 package com.aticatac.server.components.ai;
 
-import com.aticatac.common.components.Ammo;
 import com.aticatac.common.components.Component;
-import com.aticatac.common.components.Health;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.Health;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
@@ -15,7 +15,6 @@ import java.util.Random;
 //  - line of sight
 //  - powerup stuff
 //  - getting information, all enemies, all powerups
-
 /**
  * AI.
  *
@@ -24,9 +23,9 @@ import java.util.Random;
 public class AI extends Component {
   private final static int VIEW_RANGE = 500; // some value equivalent to the actual view range that a player would have
   private final GameObject tank;
-  private final Graph graph;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
+  private Graph graph;
   private State state;
   private State prevState;
   private Queue<SearchNode> searchPath; // current path being executed
@@ -40,21 +39,23 @@ public class AI extends Component {
   private boolean aimed;
 
   /**
-   * Instantiates a new Ai.
+   * Instantiates a new AI component.
    *
-   * @param parent the parent
+   * @param parent the parent tank
    */
   public AI(GameObject parent) {
     super(parent);
     this.tank = parent;
-    this.graph = new Graph(10, 10, 10, 0, 0);
     this.state = State.SEARCHING;
-    this.prevState = State.SEARCHING;
     this.searchPath = new LinkedList<>();
     this.aggression = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
+  }
+
+  public void setGraph(Graph graph) {
+    this.graph = graph;
   }
 
   /**
@@ -74,7 +75,7 @@ public class AI extends Component {
     int angleChange = getAngleChange();
     aimAngle += angleChange;
     // Poll search path if close enough to node
-    double threshold = 3;
+    double threshold = 16;
     if (!searchPath.isEmpty()) {
       if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold && Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
         searchPath.poll();
@@ -233,13 +234,14 @@ public class AI extends Component {
     }
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
-    if (!(goal == null)) {
-      searchPath = graph.getPathToLocation(tankPos, goal);
-      if (!searchPath.isEmpty()) {
-        return commandToPerform(searchPath.peek());
-      }
+    System.out.println(tankPos + "GOING TO " + goal);
+    searchPath = graph.getPathToLocation(tankPos, goal);
+    Command c = commandToPerform(searchPath.peek());
+    if (c != null) {
+      return c;
     }
-    return Command.DOWN;
+    searchPath.poll();
+    return commandToPerform(searchPath.peek());
   }
 
   /**
@@ -331,17 +333,17 @@ public class AI extends Component {
    * @return A command that executes the path
    */
   private Command commandToPerform(SearchNode node) {
-    // THESE MIGHT BE WRONG
-    if (tankPos.getX() < node.getX()) {
+    // these are actually right
+    if (tankPos.getX() > node.getX() && Math.abs(tankPos.getX() - node.getX()) > 2) {
       return Command.RIGHT;
-    } else if (tankPos.getX() > node.getX()) {
+    } else if (tankPos.getX() < node.getX() && Math.abs(tankPos.getX() - node.getX()) > 2) {
       return Command.LEFT;
-    } else if (tankPos.getY() < node.getY()) {
+    } else if (tankPos.getY() > node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
       return Command.UP;
-    } else if (tankPos.getY() > node.getY()) {
+    } else if (tankPos.getY() < node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
       return Command.DOWN;
     }
-    return null;
+    return Command.RIGHT;
   }
 
   /**
@@ -400,13 +402,13 @@ public class AI extends Component {
   private boolean checkLineOfSightToPosition(Position from, Position to) {
     // Currently broken
     // TODO: change to any angle line of sight
-    Queue<SearchNode> path = graph.getPathToLocation(from, to);
-    SearchNode first = path.peek();
-    while (!path.isEmpty()) {
-      if (path.poll() != first) {
-        return false;
-      }
-    }
+//    Queue<SearchNode> path = graph.getPathToLocation(from, to);
+//    SearchNode first = path.peek();
+//    while (!path.isEmpty()) {
+//      if (path.poll() != first) {
+//        return false;
+//      }
+//    }
     return true;
   }
 
