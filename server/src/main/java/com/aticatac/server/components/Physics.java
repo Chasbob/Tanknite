@@ -21,7 +21,7 @@ public class Physics extends Component {
     /**
      * The gravity acting for all objects
      */
-    private static double gravity = 9.81;
+    private static double gravity = 10;
     /**
      * The mass of this object
      */
@@ -190,6 +190,10 @@ public class Physics extends Component {
         String collisionType;
 
         //Below can be the only part of this that is checked and will then return the type that it is
+        double changeY = newPosition.getY() - oldPosition.getY();
+        double changeX = newPosition.getX() - oldPosition.getX();
+
+        //needs to check if there is anything there from the old position to the new position.
         if(occupiedCoordinates.containsKey(newPosition)){
 
             collisionType = occupiedCoordinates.get(newPosition);

@@ -27,25 +27,6 @@ public enum DataServer {
     DataServer(){
 
 
-        //for loop that creates a position then sets it as a wall:
-        for(int i=0; i<1921; i++){
-
-            Position position = new Position(i, 0);
-
-            setCoordinates(position, "wall");
-
-        }
-
-
-        for(int j=0; j<1921; j++){
-
-            Position position = new Position(0, j);
-
-            setCoordinates(position, "wall");
-
-        }
-
-
     }
 
 
