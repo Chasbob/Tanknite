@@ -53,6 +53,7 @@ public class GameScreen extends AbstractScreen {
    */
   GameScreen() {
     super();
+    System.out.println();
     maxX = 1920;
     maxY = 1920;
     try {
@@ -66,7 +67,7 @@ public class GameScreen extends AbstractScreen {
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("img/tank.png");
       renderer = new OrthogonalTiledMapRenderer(map);
-      this.camera = new Camera(maxX, maxY, getWidth(), getHeight());
+      this.camera = new Camera(maxX, maxY, 640, 640);
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();
@@ -78,8 +79,8 @@ public class GameScreen extends AbstractScreen {
   @Override
   public void resize(int width, int height) {
     super.resize(width, height);
-    this.camera.getCamera().viewportHeight = height;
-    this.camera.getCamera().viewportWidth = width;
+    this.camera.getViewport().update(width, height);
+    //this.camera.getCamera().zoom = 0.5f;
   }
 
   @Override
@@ -183,7 +184,6 @@ public class GameScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
-    //TODO figure out why it flickers when going side to side.
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
       update = newUpdate;
@@ -215,7 +215,7 @@ public class GameScreen extends AbstractScreen {
     batch.begin();
     //health bar
     healthBar();
-    batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
+    batch.draw(Styles.getInstance().getBlank(), 0, 0, Gdx.graphics.getWidth() * health, 5);
     batch.setColor(Color.WHITE);
     batch.end();
     super.act(delta);
