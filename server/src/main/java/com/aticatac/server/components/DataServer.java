@@ -31,10 +31,7 @@ public enum DataServer {
      *
      */
     DataServer(){
-
-
-        //create the array map
-       // map = {};
+        
 
     }
 

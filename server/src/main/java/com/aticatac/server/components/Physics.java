@@ -201,6 +201,7 @@ public class Physics extends Component {
         box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
 
 
+
         //map of the coordinates that are occupied
         BidiMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
@@ -216,11 +217,6 @@ public class Physics extends Component {
                 this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
                 return returnPosition;
             }
-            else {
-                //adds the new positions into the dataserver
-                //TODO Fix this line
-                //this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
-            }
 
         }
 
@@ -228,6 +224,9 @@ public class Physics extends Component {
         //checks the position of the tank against the occupied coordinates
         Object[] returnPosition = getCollisionArray(newPosition, oldPosition, occupiedCoordinates);
         if (returnPosition != null) return returnPosition;
+
+        //adds the box positions to the server
+        this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
 
 
         //else:
