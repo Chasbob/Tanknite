@@ -244,13 +244,7 @@ public class Physics extends Component {
 
       String collisionType;
 
-      //TODO alter this
-      System.out.println(newPosition.hashCode());
-      System.out.println(occupiedCoordinates.get(newPosition));
-
       if (occupiedCoordinates.containsKey(newPosition)) {
-
-        System.out.println("contains position");
 
         collisionType = occupiedCoordinates.get(newPosition);
 
