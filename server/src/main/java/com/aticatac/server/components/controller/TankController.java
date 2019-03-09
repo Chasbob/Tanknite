@@ -32,22 +32,19 @@ public class TankController extends Component {
     //physics manager will return a value. 0 = no collision, any other will mean collision.
     //else set position to new transform
     public boolean moveUp() {
-        Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-        Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
-        Position newPosition = (Position) physicsData[1];
-        if (oldPosition.equals(newPosition)) return false;
+      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
+      Position newPosition = (Position) physicsData[1];
+      if (oldPosition.equals(newPosition)) return false;
 
-        else{
-            DataServer.INSTANCE.deleteCoordinates(oldPosition);
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-            DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
-            this.getGameObject().getComponent(Transform.class).setRotation(0);
-            powerUpCheck(oldPosition, physicsData, newPosition);
-        }
-        return true;
+      else {
+        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        this.getGameObject().getComponent(Transform.class).setRotation(0);
+        powerUpCheck(oldPosition, physicsData, newPosition);
+      }
+      return true;
     }
-    return true;
-  }
 
     /**
      * Move right boolean.
@@ -56,31 +53,26 @@ public class TankController extends Component {
      */
     // when right arrow/d pressed
     public boolean moveRight() {
-        Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-        Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
-        Position newPosition = (Position)physicsData[1];
+      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
+      Position newPosition = (Position) physicsData[1];
 
-        if (oldPosition.equals(newPosition)) return false;
+      if (oldPosition.equals(newPosition)) return false;
 
-        else{
-            DataServer.INSTANCE.deleteCoordinates(oldPosition);
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-            DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
-            this.getGameObject().getComponent(Transform.class).setRotation(90);
-            powerUpCheck(oldPosition, physicsData, newPosition);
+      else {
+        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        this.getGameObject().getComponent(Transform.class).setRotation(90);
+        powerUpCheck(oldPosition, physicsData, newPosition);
 
-        }
-        //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
-        //bullet disappears, other collisions have no effect, just stop the current move from happening
-        return true;
+      }
+      //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
+      //bullet disappears, other collisions have no effect, just stop the current move from happening
+      return true;
     }
-    //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
-    //bullet disappears, other collisions have no effect, just stop the current move from happening
-    return true;
-  }
 
     private void powerUpCheck(Position oldPosition, Object[] physicsData, Position newPosition) {
-        DataServer.INSTANCE.setCoordinates(newPosition, "tank", oldPosition);
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName(), oldPosition);
         if (physicsData[0] == "ammo"){
             pickUpAmmo();
             // destroy powerup object too
@@ -106,24 +98,21 @@ public class TankController extends Component {
      */
     // when left arrow/a pressed
     public boolean moveLeft() {
-        Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-        Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
-        Position newPosition = (Position) physicsData[1];
-        if (oldPosition.equals(newPosition)) return false;
+      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
+      Position newPosition = (Position) physicsData[1];
+      if (oldPosition.equals(newPosition)) return false;
 
-        else{
-            DataServer.INSTANCE.deleteCoordinates(oldPosition);
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-            DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
-            this.getGameObject().getComponent(Transform.class).setRotation(270);
-            powerUpCheck(oldPosition, physicsData, newPosition);
-        }
+      else {
+        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        this.getGameObject().getComponent(Transform.class).setRotation(270);
+        powerUpCheck(oldPosition, physicsData, newPosition);
+      }
 
 
-        return true;
+      return true;
     }
-    return true;
-  }
 
   /**
    * Move backwards boolean.
@@ -132,22 +121,18 @@ public class TankController extends Component {
    */
 // when down arrow/s pressed
     public boolean moveDown() {
-        Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-        Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
-        Position newPosition = (Position) physicsData[1];
-        if (oldPosition.equals(newPosition)) return false;
-        else {
-            DataServer.INSTANCE.deleteCoordinates(oldPosition);
-            this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-            DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
-            this.getGameObject().getComponent(Transform.class).setRotation(180);
-            powerUpCheck(oldPosition, physicsData, newPosition);
-        }
-
-        return true;
+      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
+      Position newPosition = (Position) physicsData[1];
+      if (oldPosition.equals(newPosition)) return false;
+      else {
+        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        this.getGameObject().getComponent(Transform.class).setRotation(180);
+        powerUpCheck(oldPosition, physicsData, newPosition);
+      }
+      return true;
     }
-    return true;
-  }
 
   /**
    * Shoot boolean.
@@ -176,7 +161,6 @@ public class TankController extends Component {
             die();
         }
     }
-  }
 
     public void dying() {
 //        // can no longer move and will die in 20 seconds
@@ -208,16 +192,13 @@ public class TankController extends Component {
      */
     public void pickUpHealth () {
 
-        int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
-        int newHealth = currentHealth + 10;
-        if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()){
-            this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
-        }
-        else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-        // only gain health up to maximum
+      int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
+      int newHealth = currentHealth + 10;
+      if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()) {
+        this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
+      } else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
+      // only gain health up to maximum
     }
-    // only gain health up to maximum
-  }
 
     /**
      * Pick up ammo.
@@ -226,7 +207,6 @@ public class TankController extends Component {
 
         int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
         this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo + 10);
-
 
     }
 

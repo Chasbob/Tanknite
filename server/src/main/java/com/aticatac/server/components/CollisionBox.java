@@ -21,11 +21,15 @@ public class CollisionBox extends Component {
    */
   public void setCollisionBox(Position tankPosition) {
 
-        double lowerY = tankPosition.getY() - 16;
-        double lowerX = tankPosition.getX() - 16;
+    if(box != null) {
+      box.clear();
+    }
 
-        double higherY = tankPosition.getY() + 16;
-        double higherX = tankPosition.getX() + 16;
+        int lowerY = tankPosition.getY() - 16;
+        int lowerX = tankPosition.getX() - 16;
+
+        int higherY = tankPosition.getY() + 16;
+        int higherX = tankPosition.getX() + 16;
 
         for (int x = 0; x < 33; x++) {
             Position position = new Position(lowerX + x, lowerY);
@@ -71,13 +75,13 @@ public class CollisionBox extends Component {
     for(int i=0; i<box.size(); i++){
 
       Position position = box.get(i);
-      DataServer.INSTANCE.setCoordinates(position, tankID);
+      DataServer.INSTANCE.setCoordinates(position, tankID+i);
 
     }
 
   }
 
-  public void removeBoxfromData(ArrayList<Position> box){
+  public void removeBoxFromData(ArrayList<Position> box){
 
     for(int i=0; i<box.size(); i++){
 

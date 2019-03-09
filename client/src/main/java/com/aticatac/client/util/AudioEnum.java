@@ -13,9 +13,6 @@ public enum AudioEnum {
    * Instance audio enum.
    */
   INSTANCE;
-  private final Logger logger;
-
-    INSTANCE;
 
     private final Logger logger;
 

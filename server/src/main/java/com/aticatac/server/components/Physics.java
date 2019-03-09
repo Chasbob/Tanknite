@@ -6,6 +6,8 @@ import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 import org.apache.commons.collections4.BidiMap;
 
+import java.util.ArrayList;
+
 /**
  * Physics component will control the physics for the objects in the game. It will consider the new positions of
  * objects and alter any physics values (e.g. velocity) for the object. The positions of the object are kept in
@@ -17,23 +19,23 @@ public class Physics extends Component {
     /**
      * The gravity acting for all objects
      */
-    private static double gravity = 10;
+    private static int gravity = 10;
     /**
      * The mass of this object
      */
-    private double objectMass = 10;
+    private int objectMass = 10;
     /**
      * The thrust for this tank
      */
-    private double thrust = 10;
+    private int thrust = 10;
     /**
      * The acceleration for this tank
      */
-    private double acceleration;
+    private int acceleration;
     /**
      * The velocity for this tank
      */
-    private double velocity = 10;
+    private int velocity = 10;
 
   /**
    * Creates a new Physics with a parent.
@@ -63,15 +65,15 @@ public class Physics extends Component {
         }
 
         //Old Positions
-        double oldX = position.getX();
-        double oldY = position.getY();
+        int oldX = position.getX();
+        int oldY = position.getY();
 
         //new proposed positions
-        double newX = oldX;
-        double newY = oldY;
+        int newX = oldX;
+        int newY = oldY;
 
         //change in time for calculations
-        double dt = 1;
+        int dt = 1;
 
         //Set acceleration
         setAcceleration();
@@ -82,7 +84,7 @@ public class Physics extends Component {
         }
 
         // travelling
-        double movement = velocity*dt;
+        int movement = velocity*dt;
 
         //Calculates the new coordinates
         if (direction.equals("down")) {
@@ -105,54 +107,18 @@ public class Physics extends Component {
         Position newPosition = new Position(newX, newY);
 
         //Returning a collision type and also the position
-        return collision(newPosition, position, direction);
+        return collision(newPosition, position);
 
     }
 
-     /**
-     * @return Position of the object
-     */
-    public Object[] moveUp() {
-        return move("up");
-    }
-    if (direction.equals("up")) {
-      //only moving on y coord
-      newY = oldY - (velocity * dt);
-    }
-    if (direction.equals("left")) {
-      //only moving on x coord
-      newX = oldX + (velocity * dt);
-    }
-    if (direction.equals("right")) {
-      //only moving on x coord
-      newX = oldX - (velocity * dt);
-    }
-    Position newPosition = new Position(newX, newY);
-    //Returning a collision type and also the position
-    return collision(newPosition, position);
+  /**
+   * Checks if object can move forwards and returns new position
+   *
+   * @return Position of the object
+   */
+  public Object[] moveUp() {
+    return move("up");
   }
-
-    /**
-     * BulletController move position.
-     *
-     * @param rotation the bearing
-     * @return the position
-     */
-    public Object[] bulletMove(double rotation) {
-        Position position = this.getGameObject().getComponent(Transform.class).getPosition();
-        double xCoord = position.getX();
-        double yCoord = position.getY();
-        //converting the dt from nanoseconds to seconds
-        long dt = 1;
-        //Distance it moves is the change in time * the above velocity
-        double distance = dt * velocity;
-        //distance travelled in x direction is cos theta * distance
-        double distanceX = distance * Math.cos(rotation);
-        //distance travelled in y direction is sin theta * distance
-        double distanceY = distance * Math.sin(rotation);
-        //then add those to the original x and y
-        double newX = xCoord + distanceX;
-        double newY = yCoord + distanceY;
 
   /**
    * Checks if object can move backwards and returns new position
@@ -163,8 +129,14 @@ public class Physics extends Component {
     return move("down");
   }
 
-        //Returning a collision type and also the position
-        Object[] returnPosition = collision(newPosition, position, "bullet");
+  /**
+   * Checks if object can move left and returns new position
+   *
+   * @return Position of the object
+   */
+  public Object[] moveLeft() {
+    return move("left");
+  }
 
   /**
    * Checks if object can more right and returns new position
@@ -174,7 +146,37 @@ public class Physics extends Component {
   public Object[] moveRight() {
     return move("right");
   }
-  //Test bullet calculation with bearings
+
+    /**
+     * BulletController move position.
+     *
+     * @param rotation the bearing
+     * @return the position
+     */
+    public Object[] bulletMove(int rotation) {
+      Position position = this.getGameObject().getComponent(Transform.class).getPosition();
+      int xCoord = position.getX();
+      int yCoord = position.getY();
+      //converting the dt from nanoseconds to seconds
+      int dt = 1;
+      //Distance it moves is the change in time * the above velocity
+      int distance = dt * velocity;
+      //distance travelled in x direction is cos theta * distance
+      int distanceX = distance * (int) Math.round(Math.cos(rotation));
+      //distance travelled in y direction is sin theta * distance
+      int distanceY = distance * (int) Math.round(Math.sin(rotation));
+      //then add those to the original x and y
+      int newX = xCoord + distanceX;
+      int newY = yCoord + distanceY;
+
+      Position newPosition = new Position(newX, newY);
+
+      //returning a collision type and also the position
+      Object[] returnPosition = collision(newPosition, position);
+      return returnPosition;
+
+    }
+
 
     /**
      * Collision method to check if objects have collided
@@ -184,7 +186,7 @@ public class Physics extends Component {
      * @return An array of the collision type and the new position
      */
     //TODO new bullet collision method
-    private Object[] collision(Position newPosition, Position oldPosition, String direction) {
+    private Object[] collision (Position newPosition, Position oldPosition) {
 
         //string for what has been collided with
         String collisionType;
@@ -192,7 +194,7 @@ public class Physics extends Component {
         //creates and sets the new box coords based on the new position
         ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
         //removes the old positions
-        this.getGameObject().getComponent(CollisionBox.class).removeBoxfromData(box);
+        this.getGameObject().getComponent(CollisionBox.class).removeBoxFromData(box);
         //sets the new positions
         this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(newPosition);
         //gets new position box
@@ -240,33 +242,32 @@ public class Physics extends Component {
 
     private Object[] getCollisionArray(Position newPosition, Position oldPosition, BidiMap<Position, String> occupiedCoordinates) {
 
-        String collisionType;
+      String collisionType;
 
-        if(occupiedCoordinates.containsKey(newPosition)){
+      //TODO alter this
+      System.out.println(newPosition.hashCode());
+      System.out.println(occupiedCoordinates.get(newPosition));
 
-            collisionType = occupiedCoordinates.get(newPosition);
+      if (occupiedCoordinates.containsKey(newPosition)) {
 
-            //checks the coordinate is not itself
-            if(collisionType.equals(this.getGameObject().getName())){
-                return null;
-            }
+        System.out.println("contains position");
 
-            //Returning a collision type and also the position
-            Object[] returnPosition = new Object[2];
-            returnPosition[0] = collisionType;
-            returnPosition[1] = oldPosition;
+        collisionType = occupiedCoordinates.get(newPosition);
 
-            return returnPosition;
+        //checks the coordinate is not itself
+        if (collisionType.equals(this.getGameObject().getName())) {
+          return null;
         }
-        return null;
+
+        //Returning a collision type and also the position
+        Object[] returnPosition = new Object[2];
+        returnPosition[0] = collisionType;
+        returnPosition[1] = oldPosition;
+
+        return returnPosition;
+      }
+      return null;
     }
-    collisionType = "none";
-    //Returning a collision type and also the position
-    Object[] returnPosition = new Object[2];
-    returnPosition[0] = collisionType;
-    returnPosition[1] = newPosition;
-    return returnPosition;
-  }
 
     /**
      * Sets acceleration for the object.
@@ -280,5 +281,4 @@ public class Physics extends Component {
             acceleration = 0;
         }
     }
-  }
 }

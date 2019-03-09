@@ -72,4 +72,35 @@ public class Position {
     ", y=" + y +
     '}';
   }
+
+
+  @Override
+  public boolean equals(Object o) {
+
+    // null check
+    if (o == null) {
+      return false;
+    }
+
+    // this instance check
+    if (this == o) {
+      return true;
+    }
+
+    // instanceof Check and actual value check
+    if ((o instanceof Position) && (((Position) o).getX() == this.x) &&  (((Position) o).getY() == this.y)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 0;
+    result = (int) (x+y);
+    return result;
+  }
 }
+
+

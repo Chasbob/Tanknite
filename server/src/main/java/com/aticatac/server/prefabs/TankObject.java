@@ -29,11 +29,13 @@ public class TankObject extends GameObject {
     this.addComponent(Physics.class);
     this.addComponent(Time.class);
     this.addComponent(TankController.class);
+    this.addComponent(Acceleration.class);
+    this.addComponent(BulletDamage.class);
+    this.addComponent(CollisionBox.class);
+    this.getComponent(CollisionBox.class).setCollisionBox(this.getComponent(Transform.class).getPosition());
+    this.getComponent(CollisionBox.class).addBoxToData(this.getComponent(CollisionBox.class).getCollisionBox(), name);
     if (isAI) {
       this.addComponent(AI.class);
-        this.addComponent(CollisionBox.class);
-        this.getComponent(CollisionBox.class).setCollisionBox(this.getComponent(Transform.class).getPosition());
-        this.getComponent(CollisionBox.class).addBoxToData(this.getComponent(CollisionBox.class).getCollisionBox(), name);
     }
   }
 }
