@@ -46,11 +46,9 @@ public enum Screens {
    *
    * @param game the game
    */
-// Initialization with the game class
   public void initialize(Game game) {
     this.logger.warn("Initializing...");
     this.game = game;
-//        showScreen(MainMenuScreen.class);
     this.game.setScreen(getScreen(MainMenuScreen.class));
     this.currentScreen = MainMenuScreen.class;
     for (Class key : screens.keySet()) {
@@ -80,5 +78,13 @@ public enum Screens {
     this.previousScreen = this.currentScreen;
     this.game.setScreen(getScreen(type));
     this.currentScreen = type;
+  }
+
+  public void reloadUsernameScreen(){
+    this.logger.info("reloading "+this.currentScreen + ".");
+    getScreen(UsernameScreen.class).dispose();
+    screens.remove(UsernameScreen.class);
+    screens.put(UsernameScreen.class, new UsernameScreen());
+    screens.get(UsernameScreen.class).buildStage();
   }
 }

@@ -39,9 +39,11 @@ public class MainMenuScreen extends AbstractScreen {
       Data.INSTANCE.setSingleplayer(true);
       Server server = new Server(true, "SinglePlayer");
       server.start();
+      //reload the username screen and show it to show relevant fields
+      Screens.INSTANCE.reloadUsernameScreen();
+      Screens.INSTANCE.showScreen(UsernameScreen.class);
       return false;
     }));
-    singlePlayerButton.addListener(UIFactory.newChangeScreenEvent(UsernameScreen.class));
     buttonTable.add(singlePlayerButton);
     buttonTable.row();
     //create button for multi player

@@ -10,11 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Multiplayer screen.
  */
 public class MultiplayerScreen extends AbstractScreen {
+
+  private boolean hosting;
   /**
    * Instantiates a new Multiplayer screen.
    */
   MultiplayerScreen() {
     super();
+    refresh();
   }
 
   @Override
@@ -39,6 +42,11 @@ public class MultiplayerScreen extends AbstractScreen {
       Server server = new Server(true, "MultiPlayer");
       server.start();
       Data.INSTANCE.setSingleplayer(false);
+      hosting = true;
+      //reload username screen and show
+      Screens.INSTANCE.reloadUsernameScreen();
+      Screens.INSTANCE.showScreen(UsernameScreen.class);
+      refresh();
       return false;
     }));
     hostButton.addListener(UIFactory.newChangeScreenEvent(UsernameScreen.class));
@@ -60,6 +68,10 @@ public class MultiplayerScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
+    hosting = false;
+  }
 
+  public boolean isHosting() {
+    return hosting;
   }
 }

@@ -146,7 +146,6 @@ public class UIFactory {
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         try {
           Screens.INSTANCE.showScreen(dstScreen);
-          var temp = Screens.INSTANCE.getScreen(dstScreen);
         } catch (Exception e) {
           e.printStackTrace();
         }
