@@ -39,8 +39,7 @@ public class ListServers {
       serverButton.addListener(UIFactory.newListenerEvent(() -> {
         this.logger.info("Server Button clicked");
         deselect();
-        Data.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
-        Screens.INSTANCE.getScreen(ServerScreen.class).setCurrentServer(serverButton);
+        Screens.INSTANCE.getScreen(ServerScreen.class).setServerSelected(true);
         Data.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
         serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
         return false;
@@ -71,24 +70,5 @@ public class ListServers {
       }
       buttons.get(i).getLabel().setStyle(Styles.INSTANCE.getLabelStyle());
     }
-//    for (ServerInformation server : servers) {
-//      ServerButton serverButton = UIFactory.createServerButton(server.getAddress().getHostAddress(), server);
-//      serverButton.addListener(UIFactory.newListenerEvent(() -> {
-//        TextButton currentButton = Screens.INSTANCE.getScreen(ServerScreen.class).getCurrentServer();
-//        if (!Screens.INSTANCE.getScreen(ServerScreen.class).getServerSelected()) {
-//          Screens.INSTANCE.getScreen(ServerScreen.class).setServerSelected(true);
-//          serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
-//        } else {
-//          currentButton.setStyle(Styles.INSTANCE.getButtonStyle());
-//        }
-//        Screens.INSTANCE.getScreen(ServerScreen.class).setCurrentServer(serverButton);
-//        Data.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
-//        serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
-//        return false;
-//      }));
-//      serverButton.getLabel().setAlignment(Align.left);
-//      this.serversTable.add(serverButton);
-//      this.serversTable.row();
-//    }
   }
 }

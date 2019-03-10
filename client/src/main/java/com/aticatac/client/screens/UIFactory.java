@@ -72,7 +72,7 @@ public class UIFactory {
    * @return the label
    */
   public static Label createErrorLabel(String text) {
-    return new Label(text, Styles.INSTANCE.getHideLabelStyle());
+    return new Label(text, Styles.INSTANCE.getErrorStyle());
   }
 
   /**

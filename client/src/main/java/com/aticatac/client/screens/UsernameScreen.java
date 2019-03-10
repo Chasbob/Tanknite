@@ -33,13 +33,13 @@ public class UsernameScreen extends AbstractScreen {
     usernameTable.setFillParent(true);
     usernameTable.center();
     usernameTable.defaults().pad(10).width(200).height(30).center();
-    //create guidance label
-    Label guidanceLabel = UIFactory.createLabel("Enter username");
-    usernameTable.add(guidanceLabel);
-    usernameTable.row();
     //create error label
     nameTakenLabel = UIFactory.createErrorLabel("Name Taken");
     usernameTable.add(nameTakenLabel);
+    usernameTable.row();
+    //create guidance label
+    Label guidanceLabel = UIFactory.createLabel("Enter username");
+    usernameTable.add(guidanceLabel);
     usernameTable.row();
     //create text field
     textField = UIFactory.createTextField("");
