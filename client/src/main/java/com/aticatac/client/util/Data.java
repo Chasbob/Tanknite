@@ -1,18 +1,16 @@
 package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
+import com.aticatac.client.networking.Response;
 import com.aticatac.common.model.Command;
-import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.Contract;
 
 /**
  * The enum Data.
@@ -47,6 +45,24 @@ public enum Data {
     this.update = new Update(true);
     this.clients = new ArrayList<>();
     logger = Logger.getLogger(getClass());
+  }
+
+  /**
+   * Is singleplayer boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isSingleplayer() {
+    return singleplayer;
+  }
+
+  /**
+   * Sets singleplayer.
+   *
+   * @param singleplayer the singleplayer
+   */
+  public void setSingleplayer(boolean singleplayer) {
+    this.singleplayer = singleplayer;
   }
 
   /**
@@ -148,10 +164,6 @@ public enum Data {
     return currentInformation;
   }
 
-  public boolean isServerSelected() {
-    return serverSelected;
-  }
-
   /**
    * Sets current information.
    *
@@ -163,41 +175,44 @@ public enum Data {
   }
 
   /**
-   * Connect boolean.
+   * Is server selected boolean.
    *
-   * @param id           the id
-   * @param singlePlayer the singleplayer
    * @return the boolean
-   * @throws IOException  the io exception
-   * @throws InvalidBytes the invalid bytes
    */
-  public boolean connect(String id, boolean singlePlayer) throws IOException, InvalidBytes {
-    if (singlePlayer) {
-      return this.client.connect(this.localhost, id);
-    } else {
-      if (this.currentInformation != null) {
-        return this.client.connect(this.currentInformation, id);
-      } else {
-        return false;
-      }
-    }
+  public boolean isServerSelected() {
+    return serverSelected;
   }
 
   /**
-   * Gets localhost.
+   * Connect response.
    *
-   * @return the localhost
+   * @param id           the id
+   * @param singlePlayer the single player
+   * @return the response
    */
-  @Contract(pure = true)
-  public ServerInformation getLocalhost() {
-    return localhost;
+  public Response connect(String id, boolean singlePlayer) {
+    if (singlePlayer) {
+      return this.client.connect(this.localhost, id);
+    } else {
+      if (this.serverSelected) {
+        return this.client.connect(this.currentInformation, id);
+      } else {
+        //this is just if the user has not selected a server instead of there being no response.
+        return Response.NO_SERVER;
+      }
+    }
   }
 
   /**
    * Quit.
    */
   public void quit() {
-    this.client.quit();
+    if (client != null) {
+      this.client.quit();
+    }
+    if(singleplayer){
+
+    }
   }
 
   /**
@@ -207,24 +222,5 @@ public enum Data {
    */
   public void sendCommand(Command command) {
     this.client.sendCommand(command);
-  }
-
-  /**
-   * Gets singleplayer.
-   *
-   * @return the singleplayer
-   */
-  @Contract(pure = true)
-  public boolean getSingleplayer() {
-    return singleplayer;
-  }
-
-  /**
-   * Sets singleplayer.
-   *
-   * @param singleplayer the singleplayer
-   */
-  public void setSingleplayer(boolean singleplayer) {
-    this.singleplayer = singleplayer;
   }
 }

@@ -103,6 +103,8 @@ public class Server extends Thread {
     }
     this.executorService.shutdown();
     ServerData.INSTANCE.shutdown();
+
+    this.logger.info("Server ended.");
   }
 
   /**
@@ -262,7 +264,10 @@ public class Server extends Thread {
       this.singlePlayer = singlePlayer;
       try {
         if (singlePlayer) {
+          this.serverSocket.close();
           this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName("127.0.0.1"));
+        } else {
+          this.serverSocket = new ServerSocket(this.port);
         }
       } catch (IOException e) {
         e.printStackTrace();

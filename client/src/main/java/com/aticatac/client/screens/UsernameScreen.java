@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.networking.Response;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,10 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-
   private TextField usernameTextField;
   private TextField serverTextField;
   private Label errorLabel;
+
   /**
    * Instantiates a new Username screen.
    */
@@ -38,11 +39,11 @@ public class UsernameScreen extends AbstractScreen {
     errorLabel = UIFactory.createErrorLabel("Name Taken");
     dataTable.add(errorLabel);
     dataTable.row();
-    if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig() || Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
+    if (Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig() || Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()) {
       String text;
-      if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()){
+      if (Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
         text = "IP";
-      }else{
+      } else {
         text = "Name";
       }
       //create server label
@@ -67,22 +68,57 @@ public class UsernameScreen extends AbstractScreen {
     //create custom listener for submit button to get text field text
     submitButton.addListener(UIFactory.newListenerEvent(() -> {
       if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
-        boolean accepted = Data.INSTANCE.connect(usernameTextField.getText(), true);
-        if (accepted) {
-          refresh();
-          Screens.INSTANCE.showScreen(GameScreen.class);
-        } else {
-          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+        Response response = Data.INSTANCE.connect(usernameTextField.getText(), true);
+        switch (response) {
+          case ACCEPTED:
+            refresh();
+            Screens.INSTANCE.showScreen(GameScreen.class);
+            break;
+          case TAKEN:
+            errorLabel.setText("Name Taken");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+          case NO_SERVER:
+            errorLabel.setText("No Server");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+          case INVALID:
+            errorLabel.setText("Invalid Response");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
         }
+//        if (accepted) {
+//          refresh();
+//          Screens.INSTANCE.showScreen(GameScreen.class);
+//        } else {
+//          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+//        }
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-        boolean accepted = Data.INSTANCE.connect(usernameTextField.getText(), false);
-        if (accepted) {
-          refresh();
-          Screens.INSTANCE.showScreen(LobbyScreen.class);
-        } else {
-          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+        Response response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        switch (response) {
+          case ACCEPTED:
+            refresh();
+            Screens.INSTANCE.showScreen(LobbyScreen.class);
+            break;
+          case TAKEN:
+            errorLabel.setText("Name Taken");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+          case NO_SERVER:
+            errorLabel.setText("No Server");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+          case INVALID:
+            errorLabel.setText("Invalid Response");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
         }
+//        if (accepted) {
+//
+//        } else {
+//          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+//        }
         return false;
       } else {
         return false;
@@ -94,9 +130,16 @@ public class UsernameScreen extends AbstractScreen {
     rootTable.addActor(backTable);
     backTable.bottom();
     //create back button
-    TextButton backButton = UIFactory.createBackButton("quit");;
+    TextButton backButton = UIFactory.createBackButton("quit");
+    ;
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+    backButton.addListener(UIFactory.newListenerEvent(()->{
+//      if(Data.INSTANCE.isSingleplayer()){
+//        Data.INSTANCE.quit();
+//      }
+      return false;
+    }));
   }
 
   @Override
