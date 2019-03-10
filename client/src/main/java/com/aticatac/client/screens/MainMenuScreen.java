@@ -25,7 +25,7 @@ public class MainMenuScreen extends AbstractScreen {
     Table rootTable = new Table();
     rootTable.setFillParent(true);
     addActor(rootTable);
-    Label screenTitle = UIFactory.createTitleLabel("Main Menu");
+    Label screenTitle = UIFactory.createTitleLabel("TANK TROUBLE");
     screenTitle.setFillParent(true);
     rootTable.add(screenTitle).padTop(50).top();
     //create table to store all buttons

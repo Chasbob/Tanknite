@@ -1,6 +1,5 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListServers;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,8 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Server screen.
  */
 public class ServerScreen extends AbstractScreen {
+
   private Boolean serverSelected;
-  private TextButton currentServer;
   private ListServers listServers;
 
   /**
@@ -23,38 +22,6 @@ public class ServerScreen extends AbstractScreen {
     refresh();
   }
 
-  /**
-   * Gets current server.
-   *
-   * @return the current server
-   */
-  public TextButton getCurrentServer() {
-    return currentServer;
-  }
-
-  /**
-   * Sets current server.
-   *
-   * @param currentServer the current server
-   */
-  public void setCurrentServer(TextButton currentServer) {
-    this.currentServer = currentServer;
-  }
-
-  /**
-   * Gets server selected.
-   *
-   * @return the server selected
-   */
-  public Boolean getServerSelected() {
-    return serverSelected;
-  }
-
-  /**
-   * Sets server selected.
-   *
-   * @param serverSelected the server selected
-   */
   public void setServerSelected(Boolean serverSelected) {
     this.serverSelected = serverSelected;
   }
