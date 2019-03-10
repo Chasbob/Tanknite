@@ -18,6 +18,7 @@ public class Updater implements Runnable {
   private final Logger logger;
   private Update update;
   private boolean changes;
+  private boolean shutdown;
 
   /**
    * Instantiates a new Updater.
@@ -26,6 +27,7 @@ public class Updater implements Runnable {
     this.logger = Logger.getLogger(getClass());
     this.update = new Update(true);
     this.changes = true;
+    this.shutdown = false;
   }
 
   private void updatePlayers() {
@@ -38,33 +40,17 @@ public class Updater implements Runnable {
   @Override
   public void run() {
     this.logger.trace("Running...");
-    while (!Thread.currentThread().isInterrupted()) {
-      double stime = System.nanoTime();
+    while (!Thread.currentThread().isInterrupted() && !shutdown) {
+      double nanoTime = System.nanoTime();
       updatePlayers();
 //      tcpBroadcast();
       try {
         broadcast();
       } catch (IOException e) {
-        this.logger.error(e);
+        this.logger.info("stopping due to IO");
+        this.shutdown = true;
       }
-//      try {
-////        this.update.setRootContainer(new Container(Manager.INSTANCE.getRoot()));
-//        if (this.changes) {
-//          this.logger.info("Changes detected.");
-//          this.logger.trace("players: " + this.update.getPlayers().toString());
-//          this.logger.trace("Broadcasting...");
-//          broadcast();
-//          this.logger.trace("Setting changes to false.");
-//          this.changes = false;
-//        } else {
-//          this.logger.trace("Broadcasting no changes.");
-//        }
-//        broadcast();
-//      } catch (IOException e) {
-//        this.logger.error(e);
-//        return;
-//      }
-      while (System.nanoTime() - stime < 1000000000 / 60) {
+      while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
         } catch (InterruptedException e) {

@@ -35,6 +35,7 @@ public class Authenticator implements Runnable {
   public void run() {
     int counter = 0;
     while (!this.authenticated) {
+      //Limit number of attempts
       if (counter++ > 10) {
         break;
       }
@@ -49,12 +50,12 @@ public class Authenticator implements Runnable {
         }
       } catch (IOException e) {
         this.logger.error(e);
+        break;
       } catch (InvalidBytes e) {
         this.logger.error(e);
-        break;
       }
     }
-    this.logger.warn("Stopping...");
+    this.logger.info("Finished!");
   }
 
   /**
