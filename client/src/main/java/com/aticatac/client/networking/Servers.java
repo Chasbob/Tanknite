@@ -15,9 +15,11 @@ public enum Servers {
   private final ConcurrentHashMap<String, ServerInformation> servers;
   private PopulateServers pop;
   private Thread popT;
+  private int port;
 
   Servers() {
     System.out.println("Servers enum starting");
+    port = 5500;
     this.servers = new ConcurrentHashMap<>();
     try {
       this.pop = new PopulateServers(this.servers);
@@ -35,6 +37,10 @@ public enum Servers {
    */
   public static Servers getInstance() {
     return INSTANCE;
+  }
+
+  public int getPort() {
+    return port;
   }
 
   /**

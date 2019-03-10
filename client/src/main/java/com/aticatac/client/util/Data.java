@@ -2,6 +2,7 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Response;
+import com.aticatac.client.networking.Servers;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Update;
@@ -203,6 +204,11 @@ public enum Data {
     }
   }
 
+  public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
+    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort());
+    return connect(id, singleplayer);
+  }
+
   /**
    * Quit.
    */
@@ -210,8 +216,7 @@ public enum Data {
     if (client != null) {
       this.client.quit();
     }
-    if(singleplayer){
-
+    if (singleplayer) {
     }
   }
 
