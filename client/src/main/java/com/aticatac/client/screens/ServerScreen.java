@@ -13,6 +13,7 @@ public class ServerScreen extends AbstractScreen {
 
   private Boolean serverSelected;
   private ListServers listServers;
+  private boolean manualConfig;
 
   /**
    * Instantiates a new Server screen.
@@ -90,23 +91,32 @@ public class ServerScreen extends AbstractScreen {
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     //add labels to serverDetailsTable
-    TextButton refreshButton = UIFactory.createStartButton("Refresh");
-//    refreshButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
-    refreshButton.addListener(UIFactory.newListenerEvent(() -> {
-      listServers.update();
+    TextButton manualButton = UIFactory.createStartButton("Manual");
+    manualButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
+    manualButton.addListener(UIFactory.newListenerEvent(() -> {
+      manualConfig = true;
+      //need to rebuild username screen to load new fields
+      Screens.INSTANCE.reloadUsernameScreen();
+      Screens.INSTANCE.showScreen(UsernameScreen.class);
+      refresh();
       return false;
     }
     ));
-    buttonTable.add(refreshButton);
+    buttonTable.add(manualButton);
   }
 
   @Override
   public void refresh() {
     serverSelected = false;
+    manualConfig = false;
   }
 
   @Override
   public void render(float delta) {
     super.render(delta);
+  }
+
+  public boolean isManualConfig() {
+    return manualConfig;
   }
 }

@@ -12,8 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  */
 public class UsernameScreen extends AbstractScreen {
 
-  private TextField textField;
-  private Label nameTakenLabel;
+  private TextField usernameTextField;
+  private TextField serverTextField;
+  private Label errorLabel;
   /**
    * Instantiates a new Username screen.
    */
@@ -28,43 +29,59 @@ public class UsernameScreen extends AbstractScreen {
     rootTable.setFillParent(true);
     addActor(rootTable);
     //create table for label, text field, submit button
-    Table usernameTable = new Table();
-    rootTable.addActor(usernameTable);
-    usernameTable.setFillParent(true);
-    usernameTable.center();
-    usernameTable.defaults().pad(10).width(200).height(30).center();
+    Table dataTable = new Table();
+    rootTable.addActor(dataTable);
+    dataTable.setFillParent(true);
+    dataTable.center();
+    dataTable.defaults().pad(10).width(200).height(30).center();
     //create error label
-    nameTakenLabel = UIFactory.createErrorLabel("Name Taken");
-    usernameTable.add(nameTakenLabel);
-    usernameTable.row();
-    //create guidance label
-    Label guidanceLabel = UIFactory.createLabel("Enter username");
-    usernameTable.add(guidanceLabel);
-    usernameTable.row();
-    //create text field
-    textField = UIFactory.createTextField("");
-    usernameTable.add(textField);
+    errorLabel = UIFactory.createErrorLabel("Name Taken");
+    dataTable.add(errorLabel);
+    dataTable.row();
+    if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig() || Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
+      String text;
+      if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()){
+        text = "IP";
+      }else{
+        text = "Name";
+      }
+      //create server label
+      Label serverLabel = UIFactory.createLabel("Server " + text);
+      dataTable.add(serverLabel);
+      dataTable.row();
+      //create server textfield
+      serverTextField = UIFactory.createTextField("");
+      dataTable.add(serverTextField);
+      dataTable.row();
+    }
+    //create username label
+    Label usernameLabel = UIFactory.createLabel("Username");
+    dataTable.add(usernameLabel);
+    dataTable.row();
+    //create text field for username
+    usernameTextField = UIFactory.createTextField("");
+    dataTable.add(usernameTextField);
     //create button for submit
     TextButton submitButton = UIFactory.createButton("Submit");
-    usernameTable.add(submitButton);
+    dataTable.add(submitButton);
     //create custom listener for submit button to get text field text
     submitButton.addListener(UIFactory.newListenerEvent(() -> {
       if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
-        boolean accepted = Data.INSTANCE.connect(textField.getText(), true);
+        boolean accepted = Data.INSTANCE.connect(usernameTextField.getText(), true);
         if (accepted) {
           refresh();
           Screens.INSTANCE.showScreen(GameScreen.class);
         } else {
-          nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
         }
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-        boolean accepted = Data.INSTANCE.connect(textField.getText(), false);
+        boolean accepted = Data.INSTANCE.connect(usernameTextField.getText(), false);
         if (accepted) {
           refresh();
           Screens.INSTANCE.showScreen(LobbyScreen.class);
         } else {
-          nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
         }
         return false;
       } else {
@@ -77,14 +94,14 @@ public class UsernameScreen extends AbstractScreen {
     rootTable.addActor(backTable);
     backTable.bottom();
     //create back button
-    TextButton backButton = UIFactory.createBackButton("quit");
+    TextButton backButton = UIFactory.createBackButton("quit");;
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
   }
 
   @Override
   public void refresh() {
-    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
-    textField.setText("");
+    errorLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+    usernameTextField.setText("");
   }
 }
