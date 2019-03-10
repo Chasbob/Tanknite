@@ -4,7 +4,6 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
-import com.aticatac.server.components.ServerData;
 import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.networking.listen.NewClients;
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class Server extends Thread {
    * Instantiates a new Server.
    *
    * @param singleplayer the singleplayer
-   * @param name
+   * @param name         the name
    */
   public Server(boolean singleplayer, String name) {
     ServerData.INSTANCE.setSinglePlayer(singleplayer);
@@ -50,6 +49,7 @@ public class Server extends Thread {
   public void run() {
     this.logger.trace("Running...");
     try {
+      this.logger.info("Singleplayer: " + ServerData.INSTANCE.isSinglePlayer());
       if (!ServerData.INSTANCE.isSinglePlayer()) {
         this.executorService.submit(new Discovery(this.name));
         this.logger.trace("added discovery");
@@ -224,7 +224,9 @@ public class Server extends Thread {
     public void setSinglePlayer(boolean singlePlayer) {
       this.singlePlayer = singlePlayer;
       try {
-        this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName("127.0.0.1"));
+        if (singlePlayer) {
+          this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName("127.0.0.1"));
+        }
       } catch (IOException e) {
         e.printStackTrace();
       }
