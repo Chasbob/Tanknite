@@ -49,9 +49,7 @@ public enum Styles {
   }
 
   private void loadStyles() {
-    //load in font for menu
-    //String path = getClass().getResource("/styles/barcadebrawl.ttf").toString();
-    //System.out.println("Path: " + path);
+    //load in font
     FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.ttf"));
     System.out.println("Loaded ttf");
     FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -119,10 +117,6 @@ public enum Styles {
     backButtonStyle.fontColor = Color.YELLOW;
     //load in blank texture for healthbar
     blank = new Texture(Gdx.files.internal("img/white.png"));
-    //load in refresh icon
-    //Texture refreshTexture = new Texture(Gdx.files.internal("img/refresh.png"));
-    // Drawable drawable = new TextureRegionDrawable(new TextureRegion(refreshTexture));
-    //refreshIcon = new ImageButton(drawable);
   }
 
   /**
@@ -222,14 +216,5 @@ public enum Styles {
    */
   public Texture getBlank() {
     return blank;
-  }
-
-  /**
-   * Gets refresh button.
-   *
-   * @return the refresh button
-   */
-  public ImageButton getRefreshButton() {
-    return refreshIcon;
   }
 }

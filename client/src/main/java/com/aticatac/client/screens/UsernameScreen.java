@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
+
   private TextField usernameTextField;
   private TextField serverTextField;
   private Label errorLabel;
@@ -74,28 +75,19 @@ public class UsernameScreen extends AbstractScreen {
             refresh();
             Screens.INSTANCE.showScreen(GameScreen.class);
             break;
-          case TAKEN:
-            errorLabel.setText("Name Taken");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-            break;
-          case NO_SERVER:
-            errorLabel.setText("No Server");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-            break;
           case INVALID:
             errorLabel.setText("Invalid Response");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
         }
-//        if (accepted) {
-//          refresh();
-//          Screens.INSTANCE.showScreen(GameScreen.class);
-//        } else {
-//          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-//        }
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-        Response response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        Response response;
+        if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()){
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
+        }else{
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        }
         switch (response) {
           case ACCEPTED:
             refresh();
@@ -106,7 +98,7 @@ public class UsernameScreen extends AbstractScreen {
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
           case NO_SERVER:
-            errorLabel.setText("No Server");
+            errorLabel.setText("Server does not exist");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
           case INVALID:
@@ -114,11 +106,6 @@ public class UsernameScreen extends AbstractScreen {
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
         }
-//        if (accepted) {
-//
-//        } else {
-//          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-//        }
         return false;
       } else {
         return false;
@@ -131,15 +118,8 @@ public class UsernameScreen extends AbstractScreen {
     backTable.bottom();
     //create back button
     TextButton backButton = UIFactory.createBackButton("quit");
-    ;
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
-    backButton.addListener(UIFactory.newListenerEvent(()->{
-//      if(Data.INSTANCE.isSingleplayer()){
-//        Data.INSTANCE.quit();
-//      }
-      return false;
-    }));
   }
 
   @Override
