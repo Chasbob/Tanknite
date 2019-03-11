@@ -75,7 +75,7 @@ public class CollisionBox extends Component {
     for(int i=0; i<box.size(); i++){
 
       Position position = box.get(i);
-      DataServer.INSTANCE.setCoordinates(position, tankID+i);
+      DataServer.INSTANCE.setCoordinates(position, tankID);
 
     }
 

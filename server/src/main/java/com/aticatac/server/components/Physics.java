@@ -7,6 +7,7 @@ import com.aticatac.common.objectsystem.GameObject;
 import org.apache.commons.collections4.BidiMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Physics component will control the physics for the objects in the game. It will consider the new positions of
@@ -203,7 +204,7 @@ public class Physics extends Component {
 
 
         //map of the coordinates that are occupied
-        BidiMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+        HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
 
         //checks the box collision coords against the occupied
@@ -240,7 +241,7 @@ public class Physics extends Component {
         return noCollision;
     }
 
-    private Object[] getCollisionArray(Position newPosition, Position oldPosition, BidiMap<Position, String> occupiedCoordinates) {
+    private Object[] getCollisionArray(Position newPosition, Position oldPosition, HashMap<Position, String> occupiedCoordinates) {
 
       String collisionType;
 

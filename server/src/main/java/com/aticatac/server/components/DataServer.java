@@ -4,6 +4,8 @@ import com.aticatac.common.components.transform.Position;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
+import java.util.HashMap;
+
 /**
  * @author Claire Fletcher
  */
@@ -15,7 +17,7 @@ public enum DataServer {
   /**
    * Map of the occupied coordinates on map
    */
-  private BidiMap<Position, String> occupiedCoordinates = new DualHashBidiMap<>();
+  private HashMap<Position, String> occupiedCoordinates = new HashMap<>();
 
 
   /**
@@ -30,7 +32,7 @@ public enum DataServer {
    *
    * @return
    */
-  public BidiMap<Position, String> getOccupiedCoordinates() {
+  public HashMap<Position, String> getOccupiedCoordinates() {
 
     return occupiedCoordinates;
 
