@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,26 +64,25 @@ public class Server extends Thread {
       return;
     }
 //    new Thread(() -> {
-      while (!this.shutdown) {
-        CommandModel current = ServerData.INSTANCE.popCommand();
-        if (current != null) {
-          if (current.getCommand() == Command.QUIT) {
-            //todo shutdown client
-            ServerData.INSTANCE.removeClient(current.getId());
-            this.logger.info("Removing " + current.getId());
-            this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
-            if (ServerData.INSTANCE.getClients().size() == 0) {
-              shutdown();
-            }
-          } else {
-            Manager.INSTANCE.playerInput(current);
+    while (!this.shutdown) {
+      CommandModel current = ServerData.INSTANCE.popCommand();
+      if (current != null) {
+        if (current.getCommand() == Command.QUIT) {
+          //todo shutdown client
+          ServerData.INSTANCE.removeClient(current.getId());
+          this.logger.info("Removing " + current.getId());
+          this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
+          if (ServerData.INSTANCE.getClients().size() == 0) {
+            shutdown();
           }
+        } else {
+          Manager.INSTANCE.playerInput(current);
         }
       }
-      this.executorService.shutdown();
-      ServerData.INSTANCE.shutdown();
+    }
+    this.executorService.shutdown();
+    ServerData.INSTANCE.shutdown();
 //    }).start();
-
     this.logger.info("Server ended.");
   }
 
@@ -227,10 +227,9 @@ public class Server extends Thread {
       this.singlePlayer = singlePlayer;
       try {
         if (singlePlayer) {
-          this.serverSocket.close();
-          this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName("127.0.0.1"));
+          this.serverSocket.bind(new InetSocketAddress(InetAddress.getLocalHost(), this.port));
         } else {
-          this.serverSocket = new ServerSocket(this.port);
+          this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), this.port));
         }
       } catch (IOException e) {
         e.printStackTrace();
