@@ -227,8 +227,12 @@ public class Server extends Thread {
       this.singlePlayer = singlePlayer;
       try {
         if (singlePlayer) {
-          this.serverSocket.bind(new InetSocketAddress(InetAddress.getLocalHost(), this.port));
+          this.serverSocket.close();
+          this.serverSocket = new ServerSocket();
+          this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), this.port));
         } else {
+          this.serverSocket.close();
+          this.serverSocket = new ServerSocket();
           this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), this.port));
         }
       } catch (IOException e) {
