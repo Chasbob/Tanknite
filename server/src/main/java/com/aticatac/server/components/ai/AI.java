@@ -52,11 +52,12 @@ public class AI extends Component {
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
+    this.graph = new Graph();
   }
 
-  public void setGraph(Graph graph) {
-    this.graph = graph;
-  }
+//  public void setGraph(Graph graph) {
+//    this.graph = graph;
+//  }
 
   /**
    * Returns a decision to control the tank.
@@ -235,7 +236,7 @@ public class AI extends Component {
     }
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
-    System.out.println(tankPos + "GOING TO " + goal);
+//    System.out.println(tankPos + "GOING TO " + goal);
     searchPath = graph.getPathToLocation(tankPos, goal);
     Command c = commandToPerform(searchPath.peek());
     if (c != null) {

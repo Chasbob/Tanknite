@@ -1,10 +1,10 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Queue;
+import java.util.Scanner;
 // Things left TODO:
 //  - not placing nodes at wrong places
 
@@ -18,23 +18,24 @@ public class Graph {
   /**
    * A pathfinder that can generate a path in the graph
    */
-  private final PathFinder pf = new PathFinder();
+  private final PathFinder pf;
   /**
    * The nodes that make up the graph
    */
   private final HashMap<String, SearchNode> nodes;
-  private final int separation = 32;
+  private final int separation;
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
    */
   public Graph() {
+    separation = 32;
+    pf = new PathFinder();
     // Set attributes
     nodes = new HashMap<>();
     // Add nodes
     String[][] map;
     map = convertTMXFileToIntArray();
-
     int x, y;
     x = 0;
     for (int i = separation; i < (map.length * separation) + separation; i += separation) {
@@ -60,6 +61,55 @@ public class Graph {
       }
       if (nodes.containsKey((node.getX() - separation) + "-" + node.getY())) {
         node.addConnection(nodes.get((node.getX() - separation) + "-" + node.getY()));
+      }
+    }
+  }
+
+  private static void removeNearWallPositions(String[][] map) {
+    for (int x = 0; x < map.length; x++) {
+      for (int y = 0; y < map.length; y++) {
+        if (map[x][y].equals("0")) {
+          for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
+                map[x][y] = "1";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private static void rotateMatrix(String[][] matrix) {
+    if (matrix == null) {
+      return;
+    }
+    if (matrix.length != matrix[0].length)//INVALID INPUT
+    {
+      return;
+    }
+    getTranspose(matrix);
+    rorateAlongMidRow(matrix);
+  }
+
+  private static void getTranspose(String[][] matrix) {
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = i + 1; j < matrix.length; j++) {
+        String temp = matrix[i][j];
+        matrix[i][j] = matrix[j][i];
+        matrix[j][i] = temp;
+      }
+    }
+  }
+
+  private static void rorateAlongMidRow(String[][] matrix) {
+    int len = matrix.length;
+    for (int i = 0; i < len / 2; i++) {
+      for (int j = 0; j < len; j++) {
+        String temp = matrix[i][j];
+        matrix[i][j] = matrix[len - 1 - i][j];
+        matrix[len - 1 - i][j] = temp;
       }
     }
   }
@@ -125,51 +175,5 @@ public class Graph {
     rotateMatrix(map);
     removeNearWallPositions(map);
     return map;
-  }
-
-  private static void removeNearWallPositions(String[][] map) {
-    for (int x = 0; x < map.length; x++) {
-      for (int y = 0; y < map.length; y++) {
-        if (map[x][y].equals("0")) {
-          for (int i = x - 1; i <= x + 1; i++) {
-            for (int j = y - 1; j <= y + 1; j++) {
-              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
-                map[x][y] = "1";
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private static void rotateMatrix(String[][] matrix) {
-    if (matrix == null)
-      return;
-    if (matrix.length != matrix[0].length)//INVALID INPUT
-      return;
-    getTranspose(matrix);
-    rorateAlongMidRow(matrix);
-  }
-
-  private static void getTranspose(String[][] matrix) {
-    for (int i = 0; i < matrix.length; i++) {
-      for (int j = i + 1; j < matrix.length; j++) {
-        String temp = matrix[i][j];
-        matrix[i][j] = matrix[j][i];
-        matrix[j][i] = temp;
-      }
-    }
-  }
-
-  private static void rorateAlongMidRow(String[][] matrix) {
-    int len = matrix.length;
-    for (int i = 0; i < len / 2; i++) {
-      for (int j = 0; j < len; j++) {
-        String temp = matrix[i][j];
-        matrix[i][j] = matrix[len - 1 - i][j];
-        matrix[len - 1 - i][j] = temp;
-      }
-    }
   }
 }

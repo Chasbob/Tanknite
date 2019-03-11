@@ -17,6 +17,7 @@ class UpdateListener extends Thread {
   private final MulticastSocket multicastSocket;
   private final Logger logger;
   private final ConcurrentLinkedQueue<Update> queue;
+  private final ModelReader modelReader;
 
   /**
    * Instantiates a new Update listener.
@@ -28,6 +29,7 @@ class UpdateListener extends Thread {
     this.logger = Logger.getLogger(getClass());
     this.multicastSocket = multicastSocket;
     this.queue = queue;
+    this.modelReader = new ModelReader();
   }
 
   @Override
@@ -51,7 +53,7 @@ class UpdateListener extends Thread {
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     this.multicastSocket.receive(packet);
     logger.trace("Packet received!");
-    Update update = ModelReader.toModel(bytes, Update.class);
+    Update update = modelReader.toModel(bytes, Update.class);
     //TODO refactor to use queue all the way down
     this.logger.trace("Player count: " + update.getPlayers().size());
     if (update.isChanged()) {

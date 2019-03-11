@@ -4,7 +4,6 @@ import com.aticatac.common.model.ClientModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Login;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.networking.Client;
 import com.aticatac.server.networking.Server;
 import com.aticatac.server.networking.listen.CommandListener;
@@ -23,12 +22,14 @@ public class Authenticator implements Runnable {
   private final PrintStream printer;
   private final BufferedReader reader;
   private boolean authenticated;
+  private final ModelReader modelReader;
 
   public Authenticator(Socket client) throws IOException {
     this.logger = Logger.getLogger(getClass());
     this.authenticated = false;
     this.printer = new PrintStream(client.getOutputStream());
     this.reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+    this.modelReader=new ModelReader();
   }
 
   @Override
@@ -66,7 +67,7 @@ public class Authenticator implements Runnable {
     this.logger.trace("Expecting " + Login.class.getCanonicalName() + " from socket.");
     String json = this.reader.readLine();
     this.logger.trace("Client sent " + json + " bytes.");
-    return ModelReader.fromJson(json, Login.class);
+    return modelReader.fromJson(json, Login.class);
   }
 
   private boolean clientExists(Login clientModel) {
@@ -83,7 +84,7 @@ public class Authenticator implements Runnable {
   private void reject(Login login) {
     this.logger.trace("Rejecting client...");
     login.setAuthenticated(false);
-    this.printer.println(ModelReader.toJson(login));
+    this.printer.println(modelReader.toJson(login));
   }
 
   /**
@@ -98,7 +99,7 @@ public class Authenticator implements Runnable {
     login.setMapID(1);
     login.setMulticast(Server.ServerData.INSTANCE.getMulticast().getHostAddress());
     this.logger.trace("Setting multicast address: " + login.getMulticast());
-    this.printer.println(ModelReader.toJson(login));
+    this.printer.println(modelReader.toJson(login));
     addClient(login);
     this.logger.info("Client: " + login.getId() + " accepted.");
   }
@@ -112,7 +113,7 @@ public class Authenticator implements Runnable {
     CommandListener listener = new CommandListener(this.reader);
     ClientModel model = new ClientModel(login.getId());
     Client client = new Client(listener, model);
-    Manager.INSTANCE.addClient(client.getId());
+    Server.ServerData.INSTANCE.getGame().addPlayer(client.getId());
     Server.ServerData.INSTANCE.getClients().put(model.getId(), client);
   }
 }
