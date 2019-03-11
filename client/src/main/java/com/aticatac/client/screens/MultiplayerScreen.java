@@ -45,6 +45,7 @@ public class MultiplayerScreen extends AbstractScreen {
       Screens.INSTANCE.showScreen(UsernameScreen.class);
       return false;
     }));
+
     buttonTable.add(hostButton);
     //create button for joining
     TextButton joinButton = UIFactory.createButton("Join");

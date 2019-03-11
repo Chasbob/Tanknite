@@ -3,11 +3,14 @@ package com.aticatac.client.screens;
 import com.aticatac.client.networking.Response;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.model.ServerInformation;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+
+import java.net.InetAddress;
 
 /**
  * The type Username screen.
@@ -95,6 +98,8 @@ public class UsernameScreen extends AbstractScreen {
           Server server = new Server(false, serverTextField.getText());
           server.start();
           Data.INSTANCE.setSingleplayer(false);
+          ServerInformation s = new ServerInformation(serverTextField.getText(),InetAddress.getByName("127.0.0.1"), 5500);
+          Data.INSTANCE.setCurrentInformation(s);
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
         }else{
           //join server previously collected
