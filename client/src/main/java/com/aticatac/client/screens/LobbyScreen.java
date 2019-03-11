@@ -33,23 +33,28 @@ public class LobbyScreen extends AbstractScreen {
     dataTable.addActor(lobbyDetailsTable);
     lobbyDetailsTable.top().padTop(50);
     //add labels to lobbyDetailsTable
-    Label waitingLabel = UIFactory.createLabel("Waiting for players..   ");
-    lobbyDetailsTable.add(waitingLabel);
+    Label lookingLabel = UIFactory.createLabel("Looking for players..   ");
+    lobbyDetailsTable.add(lookingLabel);
     Label countLabel = UIFactory.createLabel("0");
     lobbyDetailsTable.add(countLabel);
     Label maxLabel = UIFactory.createLabel("/10");
     lobbyDetailsTable.add(maxLabel);
-    //add table with start button to load game
+    //add table with start button or waiting for host label
     Table startTable = new Table();
     startTable.setFillParent(true);
     startTable.top().padTop(100);
-    TextButton startButton = UIFactory.createStartButton("Start");
-    startTable.add(startButton);
-    startButton.addListener(UIFactory.newListenerEvent(() -> {
-      Data.INSTANCE.sendCommand(Command.START);
-      return true;
-    }));
-    startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
+    if(Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
+      TextButton startButton = UIFactory.createStartButton("Start");
+      startTable.add(startButton);
+      startButton.addListener(UIFactory.newListenerEvent(() -> {
+        Data.INSTANCE.sendCommand(Command.START);
+        return true;
+      }));
+      startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
+    }else {
+      Label waitingLabel = UIFactory.createLabel("Waiting for Host");
+      startTable.add(waitingLabel);
+    }
     dataTable.addActor(startTable);
     //add table to store players joining server
     Table playersTable = new Table();

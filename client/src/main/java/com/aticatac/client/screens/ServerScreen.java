@@ -94,7 +94,7 @@ public class ServerScreen extends AbstractScreen {
     manualButton.addListener(UIFactory.newListenerEvent(() -> {
       manualConfig = true;
       //need to rebuild username screen to load new fields
-      Screens.INSTANCE.reloadUsernameScreen();
+      Screens.INSTANCE.reloadScreen(UsernameScreen.class);
       Screens.INSTANCE.showScreen(UsernameScreen.class);
       return false;
     }

@@ -40,7 +40,7 @@ public class MainMenuScreen extends AbstractScreen {
       Server server = new Server(true, "SinglePlayer");
       server.start();
       //reload the username screen and show it to show relevant fields
-      Screens.INSTANCE.reloadUsernameScreen();
+      Screens.INSTANCE.reloadScreen(UsernameScreen.class);
       Screens.INSTANCE.showScreen(UsernameScreen.class);
       return false;
     }));
@@ -48,7 +48,11 @@ public class MainMenuScreen extends AbstractScreen {
     buttonTable.row();
     //create button for multi player
     TextButton multiPlayerButton = UIFactory.createButton("Multi Player");
-    multiPlayerButton.addListener(UIFactory.newChangeScreenEvent(MultiplayerScreen.class));
+    multiPlayerButton.addListener(UIFactory.newListenerEvent(()->{
+      Screens.INSTANCE.getScreen(MultiplayerScreen.class).refresh();
+      Screens.INSTANCE.showScreen(MultiplayerScreen.class);
+      return false;
+    }));
     buttonTable.add(multiPlayerButton);
     buttonTable.row();
     //create button for leaderboard

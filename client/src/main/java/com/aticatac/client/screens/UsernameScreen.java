@@ -90,16 +90,14 @@ public class UsernameScreen extends AbstractScreen {
         Response response;
         if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
           //join server with ip
-          Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
           response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
         }else if(Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
           //create custom server
-          Screens.INSTANCE.getScreen(MultiplayerScreen.class).refresh();
           Server server = new Server(false, serverTextField.getText());
           server.start();
           Data.INSTANCE.setSingleplayer(false);
-          ServerInformation s = new ServerInformation(serverTextField.getText(),InetAddress.getByName("127.0.0.1"), 5500);
-          Data.INSTANCE.setCurrentInformation(s);
+          //TODO make getter for port and ip
+          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(),InetAddress.getByName("127.0.0.1"), 5500));
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
         }else{
           //join server previously collected
@@ -108,6 +106,7 @@ public class UsernameScreen extends AbstractScreen {
         switch (response) {
           case ACCEPTED:
             refresh();
+            Screens.INSTANCE.reloadScreen(LobbyScreen.class);
             Screens.INSTANCE.showScreen(LobbyScreen.class);
             break;
           case TAKEN:
