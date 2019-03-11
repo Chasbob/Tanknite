@@ -71,25 +71,6 @@ public class TankController extends Component {
       return true;
     }
 
-    private void powerUpCheck(Position oldPosition, Object[] physicsData, Position newPosition) {
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName(), oldPosition);
-        if (physicsData[0] == "ammo"){
-            pickUpAmmo();
-            // destroy powerup object too
-        }
-        if (physicsData[0] == "health"){
-            pickUpHealth();
-
-        }
-        if (physicsData[0] == "speed"){
-            pickUpSpeed();
-
-        }
-        if (physicsData[0] == "damage"){
-            pickUpDamage();
-
-        }
-    }
 
     /**
      * Move left boolean.
@@ -133,6 +114,26 @@ public class TankController extends Component {
       }
       return true;
     }
+
+  private void powerUpCheck(Position oldPosition, Object[] physicsData, Position newPosition) {
+    DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName(), oldPosition);
+    if (physicsData[0] == "ammo"){
+      pickUpAmmo();
+      // destroy powerup object too
+    }
+    if (physicsData[0] == "health"){
+      pickUpHealth();
+
+    }
+    if (physicsData[0] == "speed"){
+      pickUpSpeed();
+
+    }
+    if (physicsData[0] == "damage"){
+      pickUpDamage();
+
+    }
+  }
 
   /**
    * Shoot boolean.
@@ -186,6 +187,8 @@ public class TankController extends Component {
         //if not then remove this tank from number of tanks on the map
 
     }
+
+
 
     /**
      * Pick up health.

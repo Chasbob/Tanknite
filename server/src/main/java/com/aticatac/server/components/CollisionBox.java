@@ -25,34 +25,34 @@ public class CollisionBox extends Component {
       box.clear();
     }
 
-        int lowerY = tankPosition.getY() - 16;
-        int lowerX = tankPosition.getX() - 16;
+        int lowerY = tankPosition.getY() - 14;
+        int lowerX = tankPosition.getX() - 14;
 
-        int higherY = tankPosition.getY() + 16;
-        int higherX = tankPosition.getX() + 16;
+        int higherY = tankPosition.getY() + 14;
+        int higherX = tankPosition.getX() + 14;
 
-        for (int x = 0; x < 33; x++) {
+        for (int x = 0; x < 29; x++) {
             Position position = new Position(lowerX + x, lowerY);
             box.add(position);
         }
 
-        for (int y = 0; y < 33; y++) {
+        for (int y = 0; y < 29; y++) {
 
             Position position = new Position(lowerX, lowerY + y);
             box.add(position);
 
         }
 
-        for (int x = 0; x < 33; x++) {
+        for (int x = 0; x < 29; x++) {
 
             Position position = new Position(lowerX + x, higherY);
             box.add(position);
 
         }
 
-        for (int y = 0; y < 33; y++) {
+        for (int y = 0; y < 29; y++) {
 
-            Position position = new Position(higherX, higherY + y);
+            Position position = new Position(higherX, lowerY + y);
             box.add(position);
 
         }
