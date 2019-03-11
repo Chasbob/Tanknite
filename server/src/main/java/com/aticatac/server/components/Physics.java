@@ -178,6 +178,31 @@ public class Physics extends Component {
 
     }
 
+    //TODO make
+    private Object[] bulletCollision (Position newPosition, Position oldPosition){
+
+      //string for what has been collided with
+      String collisionType;
+
+      //map of the coordinates that are occupied
+      HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+
+      //checks the position of the bullet against the occupied coordinates
+      Object[] returnPosition = getCollisionArray(newPosition, oldPosition, occupiedCoordinates);
+      if (returnPosition != null) return returnPosition;
+
+      //else:
+      collisionType = "none";
+
+      //Returning a collision type and also the position
+      Object[] noCollision = new Object[2];
+      noCollision[0] = collisionType;
+      noCollision[1] = newPosition;
+
+      return noCollision;
+
+    }
+
 
     /**
      * Collision method to check if objects have collided
