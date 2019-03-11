@@ -95,6 +95,9 @@ public class Server extends Thread {
           ServerData.INSTANCE.removeClient(current.getId());
           this.logger.info("Removing " + current.getId());
           this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
+          if (ServerData.INSTANCE.getClients().size() == 0) {
+            shutdown();
+          }
         } else {
 //            Manager.INSTANCE.playerInput(current);
           ServerData.INSTANCE.getGame().playerInput(current.getId(), current.getCommand());

@@ -7,13 +7,11 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.log4j.Logger;
 
 /**
  * The enum Data.
@@ -60,12 +58,12 @@ public enum Data {
   }
 
   /**
-   * Sets singleplayer.
+   * Gets localhost.
    *
-   * @param singleplayer the singleplayer
+   * @return the localhost
    */
-  public void setSingleplayer(boolean singleplayer) {
-    this.singleplayer = singleplayer;
+  public ServerInformation getLocalhost() {
+    return localhost;
   }
 
   /**
@@ -117,7 +115,6 @@ public enum Data {
    * Gets player.
    *
    * @param i the
-   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -178,24 +175,17 @@ public enum Data {
     this.serverSelected = true;
   }
 
-  public boolean isServerSelected() {
-    return serverSelected;
-  }
-
   /**
    * Is server selected boolean.
    *
-   * @param id           the id
-   * @param singlePlayer the singleplayer
-   *
    * @return the boolean
-   *
-   * @throws IOException  the io exception
-   * @throws InvalidBytes the invalid bytes
    */
   public boolean isServerSelected() {
     return serverSelected;
   }
+//  public boolean isServerSelected() {
+//    return serverSelected;
+//  }
 
   /**
    * Connect response.
@@ -217,6 +207,15 @@ public enum Data {
     }
   }
 
+  /**
+   * Connect response.
+   *
+   * @param id           the id
+   * @param singleplayer the singleplayer
+   * @param host         the host
+   * @return the response
+   * @throws UnknownHostException the unknown host exception
+   */
   public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
     this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort());
     return connect(id, singleplayer);

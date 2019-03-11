@@ -44,7 +44,7 @@ public class Updater implements Runnable {
     while (!Thread.currentThread().isInterrupted() && !shutdown) {
       double nanoTime = System.nanoTime();
       updatePlayers();
-//      tcpBroadcast();
+      tcpBroadcast();
       try {
         broadcast();
       } catch (IOException e) {
