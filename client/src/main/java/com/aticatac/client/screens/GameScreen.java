@@ -3,6 +3,7 @@ package com.aticatac.client.screens;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -191,7 +192,6 @@ public class GameScreen extends AbstractScreen {
       update = newUpdate;
       player = update.getMe(Data.INSTANCE.getID());
     }
-    Container player = update.getMe(Data.INSTANCE.getID());
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
       this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));

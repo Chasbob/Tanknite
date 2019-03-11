@@ -14,6 +14,7 @@ public class Client {
   private final String id;
   private final Logger logger;
   private final PrintStream printer;
+  private final ModelReader modelReader;
 
   public Client(CommandListener commandListener, ClientModel model, PrintStream printer) {
     this.logger = Logger.getLogger(getClass());
@@ -21,11 +22,12 @@ public class Client {
     this.model = model;
     this.id = this.model.getId();
     this.printer = printer;
+    this.modelReader=new ModelReader();
     (new Thread(commandListener)).start();
   }
 
   public void sendUpdate(Update update) {
-    String json = ModelReader.toJson(update);
+    String json = modelReader.toJson(update);
     this.printer.println(json);
   }
 

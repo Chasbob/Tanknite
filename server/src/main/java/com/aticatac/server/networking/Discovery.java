@@ -17,6 +17,7 @@ public class Discovery implements Runnable {
   private final List<DatagramPacket> packets;
   private final Logger logger;
   private final ModelReader modelReader;
+  private final String name;
 
   /**
    * Instantiates a new Discovery.

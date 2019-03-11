@@ -53,7 +53,6 @@ public class ServerScreen extends AbstractScreen {
     joinButton.addListener(UIFactory.newListenerEvent(() -> {
       if (Data.INSTANCE.isServerSelected()) {
         //TODO show lobby of currentServer
-        currentServer.setStyle(Styles.INSTANCE.getButtonStyle());
         Screens.INSTANCE.showScreen(UsernameScreen.class);
       }
       return false;
