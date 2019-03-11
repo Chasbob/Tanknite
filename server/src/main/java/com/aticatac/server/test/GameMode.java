@@ -85,29 +85,6 @@ abstract class GameMode implements Game {
       ThreadLocalRandom.current().nextInt(min, max + 1));
     }
     return createTank(player, isAI, position.getX(), position.getY());
-//    try {
-//      Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-//      ThreadLocalRandom.current().nextInt(min, max + 1));
-//      //checks if this is a valid coordinate when generated is not in the map then moves on.
-//      while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)) {
-//        position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-//        ThreadLocalRandom.current().nextInt(min, max + 1));
-//      }
-//      TankObject tank = new TankObject(root.getChildren().get("Player Container"),
-//      player,
-//      position,
-//      100,
-//      30,
-//      isAI);
-//      if(isAI){
-//        tank.getComponent(AI.class).setGraph(new Graph());
-//      }
-//      DataServer.INSTANCE.setCoordinates(position, player);
-//      return tank;
-//    } catch (InvalidClassInstance | ComponentExistsException e) {
-//      this.logger.error(e);
-//    }
-//    return null;
   }
 
   private TankObject createTank(String player, boolean isAI, int x, int y) {
