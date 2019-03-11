@@ -7,28 +7,27 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+
+import java.util.*;
 // Things left TODO:
 //  - line of sight
 //  - powerup stuff
 //  - getting information, all enemies, all powerups
 /**
- * AI.
+ * The AI component. Where would life be without the AI component?
  *
  * @author Dylan
  */
 public class AI extends Component {
-  private final static int VIEW_RANGE = 500; // some value equivalent to the actual view range that a player would have
+  private final static int VIEW_RANGE = 640; // some value equivalent to the actual view range that a player would have
+  private final static Graph graph = new Graph();
   private final GameObject tank;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
-  private Graph graph;
   private State state;
   private State prevState;
   private Queue<SearchNode> searchPath; // current path being executed
+  private ArrayList<Position> recentlyVisitedNodes; // current path being executed
   private ArrayList<GameObject> enemiesInRange;
   private ArrayList<GameObject> powerupsInRange;
   //private Something idealPowerup;
@@ -48,14 +47,11 @@ public class AI extends Component {
     this.tank = parent;
     this.state = State.SEARCHING;
     this.searchPath = new LinkedList<>();
+    this.recentlyVisitedNodes = new ArrayList<>();
     this.aggression = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
-  }
-
-  public void setGraph(Graph graph) {
-    this.graph = graph;
   }
 
   /**
@@ -64,6 +60,7 @@ public class AI extends Component {
    * @return A decision
    */
   public Decision getDecision() {
+    checkLineOfSightToPosition(tankPos, new Position(0,0));
     // Update information
     tankPos = tank.getComponent(Transform.class).getPosition();
     tankHealth = tank.getComponent(Health.class).getHealth();
@@ -75,10 +72,11 @@ public class AI extends Component {
     int angleChange = getAngleChange();
     aimAngle += angleChange;
     // Poll search path if close enough to node
-    double threshold = 16;
+    double threshold = 4;
     if (!searchPath.isEmpty()) {
       if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold && Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
-        searchPath.poll();
+        SearchNode visited = searchPath.poll();
+        recentlyVisitedNodes.addAll(visited.getSubGraph(5));
       }
     }
     // Check for a state change
@@ -234,7 +232,6 @@ public class AI extends Component {
     }
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
-    System.out.println(tankPos + "GOING TO " + goal);
     searchPath = graph.getPathToLocation(tankPos, goal);
     Command c = commandToPerform(searchPath.peek());
     if (c != null) {
@@ -343,7 +340,7 @@ public class AI extends Component {
     } else if (tankPos.getY() < node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
       return Command.DOWN;
     }
-    return Command.RIGHT;
+    return null;
   }
 
   /**
@@ -363,12 +360,24 @@ public class AI extends Component {
   }
 
   /**
-   * Finds a random position in range of the tank clear of enemies.
+   * Finds a random position in range of the tank clear of enemies. Used in the default SEARCHING state.
    *
    * @return A random position clear of enemies
    */
   private Position getRandomClearPosition() {
     ArrayList<Position> clearPositions = getClearPositions();
+    ArrayList<Position> newClearPositions = new ArrayList<>();
+    for (Position position : clearPositions) {
+      if (!recentlyVisitedNodes.contains(position)) {
+        newClearPositions.add(position);
+      }
+    }
+    if (!newClearPositions.isEmpty()) {
+      clearPositions = newClearPositions;
+    }
+    else {
+      recentlyVisitedNodes.clear();
+    }
     Random rand = new Random();
     return clearPositions.get(rand.nextInt(clearPositions.size()));
   }
@@ -400,15 +409,11 @@ public class AI extends Component {
    * @return True if there is a line of sight between
    */
   private boolean checkLineOfSightToPosition(Position from, Position to) {
-    // Currently broken
-    // TODO: change to any angle line of sight
-//    Queue<SearchNode> path = graph.getPathToLocation(from, to);
-//    SearchNode first = path.peek();
-//    while (!path.isEmpty()) {
-//      if (path.poll() != first) {
-//        return false;
-//      }
-//    }
+    String[][] map = graph.getMap();
+    SearchNode fromNode = graph.getNearestNode(from);
+    SearchNode toNode = graph.getNearestNode(to);
+    System.out.println("From " + from + ", Array[" + fromNode.getX()/32 + "][" + fromNode.getY()/32 + "]");
+    System.out.println("To " + to + ", Array[" + toNode.getX()/32 + "][" + toNode.getY()/32 + "]");
     return true;
   }
 
@@ -536,7 +541,7 @@ public class AI extends Component {
   }
 
   /**
-   * The set of states the AI tank can be in.
+   * The set of behavior states the AI tank can be in.
    */
   private enum State {
     /**

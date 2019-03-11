@@ -13,6 +13,12 @@ import java.util.concurrent.Callable;
  * The type Broadcast listener.
  */
 class BroadcastListener implements Callable<ServerInformation> {
+  private final ModelReader modelReader;
+
+  BroadcastListener() {
+    modelReader = new ModelReader();
+  }
+
   @Override
   public ServerInformation call() throws Exception {
     return listen();
@@ -23,6 +29,6 @@ class BroadcastListener implements Callable<ServerInformation> {
     byte[] bytes = new byte[1000];
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     socket.receive(packet);
-    return ModelReader.toModel(bytes, ServerInformation.class);
+    return modelReader.toModel(bytes, ServerInformation.class);
   }
 }
