@@ -42,9 +42,9 @@ public class Graph {
     }
     int x, y;
     x = 0;
-    for (int i = 0; i < map.length * separation; i += separation) {
+    for (int i = separation; i < (map.length * separation) + separation; i += separation) {
       y = 0;
-      for (int j = 0; j < map.length * separation; j += separation) {
+      for (int j = separation; j < (map.length * separation) + separation; j += separation) {
         if (map[x][y].equals("0")) {
           nodes.put(i + "-" + j, new SearchNode(i, j));
         }
@@ -77,6 +77,7 @@ public class Graph {
    * @return A queue of Commands that execute the path
    */
   Queue<SearchNode> getPathToLocation(Position from, Position to) {
+    //return pf.postProcessPath(pf.getPathToLocation(getNearestNode(from), getNearestNode(to)), nodes);
     return pf.getPathToLocation(getNearestNode(from), getNearestNode(to));
   }
 
@@ -145,11 +146,56 @@ public class Graph {
       s.nextLine();
     String[][] map = new String[60][60];
     for (int i = 0; i < 60; i++) {
-      ArrayList<String> line = new ArrayList<>(Arrays.asList(s.nextLine().split(",")));
-      Collections.reverse(line);
-      String[] lineArray = new String[60];
-      map[i] = line.toArray(lineArray);
+      map[i] = s.nextLine().split(",");
     }
+    rotateMatrix(map);
+    removeNearWallPositions(map);
     return map;
+  }
+
+  private static void removeNearWallPositions(String[][] map) {
+    for (int x = 0; x < map.length; x++) {
+      for (int y = 0; y < map.length; y++) {
+        if (map[x][y].equals("0")) {
+          for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
+                map[x][y] = "1";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private static void rotateMatrix(String[][] matrix){
+    if(matrix == null)
+      return;
+    if(matrix.length != matrix[0].length)//INVALID INPUT
+      return;
+    getTranspose(matrix);
+    rorateAlongMidRow(matrix);
+  }
+
+  private static void getTranspose(String[][] matrix) {
+    for(int i = 0; i < matrix.length; i++){
+      for(int j = i+1; j < matrix.length ; j++){
+        String temp = matrix[i][j];
+        matrix[i][j] = matrix[j][i];
+        matrix[j][i] = temp;
+      }
+    }
+  }
+
+  private static void rorateAlongMidRow(String[][] matrix) {
+    int len = matrix.length ;
+    for(int i = 0; i < len/2; i++){
+      for(int j = 0;j < len; j++){
+        String temp = matrix[i][j];
+        matrix[i][j] = matrix[len-1 -i][j];
+        matrix[len -1 -i][j] = temp;
+      }
+    }
   }
 }

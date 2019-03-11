@@ -7,10 +7,8 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+
+import java.util.*;
 // Things left TODO:
 //  - line of sight
 //  - powerup stuff
@@ -21,7 +19,7 @@ import java.util.Random;
  * @author Dylan
  */
 public class AI extends Component {
-  private final static int VIEW_RANGE = 500; // some value equivalent to the actual view range that a player would have
+  private final static int VIEW_RANGE = 640; // some value equivalent to the actual view range that a player would have
   private final GameObject tank;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
@@ -29,6 +27,7 @@ public class AI extends Component {
   private State state;
   private State prevState;
   private Queue<SearchNode> searchPath; // current path being executed
+  private ArrayList<Position> recentlyVisitedNodes; // current path being executed
   private ArrayList<GameObject> enemiesInRange;
   private ArrayList<GameObject> powerupsInRange;
   //private Something idealPowerup;
@@ -48,6 +47,7 @@ public class AI extends Component {
     this.tank = parent;
     this.state = State.SEARCHING;
     this.searchPath = new LinkedList<>();
+    this.recentlyVisitedNodes = new ArrayList<>();
     this.aggression = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
@@ -75,10 +75,11 @@ public class AI extends Component {
     int angleChange = getAngleChange();
     aimAngle += angleChange;
     // Poll search path if close enough to node
-    double threshold = 16;
+    double threshold = 4;
     if (!searchPath.isEmpty()) {
       if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold && Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
-        searchPath.poll();
+        SearchNode visited = searchPath.poll();
+        recentlyVisitedNodes.addAll(visited.getSubGraph(3));
       }
     }
     // Check for a state change
@@ -343,7 +344,7 @@ public class AI extends Component {
     } else if (tankPos.getY() < node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
       return Command.DOWN;
     }
-    return Command.RIGHT;
+    return null;
   }
 
   /**
@@ -363,12 +364,24 @@ public class AI extends Component {
   }
 
   /**
-   * Finds a random position in range of the tank clear of enemies.
+   * Finds a random position in range of the tank clear of enemies. Used in the default SEARCHING state.
    *
    * @return A random position clear of enemies
    */
   private Position getRandomClearPosition() {
     ArrayList<Position> clearPositions = getClearPositions();
+    ArrayList<Position> newClearPositions = new ArrayList<>();
+    for (Position position : clearPositions) {
+      if (!recentlyVisitedNodes.contains(position)) {
+        newClearPositions.add(position);
+      }
+    }
+    if (!newClearPositions.isEmpty()) {
+      clearPositions = newClearPositions;
+    }
+    else {
+      recentlyVisitedNodes.clear();
+    }
     Random rand = new Random();
     return clearPositions.get(rand.nextInt(clearPositions.size()));
   }

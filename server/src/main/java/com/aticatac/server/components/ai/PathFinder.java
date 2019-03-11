@@ -13,13 +13,12 @@ import java.util.Queue;
  * @author Dylan
  */
 class PathFinder {
-    /*
-        Adapted from: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
+  /*
+    Adapted from: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
 
-        g score = the cost of the path from the start node to the current node
-        f score = g + an estimate of the cost from the current node to the goal node
-     */
-
+    g score = the cost of the path from the start node to the current node
+    f score = g + an estimate of the cost from the current node to the goal node
+  */
   /**
    * Uses A* search to find a path from one node to another.
    *
@@ -27,7 +26,7 @@ class PathFinder {
    * @param goal  The node to end at
    * @return A queue of commands that define a path from the start node to the goal node
    */
-  Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
+  LinkedList<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
     LinkedList<SearchNode> closedSet = new LinkedList<>();
     LinkedList<SearchNode> openSet = new LinkedList<>();
     openSet.add(start);
@@ -68,7 +67,7 @@ class PathFinder {
    * @param current  The current node
    * @return The final path from the start to goal node
    */
-  private Queue<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
+  private LinkedList<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
     LinkedList<SearchNode> totalPath = new LinkedList<>();
     totalPath.add(current);
     while (cameFrom.containsKey(current)) {
@@ -77,6 +76,38 @@ class PathFinder {
     }
     Collections.reverse(totalPath);
     return totalPath;
+  }
+
+  /**
+   * Post processes a path to make it appear closer to what a path a human player would take would look like.
+   * @param path Path to be processed
+   * @return A post processed path
+   */
+  Queue<SearchNode> postProcessPath(LinkedList<SearchNode> path, HashMap<String, SearchNode> nodes) {
+    if (path.size() < 5) {
+      return path;
+    }
+    LinkedList<SearchNode> newPath = new LinkedList<>();
+    newPath.add(path.get(0));
+    for (int i = 0; i + 5 < path.size(); i += 5) {
+      SearchNode node1 = path.get(i);
+      SearchNode node2 = path.get(i + 1);
+      SearchNode node4 = path.get(i + 3);
+      SearchNode node5 = path.get(i + 4);
+      if (manhattanDistance(node1, node5) == 128) {
+        newPath.add(node2);
+        if (nodes.containsKey(node1.getX() + "-" + node5.getY()))
+          newPath.add(nodes.get(node1.getX() + "-" + node5.getY()));
+        else if (nodes.containsKey(node1.getY() + "-" + node5.getX()))
+          newPath.add(nodes.get(node1.getY() + "-" + node5.getX()));
+        newPath.add(node4);
+        newPath.add(node5);
+      }
+    }
+    if (newPath.size() > 1) {
+      return newPath;
+    }
+    return path;
   }
 
   /**
