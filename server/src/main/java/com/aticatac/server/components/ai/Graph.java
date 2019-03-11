@@ -1,12 +1,11 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.Scanner;
-// Things left TODO:
-//  - not placing nodes at wrong places
 
 /**
  * A graph is a collection of connected SearchNodes. Each node in the graph represents a point on the game map that a
@@ -14,7 +13,8 @@ import java.util.Scanner;
  *
  * @author Dylan
  */
-public class Graph {
+class Graph {
+  private static final int separation = 32;
   /**
    * A pathfinder that can generate a path in the graph
    */
@@ -23,18 +23,15 @@ public class Graph {
    * The nodes that make up the graph
    */
   private final HashMap<String, SearchNode> nodes;
-  private final int separation;
+  private final String[][] map;
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
    */
-  public Graph() {
-    separation = 32;
+  Graph() {
     pf = new PathFinder();
-    // Set attributes
     nodes = new HashMap<>();
     // Add nodes
-    String[][] map;
     map = convertTMXFileToIntArray();
     int x, y;
     x = 0;
@@ -65,7 +62,7 @@ public class Graph {
     }
   }
 
-  private static void removeNearWallPositions(String[][] map) {
+  private static void removePositionsNextToWalls(String[][] map) {
     for (int x = 0; x < map.length; x++) {
       for (int y = 0; y < map.length; y++) {
         if (map[x][y].equals("0")) {
@@ -81,35 +78,35 @@ public class Graph {
     }
   }
 
-  private static void rotateMatrix(String[][] matrix) {
-    if (matrix == null) {
+  private static void rotateMap(String[][] map) {
+    if (map == null) {
       return;
     }
-    if (matrix.length != matrix[0].length)//INVALID INPUT
+    if (map.length != map[0].length)//INVALID INPUT
     {
       return;
     }
-    getTranspose(matrix);
-    rorateAlongMidRow(matrix);
+    getTranspose(map);
+    rotateAlongMidRow(map);
   }
 
-  private static void getTranspose(String[][] matrix) {
-    for (int i = 0; i < matrix.length; i++) {
-      for (int j = i + 1; j < matrix.length; j++) {
-        String temp = matrix[i][j];
-        matrix[i][j] = matrix[j][i];
-        matrix[j][i] = temp;
+  private static void getTranspose(String[][] map) {
+    for (int i = 0; i < map.length; i++) {
+      for (int j = i + 1; j < map.length; j++) {
+        String temp = map[i][j];
+        map[i][j] = map[j][i];
+        map[j][i] = temp;
       }
     }
   }
 
-  private static void rorateAlongMidRow(String[][] matrix) {
-    int len = matrix.length;
+  private static void rotateAlongMidRow(String[][] map) {
+    int len = map.length;
     for (int i = 0; i < len / 2; i++) {
       for (int j = 0; j < len; j++) {
-        String temp = matrix[i][j];
-        matrix[i][j] = matrix[len - 1 - i][j];
-        matrix[len - 1 - i][j] = temp;
+        String temp = map[i][j];
+        map[i][j] = map[len - 1 - i][j];
+        map[len - 1 - i][j] = temp;
       }
     }
   }
@@ -131,7 +128,7 @@ public class Graph {
    * @param position The position to get nearest node from
    * @return The nearest node to the given position
    */
-  private SearchNode getNearestNode(Position position) {
+  SearchNode getNearestNode(Position position) {
     SearchNode closestNode = null;
     double distanceToClosestNode = Double.MAX_VALUE;
     for (SearchNode node : nodes.values()) {
@@ -164,6 +161,10 @@ public class Graph {
     return inRange;
   }
 
+  String[][] getMap() {
+    return map;
+  }
+
   private String[][] convertTMXFileToIntArray() {
     Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
     for (int i = 0; i < 70; i++) // map starts at line 71
@@ -172,8 +173,8 @@ public class Graph {
     for (int i = 0; i < 60; i++) {
       map[i] = s.nextLine().split(",");
     }
-    rotateMatrix(map);
-    removeNearWallPositions(map);
+    rotateMap(map);
+    removePositionsNextToWalls(map);
     return map;
   }
 }

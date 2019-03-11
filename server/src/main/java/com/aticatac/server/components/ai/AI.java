@@ -14,16 +14,16 @@ import java.util.*;
 //  - powerup stuff
 //  - getting information, all enemies, all powerups
 /**
- * AI.
+ * The AI component. Where would life be without the AI component?
  *
  * @author Dylan
  */
 public class AI extends Component {
   private final static int VIEW_RANGE = 640; // some value equivalent to the actual view range that a player would have
+  private final static Graph graph = new Graph();
   private final GameObject tank;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
-  private Graph graph;
   private State state;
   private State prevState;
   private Queue<SearchNode> searchPath; // current path being executed
@@ -52,12 +52,7 @@ public class AI extends Component {
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
-    this.graph = new Graph();
   }
-
-//  public void setGraph(Graph graph) {
-//    this.graph = graph;
-//  }
 
   /**
    * Returns a decision to control the tank.
@@ -65,6 +60,7 @@ public class AI extends Component {
    * @return A decision
    */
   public Decision getDecision() {
+    checkLineOfSightToPosition(tankPos, new Position(0,0));
     // Update information
     tankPos = tank.getComponent(Transform.class).getPosition();
     tankHealth = tank.getComponent(Health.class).getHealth();
@@ -236,7 +232,6 @@ public class AI extends Component {
     }
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
-//    System.out.println(tankPos + "GOING TO " + goal);
     searchPath = graph.getPathToLocation(tankPos, goal);
     Command c = commandToPerform(searchPath.peek());
     if (c != null) {
@@ -414,15 +409,11 @@ public class AI extends Component {
    * @return True if there is a line of sight between
    */
   private boolean checkLineOfSightToPosition(Position from, Position to) {
-    // Currently broken
-    // TODO: change to any angle line of sight
-//    Queue<SearchNode> path = graph.getPathToLocation(from, to);
-//    SearchNode first = path.peek();
-//    while (!path.isEmpty()) {
-//      if (path.poll() != first) {
-//        return false;
-//      }
-//    }
+    String[][] map = graph.getMap();
+    SearchNode fromNode = graph.getNearestNode(from);
+    SearchNode toNode = graph.getNearestNode(to);
+    System.out.println("From " + from + ", Array[" + fromNode.getX()/32 + "][" + fromNode.getY()/32 + "]");
+    System.out.println("To " + to + ", Array[" + toNode.getX()/32 + "][" + toNode.getY()/32 + "]");
     return true;
   }
 
