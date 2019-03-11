@@ -27,19 +27,14 @@ public class Graph {
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
-   *
    */
   public Graph() {
     // Set attributes
     nodes = new HashMap<>();
     // Add nodes
     String[][] map;
-    try {
-       map = convertTMXFileToIntArray();
-    } catch (FileNotFoundException e) {
-      System.out.println("Yo where'd the file go");
-      return;
-    }
+    map = convertTMXFileToIntArray();
+
     int x, y;
     x = 0;
     for (int i = separation; i < (map.length * separation) + separation; i += separation) {
@@ -77,7 +72,6 @@ public class Graph {
    * @return A queue of Commands that execute the path
    */
   Queue<SearchNode> getPathToLocation(Position from, Position to) {
-    //return pf.postProcessPath(pf.getPathToLocation(getNearestNode(from), getNearestNode(to)), nodes);
     return pf.getPathToLocation(getNearestNode(from), getNearestNode(to));
   }
 
@@ -88,36 +82,16 @@ public class Graph {
    * @return The nearest node to the given position
    */
   private SearchNode getNearestNode(Position position) {
-    SearchNode start = nodes.entrySet().iterator().next().getValue();
-    LinkedList<SearchNode> closedSet = new LinkedList<>();
-    LinkedList<SearchNode> openSet = new LinkedList<>();
-    openSet.add(start);
-    HashMap<SearchNode, Integer> g = new HashMap<>();
-    g.put(start, 0);
-    HashMap<SearchNode, Double> f = new HashMap<>();
-    f.put(start, pf.euclideanDistance(start, position));
-    while (!openSet.isEmpty()) {
-      SearchNode current = pf.getLowestFScoreNode(openSet, f);
-      if (pf.euclideanDistance(current, position) < separation) {
-        return current;
-      }
-      openSet.remove(current);
-      closedSet.add(current);
-      for (SearchNode connectedNode : current.getConnectedNodes()) {
-        if (closedSet.contains(connectedNode)) {
-          continue;
-        }
-        int tempG = g.get(current) + pf.manhattanDistance(connectedNode, current);
-        if (!openSet.contains(connectedNode)) {
-          openSet.add(connectedNode);
-        } else if (tempG >= g.get(connectedNode)) {
-          continue;
-        }
-        g.put(connectedNode, tempG);
-        f.put(connectedNode, g.get(connectedNode) + pf.euclideanDistance(connectedNode, position));
+    SearchNode closestNode = null;
+    double distanceToClosestNode = Double.MAX_VALUE;
+    for (SearchNode node : nodes.values()) {
+      double distanceToTank = pf.euclideanDistance(node, position);
+      if (distanceToTank < distanceToClosestNode) {
+        closestNode = node;
+        distanceToClosestNode = distanceToTank;
       }
     }
-    return null;
+    return closestNode;
   }
 
   /**
@@ -140,8 +114,8 @@ public class Graph {
     return inRange;
   }
 
-  private String[][] convertTMXFileToIntArray() throws FileNotFoundException {
-    Scanner s = new Scanner(new File("C:\\Users\\dylan\\IdeaProjects\\aticatac\\client\\src\\main\\resources\\maps\\map.tmx"));
+  private String[][] convertTMXFileToIntArray() {
+    Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
     for (int i = 0; i < 70; i++) // map starts at line 71
       s.nextLine();
     String[][] map = new String[60][60];
@@ -169,18 +143,18 @@ public class Graph {
     }
   }
 
-  private static void rotateMatrix(String[][] matrix){
-    if(matrix == null)
+  private static void rotateMatrix(String[][] matrix) {
+    if (matrix == null)
       return;
-    if(matrix.length != matrix[0].length)//INVALID INPUT
+    if (matrix.length != matrix[0].length)//INVALID INPUT
       return;
     getTranspose(matrix);
     rorateAlongMidRow(matrix);
   }
 
   private static void getTranspose(String[][] matrix) {
-    for(int i = 0; i < matrix.length; i++){
-      for(int j = i+1; j < matrix.length ; j++){
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = i + 1; j < matrix.length; j++) {
         String temp = matrix[i][j];
         matrix[i][j] = matrix[j][i];
         matrix[j][i] = temp;
@@ -189,12 +163,12 @@ public class Graph {
   }
 
   private static void rorateAlongMidRow(String[][] matrix) {
-    int len = matrix.length ;
-    for(int i = 0; i < len/2; i++){
-      for(int j = 0;j < len; j++){
+    int len = matrix.length;
+    for (int i = 0; i < len / 2; i++) {
+      for (int j = 0; j < len; j++) {
         String temp = matrix[i][j];
-        matrix[i][j] = matrix[len-1 -i][j];
-        matrix[len -1 -i][j] = temp;
+        matrix[i][j] = matrix[len - 1 - i][j];
+        matrix[len - 1 - i][j] = temp;
       }
     }
   }

@@ -34,7 +34,7 @@ class PathFinder {
     HashMap<SearchNode, Integer> g = new HashMap<>();
     g.put(start, 0);
     HashMap<SearchNode, Double> f = new HashMap<>();
-    f.put(start, euclideanDistance(start, goal));
+    f.put(start, manhattanDistance(start, goal));
     while (!openSet.isEmpty()) {
       SearchNode current = getLowestFScoreNode(openSet, f);
       if (current.equals(goal)) {
@@ -46,7 +46,7 @@ class PathFinder {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + manhattanDistance(connectedNode, current);
+        int tempG = g.get(current) + (int)manhattanDistance(connectedNode, current);
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
@@ -54,7 +54,7 @@ class PathFinder {
         }
         cameFrom.put(connectedNode, current);
         g.put(connectedNode, tempG);
-        f.put(connectedNode, g.get(connectedNode) + euclideanDistance(connectedNode, goal));
+        f.put(connectedNode, g.get(connectedNode) + manhattanDistance(connectedNode, goal));
       }
     }
     return null;
@@ -76,38 +76,6 @@ class PathFinder {
     }
     Collections.reverse(totalPath);
     return totalPath;
-  }
-
-  /**
-   * Post processes a path to make it appear closer to what a path a human player would take would look like.
-   * @param path Path to be processed
-   * @return A post processed path
-   */
-  Queue<SearchNode> postProcessPath(LinkedList<SearchNode> path, HashMap<String, SearchNode> nodes) {
-    if (path.size() < 5) {
-      return path;
-    }
-    LinkedList<SearchNode> newPath = new LinkedList<>();
-    newPath.add(path.get(0));
-    for (int i = 0; i + 5 < path.size(); i += 5) {
-      SearchNode node1 = path.get(i);
-      SearchNode node2 = path.get(i + 1);
-      SearchNode node4 = path.get(i + 3);
-      SearchNode node5 = path.get(i + 4);
-      if (manhattanDistance(node1, node5) == 128) {
-        newPath.add(node2);
-        if (nodes.containsKey(node1.getX() + "-" + node5.getY()))
-          newPath.add(nodes.get(node1.getX() + "-" + node5.getY()));
-        else if (nodes.containsKey(node1.getY() + "-" + node5.getX()))
-          newPath.add(nodes.get(node1.getY() + "-" + node5.getX()));
-        newPath.add(node4);
-        newPath.add(node5);
-      }
-    }
-    if (newPath.size() > 1) {
-      return newPath;
-    }
-    return path;
   }
 
   /**
@@ -147,7 +115,7 @@ class PathFinder {
    * @param to   End position
    * @return Manhattan distance between two points
    */
-  int manhattanDistance(Position from, Position to) {
+  double manhattanDistance(Position from, Position to) {
     return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
   }
 }
