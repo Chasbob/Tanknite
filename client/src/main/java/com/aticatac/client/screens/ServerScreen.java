@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Server screen.
  */
 public class ServerScreen extends AbstractScreen {
-
   private Boolean serverSelected;
   private ListServers listServers;
   private boolean manualConfig;

@@ -147,4 +147,8 @@ public class UsernameScreen extends AbstractScreen {
     errorLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
     usernameTextField.setText("");
   }
+
+  private TextButton getQuit() {
+    return UIFactory.createBackButton("quit");
+  }
 }

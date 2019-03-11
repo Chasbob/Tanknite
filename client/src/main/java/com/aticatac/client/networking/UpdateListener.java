@@ -3,12 +3,13 @@ package com.aticatac.client.networking;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.MulticastSocket;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Logger;
 
 /**
  * The type Update listener.
@@ -41,17 +42,19 @@ class UpdateListener extends Thread {
     logger.trace("Running...");
     super.run();
     while (!this.isInterrupted()) {
+      double nanoTime = System.nanoTime();
       try {
         if (this.queue.size() > 5) {
           this.queue.clear();
         }
-        listen();
-//        tcpListen();
+//        listen();
+        tcpListen();
       } catch (IOException e) {
         logger.error(e);
       } catch (InvalidBytes invalidBytes) {
         invalidBytes.printStackTrace();
       }
+      this.logger.info((System.nanoTime() - nanoTime) / 1000000000);
     }
   }
 
