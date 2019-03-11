@@ -43,10 +43,8 @@ public class MultiplayerScreen extends AbstractScreen {
       //reload username screen and show
       Screens.INSTANCE.reloadUsernameScreen();
       Screens.INSTANCE.showScreen(UsernameScreen.class);
-      refresh();
       return false;
     }));
-    hostButton.addListener(UIFactory.newChangeScreenEvent(UsernameScreen.class));
     buttonTable.add(hostButton);
     //create button for joining
     TextButton joinButton = UIFactory.createButton("Join");

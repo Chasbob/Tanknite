@@ -85,9 +85,11 @@ public class UsernameScreen extends AbstractScreen {
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
         Response response;
         if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
+          Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
           response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
         }else if(Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
-          Server server = new Server(true, serverTextField.getText());
+          Screens.INSTANCE.getScreen(MultiplayerScreen.class).refresh();
+          Server server = new Server(false, serverTextField.getText());
           server.start();
           Data.INSTANCE.setSingleplayer(false);
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);

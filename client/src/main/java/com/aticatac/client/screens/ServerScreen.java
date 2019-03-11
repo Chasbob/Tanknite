@@ -96,7 +96,6 @@ public class ServerScreen extends AbstractScreen {
       //need to rebuild username screen to load new fields
       Screens.INSTANCE.reloadUsernameScreen();
       Screens.INSTANCE.showScreen(UsernameScreen.class);
-      refresh();
       return false;
     }
     ));

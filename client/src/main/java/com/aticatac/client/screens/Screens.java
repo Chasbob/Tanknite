@@ -81,7 +81,7 @@ public enum Screens {
   }
 
   public void reloadUsernameScreen(){
-    this.logger.info("reloading "+this.currentScreen + ".");
+    this.logger.info("reloading "+"username screen" + ".");
     getScreen(UsernameScreen.class).dispose();
     screens.remove(UsernameScreen.class);
     screens.put(UsernameScreen.class, new UsernameScreen());
