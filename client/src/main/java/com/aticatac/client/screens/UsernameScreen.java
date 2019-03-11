@@ -3,6 +3,7 @@ package com.aticatac.client.screens;
 import com.aticatac.client.networking.Response;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -83,8 +84,13 @@ public class UsernameScreen extends AbstractScreen {
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
         Response response;
-        if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()){
+        if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
           response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
+        }else if(Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
+          Server server = new Server(true, serverTextField.getText());
+          server.start();
+          Data.INSTANCE.setSingleplayer(false);
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
         }else{
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
         }
