@@ -7,12 +7,10 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
-import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
+import com.aticatac.server.components.*;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
+
 
 public class TankObject extends GameObject {
   //add in a parameter boolean which is ai true or false
@@ -31,6 +29,11 @@ public class TankObject extends GameObject {
     this.addComponent(Physics.class);
     this.addComponent(Time.class);
     this.addComponent(TankController.class);
+    this.addComponent(Acceleration.class);
+    this.addComponent(BulletDamage.class);
+    this.addComponent(CollisionBox.class);
+    this.getComponent(CollisionBox.class).setCollisionBox(this.getComponent(Transform.class).getPosition());
+    this.getComponent(CollisionBox.class).addBoxToData(this.getComponent(CollisionBox.class).getCollisionBox(), name);
     if (isAI) {
       this.addComponent(AI.class);
     }
