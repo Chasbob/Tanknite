@@ -5,9 +5,14 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import org.apache.log4j.Logger;
 
+/**
+ * The enum Audio enum.
+ */
 public enum AudioEnum {
-
-    INSTANCE;
+  /**
+   * Instance audio enum.
+   */
+  INSTANCE;
 
     private final Logger logger;
 

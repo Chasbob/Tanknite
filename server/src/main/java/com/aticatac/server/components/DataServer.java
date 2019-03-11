@@ -4,76 +4,77 @@ import com.aticatac.common.components.transform.Position;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
-
 /**
- *
- *
  * @author Claire Fletcher
  */
-
 public enum DataServer {
 
-    INSTANCE;
 
-    //TODO add power ups into this and the walls
-    //ammo, health, damage, speed, <-for the power ups
+  INSTANCE;
 
-    private BidiMap<Position, String> occupiedCoordinates= new DualHashBidiMap<>();
-    DataServer(){
-
-        //TODO Remove this when the map is added but for now add in coordinates for edges of map
-
-    }
+  /**
+   * Map of the occupied coordinates on map
+   */
+  private BidiMap<Position, String> occupiedCoordinates = new DualHashBidiMap<>();
 
 
-    /**
-     * Sets the
-     * @return
-     */
-    public BidiMap<Position, String> getOccupiedCoordinates(){
+  /**
+   *
+   */
+  DataServer() {
+  }
 
-        return occupiedCoordinates;
 
-    }
+  /**
+   * Sets the
+   *
+   * @return
+   */
+  public BidiMap<Position, String> getOccupiedCoordinates() {
 
-    /**
-     * Sets the coordinates for the object in the map
-     * @param type
-     * @param newPosition
-     */
-    public void setCoordinates(Position newPosition, String type, Position oldPosition) {
+    return occupiedCoordinates;
 
-        //if old position is not in there then don't remove
-        if (!(occupiedCoordinates.containsKey(oldPosition))) {
-            occupiedCoordinates.put(newPosition, type);
-        } else {
+  }
 
-            occupiedCoordinates.remove(oldPosition);
-            occupiedCoordinates.put(newPosition, type);
+  /**
+   * Sets the coordinates for the object in the map
+   *
+   * @param type
+   * @param newPosition
+   */
+  public void setCoordinates(Position newPosition, String type, Position oldPosition) {
 
-        }
-    }
+    //if old position is not in there then don't remove
+    if (!(occupiedCoordinates.containsKey(oldPosition))) {
+      occupiedCoordinates.put(newPosition, type);
+    } else {
 
-    /**
-     * Sets the coordinates for the object in the map
-     * @param type
-     * @param newPosition
-     */
-    //only called when the tanks are first put into the map.
-    public void setCoordinates(Position newPosition, String type) {
-
-        occupiedCoordinates.put(newPosition, type);
-
+      occupiedCoordinates.remove(oldPosition);
+      occupiedCoordinates.put(newPosition, type);
 
     }
+  }
 
-    /**
-     *
-     * @param key
-     */
-    public void deleteCoordinates(Position key){
+  /**
+   * Sets the coordinates for the object in the map
+   *
+   * @param type
+   * @param newPosition
+   */
+  //only called when the objects are first put into the map.
+  public void setCoordinates(Position newPosition, String type) {
 
-        occupiedCoordinates.remove(key);
-    }
+    occupiedCoordinates.put(newPosition, type);
+
+
+  }
+
+  /**
+   * @param key
+   */
+  public void deleteCoordinates(Position key) {
+
+    occupiedCoordinates.remove(key);
+  }
 
 }

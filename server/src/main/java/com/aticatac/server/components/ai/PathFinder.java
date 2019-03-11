@@ -25,14 +25,14 @@ class PathFinder {
    * @param goal  The node to end at
    * @return A queue of commands that define a path from the start node to the goal node
    */
-  public Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
-    LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
-    LinkedList<SearchNode> openSet = new LinkedList<SearchNode>();
+  Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
+    LinkedList<SearchNode> closedSet = new LinkedList<>();
+    LinkedList<SearchNode> openSet = new LinkedList<>();
     openSet.add(start);
-    HashMap cameFrom = new HashMap<SearchNode, SearchNode>();
-    HashMap<SearchNode, Integer> g = new HashMap<SearchNode, Integer>();
+    HashMap<SearchNode, SearchNode> cameFrom = new HashMap<>();
+    HashMap<SearchNode, Integer> g = new HashMap<>();
     g.put(start, 0);
-    HashMap<SearchNode, Double> f = new HashMap<SearchNode, Double>();
+    HashMap<SearchNode, Double> f = new HashMap<>();
     f.put(start, costEstimate(start, goal));
     while (!openSet.isEmpty()) {
       SearchNode current = getLowestFScoreNode(openSet, f);
@@ -45,7 +45,7 @@ class PathFinder {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + (int) (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - connectedNode.getY()));
+        int tempG = g.get(current) + (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - current.getY()));
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
@@ -67,7 +67,7 @@ class PathFinder {
    * @return The final path from the start to goal node
    */
   private Queue<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
-    LinkedList<SearchNode> totalPath = new LinkedList<SearchNode>();
+    LinkedList<SearchNode> totalPath = new LinkedList<>();
     totalPath.add(current);
     while (cameFrom.containsKey(current)) {
       current = cameFrom.get(current);
