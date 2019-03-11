@@ -39,7 +39,8 @@ public class MultiplayerScreen extends AbstractScreen {
     TextButton hostButton = UIFactory.createButton("Host");
     hostButton.addListener(UIFactory.newListenerEvent(() -> {
       //TODO consider how the server will be stopped.
-      Server server = new Server(true, "MultiPlayer");
+      Server server = new Server(false, "MultiPlayer");
+      Data.INSTANCE.setCurrentInformation(Data.INSTANCE.getLocalhost());
       server.start();
       Data.INSTANCE.setSingleplayer(false);
       hosting = true;
