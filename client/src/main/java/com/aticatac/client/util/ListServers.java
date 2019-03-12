@@ -25,7 +25,6 @@ public class ListServers {
    * @param serverTable the server table
    */
   public ListServers(Table serverTable) {
-
     this.logger = Logger.getLogger(getClass());
     this.serversTable = serverTable;
     this.tableSize = 10;
