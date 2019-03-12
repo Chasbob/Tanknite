@@ -32,7 +32,7 @@ class Graph {
     pf = new PathFinder();
     nodes = new HashMap<>();
     // Add nodes
-    map = convertTMXFileToIntArray();
+    map = convertTMXFileToArray();
     int x, y;
     x = 0;
     for (int i = separation; i < (map.length * separation) + separation; i += separation) {
@@ -58,22 +58,6 @@ class Graph {
       }
       if (nodes.containsKey((node.getX() - separation) + "-" + node.getY())) {
         node.addConnection(nodes.get((node.getX() - separation) + "-" + node.getY()));
-      }
-    }
-  }
-
-  private static void removePositionsNextToWalls(String[][] map) {
-    for (int x = 0; x < map.length; x++) {
-      for (int y = 0; y < map.length; y++) {
-        if (map[x][y].equals("0")) {
-          for (int i = x - 1; i <= x + 1; i++) {
-            for (int j = y - 1; j <= y + 1; j++) {
-              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
-                map[x][y] = "1";
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -118,7 +102,8 @@ class Graph {
    * @param to   Goal position
    * @return A queue of Commands that execute the path
    */
-  Queue<SearchNode> getPathToLocation(Position from, Position to) {
+  Queue<SearchNode> getPathToLocation(Position from, Position to/*, ArrayList<SearchNode> occupiedNodes*/) {
+//    pf.setOccupiedNodes(occupiedNodes);
     return pf.getPathToLocation(getNearestNode(from), getNearestNode(to));
   }
 
@@ -165,7 +150,7 @@ class Graph {
     return map;
   }
 
-  private String[][] convertTMXFileToIntArray() {
+  private String[][] convertTMXFileToArray() {
     Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
     for (int i = 0; i < 70; i++) // map starts at line 71
       s.nextLine();
@@ -176,5 +161,21 @@ class Graph {
     rotateMap(map);
     removePositionsNextToWalls(map);
     return map;
+  }
+
+  private static void removePositionsNextToWalls(String[][] map) {
+    for (int x = 0; x < map.length; x++) {
+      for (int y = 0; y < map.length; y++) {
+        if (map[x][y].equals("0")) {
+          for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
+                map[x][y] = "1";
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

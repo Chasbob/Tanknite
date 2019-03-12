@@ -33,6 +33,8 @@ public class AI extends Component {
   private State prevState;
   private Queue<SearchNode> searchPath; // current path being executed
   private ArrayList<Position> recentlyVisitedNodes; // current path being executed
+  private ArrayList<SearchNode> occupiedNodes;
+  private ArrayList<Command> commandHistory = new ArrayList<>();
   private ArrayList<GameObject> enemiesInRange;
   private ArrayList<GameObject> powerupsInRange;
   //private Something idealPowerup;
@@ -78,7 +80,7 @@ public class AI extends Component {
     int angleChange = getAngleChange();
     aimAngle += angleChange;
     // Poll search path if close enough to node
-    double threshold = 4;
+    double threshold = 32;
     if (!searchPath.isEmpty()) {
       if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold && Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
         SearchNode visited = searchPath.poll();
@@ -88,6 +90,10 @@ public class AI extends Component {
     // Check for a state change
     state = getStateChange();
     // Return a decision
+    Command command = performStateAction();
+    if (!commandHistory.contains(command))
+      commandHistory.clear();
+    commandHistory.add(command);
     return new Decision(performStateAction(), angleChange);
   }
 
@@ -233,12 +239,12 @@ public class AI extends Component {
    */
   private Command performSearchingAction() {
     // Keep going along the same path if still searching
-    if (prevState == State.SEARCHING && !searchPath.isEmpty()) {
+    if (prevState == State.SEARCHING && !searchPath.isEmpty() && commandHistory.size() < 50) {
       return commandToPerform(searchPath.peek());
     }
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
-    searchPath = graph.getPathToLocation(tankPos, goal);
+    searchPath = graph.getPathToLocation(tankPos, goal/*, occupiedNodes*/);
     Command c = commandToPerform(searchPath.peek());
     if (c != null) {
       return c;
@@ -263,15 +269,15 @@ public class AI extends Component {
     if (checkLineOfSightToPosition(tankPos, nearestEnemy) && aimed) {
       return Command.SHOOT;
     } else {
-      Queue<SearchNode> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy);
+      Queue<SearchNode> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy/*, occupiedNodes*/);
       if (pathToEnemy.isEmpty()) {
         return null;
       }
       // Is a path from tank -> power-up -> enemy viable?
       if (!powerupsInRange.isEmpty()) {
         Position nearPowerup = getClosestPowerup().getTransform().getPosition();
-        Queue<SearchNode> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup);
-        Queue<SearchNode> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy);
+        Queue<SearchNode> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup/*, occupiedNodes*/);
+        Queue<SearchNode> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy/*, occupiedNodes*/);
         Queue<SearchNode> tankToPowerupToEnemy = new LinkedList<>();
         tankToPowerupToEnemy.addAll(tankToPowerup);
         tankToPowerupToEnemy.addAll(powerupToEnemy);
@@ -295,7 +301,7 @@ public class AI extends Component {
     // Pick a position in range of the agent that is clear of enemies and travel there
     Position goal = getClosestClearPosition();
     if (!(goal == null)) {
-      Queue<SearchNode> path = graph.getPathToLocation(tankPos, goal);
+      Queue<SearchNode> path = graph.getPathToLocation(tankPos, goal/*, occupiedNodes*/);
       if (!path.isEmpty()) {
         return commandToPerform(path.peek());
       }
@@ -322,7 +328,7 @@ public class AI extends Component {
     if (idealPowerup != null) {
       powerupLocation = idealPowerup.getTransform().getPosition();
     }
-    searchPath = graph.getPathToLocation(tankPos, powerupLocation);
+    searchPath = graph.getPathToLocation(tankPos, powerupLocation/*, occupiedNodes*/);
     if (searchPath.isEmpty()) {
       return Command.DOWN;
     }
@@ -337,13 +343,13 @@ public class AI extends Component {
    */
   private Command commandToPerform(SearchNode node) {
     // these are actually right
-    if (tankPos.getX() > node.getX() && Math.abs(tankPos.getX() - node.getX()) > 2) {
+    if (tankPos.getX() > node.getX() && Math.abs(tankPos.getX() - node.getX()) > 16) {
       return Command.RIGHT;
-    } else if (tankPos.getX() < node.getX() && Math.abs(tankPos.getX() - node.getX()) > 2) {
+    } else if (tankPos.getX() < node.getX() && Math.abs(tankPos.getX() - node.getX()) > 16) {
       return Command.LEFT;
-    } else if (tankPos.getY() > node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
+    } else if (tankPos.getY() > node.getY() && Math.abs(tankPos.getY() - node.getY()) > 16) {
       return Command.UP;
-    } else if (tankPos.getY() < node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
+    } else if (tankPos.getY() < node.getY() && Math.abs(tankPos.getY() - node.getY()) > 16) {
       return Command.DOWN;
     }
     return null;
