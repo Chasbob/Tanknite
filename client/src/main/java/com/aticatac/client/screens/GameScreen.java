@@ -36,14 +36,12 @@ public class GameScreen extends AbstractScreen {
    */
   private Update update;
   private Table popUpTable;
-  //  private float health;
   private Label ammoValue;
   private Label killCount;
   private Label playerCount;
   private TiledMap map;
   private OrthogonalTiledMapRenderer renderer;
   private Camera camera;
-  private Position playerPos;
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
@@ -59,7 +57,6 @@ public class GameScreen extends AbstractScreen {
     maxX = 1920;
     maxY = 1920;
     try {
-//      health = 1f;
       player = new Container();
       ammoValue = UIFactory.createLabel("");
       killCount = UIFactory.createLabel("");
@@ -136,13 +133,13 @@ public class GameScreen extends AbstractScreen {
     statsTable.add(this.direction);
     //create pop up table
     popUpTable = new Table();
-    super.addToRoot(popUpTable);
+    rootTable.add(popUpTable);
     popUpTable.center();
     popUpTable.setVisible(false);
     popUpTable.defaults().pad(10).width(150);
     //create style for pop up tables
     Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGB565);
-    tableColour.setColor(Color.DARK_GRAY);
+    tableColour.setColor(33.3f, 33.3f, 33.3f, 1);
     tableColour.fill();
     popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
     //create resume button
