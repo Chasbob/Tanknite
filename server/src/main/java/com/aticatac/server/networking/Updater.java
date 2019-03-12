@@ -45,12 +45,12 @@ public class Updater implements Runnable {
       double nanoTime = System.nanoTime();
       updatePlayers();
       tcpBroadcast();
-      try {
-        broadcast();
-      } catch (IOException e) {
-        this.logger.info("stopping due to IO");
-        this.shutdown = true;
-      }
+//      try {
+//        broadcast();
+//      } catch (IOException e) {
+//        this.logger.info("stopping due to IO");
+//        this.shutdown = true;
+//      }
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);

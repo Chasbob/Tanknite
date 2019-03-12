@@ -59,6 +59,7 @@ public class Server extends Thread {
 
   @Override
   public void run() {
+    this.logger.setLevel(Level.ALL);
     this.logger.trace("Running...");
     this.logger.trace("Waiting for host");
     new NewHost().run();
@@ -75,9 +76,9 @@ public class Server extends Thread {
       if (!ServerData.INSTANCE.isSinglePlayer()) {
         this.executorService.submit(new Discovery(this.name));
         this.logger.trace("added discovery");
+        this.executorService.submit(new NewClients());
+        this.logger.trace("added new clients");
       }
-      this.executorService.submit(new NewClients());
-      this.logger.trace("added new clients");
     } catch (IOException e) {
       this.logger.error(e);
       return;
@@ -142,6 +143,7 @@ public class Server extends Thread {
     while (!this.shutdown) {
       CommandModel current = ServerData.INSTANCE.popCommand();
       if (current != null) {
+        this.logger.trace(current.toString());
         if (current.getCommand() == Command.QUIT) {
           disconnectClient(current);
         } else {

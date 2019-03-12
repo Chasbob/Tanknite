@@ -1,10 +1,10 @@
-package com.aticatac.server.prefabs;
+package com.aticatac.common.prefabs;
 
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
+import com.aticatac.common.components.Physics;
+import com.aticatac.common.components.Time;
 
 public class BulletObject extends GameObject {
   /**

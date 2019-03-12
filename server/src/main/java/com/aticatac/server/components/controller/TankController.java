@@ -4,10 +4,10 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.DataServer;
-import com.aticatac.server.components.Health;
-import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
+import com.aticatac.common.components.DataServer;
+import com.aticatac.common.components.Health;
+import com.aticatac.common.components.Physics;
+import com.aticatac.common.components.Time;
 // components for server side make in server or import from common?
 // needs component of Physics
 

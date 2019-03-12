@@ -1,4 +1,4 @@
-package com.aticatac.server.components;
+package com.aticatac.common.components;
 
 import com.aticatac.common.components.transform.Position;
 import org.apache.commons.collections4.BidiMap;

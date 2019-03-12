@@ -1,8 +1,8 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.Component;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
+import com.aticatac.common.components.Ammo;
+import com.aticatac.common.components.Health;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;

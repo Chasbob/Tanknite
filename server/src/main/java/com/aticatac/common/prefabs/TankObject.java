@@ -1,4 +1,4 @@
-package com.aticatac.server.prefabs;
+package com.aticatac.common.prefabs;
 
 import com.aticatac.common.components.Texture;
 import com.aticatac.common.components.transform.Position;
@@ -7,10 +7,10 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
-import com.aticatac.server.components.Physics;
-import com.aticatac.server.components.Time;
+import com.aticatac.common.components.Ammo;
+import com.aticatac.common.components.Health;
+import com.aticatac.common.components.Physics;
+import com.aticatac.common.components.Time;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
 
