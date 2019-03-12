@@ -2,6 +2,7 @@ package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
+import com.aticatac.client.util.HudUpdate;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
@@ -35,7 +36,7 @@ public class GameScreen extends AbstractScreen {
    */
   private Update update;
   private Table popUpTable;
-  private float health;
+  //  private float health;
   private Label ammoValue;
   private Label killCount;
   private Label playerCount;
@@ -48,6 +49,7 @@ public class GameScreen extends AbstractScreen {
   private Texture tankTexture;
   private Label direction;
   private Container player;
+  private HudUpdate hudUpdate;
 
   /**
    * Instantiates a new Game screen.
@@ -57,10 +59,10 @@ public class GameScreen extends AbstractScreen {
     maxX = 1920;
     maxY = 1920;
     try {
-      health = 1f;
+//      health = 1f;
       player = new Container();
-      ammoValue = UIFactory.createLabel("30");
-      killCount = UIFactory.createLabel("0");
+      ammoValue = UIFactory.createLabel("");
+      killCount = UIFactory.createLabel("");
       playerCount = UIFactory.createLabel("1");
       fpsValue = UIFactory.createLabel("");
       tankXY = UIFactory.createLabel("");
@@ -173,6 +175,7 @@ public class GameScreen extends AbstractScreen {
         }
       }
     }).start();
+    hudUpdate = new HudUpdate(killTable, ammoValue, playerCount, killCount);
   }
 
   @Override
@@ -197,7 +200,7 @@ public class GameScreen extends AbstractScreen {
         this.direction.setText("LEFT");
       }
     }
-    this.camera.update();
+//    this.camera.update();
     renderer.setView(this.camera.getCamera());
     renderer.render();
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
@@ -209,10 +212,12 @@ public class GameScreen extends AbstractScreen {
       }
     }
     tanks.end();
+    if (update != null) {
+      hudUpdate.update(update);
+    }
     batch.begin();
     //health bar
     healthBar();
-    batch.draw(Styles.getInstance().getBlank(), 0, 0, Gdx.graphics.getWidth() * health, 5);
     batch.setColor(Color.WHITE);
     batch.end();
     super.act(delta);
@@ -243,6 +248,7 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void healthBar() {
+    final float health = hudUpdate.getHealth();
     if (health > 0.6f) {
       batch.setColor(Color.GREEN);
     } else if (health < 0.6f && health > 0.2f) {
@@ -250,7 +256,7 @@ public class GameScreen extends AbstractScreen {
     } else {
       batch.setColor(Color.RED);
     }
-    batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
+    batch.draw(Styles.getInstance().getBlank(), 0, 0, Gdx.graphics.getWidth() * health, 5);
   }
 
   @Override
@@ -263,7 +269,6 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
-    health = 1;
     ammoValue = UIFactory.createLabel("30");
     killCount = UIFactory.createLabel("0");
     playerCount = UIFactory.createLabel("1");

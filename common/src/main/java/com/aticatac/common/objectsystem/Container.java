@@ -6,9 +6,9 @@ import com.aticatac.common.components.Texture;
 
 public class Container {
   private final String texture;
-  private final float x;
-  private final float y;
-  private final float r;
+  private final int x;
+  private final int y;
+  private final int r;
   private final int health;
   private final int ammo;
   private final String id;
@@ -22,20 +22,18 @@ public class Container {
     } else {
       this.texture = "";
     }
-    this.x = (float) g.getTransform().getX();
-    this.y = (float) g.getTransform().getY();
-    this.r = (float) g.getTransform().getRotation();
-//    this.health=0;
-//    this.ammo=0;
+    this.x = g.getTransform().getX();
+    this.y = g.getTransform().getY();
+    this.r = g.getTransform().getRotation();
     if (g.componentExists(Health.class)) {
       this.health = g.getComponent(Health.class).getHealth();
     } else {
-      this.health = 100;
+      this.health = 0;
     }
     if (g.componentExists(Ammo.class)) {
       this.ammo = g.getComponent(Ammo.class).getAmmo();
     } else {
-      this.ammo = 30;
+      this.ammo = 0;
     }
   }
 
@@ -62,15 +60,15 @@ public class Container {
     return texture;
   }
 
-  public float getX() {
+  public int getX() {
     return x;
   }
 
-  public float getY() {
+  public int getY() {
     return y;
   }
 
-  public float getR() {
+  public int getR() {
     return r;
   }
 

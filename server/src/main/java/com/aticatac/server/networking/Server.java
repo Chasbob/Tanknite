@@ -10,7 +10,6 @@ import com.aticatac.common.model.Updates.Update;
 import com.aticatac.server.components.ai.RunAI;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.test.Survival;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -60,7 +58,7 @@ public class Server extends Thread {
 
   @Override
   public void run() {
-    this.logger.setLevel(Level.ALL);
+//    this.logger.setLevel(Level.ALL);
     this.logger.trace("Running...");
     this.logger.trace("Waiting for host");
     new NewHost().run();
@@ -117,30 +115,6 @@ public class Server extends Thread {
       this.executorService.submit(new Updater());
       this.logger.trace("added updater");
     }
-//    new Thread(() -> {
-//      while (!this.shutdown) {
-//        double nanoTime = System.nanoTime();
-//        Collection<GameObject> players = ServerData.INSTANCE.getGame().getRoot().findObject(ObjectType.PLAYER_CONTAINER).getChildren().values();
-//        for (GameObject g : players) {
-//          if (g.componentExists(AI.class)) {
-//            ServerData.INSTANCE.getGame().playerInput(g.getName(), g.getComponent(AI.class).getDecision().getCommand());
-//          }
-//        }
-//        while (System.nanoTime() - nanoTime < 1000000000 / 60) {
-//          try {
-//            Thread.sleep(0);
-//          } catch (InterruptedException e) {
-//            e.printStackTrace();
-//          }
-//        }
-//      }
-//    }).start();
-//    while (!this.shutdown && !this.started) {
-//      CommandModel current = ServerData.INSTANCE.popCommand();
-//      if (current != null) {
-//
-//      }
-//    }
     while (!this.shutdown) {
       CommandModel current = ServerData.INSTANCE.popCommand();
       if (current != null) {
