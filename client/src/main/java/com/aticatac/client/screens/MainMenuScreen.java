@@ -40,8 +40,7 @@ public class MainMenuScreen extends AbstractScreen {
       Server server = new Server(true, "SinglePlayer");
       server.start();
       //reload the username screen and show it to show relevant fields
-      Screens.INSTANCE.reloadScreen(UsernameScreen.class);
-      Screens.INSTANCE.showScreen(UsernameScreen.class);
+      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
     }));
     buttonTable.add(singlePlayerButton);

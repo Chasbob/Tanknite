@@ -43,8 +43,7 @@ public class ServerScreen extends AbstractScreen {
     buttonTable.add(joinButton).padRight(50);
     joinButton.addListener(UIFactory.newListenerEvent(() -> {
       if (serverSelected) {
-        Screens.INSTANCE.reloadScreen(UsernameScreen.class);
-        Screens.INSTANCE.showScreen(UsernameScreen.class);
+        UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       }
       return false;
     }
