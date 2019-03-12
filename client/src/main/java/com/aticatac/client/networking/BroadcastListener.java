@@ -27,7 +27,6 @@ class BroadcastListener implements Callable<ServerInformation> {
   }
 
   private ServerInformation listen() throws IOException, InvalidBytes {
-    DatagramSocket socket = new DatagramSocket(CommonData.INSTANCE.getDiscoveryPort());
     byte[] bytes = new byte[1000];
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     socket.receive(packet);
