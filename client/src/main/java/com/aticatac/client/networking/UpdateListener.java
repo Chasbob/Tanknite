@@ -19,6 +19,7 @@ class UpdateListener extends Thread {
   private final Logger logger;
   private final ConcurrentLinkedQueue<Update> queue;
   private final BufferedReader reader;
+  private final ModelReader modelReader;
 
   /**
    * Instantiates a new Update listener.
@@ -31,6 +32,7 @@ class UpdateListener extends Thread {
     this.logger = Logger.getLogger(getClass());
     this.multicastSocket = multicastSocket;
     this.queue = queue;
+    this.modelReader = new ModelReader();
     this.reader = reader;
   }
 
@@ -39,24 +41,26 @@ class UpdateListener extends Thread {
     logger.trace("Running...");
     super.run();
     while (!this.isInterrupted()) {
+      double nanoTime = System.nanoTime();
       try {
         if (this.queue.size() > 5) {
           this.queue.clear();
         }
-        listen();
-//        tcpListen();
+//        listen();
+        tcpListen();
       } catch (IOException e) {
         logger.error(e);
       } catch (InvalidBytes invalidBytes) {
         invalidBytes.printStackTrace();
       }
+//      this.logger.info((System.nanoTime() - nanoTime) / 1000000000);
     }
   }
 
   private void tcpListen() throws IOException, InvalidBytes {
     logger.trace("Listening...");
     String json = this.reader.readLine();
-    Update update = ModelReader.fromJson(json, Update.class);
+    Update update = modelReader.fromJson(json, Update.class);
     this.queue.add(update);
   }
 
@@ -66,7 +70,7 @@ class UpdateListener extends Thread {
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     this.multicastSocket.receive(packet);
     logger.trace("Packet received!");
-    Update update = ModelReader.toModel(bytes, Update.class);
+    Update update = modelReader.toModel(bytes, Update.class);
     //TODO refactor to use queue all the way down
     this.logger.trace("Player count: " + update.getPlayers().size());
     if (update.isChanged()) {

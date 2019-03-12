@@ -1,6 +1,5 @@
 package com.aticatac.client.networking;
 
-import com.aticatac.common.CommonData;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.ServerInformation;
@@ -13,10 +12,12 @@ import java.util.concurrent.Callable;
  * The type Broadcast listener.
  */
 class BroadcastListener implements Callable<ServerInformation> {
+  private final ModelReader modelReader;
   private DatagramSocket socket;
 
   public BroadcastListener(DatagramSocket socket) {
     this.socket = socket;
+    modelReader = new ModelReader();
   }
 
   @Override
@@ -25,10 +26,9 @@ class BroadcastListener implements Callable<ServerInformation> {
   }
 
   private ServerInformation listen() throws IOException, InvalidBytes {
-
     byte[] bytes = new byte[1000];
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     socket.receive(packet);
-    return ModelReader.toModel(bytes, ServerInformation.class);
+    return modelReader.toModel(bytes, ServerInformation.class);
   }
 }

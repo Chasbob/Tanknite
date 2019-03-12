@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 public class CommandListener implements Runnable {
   private final Logger logger;
   private final BufferedReader reader;
+  private final ModelReader modelReader;
 
   /**
    * Instantiates a new Command listener.
@@ -24,6 +25,7 @@ public class CommandListener implements Runnable {
   public CommandListener(BufferedReader reader) {
     this.reader = reader;
     logger = Logger.getLogger(getClass());
+    this.modelReader = new ModelReader();
   }
 
   @Override
@@ -45,7 +47,7 @@ public class CommandListener implements Runnable {
     while (!Thread.currentThread().isInterrupted()) {
       try {
         String json = this.reader.readLine();
-        CommandModel commandModel = ModelReader.fromJson(json, CommandModel.class);
+        CommandModel commandModel = modelReader.fromJson(json, CommandModel.class);
         this.logger.trace("JSON: " + json);
         Server.ServerData.INSTANCE.putCommand(commandModel);
         if (commandModel.getCommand() == Command.QUIT) {

@@ -3,6 +3,7 @@ package com.aticatac.client.screens;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -43,6 +44,7 @@ public class GameScreen extends AbstractScreen {
   private TiledMap map;
   private OrthogonalTiledMapRenderer renderer;
   private Camera camera;
+  private Position playerPos;
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;

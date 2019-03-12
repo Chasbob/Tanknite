@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 public class Discovery implements Runnable {
   private final List<DatagramPacket> packets;
   private final Logger logger;
+  private final ModelReader modelReader;
   private final String name;
 
   /**
@@ -26,6 +27,7 @@ public class Discovery implements Runnable {
    */
   Discovery(String name) throws IOException {
     this.name = name;
+    this.modelReader = new ModelReader();
     this.packets = buildPackets(Server.ServerData.INSTANCE.getId());
     this.logger = Logger.getLogger(Discovery.class);
   }
@@ -37,7 +39,7 @@ public class Discovery implements Runnable {
         continue;
       }
       ServerInformation information = new ServerInformation(id, current.getAddress(), Server.ServerData.INSTANCE.getPort());
-      byte[] bytes = ModelReader.toBytes(information);
+      byte[] bytes = modelReader.toBytes(information);
       DatagramPacket packet = new DatagramPacket(bytes, bytes.length, current.getBroadcast(), CommonData.INSTANCE.getDiscoveryPort());
       output.add(packet);
     }

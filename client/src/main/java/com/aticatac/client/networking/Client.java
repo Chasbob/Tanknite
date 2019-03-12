@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 public class Client {
   private final Logger logger;
   private final ConcurrentLinkedQueue<Update> queue;
+  private final ModelReader modelReader;
   private String id;
   private PrintStream printer;
   private BufferedReader reader;
@@ -35,6 +36,7 @@ public class Client {
   public Client() {
     this.logger = Logger.getLogger(getClass());
     queue = new ConcurrentLinkedQueue<>();
+    this.modelReader = new ModelReader();
   }
 
   public Update nextUpdate() {
@@ -64,16 +66,16 @@ public class Client {
       this.connected = false;
       Login login = new Login(id);
       this.logger.trace("ID: " + id);
-      this.logger.trace("login: " + ModelReader.toJson(login));
+      this.logger.trace("login: " + modelReader.toJson(login));
       this.logger.info("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
       Socket socket = new Socket(server.getAddress(), server.getPort());
       this.logger.trace("Connected to server at " + socket.getInetAddress());
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       this.printer = new PrintStream(socket.getOutputStream());
-      this.printer.println(ModelReader.toJson(login));
+      this.printer.println(modelReader.toJson(login));
       String json = reader.readLine();
       this.logger.trace("Waiting for response...");
-      Login output = ModelReader.fromJson(json, Login.class);
+      Login output = modelReader.fromJson(json, Login.class);
       this.logger.trace("Authenticated = " + output.isAuthenticated());
       if (output.isAuthenticated()) {
         this.logger.trace("Multicast address: " + output.getMulticast());
@@ -126,7 +128,7 @@ public class Client {
     this.logger.trace("Sending command: " + command);
     CommandModel commandModel = new CommandModel(this.id, command);
     this.logger.trace("Writing command to output stream.");
-    String json = ModelReader.toJson(commandModel);
+    String json = modelReader.toJson(commandModel);
     this.printer.println(json);
     this.logger.trace("Sent command: " + command);
   }

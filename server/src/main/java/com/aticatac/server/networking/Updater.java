@@ -4,7 +4,6 @@ import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.gamemanager.Manager;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import org.apache.log4j.Logger;
@@ -16,6 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class Updater implements Runnable {
   private final Logger logger;
+  private final ModelReader modelReader;
   private Update update;
   private boolean changes;
   private boolean shutdown;
@@ -28,11 +28,12 @@ public class Updater implements Runnable {
     this.update = new Update(true);
     this.changes = true;
     this.shutdown = false;
+    this.modelReader = new ModelReader();
   }
 
   private void updatePlayers() {
     for (GameObject c :
-    Manager.INSTANCE.getRoot().getChildren().get("Player Container").getChildren().values()) {
+        Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
       this.update.addPlayer(new Container(c));
     }
   }
@@ -43,7 +44,7 @@ public class Updater implements Runnable {
     while (!Thread.currentThread().isInterrupted() && !shutdown) {
       double nanoTime = System.nanoTime();
       updatePlayers();
-//      tcpBroadcast();
+      tcpBroadcast();
       try {
         broadcast();
       } catch (IOException e) {
@@ -69,10 +70,18 @@ public class Updater implements Runnable {
     }
   }
 
+  void tcpBroadcast(Update update) {
+    this.logger.trace("Broadcasting...");
+    final Server.ServerData s = Server.ServerData.INSTANCE;
+    for (Client c : s.getClients().values()) {
+      c.sendUpdate(update);
+    }
+  }
+
   private void broadcast() throws IOException {
     this.logger.trace("Broadcasting...");
     this.logger.trace("Player count: " + this.update.getPlayers().size());
-    byte[] bytes = ModelReader.toBytes(this.update);
+    byte[] bytes = modelReader.toBytes(this.update);
 //    this.logger.info(bytes.length);
     final Server.ServerData s = Server.ServerData.INSTANCE;
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length, s.getServer(), s.getPort());

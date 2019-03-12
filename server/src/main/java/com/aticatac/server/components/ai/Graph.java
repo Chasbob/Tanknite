@@ -3,8 +3,8 @@ package com.aticatac.server.components.ai;
 import com.aticatac.common.components.transform.Position;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Scanner;
 // Things left TODO:
 //  - not placing nodes at wrong places
 
@@ -18,58 +18,98 @@ public class Graph {
   /**
    * A pathfinder that can generate a path in the graph
    */
-  private final PathFinder pf = new PathFinder();
+  private final PathFinder pf;
   /**
    * The nodes that make up the graph
    */
   private final HashMap<String, SearchNode> nodes;
-  /**
-   * Physical attributes of the graph
-   */
-  private final int xStart;
-  private final int xEnd;
-  private final int yStart;
-  private final int yEnd;
   private final int separation;
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
-   *
-   * @param separation The distance between two connected nodes
-   * @param width      The number of nodes wide
-   * @param height     The number of nodes high
-   * @param xOffset    The x position offset
-   * @param yOffset    The y position offset
    */
-  public Graph(int width, int height, int separation, int xOffset, int yOffset) {
+  public Graph() {
+    separation = 32;
+    pf = new PathFinder();
     // Set attributes
     nodes = new HashMap<>();
-    this.separation = separation;
-    xStart = xOffset;
-    xEnd = width * separation + xOffset;
-    yStart = yOffset;
-    yEnd = height * separation + yOffset;
     // Add nodes
-    for (int i = xStart; i < xEnd; i += separation) {
-      for (int j = yStart; j < yEnd; j += separation) {
-        if (true /* TODO space is not a wall */) {
+    String[][] map;
+    map = convertTMXFileToIntArray();
+    int x, y;
+    x = 0;
+    for (int i = separation; i < (map.length * separation) + separation; i += separation) {
+      y = 0;
+      for (int j = separation; j < (map.length * separation) + separation; j += separation) {
+        if (map[x][y].equals("0")) {
           nodes.put(i + "-" + j, new SearchNode(i, j));
         }
+        y++;
       }
+      x++;
     }
     // Add connections
     for (SearchNode node : nodes.values()) {
-      if (node.getY() < yEnd - separation) {
+      if (nodes.containsKey(node.getX() + "-" + (node.getY() + separation))) {
         node.addConnection(nodes.get(node.getX() + "-" + (node.getY() + separation)));
       }
-      if (node.getY() > yStart) {
+      if (nodes.containsKey(node.getX() + "-" + (node.getY() - separation))) {
         node.addConnection(nodes.get(node.getX() + "-" + (node.getY() - separation)));
       }
-      if (node.getX() < xEnd - separation) {
+      if (nodes.containsKey((node.getX() + separation) + "-" + node.getY())) {
         node.addConnection(nodes.get((node.getX() + separation) + "-" + node.getY()));
       }
-      if (node.getX() > xStart) {
+      if (nodes.containsKey((node.getX() - separation) + "-" + node.getY())) {
         node.addConnection(nodes.get((node.getX() - separation) + "-" + node.getY()));
+      }
+    }
+  }
+
+  private static void removeNearWallPositions(String[][] map) {
+    for (int x = 0; x < map.length; x++) {
+      for (int y = 0; y < map.length; y++) {
+        if (map[x][y].equals("0")) {
+          for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
+                map[x][y] = "1";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private static void rotateMatrix(String[][] matrix) {
+    if (matrix == null) {
+      return;
+    }
+    if (matrix.length != matrix[0].length)//INVALID INPUT
+    {
+      return;
+    }
+    getTranspose(matrix);
+    rorateAlongMidRow(matrix);
+  }
+
+  private static void getTranspose(String[][] matrix) {
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = i + 1; j < matrix.length; j++) {
+        String temp = matrix[i][j];
+        matrix[i][j] = matrix[j][i];
+        matrix[j][i] = temp;
+      }
+    }
+  }
+
+  private static void rorateAlongMidRow(String[][] matrix) {
+    int len = matrix.length;
+    for (int i = 0; i < len / 2; i++) {
+      for (int j = 0; j < len; j++) {
+        String temp = matrix[i][j];
+        matrix[i][j] = matrix[len - 1 - i][j];
+        matrix[len - 1 - i][j] = temp;
       }
     }
   }
@@ -81,7 +121,7 @@ public class Graph {
    * @param to   Goal position
    * @return A queue of Commands that execute the path
    */
-  public Queue<SearchNode> getPathToLocation(Position from, Position to) {
+  Queue<SearchNode> getPathToLocation(Position from, Position to) {
     return pf.getPathToLocation(getNearestNode(from), getNearestNode(to));
   }
 
@@ -91,52 +131,17 @@ public class Graph {
    * @param position The position to get nearest node from
    * @return The nearest node to the given position
    */
-  public SearchNode getNearestNode(Position position) {
-    //hahaha
-    SearchNode start = nodes.get(xStart + "-" + yStart);
-    LinkedList<SearchNode> closedSet = new LinkedList<SearchNode>();
-    LinkedList<SearchNode> openSet = new LinkedList<SearchNode>();
-    openSet.add(start);
-    HashMap cameFrom = new HashMap<SearchNode, SearchNode>();
-    HashMap<SearchNode, Integer> g = new HashMap<SearchNode, Integer>();
-    g.put(start, 0);
-    HashMap<SearchNode, Double> f = new HashMap<SearchNode, Double>();
-    f.put(start, Math.pow(start.getY() - position.getY(), 2) + Math.pow(start.getX() - position.getX(), 2));
-    while (!openSet.isEmpty()) {
-      SearchNode current = pf.getLowestFScoreNode(openSet, f);
-      if (Math.sqrt(Math.pow(current.getY() - position.getY(), 2) + Math.pow(current.getX() - position.getX(), 2)) < separation) {
-        return current;
-      }
-      openSet.remove(current);
-      closedSet.add(current);
-      for (SearchNode connectedNode : current.getConnectedNodes()) {
-        if (closedSet.contains(connectedNode)) {
-          continue;
-        }
-        int tempG = g.get(current) + (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - current.getY()));
-        if (!openSet.contains(connectedNode)) {
-          openSet.add(connectedNode);
-        } else if (tempG >= g.get(connectedNode)) {
-          continue;
-        }
-        cameFrom.put(connectedNode, current);
-        g.put(connectedNode, tempG);
-        f.put(connectedNode, g.get(connectedNode) + Math.sqrt(Math.pow(connectedNode.getY() - position.getY(), 2) + Math.pow(connectedNode.getX() - position.getX(), 2)));
+  private SearchNode getNearestNode(Position position) {
+    SearchNode closestNode = null;
+    double distanceToClosestNode = Double.MAX_VALUE;
+    for (SearchNode node : nodes.values()) {
+      double distanceToTank = pf.euclideanDistance(node, position);
+      if (distanceToTank < distanceToClosestNode) {
+        closestNode = node;
+        distanceToClosestNode = distanceToTank;
       }
     }
-    return null;
-//        SearchNode nearestNode = null;
-//        double distanceToNearestNode = Double.MAX_VALUE;
-//        for (SearchNode node : nodes.values()) {
-//            double distance = Math.sqrt(Math.pow(node.getY() - position.getY(), 2) + Math.pow(node.getX() - position.getX(), 2));
-//            if (distance < distanceToNearestNode) {
-//                nearestNode = node;
-//                distanceToNearestNode = distance;
-//            }
-//            if (distanceToNearestNode < separation)
-//                return nearestNode;
-//        }
-//        return nearestNode;
+    return closestNode;
   }
 
   /**
@@ -146,16 +151,29 @@ public class Graph {
    * @param range    Range of consideration
    * @return All the SearchNodes in range
    */
-  public ArrayList<SearchNode> getNodesInRange(Position position, int range) {
+  ArrayList<SearchNode> getNodesInRange(Position position, int range) {
     ArrayList<SearchNode> inRange = new ArrayList<>();
     SearchNode nodeAt = getNearestNode(position);
     for (int i = nodeAt.getX() - (range - (range % separation)); i < nodeAt.getX() + (range - (range % separation)); i += separation) {
       for (int j = nodeAt.getY() - (range - (range % separation)); j < nodeAt.getY() + (range - (range % separation)); j += separation) {
-        if (i >= xStart && i < xEnd && j >= yStart && j < yEnd && !(nodeAt.getX() == i && nodeAt.getY() == j) && nodes.containsKey(i + "-" + j)) {
+        if (!(nodeAt.getX() == i && nodeAt.getY() == j) && nodes.containsKey(i + "-" + j)) {
           inRange.add(nodes.get(i + "-" + j));
         }
       }
     }
     return inRange;
+  }
+
+  private String[][] convertTMXFileToIntArray() {
+    Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
+    for (int i = 0; i < 70; i++) // map starts at line 71
+      s.nextLine();
+    String[][] map = new String[60][60];
+    for (int i = 0; i < 60; i++) {
+      map[i] = s.nextLine().split(",");
+    }
+    rotateMatrix(map);
+    removeNearWallPositions(map);
+    return map;
   }
 }
