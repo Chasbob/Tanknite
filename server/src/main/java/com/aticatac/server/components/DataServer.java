@@ -23,6 +23,11 @@ public enum DataServer {
    */
   private String[][] map = new String[60][60];
 
+  /**
+   * Count of players in the game
+   */
+  private int playerCount;
+
 
   /**
    *
@@ -131,6 +136,27 @@ public enum DataServer {
   public void deleteCoordinates(Position key) {
 
     occupiedCoordinates.remove(key);
+  }
+
+
+  /**
+   *
+   * @param count
+   */
+  public void setPlayerCount (int count){
+
+    playerCount = count;
+
+  }
+
+  /**
+   *
+   * @return
+   */
+  public int getPlayerCount(){
+
+    return playerCount;
+
   }
 
 

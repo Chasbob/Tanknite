@@ -182,9 +182,8 @@ public class TankController extends Component {
         //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
         GameObject.destroy(getGameObject());
 
-        //TODO potentially not relevant in here
-        //Check if the number of tanks alive is 1, if so end the game
-        //if not then remove this tank from number of tanks on the map
+        //TODO make this thread safe
+        DataServer.INSTANCE.setPlayerCount(DataServer.INSTANCE.getPlayerCount()-1);
 
     }
 
