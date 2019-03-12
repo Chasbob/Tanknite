@@ -2,6 +2,10 @@ package com.aticatac.client.util;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import org.apache.log4j.Logger;
 
 /**
@@ -14,8 +18,11 @@ public class Camera {
   private final float height;
   private final Logger logger;
   private OrthographicCamera camera;
-  private float tankx;
-  private float tanky;
+  private Viewport viewport;
+
+  public Viewport getViewport() {
+    return viewport;
+  }
 
   /**
    * Instantiates a new Camera.
@@ -30,7 +37,9 @@ public class Camera {
     this.maxY = maxY;
     this.width = width;
     this.height = height;
-    this.camera = new OrthographicCamera(width, height);
+    this.camera = new OrthographicCamera();
+    this.viewport = new ExtendViewport(width, height, camera);
+    this.viewport.apply(true);
     logger = Logger.getLogger(getClass());
     this.camera.setToOrtho(false);
   }
@@ -76,25 +85,7 @@ public class Camera {
    * @param y the y
    */
   public void setPosititon(float x, float y) {
-//        float newX = maxX - Math.abs(x);
-//        float newY = maxY - Math.abs(y);
-    float newX = x;
-    float newY = y;
-    this.tankx = newX;
-    this.tanky = newY;
-//        if (newX < (width / 2)) {
-//            newX = width / 2;
-//        } else if (newX > maxX - (this.width / 2)) {
-//            newX = maxX - (this.width / 2);
-//        }
-//        if (newY < (this.height / 2)) {
-//            newY = (this.height / 2);
-//        } else if (newY > maxY - (this.height / 2)) {
-//            newY = maxY - (this.height / 2);
-//        }
-    camera.position.x = MathUtils.clamp(newX, camera.viewportWidth / 2f, 1920f - camera.viewportWidth / 2f);
-    camera.position.y = MathUtils.clamp(newY, camera.viewportHeight / 2f, 1920f - camera.viewportHeight / 2f);
+    camera.position.x = MathUtils.clamp(x, camera.viewportWidth / 2f, 1920f - camera.viewportWidth / 2f);
+    camera.position.y = MathUtils.clamp(y, camera.viewportHeight / 2f, 1920f - camera.viewportHeight / 2f);
   }
-//        this.camera.position.set(maxX - newX, maxY - newY, 0);
-//    }
 }

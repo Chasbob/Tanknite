@@ -26,6 +26,7 @@ public class Client {
   private final ModelReader modelReader;
   private String id;
   private PrintStream printer;
+  private BufferedReader reader;
   private boolean connected;
   private UpdateListener updateListener;
 
@@ -38,11 +39,6 @@ public class Client {
     this.modelReader = new ModelReader();
   }
 
-  /**
-   * Next update update.
-   *
-   * @return the update
-   */
   public Update nextUpdate() {
     return this.queue.poll();
   }
@@ -65,29 +61,39 @@ public class Client {
    * @throws IOException  the io exception
    * @throws InvalidBytes the invalid bytes
    */
-  public boolean connect(ServerInformation server, String id) throws IOException, InvalidBytes {
-    this.connected = false;
-    Login login = new Login(id);
-    this.logger.trace("ID: " + id);
-    this.logger.trace("login: " + modelReader.toJson(login));
-    this.logger.info("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
-    Socket socket = new Socket(server.getAddress(), server.getPort());
-    this.logger.trace("Connected to server at " + socket.getInetAddress());
-    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    this.printer = new PrintStream(socket.getOutputStream());
-    this.printer.println(modelReader.toJson(login));
-    String json = reader.readLine();
-    this.logger.trace("Waiting for response...");
-    Login output = modelReader.fromJson(json, Login.class);
-    this.logger.trace("Authenticated = " + output.isAuthenticated());
-    if (output.isAuthenticated()) {
-      this.logger.trace("Multicast address: " + output.getMulticast());
-      initUpdateSocket(InetAddress.getByName(output.getMulticast()), server.getPort());
-      this.connected = true;
+  public Response connect(ServerInformation server, String id) {
+    try {
+      this.connected = false;
+      Login login = new Login(id);
+      this.logger.trace("ID: " + id);
+      this.logger.trace("login: " + modelReader.toJson(login));
+      this.logger.info("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
+      Socket socket = new Socket(server.getAddress(), server.getPort());
+      this.logger.trace("Connected to server at " + socket.getInetAddress());
+      reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+      this.printer = new PrintStream(socket.getOutputStream());
+      this.printer.println(modelReader.toJson(login));
+      String json = reader.readLine();
+      this.logger.trace("Waiting for response...");
+      Login output = modelReader.fromJson(json, Login.class);
+      this.logger.trace("Authenticated = " + output.isAuthenticated());
+      if (output.isAuthenticated()) {
+        this.logger.trace("Multicast address: " + output.getMulticast());
+        initUpdateSocket(InetAddress.getByName(output.getMulticast()), server.getPort());
+      } else {
+        return Response.TAKEN;
+      }
+      this.id = output.getId();
+      this.logger.info("Exiting 'connect' cleanly.");
+      this.connected=true;
+      return Response.ACCEPTED;
+    } catch (IOException e) {
+      this.logger.warn("No Server.");
+      return Response.NO_SERVER;
+    } catch (InvalidBytes e) {
+      this.logger.warn("Invalid response");
+      return Response.INVALID;
     }
-    this.id = output.getId();
-    this.logger.info("Exiting 'connect' cleanly.");
-    return this.connected;
   }
 
   private void initUpdateSocket(InetAddress address, int port) throws IOException {
@@ -95,7 +101,7 @@ public class Client {
     this.logger.trace("Joining multicast: " + address + ":" + port);
     MulticastSocket multicastSocket = new MulticastSocket(port);
     multicastSocket.joinGroup(address);
-    updateListener = new UpdateListener(multicastSocket, queue);
+    updateListener = new UpdateListener(multicastSocket, queue, this.reader);
     updateListener.start();
     this.logger.trace("Started update listener!");
   }

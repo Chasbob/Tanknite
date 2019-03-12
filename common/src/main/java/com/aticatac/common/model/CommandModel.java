@@ -25,4 +25,11 @@ public class CommandModel extends Model {
   public Command getCommand() {
     return command;
   }
+
+  @Override
+  public String toString() {
+    return "CommandModel{" +
+    "command=" + command +
+    '}';
+  }
 }

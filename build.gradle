@@ -27,6 +27,7 @@ subprojects {
         implementation group: 'log4j', name: 'log4j', version: '1.2.17'
         implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
         compile 'org.apache.commons:commons-collections4:4.1'
+        compile 'org.jetbrains:annotations:16.0.1'
     }
     ext {
         appName = "my-gdx-com.mygdx.game"

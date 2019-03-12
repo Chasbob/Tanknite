@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -22,16 +21,16 @@ public enum Styles {
   INSTANCE;
   private Label.LabelStyle errorStyle;
   private Label.LabelStyle hideLabelStyle;
-  private Label.LabelStyle labelStyle;
+  private Label.LabelStyle baseLabelStyle;
+  private Label.LabelStyle colouredLabelStyle;
   private Label.LabelStyle gameLabelStyle;
   private Label.LabelStyle titleStyle;
-  private TextButton.TextButtonStyle buttonStyle;
+  private TextButton.TextButtonStyle baseButtonStyle;
   private TextButton.TextButtonStyle selectedButtonStyle;
   private TextButton.TextButtonStyle startButtonStyle;
   private TextButton.TextButtonStyle backButtonStyle;
   private TextField.TextFieldStyle textFieldStyle;
   private Texture blank;
-  private ImageButton refreshIcon;
 
   Styles() {
     System.out.println("Loading styles...");
@@ -49,9 +48,7 @@ public enum Styles {
   }
 
   private void loadStyles() {
-    //load in font for menu
-    //String path = getClass().getResource("/styles/barcadebrawl.ttf").toString();
-    //System.out.println("Path: " + path);
+    //load in font
     FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.ttf"));
     System.out.println("Loaded ttf");
     FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -65,25 +62,17 @@ public enum Styles {
     BitmapFont titleFont = generator.generateFont(parameter40);
     generator.dispose();
     //create title label style
-    titleStyle = new Label.LabelStyle();
-    titleStyle.font = titleFont;
-    titleStyle.fontColor = Color.FOREST;
-    //create label style
-    labelStyle = new Label.LabelStyle();
-    labelStyle.font = buttonFont;
-    labelStyle.fontColor = Color.WHITE;
+    titleStyle = createLabelStyle(titleFont, Color.FOREST);
+    //create base label style
+    baseLabelStyle = createLabelStyle(buttonFont, Color.WHITE);
+    //create coloured label style
+    colouredLabelStyle = createLabelStyle(buttonFont, Color.FOREST);
     //create error label style
-    errorStyle = new Label.LabelStyle();
-    errorStyle.font = buttonFont;
-    errorStyle.fontColor = Color.RED;
+    errorStyle = createLabelStyle(buttonFont, Color.RED);
     //create style to hide error label - set to black
-    hideLabelStyle = new Label.LabelStyle();
-    hideLabelStyle.font = buttonFont;
-    hideLabelStyle.fontColor = Color.BLACK;
+    hideLabelStyle = createLabelStyle(buttonFont, Color.BLACK);
     //create style for game screen labels
-    gameLabelStyle = new Label.LabelStyle();
-    gameLabelStyle.font = gameLabelFont;
-    gameLabelStyle.fontColor = Color.WHITE;
+    gameLabelStyle = createLabelStyle(gameLabelFont, Color.WHITE);
     //create text field style with cursor
     textFieldStyle = new TextField.TextFieldStyle();
     textFieldStyle.font = buttonFont;
@@ -101,28 +90,30 @@ public enum Styles {
     textFieldColour.setColor(Color.DARK_GRAY);
     textFieldColour.fill();
     textFieldStyle.background = new Image(new Texture(textFieldColour)).getDrawable();
-    //create a style for buttons
-    buttonStyle = new TextButton.TextButtonStyle();
-    buttonStyle.font = buttonFont;
-    buttonStyle.fontColor = Color.WHITE;
+    //create a style for basic buttons
+    baseButtonStyle = createButtonStyle(buttonFont, Color.WHITE);
     //create a style for selected buttons
-    selectedButtonStyle = new TextButton.TextButtonStyle();
-    selectedButtonStyle.font = buttonFont;
-    selectedButtonStyle.fontColor = Color.GRAY;
+    selectedButtonStyle = createButtonStyle(buttonFont, Color.GRAY);
     //create a style for start buttons
-    startButtonStyle = new TextButton.TextButtonStyle();
-    startButtonStyle.font = buttonFont;
-    startButtonStyle.fontColor = Color.FOREST;
+    startButtonStyle = createButtonStyle(buttonFont, Color.FOREST);
     //create style for back buttons
-    backButtonStyle = new TextButton.TextButtonStyle();
-    backButtonStyle.font = buttonFont;
-    backButtonStyle.fontColor = Color.YELLOW;
+    backButtonStyle = createButtonStyle(buttonFont, Color.YELLOW);
     //load in blank texture for healthbar
     blank = new Texture(Gdx.files.internal("img/white.png"));
-    //load in refresh icon
-    //Texture refreshTexture = new Texture(Gdx.files.internal("img/refresh.png"));
-    // Drawable drawable = new TextureRegionDrawable(new TextureRegion(refreshTexture));
-    //refreshIcon = new ImageButton(drawable);
+  }
+
+  private Label.LabelStyle createLabelStyle(BitmapFont font, Color color){
+    Label.LabelStyle labelStyle = new Label.LabelStyle();
+    labelStyle.font = font;
+    labelStyle.fontColor = color;
+    return labelStyle;
+  }
+
+  private TextButton.TextButtonStyle createButtonStyle(BitmapFont font, Color color){
+    TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+    buttonStyle.font = font;
+    buttonStyle.fontColor = color;
+    return buttonStyle;
   }
 
   /**
@@ -148,8 +139,12 @@ public enum Styles {
    *
    * @return the label style
    */
-  public Label.LabelStyle getLabelStyle() {
-    return labelStyle;
+  public Label.LabelStyle getBaseLabelStyle() {
+    return baseLabelStyle;
+  }
+
+  public Label.LabelStyle getColouredLabelStyle() {
+    return colouredLabelStyle;
   }
 
   /**
@@ -175,8 +170,8 @@ public enum Styles {
    *
    * @return the button style
    */
-  public TextButton.TextButtonStyle getButtonStyle() {
-    return buttonStyle;
+  public TextButton.TextButtonStyle getBaseButtonStyle() {
+    return baseButtonStyle;
   }
 
   /**
@@ -222,14 +217,5 @@ public enum Styles {
    */
   public Texture getBlank() {
     return blank;
-  }
-
-  /**
-   * Gets refresh button.
-   *
-   * @return the refresh button
-   */
-  public ImageButton getRefreshButton() {
-    return refreshIcon;
   }
 }

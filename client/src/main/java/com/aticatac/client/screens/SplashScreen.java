@@ -13,5 +13,11 @@ public class SplashScreen extends AbstractScreen {
 
   @Override
   public void buildStage() {
+    super.buildStage();
+  }
+
+  @Override
+  public void refresh() {
+
   }
 }

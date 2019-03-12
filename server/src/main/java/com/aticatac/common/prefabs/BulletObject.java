@@ -1,4 +1,4 @@
-package com.aticatac.server.prefabs;
+package com.aticatac.common.prefabs;
 
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;

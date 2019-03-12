@@ -6,9 +6,8 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
-import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.ai.AI;
+import com.aticatac.common.model.Updates.Update;
+import com.aticatac.server.components.ai.RunAI;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.test.Survival;
 
@@ -16,14 +15,14 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,72 +33,145 @@ import org.apache.log4j.Logger;
 public class Server extends Thread {
   private final Logger logger;
   private final ExecutorService executorService;
+  private final String name;
+  private final boolean singleplayer;
   private volatile boolean shutdown;
+  private String host;
+  private boolean started;
+  private Thread ai;
 
   /**
    * Instantiates a new Server.
+   *
+   * @param singleplayer the singleplayer
+   * @param name         the name
    */
-  public Server() {
+  public Server(boolean singleplayer, String name) {
+    this.singleplayer = singleplayer;
+    ServerData.INSTANCE.setId(name);
     //TODO check if additional users are allowed.
     this.logger = Logger.getLogger(getClass());
     executorService = Executors.newFixedThreadPool(20);
     this.shutdown = false;
+    this.started = false;
+    this.name = name;
+    this.ai = new Thread(new RunAI());
   }
 
   @Override
   public void run() {
+    this.logger.setLevel(Level.ALL);
     this.logger.trace("Running...");
+    this.logger.trace("Waiting for host");
+    new NewHost().run();
+    if (ServerData.INSTANCE.getClients().size() == 1) {
+      this.host = ServerData.INSTANCE.getClients().keys().nextElement();
+      this.logger.info("User: " + host + " is hosting!");
+      ServerData.INSTANCE.setSinglePlayer(singleplayer);
+    } else {
+      this.logger.warn("Failed to get user to host.");
+      return;
+    }
     try {
-      this.executorService.submit(new Discovery());
-      this.logger.trace("added discovery");
-      this.executorService.submit(new NewClients());
-      this.logger.trace("added new clients");
-      this.executorService.submit(new Updater());
-      this.logger.trace("added updater");
+      this.logger.info("Single player: " + ServerData.INSTANCE.isSinglePlayer());
+      if (!ServerData.INSTANCE.isSinglePlayer()) {
+        this.executorService.submit(new Discovery(this.name));
+        this.logger.trace("added discovery");
+        this.executorService.submit(new NewClients());
+        this.logger.trace("added new clients");
+      }
     } catch (IOException e) {
       this.logger.error(e);
       return;
     }
-    new Thread(() -> {
-      while (!this.shutdown) {
-        double nanoTime = System.nanoTime();
-        Collection<GameObject> players = ServerData.INSTANCE.getGame().getRoot().findObject(ObjectType.PLAYER_CONTAINER).getChildren().values();
-        for (GameObject g : players) {
-          if (g.componentExists(AI.class)) {
-            ServerData.INSTANCE.getGame().playerInput(g.getName(), g.getComponent(AI.class).getDecision().getCommand());
-          }
-        }
-        while (System.nanoTime() - nanoTime < 1000000000 / 60) {
-          try {
-            Thread.sleep(0);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+    if (!singleplayer) {
+      this.logger.trace("Setting up multi player");
+      while (!this.shutdown && !this.started) {
+        CommandModel current = ServerData.INSTANCE.popCommand();
+        if (current != null) {
+          if (current.getCommand() == Command.QUIT) {
+            if (current.getId().equals(this.host)) {
+              shutdown();
+            } else {
+              disconnectClient(current);
+            }
+          } else if (current.getCommand() == Command.START && current.getId().equals(this.host)) {
+            this.started = true;
+            Update update = new Update(true);
+            update.setStart(true);
+            new Updater().tcpBroadcast(update);
+            double nanoTime = System.nanoTime();
+            while (System.nanoTime() - nanoTime < 3000000000d) {
+              try {
+                Thread.sleep(0);
+              } catch (InterruptedException e) {
+                this.logger.error(e);
+              }
+            }
+            this.executorService.submit(new Updater());
+            this.logger.trace("added updater");
           }
         }
       }
-    }).start();
+    } else {
+      this.executorService.submit(new Updater());
+      this.logger.trace("added updater");
+    }
+//    new Thread(() -> {
+//      while (!this.shutdown) {
+//        double nanoTime = System.nanoTime();
+//        Collection<GameObject> players = ServerData.INSTANCE.getGame().getRoot().findObject(ObjectType.PLAYER_CONTAINER).getChildren().values();
+//        for (GameObject g : players) {
+//          if (g.componentExists(AI.class)) {
+//            ServerData.INSTANCE.getGame().playerInput(g.getName(), g.getComponent(AI.class).getDecision().getCommand());
+//          }
+//        }
+//        while (System.nanoTime() - nanoTime < 1000000000 / 60) {
+//          try {
+//            Thread.sleep(0);
+//          } catch (InterruptedException e) {
+//            e.printStackTrace();
+//          }
+//        }
+//      }
+//    }).start();
+//    while (!this.shutdown && !this.started) {
+//      CommandModel current = ServerData.INSTANCE.popCommand();
+//      if (current != null) {
+//
+//      }
+//    }
     while (!this.shutdown) {
       CommandModel current = ServerData.INSTANCE.popCommand();
       if (current != null) {
+        this.logger.trace(current.toString());
         if (current.getCommand() == Command.QUIT) {
-          ServerData.INSTANCE.removeClient(current.getId());
-          this.logger.info("Removing " + current.getId());
-          this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
+          disconnectClient(current);
         } else {
-//            Manager.INSTANCE.playerInput(current);
           ServerData.INSTANCE.getGame().playerInput(current.getId(), current.getCommand());
         }
       }
     }
-    this.executorService.shutdown();
-    ServerData.INSTANCE.shutdown();
+    this.logger.info("Server ended.");
+  }
+
+  private void disconnectClient(CommandModel model) {
+    ServerData.INSTANCE.removeClient(model.getId());
+    this.logger.info("Removing " + model.getId());
+    this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
+    // this probably wont be needed in practice
+    if (ServerData.INSTANCE.getClients().size() == 0) {
+      shutdown();
+    }
   }
 
   /**
    * Shutdown.
    */
-  public void shutdown() {
+  void shutdown() {
     this.shutdown = true;
+    this.executorService.shutdown();
+    ServerData.INSTANCE.shutdown();
   }
 
   /**
@@ -142,21 +214,45 @@ public class Server extends Thread {
         this.multicast = InetAddress.getByName("225.4.5.6");
         this.multicastSocket = new MulticastSocket();
         this.broadcastSocket = new DatagramSocket();
-        this.serverSocket = new ServerSocket(this.port);
+        this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName("127.0.0.1"));
       } catch (IOException e) {
         this.logger.error(e);
       }
     }
 
+    public void rebind(String address) {
+      try {
+        this.serverSocket.close();
+        this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName(address), this.port));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    /**
+     * Remove client.
+     *
+     * @param id the id
+     */
     public void removeClient(String id) {
       clients.get(id).shutdown();
       clients.remove(id);
     }
 
+    /**
+     * Gets game.
+     *
+     * @return the game
+     */
     public Survival getGame() {
       return game;
     }
 
+    /**
+     * Sets game.
+     *
+     * @param game the game
+     */
     public void setGame(Survival game) {
       this.game = game;
     }
@@ -244,7 +340,22 @@ public class Server extends Thread {
      * @param singlePlayer the single player
      */
     public void setSinglePlayer(boolean singlePlayer) {
-      this.singlePlayer = singlePlayer;
+      if (this.singlePlayer != singlePlayer) {
+        this.singlePlayer = singlePlayer;
+        try {
+          if (singlePlayer) {
+            this.serverSocket.close();
+            this.serverSocket = new ServerSocket();
+            this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), this.port));
+          } else {
+            this.serverSocket.close();
+            this.serverSocket = new ServerSocket();
+            this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), this.port));
+          }
+        } catch (IOException e) {
+          this.logger.error(e);
+        }
+      }
     }
 
     /**

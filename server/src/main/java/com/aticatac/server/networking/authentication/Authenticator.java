@@ -36,6 +36,7 @@ public class Authenticator implements Runnable {
   public void run() {
     int counter = 0;
     while (!this.authenticated) {
+      //Limit number of attempts
       if (counter++ > 10) {
         break;
       }
@@ -50,12 +51,12 @@ public class Authenticator implements Runnable {
         }
       } catch (IOException e) {
         this.logger.error(e);
+        break;
       } catch (InvalidBytes e) {
         this.logger.error(e);
-        break;
       }
     }
-    this.logger.warn("Stopping...");
+    this.logger.info("Finished!");
   }
 
   /**
@@ -112,7 +113,7 @@ public class Authenticator implements Runnable {
   private void addClient(Login login) {
     CommandListener listener = new CommandListener(this.reader);
     ClientModel model = new ClientModel(login.getId());
-    Client client = new Client(listener, model);
+    Client client = new Client(listener, model,this.printer);
     Server.ServerData.INSTANCE.getGame().addPlayer(client.getId());
     Server.ServerData.INSTANCE.getClients().put(model.getId(), client);
   }

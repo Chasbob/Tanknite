@@ -3,7 +3,7 @@ package com.aticatac.server.networking;
 public class Main {
   public static void main(String[] args) {
     try {
-      Server server = new Server();
+      Server server = new Server(false, "Networking Main");
       server.run();
       Thread.sleep(5000);
       server.shutdown();
