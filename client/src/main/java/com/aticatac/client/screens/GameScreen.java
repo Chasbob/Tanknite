@@ -153,7 +153,6 @@ public class GameScreen extends AbstractScreen {
     popUpTable.row();
     //create quit button go back to the main menu and disconnect form server
     TextButton quitButton = UIFactory.createBackButton("quit");
-    //TODO add proper exiting of server
     quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     quitButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.quit();
