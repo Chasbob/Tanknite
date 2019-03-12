@@ -240,4 +240,7 @@ public enum Data {
   public void sendCommand(Command command) {
     this.client.sendCommand(command);
   }
-}
+
+  public void setSingleplayer(boolean singleplayer) {
+    this.singleplayer = singleplayer;
+  }}

@@ -64,13 +64,6 @@ class UpdateListener extends Thread {
     this.queue.add(update);
   }
 
-  private void tcpListen() throws IOException, InvalidBytes {
-    logger.trace("Listening...");
-    String json = this.reader.readLine();
-    Update update = ModelReader.fromJson(json, Update.class);
-    this.queue.add(update);
-  }
-
   private void listen() throws IOException, InvalidBytes {
     logger.trace("Listening...");
     byte[] bytes = new byte[8000];

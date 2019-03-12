@@ -1,5 +1,7 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.Data;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -43,7 +45,7 @@ public class MultiplayerScreen extends AbstractScreen {
       Data.INSTANCE.setSingleplayer(false);
       hosting = true;
       //reload username screen and show
-      Screens.INSTANCE.reloadUsernameScreen();
+//      Screens.INSTANCE.reloadUsernameScreen();
       Screens.INSTANCE.showScreen(UsernameScreen.class);
       refresh();
       return false;
