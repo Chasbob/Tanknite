@@ -70,20 +70,21 @@ public class Server extends Thread {
       this.logger.warn("Failed to get user to host.");
       return;
     }
-    try {
-      this.logger.info("Single player: " + ServerData.INSTANCE.isSinglePlayer());
-      if (!ServerData.INSTANCE.isSinglePlayer()) {
-        this.executorService.submit(new Discovery(this.name));
-        this.logger.trace("added discovery");
-        this.executorService.submit(new NewClients());
-        this.logger.trace("added new clients");
-      }
-    } catch (IOException e) {
-      this.logger.error(e);
-      return;
-    }
     if (!singleplayer) {
+      ServerData.INSTANCE.rebind("0.0.0.0");
       this.logger.trace("Setting up multi player");
+      try {
+        this.logger.info("Single player: " + ServerData.INSTANCE.isSinglePlayer());
+        if (!ServerData.INSTANCE.isSinglePlayer()) {
+          this.executorService.submit(new Discovery(this.name));
+          this.logger.trace("added discovery");
+          this.executorService.submit(new NewClients());
+          this.logger.trace("added new clients");
+        }
+      } catch (IOException e) {
+        this.logger.error(e);
+        return;
+      }
       while (!this.shutdown && !this.started) {
         CommandModel current = ServerData.INSTANCE.popCommand();
         if (current != null) {
@@ -197,7 +198,8 @@ public class Server extends Thread {
     public void rebind(String address) {
       try {
         this.serverSocket.close();
-        this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName(address), this.port));
+        this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName(address));
+//        this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName(address), this.port));
       } catch (IOException e) {
         e.printStackTrace();
       }
