@@ -108,9 +108,11 @@ public class Physics extends Component {
     }
 
     Position newPosition = new Position(newX, newY);
-    if (newPosition.getX() > 1920 || newPosition.getX() < 20 || newPosition.getY() > 1920 || newPosition.getY() < 30) {
+
+    if (newPosition.getX() > 1920 || newPosition.getX() < 30 || newPosition.getY() > 1920 || newPosition.getY() < 30) {
       return new Object[]{"none", position};
     }
+
     //Returning a collision type and also the position
     return collision(newPosition, position, "tank");
 

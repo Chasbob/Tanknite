@@ -70,9 +70,9 @@ abstract class GameMode implements Game {
     if (!playerMap.containsKey(player)) {
       playerMap.put(player, createTank(player, false));
       Position p = playerMap.get(player).getTransform().getPosition();
-//      for (int i = 0; i < 500; i++) {
-//        playerMap.put(player + "AI" + i, createTank(player + "AI" + i, true));
-//      }
+      for (int i = 0; i < 2; i++) {
+        playerMap.put(player + "AI" + i, createTank(player + "AI" + i, true));
+      }
     }
   }
 
