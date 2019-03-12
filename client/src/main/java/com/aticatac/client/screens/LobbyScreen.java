@@ -52,7 +52,7 @@ public class LobbyScreen extends AbstractScreen {
       }));
       startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
     }else {
-      Label waitingLabel = UIFactory.createLabel("Waiting for Host");
+      Label waitingLabel = UIFactory.createColouredLabel("Waiting for Host");
       startTable.add(waitingLabel);
     }
     dataTable.addActor(startTable);

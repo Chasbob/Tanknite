@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -23,6 +22,7 @@ public enum Styles {
   private Label.LabelStyle errorStyle;
   private Label.LabelStyle hideLabelStyle;
   private Label.LabelStyle labelStyle;
+  private Label.LabelStyle colouredLabelStyle;
   private Label.LabelStyle gameLabelStyle;
   private Label.LabelStyle titleStyle;
   private TextButton.TextButtonStyle buttonStyle;
@@ -31,7 +31,6 @@ public enum Styles {
   private TextButton.TextButtonStyle backButtonStyle;
   private TextField.TextFieldStyle textFieldStyle;
   private Texture blank;
-  private ImageButton refreshIcon;
 
   Styles() {
     System.out.println("Loading styles...");
@@ -70,6 +69,10 @@ public enum Styles {
     labelStyle = new Label.LabelStyle();
     labelStyle.font = buttonFont;
     labelStyle.fontColor = Color.WHITE;
+    //create green label style
+    colouredLabelStyle = new Label.LabelStyle();
+    colouredLabelStyle.font = buttonFont;
+    colouredLabelStyle.fontColor = Color.FOREST;
     //create error label style
     errorStyle = new Label.LabelStyle();
     errorStyle.font = buttonFont;
@@ -144,6 +147,10 @@ public enum Styles {
    */
   public Label.LabelStyle getLabelStyle() {
     return labelStyle;
+  }
+
+  public Label.LabelStyle getColouredLabelStyle() {
+    return colouredLabelStyle;
   }
 
   /**
