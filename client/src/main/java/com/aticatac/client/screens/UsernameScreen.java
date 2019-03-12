@@ -1,85 +1,146 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.networking.Response;
+import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.model.ServerInformation;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import java.net.InetAddress;
+
 /**
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-    /**
-     * Instantiates a new Username screen.
-     */
-    UsernameScreen() {
-        super();
-    }
 
-    @Override
-    public void buildStage() {
-        //create root table
-        Table rootTable = new Table();
-        rootTable.setFillParent(true);
-        addActor(rootTable);
-        //create table for label, text field, submit button
-        Table usernameTable = new Table();
-        rootTable.addActor(usernameTable);
-        usernameTable.setFillParent(true);
-        usernameTable.center();
-        usernameTable.defaults().pad(10).width(200).height(30).center();
-        //create guidance label
-        Label guidanceLabel = UIFactory.createLabel("Enter username");
-        usernameTable.add(guidanceLabel);
-        usernameTable.row();
-        //create error label
-        Label nameTakenLabel = UIFactory.createErrorLabel("Name Taken");
-        usernameTable.add(nameTakenLabel);
-        usernameTable.row();
-        //create text field
-        TextField textField = UIFactory.createTextField("");
-        usernameTable.add(textField);
-        //create button for submit
-        TextButton submitButton = UIFactory.createButton("Submit");
-        usernameTable.add(submitButton);
-        //create custom listener for submit button to get text field text
-        submitButton.addListener(UIFactory.newListenerEvent(() -> {
-            if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
-//                Client client = new Client();
-                boolean accepted = Screens.INSTANCE.getClient().connect(Screens.INSTANCE.getCurrentInformation(), textField.getText());
-                if (accepted) {
-                    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
-                    Screens.INSTANCE.showScreen(GameScreen.class);
-                } else {
-                    nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-                }
-                return false;
-            } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-                boolean accepted = Screens.INSTANCE.connect(textField.getText());
-                if (accepted) {
-                    nameTakenLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
-                    Screens.INSTANCE.showScreen(LobbyScreen.class);
-                } else {
-                    nameTakenLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-                }
-                return false;
-            } else {
-                return false;
-            }
-        }));
-        //create table to store back button
-        Table backTable = new Table();
-        backTable.setFillParent(true);
-        rootTable.addActor(backTable);
-        backTable.bottom();
-        //create back button
-        TextButton backButton = UIFactory.createBackButton("quit");
-        backTable.add(backButton).bottom().padBottom(10);
-        backButton.addListener(UIFactory.newListenerEvent(() -> {
-            Screens.INSTANCE.setSingleplayer(false);
-            return false;
-        }));
-        backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+  private TextField usernameTextField;
+  private TextField serverTextField;
+  private Label errorLabel;
+
+  /**
+   * Instantiates a new Username screen.
+   */
+  UsernameScreen() {
+    super();
+  }
+
+  @Override
+  public void buildStage() {
+    //create root table
+    Table rootTable = new Table();
+    rootTable.setFillParent(true);
+    addActor(rootTable);
+    //create table for label, text field, submit button
+    Table dataTable = new Table();
+    rootTable.addActor(dataTable);
+    dataTable.setFillParent(true);
+    dataTable.center();
+    dataTable.defaults().pad(10).width(200).height(30).center();
+    //create error label
+    errorLabel = UIFactory.createErrorLabel("Name Taken");
+    dataTable.add(errorLabel);
+    dataTable.row();
+    if (Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig() || Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()) {
+      String text;
+      if (Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
+        text = "IP";
+      } else {
+        text = "Name";
+      }
+      //create server label
+      Label serverLabel = UIFactory.createLabel("Server " + text);
+      dataTable.add(serverLabel);
+      dataTable.row();
+      //create server textfield
+      serverTextField = UIFactory.createTextField("");
+      dataTable.add(serverTextField);
+      dataTable.row();
     }
+    //create username label
+    Label usernameLabel = UIFactory.createLabel("Username");
+    dataTable.add(usernameLabel);
+    dataTable.row();
+    //create text field for username
+    usernameTextField = UIFactory.createTextField("");
+    dataTable.add(usernameTextField);
+    //create button for submit
+    TextButton submitButton = UIFactory.createButton("Submit");
+    dataTable.add(submitButton);
+    //create custom listener for submit button to get text field text
+    submitButton.addListener(UIFactory.newListenerEvent(() -> {
+      if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
+        //join single player server
+        Response response = Data.INSTANCE.connect(usernameTextField.getText(), true);
+        switch (response) {
+          case ACCEPTED:
+            refresh();
+            Screens.INSTANCE.showScreen(GameScreen.class);
+            break;
+          case INVALID:
+            errorLabel.setText("Invalid Response");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+        }
+        return false;
+      } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
+        Response response;
+        if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
+          //join server with ip
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
+        }else if(Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
+          //create custom server
+          Server server = new Server(false, serverTextField.getText());
+          server.start();
+          Data.INSTANCE.setSingleplayer(false);
+          //TODO make getter for port and ip
+          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(),InetAddress.getByName("127.0.0.1"), 5500));
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        }else{
+          //join server previously collected
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        }
+        switch (response) {
+          case ACCEPTED:
+            refresh();
+            Screens.INSTANCE.reloadScreen(LobbyScreen.class);
+            Screens.INSTANCE.showScreen(LobbyScreen.class);
+            break;
+          case TAKEN:
+            errorLabel.setText("Name Taken");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+          case NO_SERVER:
+            errorLabel.setText("Server does not exist");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+          case INVALID:
+            errorLabel.setText("Invalid Response");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+        }
+        return false;
+      } else {
+        return false;
+      }
+    }));
+    //create table to store back button
+    Table backTable = new Table();
+    backTable.setFillParent(true);
+    rootTable.addActor(backTable);
+    backTable.bottom();
+    //create back button
+    TextButton backButton = UIFactory.createBackButton("quit");
+    backTable.add(backButton).bottom().padBottom(10);
+    backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+  }
+
+  @Override
+  public void refresh() {
+    errorLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+    usernameTextField.setText("");
+  }
 }

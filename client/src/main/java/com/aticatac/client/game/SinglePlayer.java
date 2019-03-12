@@ -7,9 +7,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * The type Gdx game.
+ * The type Single player test.
  */
-public class GDXGame extends Game {
+public class SinglePlayer extends Game {
   private BlockingQueue<Update> updates;
 
   @Override

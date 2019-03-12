@@ -1,26 +1,54 @@
 package com.aticatac.client.networking;
 
 import com.aticatac.common.model.ServerInformation;
+import java.net.SocketException;
+import java.util.concurrent.ConcurrentHashMap;
 
-import java.util.ArrayList;
-
+/**
+ * The enum Servers.
+ */
 public enum Servers {
-    INSTANCE;
-    private final ArrayList<ServerInformation> servers;
-    private final PopulateServers pop;
+  /**
+   * Instance servers.
+   */
+  INSTANCE;
+  private final ConcurrentHashMap<String, ServerInformation> servers;
+  private PopulateServers pop;
+  private Thread popT;
+  private int port;
 
-    Servers() {
-        System.out.println("Servers enum starting");
-        this.servers = new ArrayList<>();
-        this.pop = new PopulateServers(this.servers);
-        this.pop.start();
+  Servers() {
+    System.out.println("Servers enum starting");
+    port = 5500;
+    this.servers = new ConcurrentHashMap<>();
+    try {
+      this.pop = new PopulateServers(this.servers);
+      popT = new Thread(this.pop);
+      popT.start();
+    } catch (SocketException e) {
+      e.printStackTrace();
     }
+  }
 
-    public static Servers getInstance() {
-        return INSTANCE;
-    }
+  /**
+   * Gets instance.
+   *
+   * @return the instance
+   */
+  public static Servers getInstance() {
+    return INSTANCE;
+  }
 
-    public ArrayList<ServerInformation> getServers() {
-        return servers;
-    }
+  public int getPort() {
+    return port;
+  }
+
+  /**
+   * Gets servers.
+   *
+   * @return the servers
+   */
+  public ConcurrentHashMap<String, ServerInformation> getServers() {
+    return servers;
+  }
 }

@@ -1,7 +1,6 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
-
 import java.util.ArrayList;
 
 /**
@@ -10,69 +9,38 @@ import java.util.ArrayList;
  *
  * @author Dylan
  */
-class SearchNode {
-    /**
-     * The position of this SearchNode
-     */
-    private Position position;
-    /**
-     * All the SearchNodes connected to this SearchNode
-     */
-    private ArrayList<SearchNode> connectedNodes;
+class SearchNode extends Position {
+  /**
+   * All the SearchNodes connected to this SearchNode
+   */
+  private ArrayList<SearchNode> connectedNodes;
 
-    /**
-     * Creates a new SearchNode at (x, y).
-     *
-     * @param x X co-ordinate position of this SearchNode
-     * @param y Y co-ordinate position of this SearchNode
-     */
-    SearchNode(int x, int y) {
-        setPosition(new Position(x, y));
-        connectedNodes = new ArrayList<SearchNode>();
-    }
+  /**
+   * Creates a new SearchNode at (x, y).
+   *
+   * @param x X co-ordinate position of this SearchNode
+   * @param y Y co-ordinate position of this SearchNode
+   */
+  SearchNode(int x, int y) {
+    super(x, y);
+    connectedNodes = new ArrayList<SearchNode>();
+  }
 
-    /**
-     * Gets x.
-     *
-     * @return the x
-     */
-    public double getX() {
-        return this.position.getX();
-    }
+  /**
+   * Gets a list of SearchNodes that this SearchNode is connected to.
+   *
+   * @return An ArrayList of the connected SearchNodes
+   */
+  public ArrayList<SearchNode> getConnectedNodes() {
+    return connectedNodes;
+  }
 
-    /**
-     * Gets y.
-     *
-     * @return the y
-     */
-    public double getY() {
-        return this.position.getY();
-    }
-
-    /**
-     * Sets the position of this SearchNode.
-     *
-     * @param position New position of this SearchNode
-     */
-    public void setPosition(Position position) {
-        this.position = position;
-    }
-
-    /**
-     * Gets a list of SearchNodes that this SearchNode is connected to.
-     *
-     * @return An ArrayList of the connected SearchNodes
-     */
-    public ArrayList<SearchNode> getConnectedNodes() {
-        return connectedNodes;
-    }
-
-    /**
-     * Adds a connection to another SearchNode.
-     *
-     * @param node The SearchNode to connect to
-     */
-    public void addConnection(SearchNode node) {
-        connectedNodes.add(node);
-    }
+  /**
+   * Adds a connection to another SearchNode.
+   *
+   * @param node The SearchNode to connect to
+   */
+  public void addConnection(SearchNode node) {
+    connectedNodes.add(node);
+  }
 }

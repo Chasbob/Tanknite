@@ -11,62 +11,58 @@ import org.apache.log4j.Logger;
  * The type Abstract screen.
  */
 abstract class AbstractScreen extends Stage implements Screen {
-    private final Logger logger;
-    private Class prevScreen;
+  /**
+   * The Logger.
+   */
+  protected final Logger logger;
+  private Class prevScreen;
 
-    /**
-     * Instantiates a new Abstract screen.
-     */
-    AbstractScreen() {
-        super(new StretchViewport(640, 640));
-//        this.prevScreen = (Class<T>) MainMenuScreen.class;
-        logger = Logger.getLogger(getClass());
-    }
+  /**
+   * Instantiates a new Abstract screen.
+   */
+  AbstractScreen() {
+    super(new StretchViewport(640, 640));
+    //this.prevScreen = (Class<T>) MainMenuScreen.class;
+    logger = Logger.getLogger(getClass());
+  }
 
-    /**
-     * Gets logger.
-     *
-     * @return the logger
-     */
-    public Logger getLogger() {
-        return logger;
-    }
+  /**
+   * Build stage.
+   */
+//Subclasses must load actors in this method
+  public abstract void buildStage();
 
-    /**
-     * Build stage.
-     */
-// Subclasses must load actors in this method
-    public abstract void buildStage();
+  public abstract void refresh();
 
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(this);
-    }
+  @Override
+  public void show() {
+    Gdx.input.setInputProcessor(this);
+  }
 
-    @Override
-    public void render(float delta) {
-        // Clear screen
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        // Calling to Stage methods
-        super.act(delta);
-        super.draw();
-    }
+  @Override
+  public void render(float delta) {
+    // Clear screen todo?
+    Gdx.gl.glClearColor(0, 0, 0, 1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    // Calling to Stage methods
+    super.act(delta);
+    super.draw();
+  }
 
-    @Override
-    public void resize(int width, int height) {
-        getViewport().update(width, height);
-    }
+  @Override
+  public void resize(int width, int height) {
+    getViewport().update(width, height);
+  }
 
-    @Override
-    public void pause() {
-    }
+  @Override
+  public void pause() {
+  }
 
-    @Override
-    public void resume() {
-    }
+  @Override
+  public void resume() {
+  }
 
-    @Override
-    public void hide() {
-    }
+  @Override
+  public void hide() {
+  }
 }

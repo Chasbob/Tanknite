@@ -1,24 +1,51 @@
 package com.aticatac.client.networking;
 
+import com.aticatac.common.CommonData;
 import com.aticatac.common.model.ServerInformation;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
+/**
+ * The type Populate servers.
+ */
+class PopulateServers implements Runnable {
+  private final ConcurrentHashMap<String, ServerInformation> servers;
+  private final Logger logger;
+  private final DatagramSocket socket;
+  private final BroadcastListener listener;
 
-class PopulateServers extends Thread {
-    private final ArrayList<ServerInformation> servers;
+  /**
+   * Instantiates a new Populate servers.
+   *
+   * @param servers the servers
+   */
+  public PopulateServers(ConcurrentHashMap<String, ServerInformation> servers) throws SocketException {
+    this.servers = servers;
+    this.logger = Logger.getLogger(getClass());
+    this.socket = new DatagramSocket(CommonData.INSTANCE.getDiscoveryPort());
+    this.listener = new BroadcastListener(this.socket);
+  }
 
-    public PopulateServers(ArrayList<ServerInformation> servers) {
-        this.servers = servers;
-    }
-
-    @Override
-    public void run() {
-        super.run();
+  @Override
+  public void run() {
+    while (!Thread.currentThread().isInterrupted()) {
+      double nanoTime = System.nanoTime();
+      try {
+        this.logger.trace("getting server");
+        ServerInformation newServer = listener.call();
+        this.servers.put(newServer.getId(), newServer);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      while (Math.abs(System.nanoTime() - nanoTime) < 1000000000) {
         try {
-            ServerInformation newServer = new BroadcastListener().call();
-            this.servers.add(newServer);
-        } catch (Exception e) {
-            e.printStackTrace();
+          Thread.sleep(0);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
+      }
     }
+  }
 }

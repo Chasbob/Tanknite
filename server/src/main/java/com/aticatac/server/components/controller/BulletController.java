@@ -10,46 +10,41 @@ import com.aticatac.server.components.Physics;
  * The type BulletController.
  */
 public class BulletController extends Component {
+  private int damage = 10; // or just have special case when shooting with powerup?
+  private boolean collided = false;
 
-    private int damage = 10; // or just have special case when shooting with powerup?
-    private boolean collided = false;
+  /**
+   * Instantiates a new Component.
+   *
+   * @param gameObject the component parent
+   */
+  public BulletController(GameObject gameObject) {
+    super(gameObject);
+  }
 
-    /**
-     * Instantiates a new Component.
-     *
-     * @param gameObject the component parent
-     */
-    public BulletController(GameObject gameObject) {
-        super(gameObject);
-    }
-
-    /**
-     * Move forwards.
-     */
-
-    public void moveForwards() {
-        while (true) {
-            //Position oldPosition = this.getGameObject().getComponent(applyTransform.class).getPosition();
-            Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
-            Position newPosition = (Position)physicsData[1];
-            int collisionType = (Integer)physicsData[0];
-            //0 nothing, 1 is a wall, 2 is a tank
-            if (collisionType != 0){
-                if (collisionType == 1){
-                    //Destroy(this);
-                }
-                else {
-
-                    //collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
-                    //collidedTank.isShot();
-                    //Destroy(this);
-
-                    collided(); // work out whether collided with wall or tank etc
-                }
-            }   // set occupied co ordinates for server data
-            else {
-                this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-            }
+  /**
+   * Move forwards.
+   */
+  public void moveForwards() {
+    while (true) {
+      //Position oldPosition = this.getGameObject().getComponent(applyTransform.class).getPosition();
+      Object physicsData[] = this.getGameObject().getComponent(Physics.class).bulletMove(this.getGameObject().getComponent(Transform.class).getRotation());
+      Position newPosition = (Position) physicsData[1];
+      int collisionType = (Integer) physicsData[0];
+      //0 nothing, 1 is a wall, 2 is a tank
+      if (collisionType != 0) {
+        if (collisionType == 1) {
+          //Destroy(this);
+        } else {
+          //collidedTankName = this.getGameObject().getComponent(ServerData.class).getOccupiedCoordinatesTank().getKey(newPosition);// get tank using new position from serverData
+          //collidedTank.isShot();
+          //Destroy(this);
+          collided(); // work out whether collided with wall or tank etc
+        }
+      }   // set occupied co ordinates for server data
+      else {
+        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
+      }
 
             /*
             switch (currentDirection) {
@@ -71,18 +66,16 @@ public class BulletController extends Component {
                     } else collided();
             }
             */
-        }
     }
-    // physics handles bullet collision
+  }
+  // physics handles bullet collision
+  // make a method for bullet to disappear
 
-    // make a method for bullet to disappear
+  public void collided() {
+    collided = true;
+  }
 
-    public void collided () {
-        collided = true;
-    }
-
-    public boolean getCurrentCollided () {
-        return collided;
-    }
-
+  public boolean getCurrentCollided() {
+    return collided;
+  }
 }

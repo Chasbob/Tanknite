@@ -26,6 +26,7 @@ subprojects {
         testCompile group: 'junit', name: 'junit', version: '4.12'
         implementation group: 'log4j', name: 'log4j', version: '1.2.17'
         implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+        compile 'org.jetbrains:annotations:16.0.1'
     }
     ext {
         appName = "my-gdx-com.mygdx.game"
@@ -80,7 +81,8 @@ dockerCompose {
 //    dockerComposeWorkingDirectory = '/path/where/docker-compose/is/invoked/from'
     dockerComposeStopTimeout = java.time.Duration.ofSeconds(20)
     // time before docker-compose sends SIGTERM to the running containers after the composeDown task has been started
-    environment.put 'version', "$version"    // Pass environment variable to 'docker-compose' for substitution in compose file
+    environment.put 'version', "$version"
+    // Pass environment variable to 'docker-compose' for substitution in compose file
 }
 
 
