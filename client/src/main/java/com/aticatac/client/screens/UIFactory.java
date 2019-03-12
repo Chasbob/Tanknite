@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
