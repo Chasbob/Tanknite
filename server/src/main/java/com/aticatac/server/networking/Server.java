@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -82,6 +83,7 @@ public class Server extends Thread {
       return;
     }
     if (!singleplayer) {
+      this.logger.trace("Setting up multi player");
       while (!this.shutdown && !this.started) {
         CommandModel current = ServerData.INSTANCE.popCommand();
         if (current != null) {
@@ -103,9 +105,9 @@ public class Server extends Thread {
               } catch (InterruptedException e) {
                 this.logger.error(e);
               }
-              this.executorService.submit(new Updater());
-              this.logger.trace("added updater");
             }
+            this.executorService.submit(new Updater());
+            this.logger.trace("added updater");
           }
         }
       }
