@@ -240,22 +240,4 @@ public enum Data {
   public void sendCommand(Command command) {
     this.client.sendCommand(command);
   }
-
-  /**
-   * Gets singleplayer.
-   *
-   * @return the singleplayer
-   */
-  public boolean getSingleplayer() {
-    return singleplayer;
-  }
-
-  /**
-   * Sets singleplayer.
-   *
-   * @param singleplayer the singleplayer
-   */
-  public void setSingleplayer(boolean singleplayer) {
-    this.singleplayer = singleplayer;
-  }
 }

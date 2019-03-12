@@ -1,7 +1,5 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.Data;
-import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -50,11 +48,15 @@ public class MultiplayerScreen extends AbstractScreen {
       refresh();
       return false;
     }));
-    hostButton.addListener(UIFactory.newChangeScreenEvent(UsernameScreen.class));
+
     buttonTable.add(hostButton);
     //create button for joining
     TextButton joinButton = UIFactory.createButton("Join");
-    joinButton.addListener(UIFactory.newChangeScreenEvent(ServerScreen.class));
+    joinButton.addListener(UIFactory.newListenerEvent(()->{
+      Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
+      Screens.INSTANCE.showScreen(ServerScreen.class);
+      return false;
+    }));
     buttonTable.add(joinButton);
     //create table to store back button
     Table backTable = new Table();

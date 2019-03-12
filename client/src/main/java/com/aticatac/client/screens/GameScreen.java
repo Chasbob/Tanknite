@@ -3,7 +3,6 @@ package com.aticatac.client.screens;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -70,7 +69,7 @@ public class GameScreen extends AbstractScreen {
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("img/tank.png");
       renderer = new OrthogonalTiledMapRenderer(map);
-      this.camera = new Camera(maxX, maxY, getWidth(), getHeight());
+      this.camera = new Camera(maxX, maxY, 640, 640);
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();
@@ -82,8 +81,7 @@ public class GameScreen extends AbstractScreen {
   @Override
   public void resize(int width, int height) {
     super.resize(width, height);
-    this.camera.getCamera().viewportHeight = height;
-    this.camera.getCamera().viewportWidth = width;
+    this.camera.getViewport().update(width, height);
   }
 
   @Override
@@ -165,6 +163,7 @@ public class GameScreen extends AbstractScreen {
     quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     quitButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.quit();
+      refresh();
       return true;
     }));
     popUpTable.add(quitButton);
@@ -220,7 +219,7 @@ public class GameScreen extends AbstractScreen {
     batch.begin();
     //health bar
     healthBar();
-    batch.draw(Styles.getInstance().getBlank(), 0, 0, getWidth() * health, 5);
+    batch.draw(Styles.getInstance().getBlank(), 0, 0, Gdx.graphics.getWidth() * health, 5);
     batch.setColor(Color.WHITE);
     batch.end();
     super.act(delta);

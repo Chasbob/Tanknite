@@ -3,15 +3,20 @@ package com.aticatac.client.screens;
 import com.aticatac.client.networking.Response;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.model.ServerInformation;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import java.net.InetAddress;
+
 /**
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
+
   private TextField usernameTextField;
   private TextField serverTextField;
   private Label errorLabel;
@@ -68,37 +73,40 @@ public class UsernameScreen extends AbstractScreen {
     //create custom listener for submit button to get text field text
     submitButton.addListener(UIFactory.newListenerEvent(() -> {
       if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
+        //join single player server
         Response response = Data.INSTANCE.connect(usernameTextField.getText(), true);
         switch (response) {
           case ACCEPTED:
             refresh();
             Screens.INSTANCE.showScreen(GameScreen.class);
             break;
-          case TAKEN:
-            errorLabel.setText("Name Taken");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-            break;
-          case NO_SERVER:
-            errorLabel.setText("No Server");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-            break;
           case INVALID:
             errorLabel.setText("Invalid Response");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
         }
-//        if (accepted) {
-//          refresh();
-//          Screens.INSTANCE.showScreen(GameScreen.class);
-//        } else {
-//          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-//        }
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
-        Response response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        Response response;
+        if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
+          //join server with ip
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
+        }else if(Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
+          //create custom server
+          Server server = new Server(false, serverTextField.getText());
+          server.start();
+          Data.INSTANCE.setSingleplayer(false);
+          //TODO make getter for port and ip
+          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(),InetAddress.getByName("127.0.0.1"), 5500));
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        }else{
+          //join server previously collected
+          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+        }
         switch (response) {
           case ACCEPTED:
             refresh();
+            Screens.INSTANCE.reloadScreen(LobbyScreen.class);
             Screens.INSTANCE.showScreen(LobbyScreen.class);
             break;
           case TAKEN:
@@ -106,7 +114,7 @@ public class UsernameScreen extends AbstractScreen {
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
           case NO_SERVER:
-            errorLabel.setText("No Server");
+            errorLabel.setText("Server does not exist");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
           case INVALID:
@@ -114,11 +122,6 @@ public class UsernameScreen extends AbstractScreen {
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
         }
-//        if (accepted) {
-//
-//        } else {
-//          errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
-//        }
         return false;
       } else {
         return false;
@@ -131,24 +134,13 @@ public class UsernameScreen extends AbstractScreen {
     backTable.bottom();
     //create back button
     TextButton backButton = UIFactory.createBackButton("quit");
-    ;
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
-    backButton.addListener(UIFactory.newListenerEvent(()->{
-//      if(Data.INSTANCE.isSingleplayer()){
-//        Data.INSTANCE.quit();
-//      }
-      return false;
-    }));
   }
 
   @Override
   public void refresh() {
     errorLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
     usernameTextField.setText("");
-  }
-
-  private TextButton getQuit() {
-    return UIFactory.createBackButton("quit");
   }
 }

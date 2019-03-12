@@ -2,6 +2,7 @@ package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListServers;
+import com.aticatac.client.util.ListServers;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Server screen.
  */
 public class ServerScreen extends AbstractScreen {
+
   private Boolean serverSelected;
   private ListServers listServers;
   private boolean manualConfig;
@@ -95,9 +97,8 @@ public class ServerScreen extends AbstractScreen {
     manualButton.addListener(UIFactory.newListenerEvent(() -> {
       manualConfig = true;
       //need to rebuild username screen to load new fields
-      Screens.INSTANCE.reloadUsernameScreen();
+      Screens.INSTANCE.reloadScreen(UsernameScreen.class);
       Screens.INSTANCE.showScreen(UsernameScreen.class);
-      refresh();
       return false;
     }
     ));

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.util.Collection;
@@ -268,9 +269,12 @@ public class Server extends Thread {
       try {
         if (singlePlayer) {
           this.serverSocket.close();
-          this.serverSocket = new ServerSocket(this.port, 5, InetAddress.getByName("127.0.0.1"));
+          this.serverSocket = new ServerSocket();
+          this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), this.port));
         } else {
-          this.serverSocket = new ServerSocket(this.port);
+          this.serverSocket.close();
+          this.serverSocket = new ServerSocket();
+          this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), this.port));
         }
       } catch (IOException e) {
         e.printStackTrace();

@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -23,6 +22,7 @@ public enum Styles {
   private Label.LabelStyle errorStyle;
   private Label.LabelStyle hideLabelStyle;
   private Label.LabelStyle labelStyle;
+  private Label.LabelStyle colouredLabelStyle;
   private Label.LabelStyle gameLabelStyle;
   private Label.LabelStyle titleStyle;
   private TextButton.TextButtonStyle buttonStyle;
@@ -31,7 +31,6 @@ public enum Styles {
   private TextButton.TextButtonStyle backButtonStyle;
   private TextField.TextFieldStyle textFieldStyle;
   private Texture blank;
-  private ImageButton refreshIcon;
 
   Styles() {
     System.out.println("Loading styles...");
@@ -49,9 +48,7 @@ public enum Styles {
   }
 
   private void loadStyles() {
-    //load in font for menu
-    //String path = getClass().getResource("/styles/barcadebrawl.ttf").toString();
-    //System.out.println("Path: " + path);
+    //load in font
     FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.ttf"));
     System.out.println("Loaded ttf");
     FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -72,6 +69,10 @@ public enum Styles {
     labelStyle = new Label.LabelStyle();
     labelStyle.font = buttonFont;
     labelStyle.fontColor = Color.WHITE;
+    //create green label style
+    colouredLabelStyle = new Label.LabelStyle();
+    colouredLabelStyle.font = buttonFont;
+    colouredLabelStyle.fontColor = Color.FOREST;
     //create error label style
     errorStyle = new Label.LabelStyle();
     errorStyle.font = buttonFont;
@@ -119,10 +120,6 @@ public enum Styles {
     backButtonStyle.fontColor = Color.YELLOW;
     //load in blank texture for healthbar
     blank = new Texture(Gdx.files.internal("img/white.png"));
-    //load in refresh icon
-    //Texture refreshTexture = new Texture(Gdx.files.internal("img/refresh.png"));
-    // Drawable drawable = new TextureRegionDrawable(new TextureRegion(refreshTexture));
-    //refreshIcon = new ImageButton(drawable);
   }
 
   /**
@@ -150,6 +147,10 @@ public enum Styles {
    */
   public Label.LabelStyle getLabelStyle() {
     return labelStyle;
+  }
+
+  public Label.LabelStyle getColouredLabelStyle() {
+    return colouredLabelStyle;
   }
 
   /**
@@ -222,14 +223,5 @@ public enum Styles {
    */
   public Texture getBlank() {
     return blank;
-  }
-
-  /**
-   * Gets refresh button.
-   *
-   * @return the refresh button
-   */
-  public ImageButton getRefreshButton() {
-    return refreshIcon;
   }
 }

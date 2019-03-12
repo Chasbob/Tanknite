@@ -1,7 +1,6 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.PopulatePlayers;
-import com.aticatac.client.util.ServerButton;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -37,17 +36,6 @@ public class UIFactory {
   }
 
   /**
-   * Create server button server button.
-   *
-   * @param text              the text
-   * @param serverInformation the server information
-   * @return the server button
-   */
-  public static ServerButton createServerButton(String text, ServerInformation serverInformation) {
-    return new ServerButton(text, Styles.INSTANCE.getButtonStyle(), serverInformation);
-  }
-
-  /**
    * Create button text button.
    *
    * @param text the text
@@ -56,14 +44,8 @@ public class UIFactory {
   public static TextButton createButton(String text) {
     return new TextButton(text, Styles.INSTANCE.getButtonStyle());
   }
-  /**
-   * Gets servers.
-   *
-   * @param serversTable the servers table
-   */
-//  public static void getServers(Table serversTable) {
-//    (new ListServers(serversTable)).start();
-//  }
+
+
 
   /**
    * Create error label label.
@@ -133,6 +115,8 @@ public class UIFactory {
   public static Label createGameLabel(String text) {
     return new Label(text, Styles.INSTANCE.getGameLabelStyle());
   }
+
+  public static Label createColouredLabel(String text){ return new Label(text, Styles.INSTANCE.getColouredLabelStyle());}
 
   /**
    * New change screen event input listener.
