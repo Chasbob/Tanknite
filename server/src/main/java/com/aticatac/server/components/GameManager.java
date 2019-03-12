@@ -9,6 +9,8 @@ import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.prefabs.TankObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -83,13 +85,32 @@ public class GameManager extends Component {
 
   public TankObject createTank(String player, boolean isAI) {
     try {
-      Position position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
-      ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
-      //checks if this is a valid coordinate when generated is not in the map then moves on.
-      while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)) {
+
+      boolean positionClean = false;
+      Position position = new Position();
+
+      //while loop generating positions until finds one that isn't occupied
+      while (!positionClean) {
+
+        //creates random position
         position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
         ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
+
+        //creates a collision box for tank
+        this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(position);
+
+        //gets the collision box and occupied map
+        ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+        HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+
+        //checks if any of the positions already exist
+        for(int i=0; i<box.size(); i++){
+
+          positionClean = !occupiedCoordinates.containsKey(box.get(i));
+
+        }
       }
+
       TankObject tank = new TankObject(getGameObject().getChildren().get("Player Container"),
       player,
       position,
