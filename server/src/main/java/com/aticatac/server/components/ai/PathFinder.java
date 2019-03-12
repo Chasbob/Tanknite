@@ -2,6 +2,7 @@ package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,6 +19,11 @@ class PathFinder {
     g score = the cost of the path from the start node to the current node
     f score = g + an estimate of the cost from the current node to the goal node
   */
+//  private ArrayList<SearchNode> occupiedNodes = new ArrayList<>();
+//
+//  void setOccupiedNodes(ArrayList<SearchNode> occupiedNodes){
+//    this.occupiedNodes = occupiedNodes;
+//  }
   /**
    * Uses A* search to find a path from one node to another.
    *
@@ -46,6 +52,8 @@ class PathFinder {
           continue;
         }
         int tempG = g.get(current) + (int)manhattanDistance(connectedNode, current);
+//        if (occupiedNodes.contains(connectedNode))
+//          tempG+=640;
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
