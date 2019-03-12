@@ -143,6 +143,10 @@ public enum DataServer {
     int mapPositionX = (32*(mapX))+28;
     int mapPositionY = (32*(mapY))+28;
 
+    //adds centre of the element to the occupied
+    Position centrePosition = new Position(mapPositionX, mapPositionY);
+    setCoordinates(centrePosition, "wall");
+
     int lowerY = mapPositionX - 14;
     int lowerX = mapPositionY - 14;
 
