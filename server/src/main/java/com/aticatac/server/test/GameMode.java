@@ -1,42 +1,27 @@
 package com.aticatac.server.test;
 
+import com.aticatac.common.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.common.components.DataServer;
-import com.aticatac.server.components.controller.TankController;
 import com.aticatac.common.prefabs.TankObject;
-import java.util.ArrayList;
+import com.aticatac.server.components.controller.TankController;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.log4j.Logger;
 
-/**
- * The type Game mode.
- */
 @SuppressWarnings("ALL")
 abstract class GameMode implements Game {
-  /**
-   * The Player map.
-   */
   protected final HashMap<String, GameObject> playerMap;
-  private final ArrayList<String> ai;
   private final Logger logger;
   private final int min = 320;
   private final int max = 1920 - 320;
   private GameObject root;
 
-  /**
-   * Instantiates a new Game mode.
-   *
-   * @throws InvalidClassInstance     the invalid class instance
-   * @throws ComponentExistsException the component exists exception
-   */
   GameMode() throws InvalidClassInstance, ComponentExistsException {
-    this.ai = new ArrayList<>();
     this.root = new GameObject("root", ObjectType.ROOT);
     new GameObject("Player Container", root, ObjectType.PLAYER_CONTAINER);
     this.playerMap = new HashMap<>();
@@ -77,9 +62,6 @@ abstract class GameMode implements Game {
       case SHOOT:
         tank.getComponent(TankController.class).shoot();
         logger.trace("Player: " + player + " sent command: " + cmd);
-        break;
-      default:
-        break;
     }
   }
 
@@ -88,19 +70,10 @@ abstract class GameMode implements Game {
     if (!playerMap.containsKey(player)) {
       playerMap.put(player, createTank(player, false));
       Position p = playerMap.get(player).getTransform().getPosition();
-//      for (int i = 0; i < 500; i++) {
-//        playerMap.put(player + "AI" + i, createTank(player + "AI" + i, true));
-//      }
+      for (int i = 0; i < 2; i++) {
+        playerMap.put(player + "AI" + i, createTank(player + "AI" + i, true));
+      }
     }
-  }
-
-  /**
-   * Gets ai.
-   *
-   * @return the ai
-   */
-  public ArrayList<String> getAi() {
-    return ai;
   }
 
   private TankObject createTank(String player, boolean isAI) {
@@ -124,9 +97,6 @@ abstract class GameMode implements Game {
           30,
           isAI);
       DataServer.INSTANCE.setCoordinates(position, player);
-      if (isAI) {
-        ai.add(player);
-      }
       return tank;
     } catch (InvalidClassInstance | ComponentExistsException e) {
       this.logger.error(e);
@@ -134,11 +104,6 @@ abstract class GameMode implements Game {
     return null;
   }
 
-  /**
-   * Gets root.
-   *
-   * @return the root
-   */
   public GameObject getRoot() {
     return root;
   }
