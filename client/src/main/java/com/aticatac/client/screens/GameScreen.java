@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.AudioEnum;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
@@ -179,6 +180,10 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void render(float delta) {
+
+    //Audio
+    AudioEnum.INSTANCE.getBackgroundMusic();
+
     super.render(delta);
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     //TODO figure out why it flickers when going side to side.
