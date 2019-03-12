@@ -19,14 +19,10 @@ public class SettingsScreen extends AbstractScreen {
 
   @Override
   public void buildStage() {
-    //create root table
-    Table rootTable = new Table();
-    rootTable.setFillParent(true);
-    addActor(rootTable);
+    super.buildStage();
     //create table to store setting toggles
     Table toggleTable = new Table();
-    toggleTable.setFillParent(true);
-    rootTable.addActor(toggleTable);
+    super.addToRoot(toggleTable);
     TextButton soundButton = UIFactory.createButton("Toggle Sound: ");
     Label soundLabel = UIFactory.createLabel("ON");
     soundButton.addListener(UIFactory.newListenerEvent(()->{
@@ -41,15 +37,6 @@ public class SettingsScreen extends AbstractScreen {
     }));
     toggleTable.add(soundButton);
     toggleTable.add(soundLabel);
-    //create table to store back button
-    Table backTable = new Table();
-    backTable.setFillParent(true);
-    rootTable.addActor(backTable);
-    backTable.bottom();
-    //create back button
-    TextButton backButton = UIFactory.createBackButton("back");
-    backTable.add(backButton).bottom().padBottom(10);
-    backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
   }
 
   @Override

@@ -1,7 +1,7 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListServers;
-import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -13,7 +13,6 @@ public class ServerScreen extends AbstractScreen {
 
   private Boolean serverSelected;
   private ListServers listServers;
-  private boolean manualConfig;
 
   /**
    * Instantiates a new Server screen.
@@ -29,19 +28,11 @@ public class ServerScreen extends AbstractScreen {
 
   @Override
   public void buildStage() {
-    //create root table
-    Table rootTable = new Table();
-    rootTable.setFillParent(true);
-    addActor(rootTable);
+    super.buildStage();
     //create data table
     Table dataTable = new Table();
-    dataTable.setFillParent(true);
-    rootTable.addActor(dataTable);
-    //create table for top lables
-    Table serverDetailsTable = new Table();
-    serverDetailsTable.setFillParent(true);
-    dataTable.addActor(serverDetailsTable);
-    serverDetailsTable.top().padTop(50);
+    //create table for top labels
+    Table serverDetailsTable = super.createTopLabelTable(dataTable);
     Label waitingLabel = UIFactory.createLabel("servers");
     serverDetailsTable.add(waitingLabel);
     //add table with join button to get into lobby after entering username
@@ -80,40 +71,24 @@ public class ServerScreen extends AbstractScreen {
       }
     }).start();
     dataTable.addActor(serversTable);
-    //create table to store back button
-    Table backTable = new Table();
-    backTable.setFillParent(true);
-    rootTable.addActor(backTable);
-    backTable.bottom();
-    TextButton backButton = UIFactory.createBackButton("back");
-    backTable.add(backButton).bottom().padBottom(10);
-    backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     //add labels to serverDetailsTable
     TextButton manualButton = UIFactory.createStartButton("Manual");
-    manualButton.setStyle(Styles.getInstance().getSelectedButtonStyle());
     manualButton.addListener(UIFactory.newListenerEvent(() -> {
-      manualConfig = true;
-      //need to rebuild username screen to load new fields
-      Screens.INSTANCE.reloadScreen(UsernameScreen.class);
-      Screens.INSTANCE.showScreen(UsernameScreen.class);
+      Data.INSTANCE.setManualConfigForServer(true);
+      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
-    }
-    ));
+    }));
     buttonTable.add(manualButton);
   }
 
   @Override
   public void refresh() {
     serverSelected = false;
-    manualConfig = false;
+    Data.INSTANCE.setManualConfigForServer(false);
   }
 
   @Override
   public void render(float delta) {
     super.render(delta);
-  }
-
-  public boolean isManualConfig() {
-    return manualConfig;
   }
 }

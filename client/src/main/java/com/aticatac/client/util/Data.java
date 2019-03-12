@@ -32,10 +32,14 @@ public enum Data {
   private Container playerPos;
   private ArrayList<Container> playerList;
   private boolean serverSelected;
+  private boolean manualConfigForServer;
+  private boolean isHosting;
 
   Data() {
     client = new Client();
     serverSelected = false;
+    manualConfigForServer = false;
+    isHosting = false;
     try {
       //TODO don't hard code the port.
       this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), 5500);
@@ -228,4 +232,19 @@ public enum Data {
   public void sendCommand(Command command) {
     this.client.sendCommand(command);
   }
-}
+
+  public boolean isManualConfigForServer() {
+    return manualConfigForServer;
+  }
+
+  public void setManualConfigForServer(boolean manualConfigForServer) {
+    this.manualConfigForServer = manualConfigForServer;
+  }
+
+  public boolean isHosting() {
+    return isHosting;
+  }
+
+  public void setHosting(boolean hosting) {
+    isHosting = hosting;
+  }}

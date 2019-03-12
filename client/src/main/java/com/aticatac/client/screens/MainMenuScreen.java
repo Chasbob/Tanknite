@@ -22,16 +22,16 @@ public class MainMenuScreen extends AbstractScreen {
   @Override
   public void buildStage() {
     //create root table
-    Table rootTable = new Table();
+    rootTable = new Table();
     rootTable.setFillParent(true);
     addActor(rootTable);
+    //create title
     Label screenTitle = UIFactory.createTitleLabel("TANK TROUBLE");
     screenTitle.setFillParent(true);
     rootTable.add(screenTitle).padTop(50).top();
     //create table to store all buttons
     Table buttonTable = new Table();
-    buttonTable.setFillParent(true);
-    rootTable.addActor(buttonTable);
+    super.addToRoot(buttonTable);
     buttonTable.defaults().pad(10).width(100).center();
     //create button for single player
     TextButton singlePlayerButton = UIFactory.createButton("single player");

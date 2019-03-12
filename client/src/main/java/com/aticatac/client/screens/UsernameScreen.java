@@ -30,23 +30,19 @@ public class UsernameScreen extends AbstractScreen {
 
   @Override
   public void buildStage() {
-    //create root table
-    Table rootTable = new Table();
-    rootTable.setFillParent(true);
-    addActor(rootTable);
+    super.buildStage();
     //create table for label, text field, submit button
     Table dataTable = new Table();
-    rootTable.addActor(dataTable);
-    dataTable.setFillParent(true);
+    super.addToRoot(dataTable);
     dataTable.center();
     dataTable.defaults().pad(10).width(200).height(30).center();
     //create error label
     errorLabel = UIFactory.createErrorLabel("Name Taken");
     dataTable.add(errorLabel);
     dataTable.row();
-    if (Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig() || Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()) {
+    if (Data.INSTANCE.isManualConfigForServer() || Data.INSTANCE.isHosting()) {
       String text;
-      if (Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
+      if (Data.INSTANCE.isManualConfigForServer()) {
         text = "IP";
       } else {
         text = "Name";
@@ -88,10 +84,10 @@ public class UsernameScreen extends AbstractScreen {
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
         Response response;
-        if(Screens.INSTANCE.getScreen(ServerScreen.class).isManualConfig()) {
+        if(Data.INSTANCE.isManualConfigForServer()) {
           //join server with ip
           response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
-        }else if(Screens.INSTANCE.getScreen(MultiplayerScreen.class).isHosting()){
+        }else if(Data.INSTANCE.isHosting()){
           //create custom server
           Server server = new Server(false, serverTextField.getText());
           server.start();
@@ -127,15 +123,6 @@ public class UsernameScreen extends AbstractScreen {
         return false;
       }
     }));
-    //create table to store back button
-    Table backTable = new Table();
-    backTable.setFillParent(true);
-    rootTable.addActor(backTable);
-    backTable.bottom();
-    //create back button
-    TextButton backButton = UIFactory.createBackButton("quit");
-    backTable.add(backButton).bottom().padBottom(10);
-    backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
   }
 
   @Override

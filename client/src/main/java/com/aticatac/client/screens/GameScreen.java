@@ -85,15 +85,14 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void buildStage() {
-    Gdx.graphics.setVSync(true);
     //create root table
-    Table rootTable = new Table();
+    rootTable = new Table();
     rootTable.setFillParent(true);
     addActor(rootTable);
+    Gdx.graphics.setVSync(true);
     //create table and labels for player count and kills - TOP LEFT
     Table countTable = new Table();
-    countTable.setFillParent(true);
-    rootTable.addActor(countTable);
+    super.addToRoot(countTable);
     countTable.top().left();
     countTable.defaults().padTop(10).padLeft(10).left();
     Label players = UIFactory.createLabel("player count: ");
@@ -105,24 +104,21 @@ public class GameScreen extends AbstractScreen {
     countTable.add(killCount);
     //create table for kill feed - BOTTOM LEFT
     Table killTable = new Table();
-    killTable.setFillParent(true);
-    rootTable.addActor(killTable);
+    super.addToRoot(killTable);
     killTable.bottom().left();
     killTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
     Label tempKill = UIFactory.createGameLabel("Archie killed Ewan");
     killTable.add(tempKill);
     //create table for ammo - BOTTOM RIGHT
     Table ammoTable = new Table();
-    ammoTable.setFillParent(true);
-    rootTable.addActor(ammoTable);
+    super.addToRoot(ammoTable);
     ammoTable.bottom().right();
     ammoTable.defaults().padRight(10).padTop(10).padBottom(20).left();
     Label ammo = UIFactory.createLabel("ammo: ");
     ammoTable.add(ammo);
     ammoTable.add(ammoValue);
     Table statsTable = new Table();
-    statsTable.setFillParent(true);
-    rootTable.addActor(statsTable);
+    super.addToRoot(statsTable);
     statsTable.top().right();
     statsTable.defaults().padRight(10).padTop(10).padBottom(20).left();
     Label fps = UIFactory.createLabel("FPS: ");
@@ -138,8 +134,7 @@ public class GameScreen extends AbstractScreen {
     statsTable.add(this.direction);
     //create pop up table
     popUpTable = new Table();
-    rootTable.addActor(popUpTable);
-    popUpTable.setFillParent(true);
+    super.addToRoot(popUpTable);
     popUpTable.center();
     popUpTable.setVisible(false);
     popUpTable.defaults().pad(10).width(150);

@@ -5,7 +5,6 @@ import com.aticatac.client.screens.Screens;
 import com.aticatac.client.screens.ServerScreen;
 import com.aticatac.client.screens.UIFactory;
 import com.aticatac.common.model.ServerInformation;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class ListServers {
     for (int i = 0; i < tableSize; i++) {
       ServerButton serverButton = new ServerButton();
       serverButton.getLabel().setAlignment(Align.left);
-      serverButton.setStyle(Styles.INSTANCE.getButtonStyle());
+      serverButton.setStyle(Styles.INSTANCE.getBaseButtonStyle());
       serverButton.addListener(UIFactory.newListenerEvent(() -> {
         this.logger.info("Server Button clicked");
         deselect();
@@ -52,7 +51,7 @@ public class ListServers {
 
   private void deselect() {
     for (ServerButton b : buttons) {
-      b.setStyle(Styles.INSTANCE.getButtonStyle());
+      b.setStyle(Styles.INSTANCE.getBaseButtonStyle());
     }
   }
 
@@ -61,14 +60,14 @@ public class ListServers {
     for (int i = 0; i < buttons.size(); i++) {
       if (i < servers.size()) {
         if (!buttons.get(i).getLabel().getText().toString().equals(servers.get(i).getId())) {
-          buttons.get(i).setStyle(Styles.INSTANCE.getButtonStyle());
+          buttons.get(i).setStyle(Styles.INSTANCE.getBaseButtonStyle());
         }
         buttons.get(i).getLabel().setText(servers.get(i).getId());
         buttons.get(i).setServerInformation(servers.get(i));
       } else {
         buttons.get(i).getLabel().setText("<EMPTY>");
       }
-      buttons.get(i).getLabel().setStyle(Styles.INSTANCE.getLabelStyle());
+      buttons.get(i).getLabel().setStyle(Styles.INSTANCE.getBaseLabelStyle());
     }
   }
 }
