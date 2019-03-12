@@ -35,17 +35,30 @@ public class LobbyScreen extends AbstractScreen {
     Table startTable = new Table();
     startTable.setFillParent(true);
     startTable.top().padTop(100);
-    if(Data.INSTANCE.isHosting()){
+    if (Data.INSTANCE.isHosting()) {
       TextButton startButton = UIFactory.createStartButton("Start");
       startTable.add(startButton);
       startButton.addListener(UIFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.START);
+        while (Data.INSTANCE.getMe() == null) {
+          Thread.sleep(0);
+        }
+        Screens.INSTANCE.showScreen(GameScreen.class);
         return true;
       }));
-      startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
-    }else {
+    } else {
       Label waitingLabel = UIFactory.createColouredLabel("Waiting for Host");
       startTable.add(waitingLabel);
+      new Thread(() -> {
+        while ((Data.INSTANCE.peekUpdate() == null || !Data.INSTANCE.peekUpdate().isStart())) {
+          try {
+            Thread.sleep(0);
+          } catch (InterruptedException e) {
+            this.logger.error(e);
+          }
+        }
+        Screens.INSTANCE.showScreen(GameScreen.class);
+      }).start();
     }
     dataTable.addActor(startTable);
     //add table to store players joining server
@@ -59,6 +72,5 @@ public class LobbyScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
-
   }
 }

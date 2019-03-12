@@ -43,6 +43,9 @@ public class Client {
     return this.queue.poll();
   }
 
+  public Update peekUpdate(){
+    return queue.peek();
+  }
   /**
    * Gets id.
    *
