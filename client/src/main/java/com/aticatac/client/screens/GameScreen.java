@@ -209,7 +209,7 @@ public class GameScreen extends AbstractScreen {
       }
     }
     tanks.end();
-    if (update != null) {
+    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
       hudUpdate.update(update);
     }
     batch.begin();
