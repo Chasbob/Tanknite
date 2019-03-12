@@ -1,11 +1,8 @@
-package com.aticatac.server.components;
+package com.aticatac.common.components;
 
-import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import org.apache.commons.collections4.BidiMap;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,7 +14,6 @@ import java.util.HashMap;
  * @author Claire Fletcher
  */
 public class Physics extends Component {
-
   /**
    * The gravity acting for all objects
    */
@@ -39,7 +35,6 @@ public class Physics extends Component {
    */
   private int velocity = 10;
 
-
   /**
    * Creates a new Physics with a parent.
    *
@@ -49,46 +44,35 @@ public class Physics extends Component {
     super(gameObject);
   }
 
-
   /**
    * Checks if the object can move in a direction and returns if it can and the new/current position.
    *
    * @return Position of the object
    */
   private Object[] move(String direction) {
-
     //the position for this tank.
     Position position = this.getGameObject().getComponent(Transform.class).getPosition();
-
     //If the health is below 10 then tank cannot move
-    if((this.getGameObject().getComponent(Health.class).getHealth()) <= 10){
-
+    if ((this.getGameObject().getComponent(Health.class).getHealth()) <= 10) {
       Object[] cannotMove = {"none", position};
       return cannotMove;
     }
-
     //Old Positions
     int oldX = position.getX();
     int oldY = position.getY();
-
     //new proposed positions
     int newX = oldX;
     int newY = oldY;
-
     //change in time for calculations
     int dt = 1;
-
     //Set acceleration
     setAcceleration();
-
     //velocity altered if there is a power up
     if (acceleration != 0) {
       velocity = velocity + (acceleration * dt);
     }
-
     // travelling
-    int movement = velocity*dt;
-
+    int movement = velocity * dt;
     //Calculates the new coordinates
     if (direction.equals("down")) {
       //only moving on y coord
@@ -106,16 +90,12 @@ public class Physics extends Component {
       //only moving on x coord
       newX = oldX - (movement);
     }
-
     Position newPosition = new Position(newX, newY);
-
     if (newPosition.getX() > 1920 || newPosition.getX() < 30 || newPosition.getY() > 1920 || newPosition.getY() < 30) {
       return new Object[]{"none", position};
     }
-
     //Returning a collision type and also the position
     return collision(newPosition, position, "tank");
-
   }
 
   /**
@@ -139,15 +119,11 @@ public class Physics extends Component {
     //then add those to the original x and y
     int newX = xCoord + distanceX;
     int newY = yCoord + distanceY;
-
     Position newPosition = new Position(newX, newY);
-
     //returning a collision type and also the position
     Object[] returnPosition = collision(newPosition, position, "bullet");
     return returnPosition;
-
   }
-
 
   /**
    * Checks if object can move forwards and returns new position
@@ -185,117 +161,90 @@ public class Physics extends Component {
     return move("right");
   }
 
-
-    /**
-     * Collision method to check if objects have collided
-     *
-     * @param newPosition The previous position of the tank
-     * @param oldPosition The new calculates position of the tank
-     * @return An array of the collision type and the new position
-     */
-    //TODO new bullet collision method
-    private Object[] collision (Position newPosition, Position oldPosition, String objectType) {
-
-
-      if(objectType == "tank"){
-
-        //creates and sets the new box coords based on the new position
-        ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
-        //removes the old positions
-        this.getGameObject().getComponent(CollisionBox.class).removeBoxFromData(box);
-        //sets the new positions
-        this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(newPosition);
-        //gets new position box
-        box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
-
-
-        //checks the box collision coords against the occupied
-        for(int i=0; i<box.size(); i++){
-
-          //map of the coordinates that are occupied
-          HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
-
-          Position position = box.get(i);
-          Object[] returnPosition = getCollisionArray(position, oldPosition, occupiedCoordinates);
-          if(returnPosition != null){
-            //sets the box positions back to the old ones and puts that back into the data server
-            this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(oldPosition);
-            this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
-            return returnPosition;
-          }
-
+  /**
+   * Collision method to check if objects have collided
+   *
+   * @param newPosition The previous position of the tank
+   * @param oldPosition The new calculates position of the tank
+   * @return An array of the collision type and the new position
+   */
+  //TODO new bullet collision method
+  private Object[] collision(Position newPosition, Position oldPosition, String objectType) {
+    if (objectType == "tank") {
+      //creates and sets the new box coords based on the new position
+      ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+      //removes the old positions
+      this.getGameObject().getComponent(CollisionBox.class).removeBoxFromData(box);
+      //sets the new positions
+      this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(newPosition);
+      //gets new position box
+      box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+      //checks the box collision coords against the occupied
+      for (int i = 0; i < box.size(); i++) {
+        //map of the coordinates that are occupied
+        HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+        Position position = box.get(i);
+        Object[] returnPosition = getCollisionArray(position, oldPosition, occupiedCoordinates);
+        if (returnPosition != null) {
+          //sets the box positions back to the old ones and puts that back into the data server
+          this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(oldPosition);
+          this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
+          return returnPosition;
         }
-
-
-        //adds the box positions to the server
-        this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
-
       }
-
-      //string for what has been collided with
-      String collisionType;
-
-      //map of the coordinates that are occupied
-      HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
-
-
-      //checks the position of the tank against the occupied coordinates
-      Object[] returnPosition = getCollisionArray(newPosition, oldPosition, occupiedCoordinates);
-      if (returnPosition != null) return returnPosition;
-
-      //else:
-      collisionType = "none";
-
-      //Returning a collision type and also the position
-      Object[] noCollision = new Object[2];
-      noCollision[0] = collisionType;
-      noCollision[1] = newPosition;
-
-      return noCollision;
-
+      //adds the box positions to the server
+      this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
     }
+    //string for what has been collided with
+    String collisionType;
+    //map of the coordinates that are occupied
+    HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+    //checks the position of the tank against the occupied coordinates
+    Object[] returnPosition = getCollisionArray(newPosition, oldPosition, occupiedCoordinates);
+    if (returnPosition != null) {
+      return returnPosition;
+    }
+    //else:
+    collisionType = "none";
+    //Returning a collision type and also the position
+    Object[] noCollision = new Object[2];
+    noCollision[0] = collisionType;
+    noCollision[1] = newPosition;
+    return noCollision;
+  }
 
   /**
-   *
    * @param newPosition
    * @param oldPosition
    * @param occupiedCoordinates
    * @return
    */
-    private Object[] getCollisionArray(Position newPosition, Position oldPosition, HashMap<Position, String> occupiedCoordinates) {
-
-      String collisionType;
-
-      if (occupiedCoordinates.containsKey(newPosition)) {
-
-        collisionType = occupiedCoordinates.get(newPosition);
-
-        //checks the coordinate is not itself
-        if (collisionType.equals(this.getGameObject().getName())) {
-          return null;
-        }
-
-        //Returning a collision type and also the position
-        Object[] returnPosition = new Object[2];
-        returnPosition[0] = collisionType;
-        returnPosition[1] = oldPosition;
-
-        return returnPosition;
+  private Object[] getCollisionArray(Position newPosition, Position oldPosition, HashMap<Position, String> occupiedCoordinates) {
+    String collisionType;
+    if (occupiedCoordinates.containsKey(newPosition)) {
+      collisionType = occupiedCoordinates.get(newPosition);
+      //checks the coordinate is not itself
+      if (collisionType.equals(this.getGameObject().getName())) {
+        return null;
       }
-      return null;
+      //Returning a collision type and also the position
+      Object[] returnPosition = new Object[2];
+      returnPosition[0] = collisionType;
+      returnPosition[1] = oldPosition;
+      return returnPosition;
     }
+    return null;
+  }
 
-
-    /**
-     * Sets acceleration for the object.
-     */
-    //Allows for power ups that increase this, to happen.
-    private void setAcceleration() {
-
-        if (this.getGameObject().getComponent(Acceleration.class).getPowerUpExists()) {
-            acceleration = (gravity * (this.getGameObject().getComponent(Acceleration.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
-        } else {
-            acceleration = 0;
-        }
+  /**
+   * Sets acceleration for the object.
+   */
+  //Allows for power ups that increase this, to happen.
+  private void setAcceleration() {
+    if (this.getGameObject().getComponent(Acceleration.class).getPowerUpExists()) {
+      acceleration = (gravity * (this.getGameObject().getComponent(Acceleration.class).getFrictionCoefficient() + objectMass) + thrust) / objectMass;
+    } else {
+      acceleration = 0;
     }
+  }
 }

@@ -8,7 +8,6 @@ import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.test.Survival;

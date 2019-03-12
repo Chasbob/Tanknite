@@ -1,4 +1,4 @@
-package com.aticatac.server.components;
+package com.aticatac.common.components;
 
 public class delete {
 

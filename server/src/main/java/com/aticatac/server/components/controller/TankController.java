@@ -1,12 +1,15 @@
 package com.aticatac.server.components.controller;
 
+import com.aticatac.common.components.Acceleration;
+import com.aticatac.common.components.Ammo;
+import com.aticatac.common.components.BulletDamage;
 import com.aticatac.common.components.Component;
-import com.aticatac.server.components.DataServer;
+import com.aticatac.common.components.DataServer;
+import com.aticatac.common.components.Health;
+import com.aticatac.common.components.Physics;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.*;
-
 // components for server side make in server or import from common?
 // needs component of Physics
 

@@ -1,18 +1,21 @@
 package com.aticatac.server.components.ai;
 
+import com.aticatac.common.components.Ammo;
 import com.aticatac.common.components.Component;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
+import com.aticatac.common.components.Health;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
 // Things left TODO:
 //  - line of sight
 //  - powerup stuff
 //  - getting information, all enemies, all powerups
+
 /**
  * The AI component. Where would life be without the AI component?
  *
@@ -20,7 +23,7 @@ import java.util.*;
  */
 public class AI extends Component {
   private final static int VIEW_RANGE = 640; // some value equivalent to the actual view range that a player would have
-  private final static Graph graph = new Graph();
+  private final Graph graph;
   private final GameObject tank;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
@@ -52,6 +55,7 @@ public class AI extends Component {
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
+    this.graph = new Graph();
   }
 
   /**
@@ -60,7 +64,7 @@ public class AI extends Component {
    * @return A decision
    */
   public Decision getDecision() {
-    checkLineOfSightToPosition(tankPos, new Position(0,0));
+    checkLineOfSightToPosition(tankPos, new Position(0, 0));
     // Update information
     tankPos = tank.getComponent(Transform.class).getPosition();
     tankHealth = tank.getComponent(Health.class).getHealth();
@@ -374,8 +378,7 @@ public class AI extends Component {
     }
     if (!newClearPositions.isEmpty()) {
       clearPositions = newClearPositions;
-    }
-    else {
+    } else {
       recentlyVisitedNodes.clear();
     }
     Random rand = new Random();
@@ -412,8 +415,8 @@ public class AI extends Component {
     String[][] map = graph.getMap();
     SearchNode fromNode = graph.getNearestNode(from);
     SearchNode toNode = graph.getNearestNode(to);
-    System.out.println("From " + from + ", Array[" + fromNode.getX()/32 + "][" + fromNode.getY()/32 + "]");
-    System.out.println("To " + to + ", Array[" + toNode.getX()/32 + "][" + toNode.getY()/32 + "]");
+    System.out.println("From " + from + ", Array[" + fromNode.getX() / 32 + "][" + fromNode.getY() / 32 + "]");
+    System.out.println("To " + to + ", Array[" + toNode.getX() / 32 + "][" + toNode.getY() / 32 + "]");
     return true;
   }
 
@@ -485,7 +488,7 @@ public class AI extends Component {
     ArrayList<GameObject> inRange = new ArrayList<>();
     for (GameObject enemy : allObjects) {
       if (Math.abs(enemy.getTransform().getX() - position.getX()) <= range ||
-      Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
+          Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
         inRange.add(enemy);
       }
     }

@@ -6,7 +6,7 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.DataServer;
+import com.aticatac.common.components.DataServer;
 import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.prefabs.TankObject;
 import java.util.HashMap;

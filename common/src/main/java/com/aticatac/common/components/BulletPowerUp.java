@@ -1,4 +1,4 @@
-package com.aticatac.server.components;
+package com.aticatac.common.components;
 
 import com.aticatac.common.components.Component;
 import com.aticatac.common.objectsystem.GameObject;

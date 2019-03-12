@@ -4,8 +4,8 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.BulletDamage;
-import com.aticatac.server.components.Damage;
+import com.aticatac.common.components.BulletDamage;
+import com.aticatac.common.components.Damage;
 import com.aticatac.server.prefabs.BulletObject;
 
 public class TurretController extends Component {

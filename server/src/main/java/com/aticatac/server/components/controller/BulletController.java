@@ -4,13 +4,7 @@ import com.aticatac.common.components.Component;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.Damage;
-import com.aticatac.server.components.DataServer;
-import com.aticatac.server.components.Physics;
-
-import static com.aticatac.common.objectsystem.GameObject.destroy;
-import com.aticatac.server.components.Physics;
-
+import com.aticatac.common.components.Physics;
 
 /**
  * The type BulletController.
