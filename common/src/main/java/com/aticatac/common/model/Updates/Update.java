@@ -10,10 +10,11 @@ import java.util.LinkedHashMap;
  */
 public class Update extends Model {
   private final boolean changed;
+  private boolean start;
   /**
    * The Players.
    */
-  LinkedHashMap<String, Container> players;
+  private LinkedHashMap<String, Container> players;
   //    private boolean objectChanged;
 //  private Container rootContainer;
   private boolean playersChanged;
@@ -28,6 +29,15 @@ public class Update extends Model {
     this.changed = changed;
     this.players = new LinkedHashMap<>();
     this.playersChanged = true;
+    this.start = false;
+  }
+
+  public boolean isStart() {
+    return start;
+  }
+
+  public void setStart(boolean start) {
+    this.start = start;
   }
 
   public Container getI(int i) {
@@ -72,10 +82,10 @@ public class Update extends Model {
   @Override
   public String toString() {
     String toString = "Update{" +
-    "changed=" + changed +
-    ", players=" + players.toString() +
-    ", playersChanged=" + playersChanged +
-    '}';
+        "changed=" + changed +
+        ", players=" + players.toString() +
+        ", playersChanged=" + playersChanged +
+        '}';
     return toString;
   }
 }

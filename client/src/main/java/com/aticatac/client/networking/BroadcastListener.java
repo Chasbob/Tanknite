@@ -1,6 +1,5 @@
 package com.aticatac.client.networking;
 
-import com.aticatac.common.CommonData;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.ServerInformation;
@@ -13,8 +12,8 @@ import java.util.concurrent.Callable;
  * The type Broadcast listener.
  */
 class BroadcastListener implements Callable<ServerInformation> {
-  private DatagramSocket socket;
   private final ModelReader modelReader;
+  private DatagramSocket socket;
 
   public BroadcastListener(DatagramSocket socket) {
     this.socket = socket;

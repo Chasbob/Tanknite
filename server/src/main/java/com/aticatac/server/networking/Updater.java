@@ -33,7 +33,7 @@ public class Updater implements Runnable {
 
   private void updatePlayers() {
     for (GameObject c :
-    Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
+        Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
       this.update.addPlayer(new Container(c));
     }
   }
@@ -67,6 +67,14 @@ public class Updater implements Runnable {
     final Server.ServerData s = Server.ServerData.INSTANCE;
     for (Client c : s.getClients().values()) {
       c.sendUpdate(this.update);
+    }
+  }
+
+  void tcpBroadcast(Update update) {
+    this.logger.trace("Broadcasting...");
+    final Server.ServerData s = Server.ServerData.INSTANCE;
+    for (Client c : s.getClients().values()) {
+      c.sendUpdate(update);
     }
   }
 
