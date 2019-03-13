@@ -38,9 +38,11 @@ public class ServerScreen extends AbstractScreen {
     //add table with join button to get into lobby after entering username
     Table buttonTable = new Table();
     buttonTable.setFillParent(true);
+    dataTable.addActor(buttonTable);
     buttonTable.top().padTop(100);
     TextButton joinButton = UIFactory.createStartButton("Join");
-    buttonTable.add(joinButton).padRight(50);
+    buttonTable.defaults().padLeft(25).padRight(25);
+    buttonTable.add(joinButton);
     joinButton.addListener(UIFactory.newListenerEvent(() -> {
       if (serverSelected) {
         UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
@@ -48,7 +50,13 @@ public class ServerScreen extends AbstractScreen {
       return false;
     }
     ));
-    dataTable.addActor(buttonTable);
+    TextButton manualButton = UIFactory.createStartButton("Manual");
+    manualButton.addListener(UIFactory.newListenerEvent(() -> {
+      Data.INSTANCE.setManualConfigForServer(true);
+      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      return false;
+    }));
+    buttonTable.add(manualButton);
     //add table to store all current open servers
     Table serversTable = new Table();
     serversTable.setFillParent(true);
@@ -71,14 +79,6 @@ public class ServerScreen extends AbstractScreen {
       }
     }).start();
     dataTable.addActor(serversTable);
-    //add labels to serverDetailsTable
-    TextButton manualButton = UIFactory.createStartButton("Manual");
-    manualButton.addListener(UIFactory.newListenerEvent(() -> {
-      Data.INSTANCE.setManualConfigForServer(true);
-      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
-      return false;
-    }));
-    buttonTable.add(manualButton);
   }
 
   @Override
