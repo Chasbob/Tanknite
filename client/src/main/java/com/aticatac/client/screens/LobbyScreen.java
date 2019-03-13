@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Data;
+import com.aticatac.client.util.PopulatePlayers;
 import com.aticatac.common.model.Command;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -10,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Lobby screen.
  */
 public class LobbyScreen extends AbstractScreen {
+  private PopulatePlayers populatePlayers;
+
   /**
    * Instantiates a new Lobby screen.
    */
@@ -53,6 +56,8 @@ public class LobbyScreen extends AbstractScreen {
     playersTable.setFillParent(true);
     playersTable.defaults().pad(10).left().width(450);
     playersTable.top().padTop(150);
+    populatePlayers = new PopulatePlayers(playersTable, countLabel);
+    populatePlayers.start();
     //UIFactory.populateLobby(playersTable, countLabel);
     dataTable.addActor(playersTable);
   }

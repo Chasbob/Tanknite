@@ -82,7 +82,8 @@ public enum Data {
   public Update nextUpdate() {
     return client.nextUpdate();
   }
-  public Update peekUpdate(){
+
+  public Update peekUpdate() {
     return client.peekUpdate();
   }
 
@@ -109,8 +110,8 @@ public enum Data {
    *
    * @return the players
    */
-  public ArrayList<Container> getPlayers() {
-    return new ArrayList<>(players.values());
+  public ArrayList<String> getPlayers() {
+    return this.client.getPlayers();
   }
 
   /**
@@ -140,23 +141,22 @@ public enum Data {
   public Container getPlayerPos() {
     return playerPos;
   }
-
-  /**
-   * Sets update.
-   *
-   * @param update the update
-   */
-  public void setUpdate(Update update) {
-    this.update = update;
-    this.players = this.update.getPlayers();
-    if (playerPos != null) {
-      if (Math.abs(this.playerPos.getX() - this.players.get(client.getId()).getX()) > 1) {
-        this.logger.info("moved");
-      }
-    }
-    this.playerPos = this.players.get(client.getId());
-    this.playerList = getPlayers();
-  }
+//  /**
+//   * Sets update.
+//   *
+//   * @param update the update
+//   */
+//  public void setUpdate(Update update) {
+//    this.update = update;
+//    this.players = this.update.getPlayers();
+//    if (playerPos != null) {
+//      if (Math.abs(this.playerPos.getX() - this.players.get(client.getId()).getX()) > 1) {
+//        this.logger.info("moved");
+//      }
+//    }
+//    this.playerPos = this.players.get(client.getId());
+//    this.playerList = getPlayers();
+//  }
 
   /**
    * Gets me.

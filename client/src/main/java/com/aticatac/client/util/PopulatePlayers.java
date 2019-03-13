@@ -1,6 +1,5 @@
 package com.aticatac.client.util;
 
-import com.aticatac.client.screens.UIFactory;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ public class PopulatePlayers extends Thread {
   private final Table playerTable;
   private final Label playerCount;
   private final Logger logger;
+  private final ArrayList<Label> labels;
 
   /**
    * Instantiates a new Populate players.
@@ -24,6 +24,13 @@ public class PopulatePlayers extends Thread {
     this.playerTable = serverTable;
     this.playerCount = playerCount;
     this.logger = Logger.getLogger(getClass());
+    labels = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      Label label = new Label("", Styles.INSTANCE.getBaseLabelStyle());
+      this.labels.add(label);
+      this.playerTable.add(label);
+      this.playerTable.row();
+    }
   }
 
   @Override
@@ -41,20 +48,13 @@ public class PopulatePlayers extends Thread {
   }
 
   private void list() {
-    this.logger.trace("Listing...");
-    //TODO
-    ArrayList<String> players;
-    players = new ArrayList<>(Data.INSTANCE.getClients());
-    this.logger.trace("Players: " + players.toString());
-    this.playerTable.clearChildren();
-    this.logger.trace("Got update! " + players.size());
-    this.logger.trace("Listing");
-    for (String player : players) {
-      this.logger.trace("Player: " + player);
-      Label playerLabel = UIFactory.createLabel(player);
-      this.playerTable.add(playerLabel);
-      this.playerTable.row();
+    ArrayList<String> players = Data.INSTANCE.getClients();
+    for (int i = 0; i < labels.size(); i++) {
+      if (i < players.size()) {
+        labels.get(i).setText(players.get(i));
+      } else {
+        labels.get(i).setText("<EMPTY>");
+      }
     }
-    this.playerCount.setText(players.size());
   }
 }

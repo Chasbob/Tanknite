@@ -14,6 +14,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
@@ -24,6 +25,7 @@ public class Client {
   private final Logger logger;
   private final ConcurrentLinkedQueue<Update> queue;
   private final ModelReader modelReader;
+  private final ArrayList<String> players;
   private String id;
   private PrintStream printer;
   private BufferedReader reader;
@@ -35,8 +37,9 @@ public class Client {
    */
   public Client() {
     this.logger = Logger.getLogger(getClass());
-    queue = new ConcurrentLinkedQueue<>();
+    this.queue = new ConcurrentLinkedQueue<>();
     this.modelReader = new ModelReader();
+    this.players = new ArrayList<>();
   }
 
   public Update nextUpdate() {
@@ -51,9 +54,18 @@ public class Client {
     }
   }
 
-  public Update peekUpdate(){
+  public ArrayList<String> getPlayers() {
+    if (this.queue.peek() != null) {
+      this.players.clear();
+      this.players.addAll(this.queue.peek().getPlayers().keySet());
+    }
+    return this.players;
+  }
+
+  public Update peekUpdate() {
     return queue.peek();
   }
+
   /**
    * Gets id.
    *
