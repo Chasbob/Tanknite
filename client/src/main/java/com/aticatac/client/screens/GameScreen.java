@@ -57,12 +57,12 @@ public class GameScreen extends AbstractScreen {
         maxY = 1920;
         try {
             player = new Container();
-            ammoValue = UIFactory.createLabel("");
-            killCount = UIFactory.createLabel("");
-            playerCount = UIFactory.createLabel("1");
-            fpsValue = UIFactory.createLabel("");
-            tankXY = UIFactory.createLabel("");
-            direction = UIFactory.createLabel("");
+            ammoValue = UIFactory.createGameLabel("");
+            killCount = UIFactory.createGameLabel("");
+            playerCount = UIFactory.createGameLabel("1");
+            fpsValue = UIFactory.createGameLabel("");
+            tankXY = UIFactory.createGameLabel("");
+            direction = UIFactory.createGameLabel("");
             map = new TmxMapLoader().load("maps/map.tmx");
             tankTexture = new Texture("img/tank.png");
             traction = true;
@@ -94,11 +94,11 @@ public class GameScreen extends AbstractScreen {
         super.addToRoot(countTable);
         countTable.top().left();
         countTable.defaults().padTop(10).padLeft(10).left();
-        Label players = UIFactory.createLabel("player count: ");
+        Label players = UIFactory.createGameLabel("player count: ");
         countTable.add(players);
         countTable.add(playerCount);
         countTable.row();
-        Label kills = UIFactory.createLabel("kills: ");
+        Label kills = UIFactory.createGameLabel("kills: ");
         countTable.add(kills);
         countTable.add(killCount);
         //create table for kill feed - BOTTOM LEFT
@@ -106,14 +106,14 @@ public class GameScreen extends AbstractScreen {
         super.addToRoot(killTable);
         killTable.bottom().left();
         killTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
-        Label tempKill = UIFactory.createGameLabel("Archie killed Ewan");
+        Label tempKill = UIFactory.createGameLabel("");
         killTable.add(tempKill);
         //create table for ammo - BOTTOM RIGHT
         Table ammoTable = new Table();
         super.addToRoot(ammoTable);
         ammoTable.bottom().right();
         ammoTable.defaults().padRight(10).padTop(10).padBottom(20).left();
-        Label ammo = UIFactory.createLabel("ammo: ");
+        Label ammo = UIFactory.createGameLabel("ammo: ");
         ammoTable.add(ammo);
         ammoTable.add(ammoValue);
         //create table for testing contatining stats
@@ -121,15 +121,15 @@ public class GameScreen extends AbstractScreen {
         super.addToRoot(statsTable);
         statsTable.top().right();
         statsTable.defaults().padRight(10).padTop(10).padBottom(20).left();
-        Label fps = UIFactory.createLabel("FPS: ");
-        Label tank = UIFactory.createLabel("TANK: ");
+        Label fps = UIFactory.createGameLabel("FPS: ");
+        Label tank = UIFactory.createGameLabel("TANK: ");
         statsTable.add(tank);
         statsTable.add(tankXY);
         statsTable.row();
         statsTable.add(fps);
         statsTable.add(this.fpsValue);
         statsTable.row();
-        Label direction = UIFactory.createLabel("DIRECTION:");
+        Label direction = UIFactory.createGameLabel("DIRECTION:");
         statsTable.add(direction);
         statsTable.add(this.direction);
         //create table for pop up label when try move and tank cant
@@ -148,7 +148,7 @@ public class GameScreen extends AbstractScreen {
         popUpTable.defaults().pad(10).width(150);
         //create style for pop up tables
         Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGB565);
-        tableColour.setColor(Color.DARK_GRAY);
+        tableColour.setColor(Color.BLACK);
         tableColour.fill();
         popUpTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
         //create resume button
@@ -283,11 +283,11 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void refresh() {
-        ammoValue = UIFactory.createLabel("30");
-        killCount = UIFactory.createLabel("0");
-        playerCount = UIFactory.createLabel("1");
-        tankXY = UIFactory.createLabel("");
-        direction = UIFactory.createLabel("");
+        ammoValue = UIFactory.createGameLabel("");
+        killCount = UIFactory.createGameLabel("");
+        playerCount = UIFactory.createGameLabel("");
+        tankXY = UIFactory.createGameLabel("");
+        direction = UIFactory.createGameLabel("");
         popUpTable.setVisible(false);
         alertTable.setVisible(false);
         traction = true;

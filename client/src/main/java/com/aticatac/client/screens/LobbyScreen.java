@@ -36,11 +36,14 @@ public class LobbyScreen extends AbstractScreen {
     lobbyDetailsTable.add(maxLabel);
     //add table with start button or waiting for host label
     Table startTable = new Table();
+    startTable.defaults().padRight(25).padLeft(25);
     startTable.setFillParent(true);
     startTable.top().padTop(100);
     if (Data.INSTANCE.isHosting()) {
       TextButton startButton = UIFactory.createStartButton("Start");
       startTable.add(startButton);
+      TextButton aiButton = UIFactory.createStartButton("Fill AI");
+      startTable.add(aiButton);
       startButton.addListener(UIFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.START);
         return true;
