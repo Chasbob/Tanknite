@@ -46,10 +46,7 @@ public class LobbyScreen extends AbstractScreen {
         Screens.INSTANCE.showScreen(GameScreen.class);
         return true;
       }));
-<<<<<<< HEAD
       startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
-=======
->>>>>>> b56cd0dc85589aa7ec74c2603afc79078bee3442
     } else {
       Label waitingLabel = UIFactory.createColouredLabel("Waiting for Host");
       startTable.add(waitingLabel);

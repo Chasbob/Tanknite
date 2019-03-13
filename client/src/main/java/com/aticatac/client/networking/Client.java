@@ -43,7 +43,6 @@ public class Client {
     return this.queue.poll();
   }
 
-<<<<<<< HEAD
   public boolean isStarted() {
     if (this.queue.peek() != null) {
       return this.queue.peek().isStart();
@@ -52,11 +51,9 @@ public class Client {
     }
   }
 
-=======
   public Update peekUpdate(){
     return queue.peek();
   }
->>>>>>> b56cd0dc85589aa7ec74c2603afc79078bee3442
   /**
    * Gets id.
    *
