@@ -35,7 +35,7 @@ public class LobbyScreen extends AbstractScreen {
     Table startTable = new Table();
     startTable.setFillParent(true);
     startTable.top().padTop(100);
-    if(Data.INSTANCE.isHosting()){
+    if (Data.INSTANCE.isHosting()) {
       TextButton startButton = UIFactory.createStartButton("Start");
       startTable.add(startButton);
       startButton.addListener(UIFactory.newListenerEvent(() -> {
@@ -43,7 +43,7 @@ public class LobbyScreen extends AbstractScreen {
         return true;
       }));
       startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
-    }else {
+    } else {
       Label waitingLabel = UIFactory.createColouredLabel("Waiting for Host");
       startTable.add(waitingLabel);
     }
@@ -59,6 +59,5 @@ public class LobbyScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
-
   }
 }

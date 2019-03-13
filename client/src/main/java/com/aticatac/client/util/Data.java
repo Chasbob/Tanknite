@@ -52,6 +52,10 @@ public enum Data {
     logger = Logger.getLogger(getClass());
   }
 
+  public boolean isStarted() {
+    return client.isStarted();
+  }
+
   /**
    * Is singleplayer boolean.
    *

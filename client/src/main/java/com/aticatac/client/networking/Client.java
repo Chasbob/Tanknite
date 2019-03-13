@@ -43,6 +43,14 @@ public class Client {
     return this.queue.poll();
   }
 
+  public boolean isStarted() {
+    if (this.queue.peek() != null) {
+      return this.queue.peek().isStart();
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Gets id.
    *
@@ -85,7 +93,7 @@ public class Client {
       }
       this.id = output.getId();
       this.logger.info("Exiting 'connect' cleanly.");
-      this.connected=true;
+      this.connected = true;
       return Response.ACCEPTED;
     } catch (IOException e) {
       this.logger.warn("No Server.");
