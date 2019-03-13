@@ -56,5 +56,6 @@ public class PopulatePlayers extends Thread {
         labels.get(i).setText("<EMPTY>");
       }
     }
+    this.playerCount.setText(players.size());
   }
 }
