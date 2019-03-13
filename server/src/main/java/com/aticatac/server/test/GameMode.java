@@ -8,7 +8,11 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.common.prefabs.TankObject;
+import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.log4j.Logger;
@@ -40,6 +44,8 @@ abstract class GameMode implements Game {
   @Override
   public void playerInput(String player, Command cmd) {
     //Gets the tank that the command came from
+    if (cmd == null)
+      return;
     var tank = playerMap.get(player);
     switch (cmd) {
       //TODO set name of tank game object to player id and pass that in to logic.
@@ -70,10 +76,24 @@ abstract class GameMode implements Game {
     if (!playerMap.containsKey(player)) {
       playerMap.put(player, createTank(player, false));
       Position p = playerMap.get(player).getTransform().getPosition();
-      for (int i = 0; i < 2; i++) {
-        playerMap.put(player + "AI" + i, createTank(player + "AI" + i, true));
+      addAI(9);
+    }
+  }
+
+  public void addAI(int numberToAdd) {
+    for (int i = 0; i < numberToAdd; i++) {
+      playerMap.put("AI" + i, createTank("AI" + i, true));
+    }
+  }
+
+  public Collection<GameObject> getAI() {
+    Collection<GameObject> ais = new ArrayList<>();
+    for (GameObject tank : playerMap.values()) {
+      if (tank.componentExists(AI.class)) {
+        ais.add(tank);
       }
     }
+    return ais;
   }
 
   private TankObject createTank(String player, boolean isAI) {

@@ -34,8 +34,8 @@ public class RunAI implements Runnable {
   public void run() {
     while (!Thread.currentThread().isInterrupted() && run) {
       double nanoTime = System.nanoTime();
-//      for (String g : Server.ServerData.INSTANCE.getGame().getAi()) {
-//        Server.ServerData.INSTANCE.getGame().playerInput(g, this.players.get(g).getComponent(AI.class).getDecision().getCommand());
+//      for (GameObject g : Server.ServerData.INSTANCE.getGame().getAI()) {
+//        Server.ServerData.INSTANCE.getGame().playerInput(g.getName(), g.getComponent(AI.class).getDecision().getCommand());
 //      }
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {

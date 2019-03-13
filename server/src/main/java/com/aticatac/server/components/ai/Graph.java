@@ -4,7 +4,6 @@ import com.aticatac.common.components.transform.Position;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Queue;
 import java.util.Scanner;
 
 /**
@@ -14,25 +13,26 @@ import java.util.Scanner;
  * @author Dylan
  */
 class Graph {
-  private static final int separation = 32;
   /**
-   * A pathfinder that can generate a path in the graph
+   * Position difference between two connected nodes
    */
-  private final PathFinder pf;
+  private static final int separation = 32;
   /**
    * The nodes that make up the graph
    */
   private final HashMap<String, SearchNode> nodes;
+  /**
+   * String character representation of the game's map
+   */
   private final String[][] map;
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
    */
   Graph() {
-    pf = new PathFinder();
     nodes = new HashMap<>();
-    // Add nodes
     map = convertTMXFileToArray();
+    // Add nodes
     int x, y;
     x = 0;
     for (int i = separation; i < (map.length * separation) + separation; i += separation) {
@@ -62,18 +62,6 @@ class Graph {
     }
   }
 
-  private static void rotateMap(String[][] map) {
-    if (map == null) {
-      return;
-    }
-    if (map.length != map[0].length)//INVALID INPUT
-    {
-      return;
-    }
-    getTranspose(map);
-    rotateAlongMidRow(map);
-  }
-
   private static void getTranspose(String[][] map) {
     for (int i = 0; i < map.length; i++) {
       for (int j = i + 1; j < map.length; j++) {
@@ -85,26 +73,13 @@ class Graph {
   }
 
   private static void rotateAlongMidRow(String[][] map) {
-    int len = map.length;
-    for (int i = 0; i < len / 2; i++) {
-      for (int j = 0; j < len; j++) {
+    for (int i = 0; i < map.length / 2; i++) {
+      for (int j = 0; j < map.length; j++) {
         String temp = map[i][j];
-        map[i][j] = map[len - 1 - i][j];
-        map[len - 1 - i][j] = temp;
+        map[i][j] = map[map.length - 1 - i][j];
+        map[map.length - 1 - i][j] = temp;
       }
     }
-  }
-
-  /**
-   * Uses the pathfinder to generate queue of commands that define a path from one location to another.
-   *
-   * @param from Start position
-   * @param to   Goal position
-   * @return A queue of Commands that execute the path
-   */
-  Queue<SearchNode> getPathToLocation(Position from, Position to/*, ArrayList<SearchNode> occupiedNodes*/) {
-//    pf.setOccupiedNodes(occupiedNodes);
-    return pf.getPathToLocation(getNearestNode(from), getNearestNode(to));
   }
 
   /**
@@ -117,7 +92,7 @@ class Graph {
     SearchNode closestNode = null;
     double distanceToClosestNode = Double.MAX_VALUE;
     for (SearchNode node : nodes.values()) {
-      double distanceToTank = pf.euclideanDistance(node, position);
+      double distanceToTank = Math.sqrt(Math.pow(node.getY() - position.getY(), 2) + Math.pow(node.getX() - position.getX(), 2));
       if (distanceToTank < distanceToClosestNode) {
         closestNode = node;
         distanceToClosestNode = distanceToTank;
@@ -146,10 +121,19 @@ class Graph {
     return inRange;
   }
 
+  /**
+   * Gets a String character representation of the game's map
+   * @return A String character representation of the game's map
+   */
   String[][] getMap() {
     return map;
   }
 
+  /**
+   * Reads the map.tmx file containing a representation of the game's map into a String array.
+   *
+   * @return A representation of the map as an array
+   */
   private String[][] convertTMXFileToArray() {
     Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
     for (int i = 0; i < 70; i++) // map starts at line 71
@@ -158,7 +142,10 @@ class Graph {
     for (int i = 0; i < 60; i++) {
       map[i] = s.nextLine().split(",");
     }
-    rotateMap(map);
+    // Rotate map
+    getTranspose(map);
+    rotateAlongMidRow(map);
+    // Add "1"s on positions adjacent to walls
     removePositionsNextToWalls(map);
     return map;
   }

@@ -2,10 +2,7 @@ package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * A PathFinder constructs a path from a start node to a goal node using A* search
@@ -19,11 +16,19 @@ class PathFinder {
     g score = the cost of the path from the start node to the current node
     f score = g + an estimate of the cost from the current node to the goal node
   */
-//  private ArrayList<SearchNode> occupiedNodes = new ArrayList<>();
-//
-//  void setOccupiedNodes(ArrayList<SearchNode> occupiedNodes){
-//    this.occupiedNodes = occupiedNodes;
-//  }
+  /**
+   * The set of nodes which are currently deemed occupied.
+   */
+  private Set<SearchNode> occupiedNodes = new HashSet<>();
+
+  /**
+   * Updates the set of occupied nodes
+   *
+   * @param occupiedNodes The new set of occupied nodes
+   */
+  void setOccupiedNodes(Set<SearchNode> occupiedNodes){
+    this.occupiedNodes = occupiedNodes;
+  }
   /**
    * Uses A* search to find a path from one node to another.
    *
@@ -38,8 +43,8 @@ class PathFinder {
     HashMap<SearchNode, SearchNode> cameFrom = new HashMap<>();
     HashMap<SearchNode, Integer> g = new HashMap<>();
     g.put(start, 0);
-    HashMap<SearchNode, Double> f = new HashMap<>();
-    f.put(start, manhattanDistance(start, goal));
+    HashMap<SearchNode, Integer> f = new HashMap<>();
+    f.put(start, getCostEstimate(start, goal));
     while (!openSet.isEmpty()) {
       SearchNode current = getLowestFScoreNode(openSet, f);
       if (current.equals(goal)) {
@@ -51,9 +56,7 @@ class PathFinder {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + (int)manhattanDistance(connectedNode, current);
-//        if (occupiedNodes.contains(connectedNode))
-//          tempG+=640;
+        int tempG = g.get(current) + manhattanDistance(connectedNode, current);
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
@@ -61,7 +64,7 @@ class PathFinder {
         }
         cameFrom.put(connectedNode, current);
         g.put(connectedNode, tempG);
-        f.put(connectedNode, g.get(connectedNode) + manhattanDistance(connectedNode, goal));
+        f.put(connectedNode, g.get(connectedNode) + getCostEstimate(connectedNode, goal));
       }
     }
     return null;
@@ -92,8 +95,8 @@ class PathFinder {
    * @param f       A mapping from search nodes to f score
    * @return The node with the lowest f score from the set of open nodes
    */
-  SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Double> f) {
-    double lowestScore = Double.MAX_VALUE;
+  SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Integer> f) {
+    int lowestScore = Integer.MAX_VALUE;
     SearchNode lowestScoreNode = openSet.get(0);
     for (SearchNode node : openSet) {
       if (f.get(node) < lowestScore) {
@@ -105,14 +108,17 @@ class PathFinder {
   }
 
   /**
-   * Calculates euclidean distance between two points. Used as a heuristic for A* search.
+   * Returns a cost estimate for travelling from one node to another. Used as a heuristic for A* ('h').
    *
-   * @param from Start position
-   * @param to   End position
-   * @return Euclidean distance between two points
+   * @param from Node to travel from
+   * @param to   Node to travel to
+   * @return Cost estimate to travel from the one node to the other
    */
-  double euclideanDistance(Position from, Position to) {
-    return Math.sqrt(Math.pow(from.getY() - to.getY(), 2) + Math.pow(from.getX() - to.getX(), 2));
+  private int getCostEstimate(SearchNode from, SearchNode to) {
+    if (occupiedNodes.contains(from)) {
+      return manhattanDistance(from, to) + 6400;
+    }
+    return manhattanDistance(from, to);
   }
 
   /**
@@ -122,7 +128,7 @@ class PathFinder {
    * @param to   End position
    * @return Manhattan distance between two points
    */
-  double manhattanDistance(Position from, Position to) {
+  private int manhattanDistance(Position from, Position to) {
     return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
   }
 }
