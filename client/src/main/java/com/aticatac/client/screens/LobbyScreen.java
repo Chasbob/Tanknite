@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Lobby screen.
  */
 public class LobbyScreen extends AbstractScreen {
-  private PopulatePlayers populatePlayers;
 
   /**
    * Instantiates a new Lobby screen.
@@ -28,7 +27,7 @@ public class LobbyScreen extends AbstractScreen {
     //create table for waiting for players label and player count for the lobby
     Table lobbyDetailsTable = super.createTopLabelTable(dataTable);
     //add labels to lobbyDetailsTable
-    Label lookingLabel = UIFactory.createLabel("Looking for players..   ");
+    Label lookingLabel = UIFactory.createLabel("");
     lobbyDetailsTable.add(lookingLabel);
     Label countLabel = UIFactory.createLabel("0");
     lobbyDetailsTable.add(countLabel);
@@ -52,7 +51,6 @@ public class LobbyScreen extends AbstractScreen {
         Data.INSTANCE.sendCommand(Command.START);
         return true;
       }));
-      startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
     } else {
       Label waitingLabel = UIFactory.createColouredLabel("Waiting for Host");
       startTable.add(waitingLabel);
@@ -63,9 +61,8 @@ public class LobbyScreen extends AbstractScreen {
     playersTable.setFillParent(true);
     playersTable.defaults().pad(10).left().width(450);
     playersTable.top().padTop(150);
-    populatePlayers = new PopulatePlayers(playersTable, countLabel);
+    PopulatePlayers populatePlayers = new PopulatePlayers(playersTable, countLabel, lookingLabel);
     populatePlayers.start();
-    //UIFactory.populateLobby(playersTable, countLabel);
     dataTable.addActor(playersTable);
   }
 
