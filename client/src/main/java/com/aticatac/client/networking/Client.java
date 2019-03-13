@@ -6,6 +6,7 @@ import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Login;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -100,11 +101,11 @@ public class Client {
       this.logger.trace("Waiting for response...");
       Login output = modelReader.fromJson(json, Login.class);
       this.logger.trace("Authenticated = " + output.isAuthenticated());
-      if (output.isAuthenticated()) {
+      if (output.isAuthenticated() == Response.ACCEPTED) {
         this.logger.trace("Multicast address: " + output.getMulticast());
         initUpdateSocket(InetAddress.getByName(output.getMulticast()), server.getPort());
       } else {
-        return Response.TAKEN;
+        return output.isAuthenticated();
       }
       this.id = output.getId();
       this.logger.info("Exiting 'connect' cleanly.");
@@ -115,7 +116,7 @@ public class Client {
       return Response.NO_SERVER;
     } catch (InvalidBytes e) {
       this.logger.warn("Invalid response");
-      return Response.INVALID;
+      return Response.INVALID_RESPONSE;
     }
   }
 

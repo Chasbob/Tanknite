@@ -4,6 +4,7 @@ import com.aticatac.common.model.ClientModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Login;
 import com.aticatac.common.model.ModelReader;
+import com.aticatac.common.model.Updates.Response;
 import com.aticatac.server.networking.Client;
 import com.aticatac.server.networking.Server;
 import com.aticatac.server.networking.listen.CommandListener;
@@ -21,15 +22,15 @@ public class Authenticator implements Runnable {
   private final Logger logger;
   private final PrintStream printer;
   private final BufferedReader reader;
-  private boolean authenticated;
   private final ModelReader modelReader;
+  private boolean authenticated;
 
   public Authenticator(Socket client) throws IOException {
     this.logger = Logger.getLogger(getClass());
     this.authenticated = false;
     this.printer = new PrintStream(client.getOutputStream());
     this.reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-    this.modelReader=new ModelReader();
+    this.modelReader = new ModelReader();
   }
 
   @Override
@@ -44,7 +45,9 @@ public class Authenticator implements Runnable {
         Login login = getRequest();
         if (clientExists(login)) {
           this.logger.warn("Client already exists... Rejecting...");
-          reject(login);
+          reject(login, Response.TAKEN);
+        } else if (login.getId().equals("")) {
+          reject(login, Response.INVALID_NAME);
         } else {
           accept(login);
           this.authenticated = true;
@@ -82,9 +85,9 @@ public class Authenticator implements Runnable {
    *
    * @param login login details
    */
-  private void reject(Login login) {
+  private void reject(Login login, Response reason) {
     this.logger.trace("Rejecting client...");
-    login.setAuthenticated(false);
+    login.setAuthenticated(reason);
     this.printer.println(modelReader.toJson(login));
   }
 
@@ -95,7 +98,7 @@ public class Authenticator implements Runnable {
    */
   private void accept(Login login) {
     this.logger.trace("Accepting client...");
-    login.setAuthenticated(true);
+    login.setAuthenticated(Response.ACCEPTED);
     //TODO add correct map id
     login.setMapID(1);
     login.setMulticast(Server.ServerData.INSTANCE.getMulticast().getHostAddress());
@@ -113,7 +116,7 @@ public class Authenticator implements Runnable {
   private void addClient(Login login) {
     CommandListener listener = new CommandListener(this.reader);
     ClientModel model = new ClientModel(login.getId());
-    Client client = new Client(listener, model,this.printer);
+    Client client = new Client(listener, model, this.printer);
     Server.ServerData.INSTANCE.getGame().addPlayer(client.getId());
     Server.ServerData.INSTANCE.getClients().put(model.getId(), client);
   }

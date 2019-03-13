@@ -1,15 +1,14 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.networking.Response;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Updates.Response;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-
 import java.net.InetAddress;
 
 /**
@@ -76,8 +75,8 @@ public class UsernameScreen extends AbstractScreen {
             refresh();
             Screens.INSTANCE.showScreen(GameScreen.class);
             break;
-          case INVALID:
-            errorLabel.setText("Invalid Response");
+          case INVALID_NAME:
+            errorLabel.setText("Invalid Username");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
         }
@@ -113,8 +112,8 @@ public class UsernameScreen extends AbstractScreen {
             errorLabel.setText("Server does not exist");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
-          case INVALID:
-            errorLabel.setText("Invalid Response");
+          case INVALID_NAME:
+            errorLabel.setText("Invalid Username");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
         }

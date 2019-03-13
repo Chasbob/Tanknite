@@ -1,7 +1,6 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.components.transform.Position;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
@@ -66,7 +65,7 @@ class Graph {
     if (map == null) {
       return;
     }
-    if (map.length != map[0].length)//INVALID INPUT
+    if (map.length != map[0].length)//INVALID_NAME INPUT
     {
       return;
     }
