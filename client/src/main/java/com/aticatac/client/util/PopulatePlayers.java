@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 public class PopulatePlayers extends Thread {
   private final Table playerTable;
   private final Label playerCount;
+  private final Label header;
   private final Logger logger;
   private final ArrayList<Label> labels;
 
@@ -20,9 +21,10 @@ public class PopulatePlayers extends Thread {
    * @param serverTable the server table
    * @param playerCount the player count
    */
-  public PopulatePlayers(Table serverTable, Label playerCount) {
+  public PopulatePlayers(Table serverTable, Label playerCount, Label header) {
     this.playerTable = serverTable;
     this.playerCount = playerCount;
+    this.header = header;
     this.logger = Logger.getLogger(getClass());
     labels = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
@@ -57,5 +59,10 @@ public class PopulatePlayers extends Thread {
       }
     }
     this.playerCount.setText(players.size());
+    if(players.size() == 10){
+      header.setText("Lobby Full ");
+    }else{
+      header.setText("Looking for players.. ");
+    }
   }
 }
