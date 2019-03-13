@@ -15,6 +15,7 @@ public class HudUpdate {
   private Logger logger;
 
   public HudUpdate(Table killLog, Label ammoLabel, Label playerCountLabel, Label killCountLabel) {
+    this.health = 1;
     this.logger = Logger.getLogger(getClass());
     this.killLog = killLog;
     this.ammoLabel = ammoLabel;
