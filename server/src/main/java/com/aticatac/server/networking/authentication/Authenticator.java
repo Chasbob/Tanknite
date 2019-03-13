@@ -40,7 +40,7 @@ public class Authenticator implements Runnable {
         reject(login, Response.TAKEN);
       } else if (login.getId().equals("")) {
         reject(login, Response.INVALID_NAME);
-      } else if (Server.ServerData.INSTANCE.playerCount() >= Server.ServerData.INSTANCE.getMaxPlayers()) {
+      } else if (Server.ServerData.INSTANCE.playerCount() >= Server.ServerData.INSTANCE.getMaxPlayers() - 1) {
         reject(login, Response.FULL);
       } else {
         accept(login);
