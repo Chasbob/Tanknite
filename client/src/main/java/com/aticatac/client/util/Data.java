@@ -82,6 +82,9 @@ public enum Data {
   public Update nextUpdate() {
     return client.nextUpdate();
   }
+  public Update peekUpdate(){
+    return client.peekUpdate();
+  }
 
   /**
    * Gets id.

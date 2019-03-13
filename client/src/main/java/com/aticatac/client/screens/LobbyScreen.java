@@ -40,12 +40,29 @@ public class LobbyScreen extends AbstractScreen {
       startTable.add(startButton);
       startButton.addListener(UIFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.START);
+        while (Data.INSTANCE.getMe() == null) {
+          Thread.sleep(0);
+        }
+        Screens.INSTANCE.showScreen(GameScreen.class);
         return true;
       }));
+<<<<<<< HEAD
       startButton.addListener(UIFactory.newChangeScreenEvent(GameScreen.class));
+=======
+>>>>>>> b56cd0dc85589aa7ec74c2603afc79078bee3442
     } else {
       Label waitingLabel = UIFactory.createColouredLabel("Waiting for Host");
       startTable.add(waitingLabel);
+      new Thread(() -> {
+        while ((Data.INSTANCE.peekUpdate() == null || !Data.INSTANCE.peekUpdate().isStart())) {
+          try {
+            Thread.sleep(0);
+          } catch (InterruptedException e) {
+            this.logger.error(e);
+          }
+        }
+        Screens.INSTANCE.showScreen(GameScreen.class);
+      }).start();
     }
     dataTable.addActor(startTable);
     //add table to store players joining server
