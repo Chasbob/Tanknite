@@ -175,6 +175,7 @@ public class Server extends Thread {
     private Survival game;
     private boolean start;
     private int maxPlayers;
+    private int broadcastCount;
 
     ServerData() {
       maxPlayers = 10;
@@ -210,6 +211,15 @@ public class Server extends Thread {
 
     public void clearRequests() {
       this.requests.clear();
+    }
+
+    public boolean refreshBroadcast() {
+      if (broadcastCount != game.playerCount()) {
+        broadcastCount = game.playerCount();
+        return true;
+      } else {
+        return true;
+      }
     }
 
     /**
