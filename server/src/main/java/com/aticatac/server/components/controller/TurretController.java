@@ -20,8 +20,6 @@ public class TurretController extends Component {
 
   public boolean shoot() {
 
-    //TODO shooting
-
     //create a bullet object
     BulletObject bullet = null; // get name of bullet
     try {

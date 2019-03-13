@@ -10,6 +10,7 @@ import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.components.*;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
+import com.aticatac.server.components.controller.TurretController;
 
 
 public class TankObject extends GameObject {
@@ -32,6 +33,7 @@ public class TankObject extends GameObject {
     this.addComponent(Acceleration.class);
     this.addComponent(BulletDamage.class);
     this.addComponent(CollisionBox.class);
+    this.addComponent(TurretController.class);
     this.getComponent(CollisionBox.class).setCollisionBox(this.getComponent(Transform.class).getPosition());
     this.getComponent(CollisionBox.class).addBoxToData(this.getComponent(CollisionBox.class).getCollisionBox(), name);
     if (isAI) {
