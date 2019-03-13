@@ -15,7 +15,6 @@ import java.net.InetAddress;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-
   private TextField usernameTextField;
   private TextField serverTextField;
   private Label errorLabel;
@@ -83,18 +82,18 @@ public class UsernameScreen extends AbstractScreen {
         return false;
       } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
         Response response;
-        if(Data.INSTANCE.isManualConfigForServer()) {
+        if (Data.INSTANCE.isManualConfigForServer()) {
           //join server with ip
           response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
-        }else if(Data.INSTANCE.isHosting()){
+        } else if (Data.INSTANCE.isHosting()) {
           //create custom server
           Server server = new Server(false, serverTextField.getText());
           server.start();
           Data.INSTANCE.setSingleplayer(false);
           //TODO make getter for port and ip
-          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(),InetAddress.getByName("127.0.0.1"), 5500));
+          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(), InetAddress.getByName("127.0.0.1"), 5500));
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
-        }else{
+        } else {
           //join server previously collected
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
         }
@@ -114,6 +113,10 @@ public class UsernameScreen extends AbstractScreen {
             break;
           case INVALID_NAME:
             errorLabel.setText("Invalid Username");
+            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            break;
+          case FULL:
+            errorLabel.setText("Game Full");
             errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
             break;
         }

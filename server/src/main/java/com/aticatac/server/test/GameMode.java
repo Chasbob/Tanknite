@@ -13,19 +13,40 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.log4j.Logger;
 
+/**
+ * The type Game mode.
+ */
 @SuppressWarnings("ALL")
 abstract class GameMode implements Game {
+  /**
+   * The Player map.
+   */
   protected final HashMap<String, GameObject> playerMap;
   private final Logger logger;
   private final int min = 320;
   private final int max = 1920 - 320;
   private GameObject root;
 
+  /**
+   * Instantiates a new Game mode.
+   *
+   * @throws InvalidClassInstance     the invalid class instance
+   * @throws ComponentExistsException the component exists exception
+   */
   GameMode() throws InvalidClassInstance, ComponentExistsException {
     this.root = new GameObject("root", ObjectType.ROOT);
     new GameObject("Player Container", root, ObjectType.PLAYER_CONTAINER);
     this.playerMap = new HashMap<>();
     this.logger = Logger.getLogger(getClass());
+  }
+
+  /**
+   * Player count int.
+   *
+   * @return the int
+   */
+  public int playerCount() {
+    return this.playerMap.size();
   }
 
   @Override
@@ -70,9 +91,9 @@ abstract class GameMode implements Game {
     if (!playerMap.containsKey(player)) {
       playerMap.put(player, createTank(player, false));
       Position p = playerMap.get(player).getTransform().getPosition();
-      for (int i = 0; i < 2; i++) {
-        playerMap.put(player + "AI" + i, createTank(player + "AI" + i, true));
-      }
+//      for (int i = 0; i < 2; i++) {
+//        playerMap.put(player + "AI" + i, createTank(player + "AI" + i, true));
+//      }
     }
   }
 
@@ -104,7 +125,18 @@ abstract class GameMode implements Game {
     return null;
   }
 
+  /**
+   * Gets root.
+   *
+   * @return the root
+   */
   public GameObject getRoot() {
     return root;
+  }
+
+  public void nAddAI(int n) {
+    for (int i = 0; i < n; i++) {
+      createTank("AI " + Integer.toString(i + 1), true);
+    }
   }
 }

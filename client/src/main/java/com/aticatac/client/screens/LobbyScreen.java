@@ -43,6 +43,10 @@ public class LobbyScreen extends AbstractScreen {
       TextButton startButton = UIFactory.createStartButton("Start");
       startTable.add(startButton);
       TextButton aiButton = UIFactory.createStartButton("Fill AI");
+      aiButton.addListener(UIFactory.newListenerEvent(() -> {
+        Data.INSTANCE.sendCommand(Command.FILL_AI);
+        return true;
+      }));
       startTable.add(aiButton);
       startButton.addListener(UIFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.START);

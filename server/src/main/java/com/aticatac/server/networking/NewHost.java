@@ -3,6 +3,7 @@ package com.aticatac.server.networking;
 import com.aticatac.server.networking.authentication.Authenticator;
 import java.io.IOException;
 import java.net.Socket;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class NewHost implements Runnable {
@@ -10,6 +11,7 @@ public class NewHost implements Runnable {
 
   NewHost() {
     this.logger = Logger.getLogger(getClass());
+    this.logger.setLevel(Level.ALL);
   }
 
   @Override

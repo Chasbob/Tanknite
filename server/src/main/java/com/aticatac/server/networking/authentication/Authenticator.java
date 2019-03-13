@@ -23,11 +23,9 @@ public class Authenticator implements Runnable {
   private final PrintStream printer;
   private final BufferedReader reader;
   private final ModelReader modelReader;
-  private boolean authenticated;
 
   public Authenticator(Socket client) throws IOException {
     this.logger = Logger.getLogger(getClass());
-    this.authenticated = false;
     this.printer = new PrintStream(client.getOutputStream());
     this.reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
     this.modelReader = new ModelReader();
@@ -35,29 +33,20 @@ public class Authenticator implements Runnable {
 
   @Override
   public void run() {
-    int counter = 0;
-    while (!this.authenticated) {
-      //Limit number of attempts
-      if (counter++ > 10) {
-        break;
+    try {
+      Login login = getRequest();
+      if (clientExists(login)) {
+        this.logger.warn("Client already exists... Rejecting...");
+        reject(login, Response.TAKEN);
+      } else if (login.getId().equals("")) {
+        reject(login, Response.INVALID_NAME);
+      } else if (Server.ServerData.INSTANCE.playerCount() >= Server.ServerData.INSTANCE.getMaxPlayers()) {
+        reject(login, Response.FULL);
+      } else {
+        accept(login);
       }
-      try {
-        Login login = getRequest();
-        if (clientExists(login)) {
-          this.logger.warn("Client already exists... Rejecting...");
-          reject(login, Response.TAKEN);
-        } else if (login.getId().equals("")) {
-          reject(login, Response.INVALID_NAME);
-        } else {
-          accept(login);
-          this.authenticated = true;
-        }
-      } catch (IOException e) {
-        this.logger.error(e);
-        break;
-      } catch (InvalidBytes e) {
-        this.logger.error(e);
-      }
+    } catch (IOException | InvalidBytes e) {
+      this.logger.error(e);
     }
     this.logger.info("Finished!");
   }

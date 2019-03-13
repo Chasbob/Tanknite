@@ -59,16 +59,17 @@ public class Server extends Thread {
   public void run() {
 //    this.logger.setLevel(Level.ALL);
     this.logger.trace("Running...");
-    this.logger.trace("Waiting for host");
-    new NewHost().run();
-    if (ServerData.INSTANCE.getClients().size() == 1) {
-      this.host = ServerData.INSTANCE.getClients().keys().nextElement();
-      this.logger.info("User: " + host + " is hosting!");
-      ServerData.INSTANCE.setSinglePlayer(singleplayer);
-    } else {
-      this.logger.warn("Failed to get user to host.");
-      return;
+    while (ServerData.INSTANCE.playerCount() == 0) {
+      this.logger.info("Waiting for host");
+      new NewHost().run();
+      if (ServerData.INSTANCE.getClients().size() == 1) {
+        this.host = ServerData.INSTANCE.getClients().keys().nextElement();
+        this.logger.info("User: " + host + " is hosting!");
+      } else {
+        this.logger.warn("Failed to get user to host.");
+      }
     }
+    ServerData.INSTANCE.setSinglePlayer(singleplayer);
     if (!singleplayer) {
       ServerData.INSTANCE.rebind("0.0.0.0");
       this.logger.trace("Setting up multi player");
@@ -95,6 +96,8 @@ public class Server extends Thread {
             } else {
               disconnectClient(current);
             }
+          } else if (current.getCommand() == Command.FILL_AI && current.getId().equals(this.host)) {
+            ServerData.INSTANCE.fillAI();
           } else if (current.getCommand() == Command.START && current.getId().equals(this.host)) {
             ServerData.INSTANCE.setStart(true);
             double nanoTime = System.nanoTime();
@@ -112,6 +115,9 @@ public class Server extends Thread {
       this.executorService.submit(new Updater());
       this.logger.trace("added updater");
     }
+    this.logger.info("Accept input...");
+    ServerData.INSTANCE.clearRequests();
+    this.ai.start();
     while (!this.shutdown) {
       CommandModel current = ServerData.INSTANCE.popCommand();
       if (current != null) {
@@ -168,8 +174,10 @@ public class Server extends Thread {
     private int broadcastPort;
     private Survival game;
     private boolean start;
+    private int maxPlayers;
 
     ServerData() {
+      maxPlayers = 10;
       try {
         this.game = new Survival();
       } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
@@ -190,6 +198,18 @@ public class Server extends Thread {
       } catch (IOException e) {
         this.logger.error(e);
       }
+    }
+
+    public int playerCount() {
+      return this.game.playerCount();
+    }
+
+    public int getMaxPlayers() {
+      return maxPlayers;
+    }
+
+    public void clearRequests() {
+      this.requests.clear();
     }
 
     /**
@@ -424,6 +444,10 @@ public class Server extends Thread {
      */
     public int getBroadcastPort() {
       return broadcastPort;
+    }
+
+    public void fillAI() {
+      game.nAddAI(maxPlayers - game.playerCount());
     }
   }
 }
