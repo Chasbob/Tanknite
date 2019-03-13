@@ -7,6 +7,7 @@ import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.server.networking.Server;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -36,20 +37,21 @@ public enum Data {
   private boolean isHosting;
 
   Data() {
+    this.logger = Logger.getLogger(getClass());
     client = new Client();
     serverSelected = false;
     manualConfigForServer = false;
     isHosting = false;
     try {
       //TODO don't hard code the port.
-      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), 5500);
+      final Server.ServerData s = Server.ServerData.INSTANCE;
+      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), s.getPort(), s.getMaxPlayers(), s.playerCount());
     } catch (UnknownHostException e) {
       e.printStackTrace();
     }
     players = new HashMap<>();
     this.update = new Update(true);
     this.clients = new ArrayList<>();
-    logger = Logger.getLogger(getClass());
   }
 
   public boolean isStarted() {
@@ -216,7 +218,7 @@ public enum Data {
   }
 
   public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
-    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort());
+    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
     return connect(id, singleplayer);
   }
 
