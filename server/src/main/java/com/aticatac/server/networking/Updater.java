@@ -32,6 +32,7 @@ public class Updater implements Runnable {
   }
 
   private void updatePlayers() {
+    this.update.setStart(Server.ServerData.INSTANCE.isStart());
     for (GameObject c :
         Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
       this.update.addPlayer(new Container(c));

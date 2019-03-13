@@ -6,7 +6,6 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
-import com.aticatac.common.model.Updates.Update;
 import com.aticatac.server.components.ai.RunAI;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.test.Survival;
@@ -80,12 +79,14 @@ public class Server extends Thread {
           this.logger.trace("added discovery");
           this.executorService.submit(new NewClients());
           this.logger.trace("added new clients");
+          this.executorService.submit(new Updater());
+          this.logger.trace("added updater");
         }
       } catch (IOException e) {
         this.logger.error(e);
         return;
       }
-      while (!this.shutdown && !this.started) {
+      while (!this.shutdown && !ServerData.INSTANCE.isStart()) {
         CommandModel current = ServerData.INSTANCE.popCommand();
         if (current != null) {
           if (current.getCommand() == Command.QUIT) {
@@ -95,10 +96,7 @@ public class Server extends Thread {
               disconnectClient(current);
             }
           } else if (current.getCommand() == Command.START && current.getId().equals(this.host)) {
-            this.started = true;
-            Update update = new Update(true);
-            update.setStart(true);
-            new Updater().tcpBroadcast(update);
+            ServerData.INSTANCE.setStart(true);
             double nanoTime = System.nanoTime();
             while (System.nanoTime() - nanoTime < 3000000000d) {
               try {
@@ -107,8 +105,6 @@ public class Server extends Thread {
                 this.logger.error(e);
               }
             }
-            this.executorService.submit(new Updater());
-            this.logger.trace("added updater");
           }
         }
       }
@@ -171,6 +167,7 @@ public class Server extends Thread {
     private int port;
     private int broadcastPort;
     private Survival game;
+    private boolean start;
 
     ServerData() {
       try {
@@ -195,6 +192,29 @@ public class Server extends Thread {
       }
     }
 
+    /**
+     * Is start boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isStart() {
+      return start;
+    }
+
+    /**
+     * Sets start.
+     *
+     * @param start the start
+     */
+    public void setStart(boolean start) {
+      this.start = start;
+    }
+
+    /**
+     * Rebind.
+     *
+     * @param address the address
+     */
     public void rebind(String address) {
       try {
         this.serverSocket.close();

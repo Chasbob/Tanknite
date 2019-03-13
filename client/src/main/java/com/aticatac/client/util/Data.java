@@ -102,7 +102,7 @@ public enum Data {
    * @return the clients
    */
   public ArrayList<String> getClients() {
-    return clients;
+    return this.client.getPlayers();
   }
 
   /**
