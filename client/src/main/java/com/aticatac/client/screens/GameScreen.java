@@ -1,13 +1,12 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.AudioEnum;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.GameObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -181,6 +180,10 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void render(float delta) {
+
+    //Audio
+    AudioEnum.INSTANCE.getBackgroundMusic();
+
     super.render(delta);
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     //TODO figure out why it flickers when going side to side.
@@ -236,11 +239,11 @@ public class GameScreen extends AbstractScreen {
     }
     if (Gdx.input.isKeyPressed(Input.Keys.A)) {
       Data.INSTANCE.sendCommand(Command.LEFT);
-    }else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+    } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
       Data.INSTANCE.sendCommand(Command.RIGHT);
-    }else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+    } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
       Data.INSTANCE.sendCommand(Command.UP);
-    }else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+    } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
       Data.INSTANCE.sendCommand(Command.DOWN);
     }
   }

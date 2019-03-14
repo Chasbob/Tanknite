@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type GameObject.
@@ -17,8 +18,8 @@ public class GameObject {
   //  private final Transform transform;
   private final ObjectType objectType;
   private final String name;
-  private final HashMap<Class<?>, Component> components;
-  private final HashMap<String, GameObject> children;
+  private final ConcurrentHashMap<Class<?>, Component> components;
+  private final ConcurrentHashMap<String, GameObject> children;
   private final Optional<GameObject> parent;
 
   /**
@@ -43,8 +44,8 @@ public class GameObject {
   public GameObject(String name, ObjectType objectType)
   throws InvalidClassInstance, ComponentExistsException {
     this.name = name;
-    this.children = new HashMap<>();
-    this.components = new HashMap<>();
+    this.children = new ConcurrentHashMap<>();
+    this.components = new ConcurrentHashMap<>();
     this.addComponent(Transform.class);
     this.objectType = objectType;
     this.parent = Optional.empty();
@@ -76,8 +77,8 @@ public class GameObject {
   throws InvalidClassInstance, ComponentExistsException {
     this.parent = Optional.of(parent);
     this.name = name;
-    this.children = new HashMap<>();
-    this.components = new HashMap<>();
+    this.children = new ConcurrentHashMap<>();
+    this.components = new ConcurrentHashMap<>();
     this.parent.get().addChild(this);
     this.addComponent(Transform.class);
     this.objectType = objectType;
@@ -91,6 +92,11 @@ public class GameObject {
   public static void destroy(GameObject g) {
   }
 
+  /**
+   * Has parent boolean.
+   *
+   * @return the boolean
+   */
   public boolean hasParent() {
     return this.parent.isPresent();
   }
@@ -118,7 +124,7 @@ public class GameObject {
    *
    * @return the components
    */
-  public HashMap<Class<?>, Component> getComponents() {
+  public ConcurrentHashMap<Class<?>, Component> getComponents() {
     return components;
   }
 
@@ -215,14 +221,18 @@ public class GameObject {
   /**
    * Find object game object.
    *
-   * @param tag        the tag
-   * @param gameObject the game object
-   * @return game object
+   * @param tag the tag
+   * @return the game object
    */
-  public GameObject findObject(String tag, GameObject gameObject) {
-    return gameObject.parent.isPresent() ? findObject(tag, gameObject.parent.get()) : findObjectHelper(tag, gameObject);
+  public GameObject findObject(String tag) {
+    return this.parent.isPresent() ? findObject(tag) : findObjectHelper(tag, this);
   }
 
+  /**
+   * Gets textured.
+   *
+   * @return the textured
+   */
   public ArrayList<GameObject> getTextured() {
     ArrayList<GameObject> out = new ArrayList<>();
     for (GameObject c :
@@ -235,12 +245,12 @@ public class GameObject {
     return out;
   }
 
-  public GameObject findObject(ObjectType type, GameObject gameObject) {
+  public GameObject findObject(ObjectType type) {
     GameObject out;
-    if (gameObject.parent.isPresent()) {
-      out = findObject(type, gameObject.parent.get());
+    if (this.parent.isPresent()) {
+      out = findObject(type);
     } else {
-      out = findObjectHelper(type, gameObject);
+      out = findObjectHelper(type, this);
     }
     return out;
   }
@@ -285,7 +295,7 @@ public class GameObject {
    *
    * @return the children
    */
-  public HashMap<String, GameObject> getChildren() {
+  public ConcurrentHashMap<String, GameObject> getChildren() {
     return children;
   }
 

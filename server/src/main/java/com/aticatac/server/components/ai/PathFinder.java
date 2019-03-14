@@ -1,9 +1,10 @@
 package com.aticatac.server.components.ai;
 
+import com.aticatac.common.components.transform.Position;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * A PathFinder constructs a path from a start node to a goal node using A* search
@@ -11,13 +12,12 @@ import java.util.Queue;
  * @author Dylan
  */
 class PathFinder {
-    /*
-        Adapted from: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
+  /*
+    Adapted from: https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode
 
-        g score = the cost of the path from the start node to the current node
-        f score = g + an estimate of the cost from the current node to the goal node
-     */
-
+    g score = the cost of the path from the start node to the current node
+    f score = g + an estimate of the cost from the current node to the goal node
+  */
   /**
    * Uses A* search to find a path from one node to another.
    *
@@ -25,7 +25,7 @@ class PathFinder {
    * @param goal  The node to end at
    * @return A queue of commands that define a path from the start node to the goal node
    */
-  Queue<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
+  LinkedList<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {
     LinkedList<SearchNode> closedSet = new LinkedList<>();
     LinkedList<SearchNode> openSet = new LinkedList<>();
     openSet.add(start);
@@ -33,7 +33,7 @@ class PathFinder {
     HashMap<SearchNode, Integer> g = new HashMap<>();
     g.put(start, 0);
     HashMap<SearchNode, Double> f = new HashMap<>();
-    f.put(start, costEstimate(start, goal));
+    f.put(start, manhattanDistance(start, goal));
     while (!openSet.isEmpty()) {
       SearchNode current = getLowestFScoreNode(openSet, f);
       if (current.equals(goal)) {
@@ -45,7 +45,7 @@ class PathFinder {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + (Math.abs(connectedNode.getX() - current.getX()) + Math.abs(connectedNode.getY() - current.getY()));
+        int tempG = g.get(current) + (int)manhattanDistance(connectedNode, current);
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
@@ -53,7 +53,7 @@ class PathFinder {
         }
         cameFrom.put(connectedNode, current);
         g.put(connectedNode, tempG);
-        f.put(connectedNode, g.get(connectedNode) + costEstimate(connectedNode, goal));
+        f.put(connectedNode, g.get(connectedNode) + manhattanDistance(connectedNode, goal));
       }
     }
     return null;
@@ -66,7 +66,7 @@ class PathFinder {
    * @param current  The current node
    * @return The final path from the start to goal node
    */
-  private Queue<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
+  private LinkedList<SearchNode> reconstructPath(HashMap<SearchNode, SearchNode> cameFrom, SearchNode current) {
     LinkedList<SearchNode> totalPath = new LinkedList<>();
     totalPath.add(current);
     while (cameFrom.containsKey(current)) {
@@ -97,14 +97,24 @@ class PathFinder {
   }
 
   /**
-   * Calculates a cost estimate for travelling from one node to another using euclidean distance. Used as a heuristic
-   * for A* search.
+   * Calculates euclidean distance between two points. Used as a heuristic for A* search.
    *
-   * @param from Node to start from
-   * @param to   Node to end on
-   * @return An estimate for the cost of travelling from one node to another
+   * @param from Start position
+   * @param to   End position
+   * @return Euclidean distance between two points
    */
-  private double costEstimate(SearchNode from, SearchNode to) {
+  double euclideanDistance(Position from, Position to) {
     return Math.sqrt(Math.pow(from.getY() - to.getY(), 2) + Math.pow(from.getX() - to.getX(), 2));
+  }
+
+  /**
+   * Calculates manhattan distance between two points.
+   *
+   * @param from Start position
+   * @param to   End position
+   * @return Manhattan distance between two points
+   */
+  double manhattanDistance(Position from, Position to) {
+    return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
   }
 }

@@ -32,6 +32,7 @@ public class TankObject extends GameObject {
     this.addComponent(TankController.class);
     this.addComponent(Acceleration.class);
     this.addComponent(BulletDamage.class);
+    this.addComponent(PlayerKilledCount.class);
     this.addComponent(CollisionBox.class);
     this.addComponent(TurretController.class);
     this.getComponent(CollisionBox.class).setCollisionBox(this.getComponent(Transform.class).getPosition());

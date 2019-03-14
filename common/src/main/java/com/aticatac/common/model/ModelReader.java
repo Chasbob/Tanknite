@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  * The type Model reader.
  */
 public class ModelReader {
-  private static Logger logger = Logger.getLogger(ModelReader.class);
+  private Logger logger = Logger.getLogger(ModelReader.class);
 
   /**
    * To bytes udp byte [ ].
@@ -25,7 +25,7 @@ public class ModelReader {
    * @param model the model
    * @return the byte [ ]
    */
-  public static byte[] toBytes(Model model) throws IOException {
+  public byte[] toBytes(Model model) throws IOException {
     logger.trace("Reading " + model.getClass().getName());
     String json = toJson(model);
     byte[] data = json.getBytes();
@@ -39,7 +39,7 @@ public class ModelReader {
    * @param model the model
    * @return the string
    */
-  public static String toJson(Model model) {
+  public String toJson(Model model) {
     Gson gson = new Gson();
     return gson.toJson(model);
   }
@@ -53,7 +53,7 @@ public class ModelReader {
    * @return the t
    * @throws InvalidBytes the invalid bytes
    */
-  public static <T extends Model> T toModel(byte[] in, Class<T> type) throws InvalidBytes, IOException {
+  public <T extends Model> T toModel(byte[] in, Class<T> type) throws InvalidBytes, IOException {
     logger.trace("Converting bytes to " + type.getCanonicalName());
     byte[] decompressed = decompress(in);
     int length = ByteBuffer.wrap(Arrays.copyOfRange(decompressed, 0, 4)).getInt();
@@ -69,7 +69,7 @@ public class ModelReader {
    * @return the t
    * @throws InvalidBytes the invalid bytes
    */
-  public static <T extends Model> T fromJson(String json, Class<T> type) throws InvalidBytes {
+  public <T extends Model> T fromJson(String json, Class<T> type) throws InvalidBytes {
     Gson gson = new Gson();
     T output;
     output = gson.fromJson(json, type);
@@ -80,7 +80,7 @@ public class ModelReader {
     }
   }
 
-  private static byte[] compress(byte[] data) throws IOException {
+  private byte[] compress(byte[] data) throws IOException {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
     GZIPOutputStream gzip = new GZIPOutputStream(bos);
     gzip.write(data);
@@ -90,7 +90,7 @@ public class ModelReader {
     return compressed;
   }
 
-  private static byte[] decompress(byte[] compressed) throws IOException {
+  private byte[] decompress(byte[] compressed) throws IOException {
     ByteArrayInputStream bis = new ByteArrayInputStream(compressed);
     GZIPInputStream gis = new GZIPInputStream(bis);
     byte[] output = gis.readAllBytes();

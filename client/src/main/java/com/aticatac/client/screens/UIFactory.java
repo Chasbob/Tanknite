@@ -172,9 +172,6 @@ public class UIFactory {
         Boolean result = false;
         try {
           result = func.call();
-          //addition of sound
-          Sound tank = Gdx.audio.newSound(Gdx.files.internal("audio/Humvee-Stephan_Schutze-1064024548.mp3"));
-          tank.play();
         } catch (Exception e) {
           e.printStackTrace();
         }

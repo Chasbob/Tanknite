@@ -1,21 +1,30 @@
 package com.aticatac.server.networking;
 
+import com.aticatac.common.exceptions.ComponentExistsException;
+import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
-import com.aticatac.server.gamemanager.Manager;
+import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.components.DataServer;
+import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.networking.listen.NewClients;
+import com.aticatac.server.test.Survival;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.ServerSocket;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -54,20 +63,37 @@ public class Server extends Thread {
     }
     new Thread(() -> {
       while (!this.shutdown) {
-        CommandModel current = ServerData.INSTANCE.popCommand();
-        if (current != null) {
-          if (current.getCommand() == Command.QUIT) {
-            ServerData.INSTANCE.removeClient(current.getId());
-            this.logger.info("Removing " + current.getId());
-            this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
-          } else {
-            Manager.INSTANCE.playerInput(current);
+        double nanoTime = System.nanoTime();
+        Collection<GameObject> players = ServerData.INSTANCE.getGame().getRoot().findObject(ObjectType.PLAYER_CONTAINER).getChildren().values();
+        for (GameObject g : players) {
+          if (g.componentExists(AI.class)) {
+            ServerData.INSTANCE.getGame().playerInput(g.getName(), g.getComponent(AI.class).getDecision().getCommand());
+          }
+        }
+        while (System.nanoTime() - nanoTime < 1000000000 / 60) {
+          try {
+            Thread.sleep(0);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
         }
       }
-      this.executorService.shutdown();
-      ServerData.INSTANCE.shutdown();
     }).start();
+    while (!this.shutdown) {
+      CommandModel current = ServerData.INSTANCE.popCommand();
+      if (current != null) {
+        if (current.getCommand() == Command.QUIT) {
+          ServerData.INSTANCE.removeClient(current.getId());
+          this.logger.info("Removing " + current.getId());
+          this.logger.info("Clients: " + ServerData.INSTANCE.clients.size());
+        } else {
+//            Manager.INSTANCE.playerInput(current);
+          ServerData.INSTANCE.getGame().playerInput(current.getId(), current.getCommand());
+        }
+      }
+    }
+    this.executorService.shutdown();
+    ServerData.INSTANCE.shutdown();
   }
 
   /**
@@ -88,6 +114,7 @@ public class Server extends Thread {
     private final ConcurrentLinkedQueue<CommandModel> requests;
     private final ConcurrentHashMap<String, Client> clients;
     private final Logger logger;
+    private final ModelReader modelReader;
     private ServerSocket serverSocket;
     private MulticastSocket multicastSocket;
     private DatagramSocket broadcastSocket;
@@ -97,8 +124,15 @@ public class Server extends Thread {
     private InetAddress multicast;
     private int port;
     private int broadcastPort;
+    private Survival game;
 
     ServerData() {
+      try {
+        this.game = new Survival();
+      } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+        invalidClassInstance.printStackTrace();
+      }
+      this.modelReader = new ModelReader();
       this.requests = new ConcurrentLinkedQueue<>();
       this.clients = new ConcurrentHashMap<>();
       this.port = 5500;
@@ -118,6 +152,14 @@ public class Server extends Thread {
     public void removeClient(String id) {
       clients.get(id).shutdown();
       clients.remove(id);
+    }
+
+    public Survival getGame() {
+      return game;
+    }
+
+    public void setGame(Survival game) {
+      this.game = game;
     }
 
     /**
@@ -149,7 +191,7 @@ public class Server extends Thread {
         client.shutdown();
       }
       try {
-        byte[] b = ModelReader.toBytes(new Shutdown());
+        byte[] b = modelReader.toBytes(new Shutdown());
         final ServerData s = ServerData.INSTANCE;
         DatagramPacket shutdown = new DatagramPacket(b, b.length, s.getServer(), s.getPort());
         this.broadcastSocket.send(shutdown);
