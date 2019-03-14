@@ -4,17 +4,14 @@ import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.HudUpdate;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -23,7 +20,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  * The type Game screen.
@@ -93,15 +89,15 @@ public class GameScreen extends AbstractScreen {
         addActor(rootTable);
         Gdx.graphics.setVSync(true);
         //create table and labels for player count and kills - TOP LEFT
-        super.addToRoot(createTopLeft());
+        super.addToRoot(createHudTopLeft());
         //create table for kill feed - BOTTOM LEFT
-        super.addToRoot(createBottomLeft());
+        super.addToRoot(createHudBottomLeft());
         //create table for ammo - BOTTOM RIGHT
-        super.addToRoot(createBottomRight());
+        super.addToRoot(createHudBottomRight());
         //create alert table - BOTTOM MIDDLE
-        super.addToRoot(createAlertTable());
+        super.addToRoot(createHudAlertTable());
         //create pop up table
-        rootTable.add(createPopUp());
+        rootTable.add(createHudPopUp());
         new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 double nanoTime = System.nanoTime();
@@ -118,7 +114,7 @@ public class GameScreen extends AbstractScreen {
         hudUpdate = new HudUpdate(killLogTable, ammoValue, playerCount, killCount);
     }
 
-    private Table createTopLeft(){
+    private Table createHudTopLeft(){
         Table topLeftTable = new Table();
         topLeftTable.top().left();
         topLeftTable.defaults().padTop(10).padLeft(10).left();
@@ -147,12 +143,12 @@ public class GameScreen extends AbstractScreen {
         return topLeftTable;
     }
 
-    private Table createTopRight(){
+    private Table createHudTopRight(){
         //todo..radar
         return new Table();
     }
 
-    private Table createBottomLeft(){
+    private Table createHudBottomLeft(){
         killLogTable = new Table();
         killLogTable.bottom().left();
         killLogTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
@@ -161,7 +157,7 @@ public class GameScreen extends AbstractScreen {
         return killLogTable;
     }
 
-    private Table createBottomRight(){
+    private Table createHudBottomRight(){
         Table bottomRightTable = new Table();
         bottomRightTable.bottom().right();
         bottomRightTable.defaults().padRight(10).padTop(10).padBottom(20).left();
@@ -179,7 +175,7 @@ public class GameScreen extends AbstractScreen {
         return bottomRightTable;
     }
 
-    private Table createPopUp(){
+    private Table createHudPopUp(){
         popUpTable = new Table();
         popUpTable.center();
         popUpTable.setVisible(false);
@@ -205,7 +201,7 @@ public class GameScreen extends AbstractScreen {
         return popUpTable;
     }
 
-    private Table createAlertTable(){
+    private Table createHudAlertTable(){
         alertTable = new Table();
         alertTable.bottom();
         alertTable.defaults().padBottom(20);
