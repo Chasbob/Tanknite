@@ -69,6 +69,7 @@ public class LobbyScreen extends AbstractScreen {
   @Override
   public void refresh() {
     Data.INSTANCE.setHosting(false);
+    Data.INSTANCE.setManualConfigForServer(false);
   }
 
   @Override

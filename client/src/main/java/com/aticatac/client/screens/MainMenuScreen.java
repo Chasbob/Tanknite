@@ -99,9 +99,9 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton singlePlayerButton = UIFactory.createLessSubtleButton("Single-Player");
     singlePlayerButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
-      Server server = new Server(true, "Online");
+      Server server = new Server(true, "Single-Player");
+      System.out.println(Data.INSTANCE.isManualConfigForServer());
       server.start();
-      //reload the username screen and show it to show relevant fields
       refresh();
       UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
@@ -141,7 +141,6 @@ public class MainMenuScreen extends AbstractScreen {
     multiplayerTable.add(hostButton);
     //create button for joining
     TextButton joinButton = UIFactory.createSubtleButton("Join");
-    //joinButton.padLeft(250);
     joinButton.addListener(UIFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.getScreen(ServerScreen.class).refresh();

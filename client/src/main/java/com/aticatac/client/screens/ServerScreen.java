@@ -64,6 +64,7 @@ public class ServerScreen extends AbstractScreen {
     Table playersTable = new Table();
     playersTable.defaults().pad(10);
     playersTable.top().padTop(50);
+    //TODO still coming up with server if i quit game when hosting...cant join it tho
     listServers = new ListServers(serversTable, playersTable);
     listServers.update();
     new Thread(() -> {

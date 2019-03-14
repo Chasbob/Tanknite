@@ -44,7 +44,11 @@ public class AbstractScreen extends Stage implements Screen {
     //create back button
     TextButton backButton = UIFactory.createBackButton("back");
     backTable.add(backButton).bottom().padBottom(10);
-    backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+    backButton.addListener(UIFactory.newListenerEvent(() -> {
+      refresh();
+      Screens.INSTANCE.showScreen(MainMenuScreen.class);
+      return false;
+    }));
   }
 
   void addToRoot(Table table){

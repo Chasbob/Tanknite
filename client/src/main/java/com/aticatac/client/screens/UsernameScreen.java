@@ -99,9 +99,8 @@ public class UsernameScreen extends AbstractScreen {
         }
         switch (response) {
           case ACCEPTED:
+            UIFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
             refresh();
-            Screens.INSTANCE.reloadScreen(LobbyScreen.class);
-            Screens.INSTANCE.showScreen(LobbyScreen.class);
             break;
           case TAKEN:
             errorLabel.setText("Name Taken");
@@ -129,6 +128,8 @@ public class UsernameScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
+    Data.INSTANCE.setHosting(false);
+    Data.INSTANCE.setManualConfigForServer(false);
     errorLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
     usernameTextField.setText("");
   }
