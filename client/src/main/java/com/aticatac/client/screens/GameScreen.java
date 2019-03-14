@@ -58,8 +58,8 @@ public class GameScreen extends AbstractScreen {
         try {
             player = new Container();
             ammoValue = UIFactory.createGameLabel("");
-            killCount = UIFactory.createGameLabel("");
-            playerCount = UIFactory.createGameLabel("1");
+            killCount = UIFactory.createGameLabel("0 ");
+            playerCount = UIFactory.createGameLabel("1 ");
             fpsValue = UIFactory.createGameLabel("");
             tankXY = UIFactory.createGameLabel("");
             direction = UIFactory.createGameLabel("");
@@ -94,20 +94,47 @@ public class GameScreen extends AbstractScreen {
         super.addToRoot(countTable);
         countTable.top().left();
         countTable.defaults().padTop(10).padLeft(10).left();
-        Label players = UIFactory.createGameLabel("player count: ");
-        countTable.add(players);
-        countTable.add(playerCount);
-        countTable.row();
-        Label kills = UIFactory.createGameLabel("kills: ");
-        countTable.add(kills);
-        countTable.add(killCount);
-        //create table for kill feed - BOTTOM LEFT
+        Table aliveTable = new Table();
+        Table aliveLabelTable = new Table();
+        Pixmap tableColour1 = new Pixmap(1, 1, Pixmap.Format.RGB565);
+        tableColour1.setColor(Color.GRAY);
+        tableColour1.fill();
+        aliveLabelTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour1))));
+        Label aliveLabel = UIFactory.createGameLabel("Alive");
+        aliveLabelTable.add(aliveLabel);
+        Table playerCountTable = new Table();
+        playerCountTable.add(playerCount);
+        Pixmap tableColour2 = new Pixmap(1, 1, Pixmap.Format.RGB565);
+        tableColour2.setColor(Color.BLACK);
+        tableColour2.fill();
+        playerCountTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour2))));
+        aliveTable.add(playerCountTable);
+        aliveTable.add(aliveLabelTable);
         Table killTable = new Table();
-        super.addToRoot(killTable);
-        killTable.bottom().left();
-        killTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
+        Table killLableTable = new Table();
+        Pixmap tableColour3 = new Pixmap(1, 1, Pixmap.Format.RGB565);
+        tableColour3.setColor(Color.GRAY);
+        tableColour3.fill();
+        killLableTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour3))));
+        Label killLabel = UIFactory.createGameLabel("Killed");
+        killLableTable.add(killLabel);
+        Table killCountTable = new Table();
+        Pixmap tableColour4 = new Pixmap(1, 1, Pixmap.Format.RGB565);
+        tableColour4.setColor(Color.BLACK);
+        tableColour4.fill();
+        killCountTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour4))));
+        killCountTable.add(killCount);
+        killTable.add(killCountTable);
+        killTable.add(killLableTable);
+        countTable.add(aliveTable);
+        countTable.add(killTable);
+        //create table for kill feed - BOTTOM LEFT
+        Table killLogTable = new Table();
+        super.addToRoot(killLogTable);
+        killLogTable.bottom().left();
+        killLogTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
         Label tempKill = UIFactory.createGameLabel("");
-        killTable.add(tempKill);
+        killLogTable.add(tempKill);
         //create table for ammo - BOTTOM RIGHT
         Table ammoTable = new Table();
         super.addToRoot(ammoTable);
@@ -117,21 +144,21 @@ public class GameScreen extends AbstractScreen {
         ammoTable.add(ammo);
         ammoTable.add(ammoValue);
         //create table for testing contatining stats
-        Table statsTable = new Table();
-        super.addToRoot(statsTable);
-        statsTable.top().right();
-        statsTable.defaults().padRight(10).padTop(10).padBottom(20).left();
-        Label fps = UIFactory.createGameLabel("FPS: ");
-        Label tank = UIFactory.createGameLabel("TANK: ");
-        statsTable.add(tank);
-        statsTable.add(tankXY);
-        statsTable.row();
-        statsTable.add(fps);
-        statsTable.add(this.fpsValue);
-        statsTable.row();
-        Label direction = UIFactory.createGameLabel("DIRECTION:");
-        statsTable.add(direction);
-        statsTable.add(this.direction);
+//        Table statsTable = new Table();
+//        super.addToRoot(statsTable);
+//        statsTable.top().right();
+//        statsTable.defaults().padRight(10).padTop(10).padBottom(20).left();
+//        Label fps = UIFactory.createGameLabel("FPS: ");
+//        Label tank = UIFactory.createGameLabel("TANK: ");
+//        statsTable.add(tank);
+//        statsTable.add(tankXY);
+//        statsTable.row();
+//        statsTable.add(fps);
+//        statsTable.add(this.fpsValue);
+//        statsTable.row();
+//        Label direction = UIFactory.createGameLabel("DIRECTION:");
+//        statsTable.add(direction);
+//        statsTable.add(this.direction);
         //create table for pop up label when try move and tank cant
         alertTable = new Table();
         super.addToRoot(alertTable);
@@ -181,7 +208,7 @@ public class GameScreen extends AbstractScreen {
                 }
             }
         }).start();
-        hudUpdate = new HudUpdate(killTable, ammoValue, playerCount, killCount);
+        hudUpdate = new HudUpdate(killLogTable, ammoValue, playerCount, killCount);
     }
 
     @Override
