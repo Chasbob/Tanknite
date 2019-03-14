@@ -37,7 +37,7 @@ public class Physics extends Component {
   /**
    * The velocity for this tank
    */
-  private int velocity = 10;
+  private int velocity = 5;
 
 
   /**

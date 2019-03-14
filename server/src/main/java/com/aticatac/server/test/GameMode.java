@@ -6,9 +6,13 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.components.CollisionBox;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.controller.TankController;
+import com.aticatac.server.gamemanager.Manager;
 import com.aticatac.server.prefabs.TankObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.log4j.Logger;
@@ -77,13 +81,43 @@ abstract class GameMode implements Game {
   }
 
   private TankObject createTank(String player, boolean isAI) {
-    Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-    ThreadLocalRandom.current().nextInt(min, max + 1));
-    //checks if this is a valid coordinate when generated is not in the map then moves on.
-    while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position)) {
-      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-      ThreadLocalRandom.current().nextInt(min, max + 1));
+
+    boolean positionClean = false;
+    Position position = new Position();
+    System.out.println("Before While");
+
+    //while loop generating positions until finds one that isn't occupied
+    while (!positionClean) {
+
+      System.out.println("Position not clean");
+
+      //creates random position
+      position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
+          ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
+
+      //creates a collision box for tank
+      this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(position);
+
+      //gets the collision box and occupied map
+      ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+      HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+
+      //checks if any of the positions already exist
+      for(int i=0; i<box.size(); i++){
+
+        System.out.println("Checking box");
+        positionClean = !occupiedCoordinates.containsKey(box.get(i));
+
+      }
     }
+
+    TankObject tank = new TankObject(getGameObject().getChildren().get("Player Container"),
+        player,
+        position,
+        100,
+        30,
+        isAI);
+
     return createTank(player, isAI, position.getX(), position.getY());
   }
 

@@ -88,9 +88,12 @@ public class GameManager extends Component {
 
       boolean positionClean = false;
       Position position = new Position();
+      System.out.println("Before While");
 
       //while loop generating positions until finds one that isn't occupied
       while (!positionClean) {
+
+        System.out.println("Position not clean");
 
         //creates random position
         position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
@@ -106,6 +109,7 @@ public class GameManager extends Component {
         //checks if any of the positions already exist
         for(int i=0; i<box.size(); i++){
 
+          System.out.println("Checking box");
           positionClean = !occupiedCoordinates.containsKey(box.get(i));
 
         }
