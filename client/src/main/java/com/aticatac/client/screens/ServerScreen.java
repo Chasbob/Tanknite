@@ -59,10 +59,13 @@ public class ServerScreen extends AbstractScreen {
     buttonTable.add(manualButton);
     //add table to store all current open servers
     Table serversTable = new Table();
-    serversTable.setFillParent(true);
-    serversTable.defaults().pad(10).width(450);
+    //serversTable.setFillParent(true);
+    serversTable.defaults().pad(10).width(400).padLeft(100);
     serversTable.top().padTop(150);
-    listServers = new ListServers(serversTable);
+    Table playersTable = new Table();
+    playersTable.defaults().pad(10);
+    playersTable.top().padTop(150);
+    listServers = new ListServers(serversTable, playersTable);
     listServers.update();
     new Thread(() -> {
       while (!Thread.currentThread().isInterrupted()) {
@@ -78,7 +81,8 @@ public class ServerScreen extends AbstractScreen {
         }
       }
     }).start();
-    dataTable.addActor(serversTable);
+    dataTable.add(serversTable);
+    dataTable.add(playersTable);
   }
 
   @Override

@@ -97,6 +97,8 @@ public class UIFactory {
 
   static Label createColouredLabel(String text){ return new Label(text, Styles.INSTANCE.getColouredLabelStyle());}
 
+  public static Label createSubtleLabel(String text){return new Label(text, Styles.INSTANCE.getSubtleStyle());}
+
   /**
    * New change screen event input listener.
    *

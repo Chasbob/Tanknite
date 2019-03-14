@@ -24,6 +24,7 @@ public enum Styles {
   private Label.LabelStyle colouredLabelStyle;
   private Label.LabelStyle gameLabelStyle;
   private Label.LabelStyle titleStyle;
+  private Label.LabelStyle subtleStyle;
   private TextButton.TextButtonStyle baseButtonStyle;
   private TextButton.TextButtonStyle selectedButtonStyle;
   private TextButton.TextButtonStyle startButtonStyle;
@@ -72,6 +73,8 @@ public enum Styles {
     hideLabelStyle = createLabelStyle(buttonFont, Color.BLACK);
     //create style for game screen labels
     gameLabelStyle = createLabelStyle(gameLabelFont, Color.WHITE);
+    //create style for subtle labels
+    subtleStyle = createLabelStyle(buttonFont, Color.DARK_GRAY);
     //create text field style with cursor
     textFieldStyle = new TextField.TextFieldStyle();
     textFieldStyle.font = buttonFont;
@@ -160,6 +163,10 @@ public enum Styles {
    */
   public Label.LabelStyle getGameLabelStyle() {
     return gameLabelStyle;
+  }
+
+  public Label.LabelStyle getSubtleStyle() {
+    return subtleStyle;
   }
 
   /**

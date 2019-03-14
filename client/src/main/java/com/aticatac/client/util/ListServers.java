@@ -5,6 +5,7 @@ import com.aticatac.client.screens.Screens;
 import com.aticatac.client.screens.ServerScreen;
 import com.aticatac.client.screens.UIFactory;
 import com.aticatac.common.model.ServerInformation;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import java.util.ArrayList;
@@ -14,9 +15,8 @@ import org.apache.log4j.Logger;
  * The type List servers.
  */
 public class ListServers {
-  private final Table serversTable;
-  private final int tableSize;
   private final ArrayList<ServerButton> buttons;
+  private final ArrayList<Label> labels;
   private final Logger logger;
 
   /**
@@ -24,12 +24,11 @@ public class ListServers {
    *
    * @param serverTable the server table
    */
-  public ListServers(Table serverTable) {
+  public ListServers(Table serverTable, Table playerTable) {
     this.logger = Logger.getLogger(getClass());
-    this.serversTable = serverTable;
-    this.tableSize = 10;
+    int tableSize = 10;
     this.buttons = new ArrayList<>();
-    serverTable.defaults().padLeft(100);
+    this.labels = new ArrayList<>();
     for (int i = 0; i < tableSize; i++) {
       ServerButton serverButton = new ServerButton();
       serverButton.getLabel().setAlignment(Align.left);
@@ -42,9 +41,14 @@ public class ListServers {
         serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
         return false;
       }));
-      this.serversTable.add(serverButton);
-      this.serversTable.row();
+      serverTable.add(serverButton);
+      serverTable.row();
       buttons.add(serverButton);
+      Label playersLabel = UIFactory.createSubtleLabel("");
+      playersLabel.setAlignment(Align.left);
+      labels.add(playersLabel);
+      playerTable.add(playersLabel);
+      playerTable.row();
     }
   }
 
@@ -63,6 +67,13 @@ public class ListServers {
         }
         buttons.get(i).getLabel().setText(servers.get(i).getId());
         buttons.get(i).setServerInformation(servers.get(i));
+        int playerCount = buttons.get(i).getServerInformation().getPlayerCount();
+        int maxPlayers = buttons.get(i).getServerInformation().getMaxPlayers();
+        if (playerCount<maxPlayers){
+          labels.get(i).setText(playerCount+"/"+maxPlayers);
+        }else{
+          labels.get(i).setText("FULL");
+        }
       } else {
         buttons.get(i).getLabel().setText("<EMPTY>");
       }
