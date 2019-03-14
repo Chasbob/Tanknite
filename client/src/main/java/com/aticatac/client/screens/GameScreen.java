@@ -98,7 +98,7 @@ public class GameScreen extends AbstractScreen {
         super.addToRoot(createBottomLeft());
         //create table for ammo - BOTTOM RIGHT
         super.addToRoot(createBottomRight());
-        //create table for pop up label when try move and tank cant
+        //create alert table - BOTTOM MIDDLE
         super.addToRoot(createAlertTable());
         //create pop up table
         rootTable.add(createPopUp());
@@ -118,34 +118,27 @@ public class GameScreen extends AbstractScreen {
         hudUpdate = new HudUpdate(killLogTable, ammoValue, playerCount, killCount);
     }
 
-    private void addTableColour(Table table, Color color){
-        Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGB565);
-        tableColour.setColor(color);
-        tableColour.fill();
-        table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
-    }
-
     private Table createTopLeft(){
         Table countTable = new Table();
         countTable.top().left();
         countTable.defaults().padTop(10).padLeft(10).left();
         Table aliveTable = new Table();
         Table aliveLabelTable = new Table();
-        addTableColour(aliveLabelTable, Color.GRAY);
+        Styles.INSTANCE.addTableColour(aliveLabelTable, Color.GRAY);
         Label aliveLabel = UIFactory.createGameLabel("Alive");
         aliveLabelTable.add(aliveLabel);
         Table playerCountTable = new Table();
         playerCountTable.add(playerCount);
-        addTableColour(playerCountTable, Color.BLACK);
+        Styles.INSTANCE.addTableColour(playerCountTable, Color.BLACK);
         aliveTable.add(playerCountTable);
         aliveTable.add(aliveLabelTable);
         Table killTable = new Table();
         Table killLableTable = new Table();
-        addTableColour(killLableTable, Color.GRAY);
+        Styles.INSTANCE.addTableColour(killLableTable, Color.GRAY);
         Label killLabel = UIFactory.createGameLabel("Killed");
         killLableTable.add(killLabel);
         Table killCountTable = new Table();
-        addTableColour(killCountTable, Color.BLACK);
+        Styles.INSTANCE.addTableColour(killCountTable, Color.BLACK);
         killCountTable.add(killCount);
         killTable.add(killCountTable);
         killTable.add(killLableTable);
@@ -200,7 +193,7 @@ public class GameScreen extends AbstractScreen {
             return true;
         }));
         popUpTable.add(quitButton);
-        addTableColour(popUpTable, Color.BLACK);
+        Styles.INSTANCE.addTableColour(popUpTable, Color.BLACK);
         return popUpTable;
     }
 

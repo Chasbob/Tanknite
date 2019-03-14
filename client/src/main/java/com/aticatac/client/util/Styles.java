@@ -5,11 +5,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
  * The enum Styles.
@@ -114,6 +113,13 @@ public enum Styles {
     buttonStyle.font = font;
     buttonStyle.fontColor = color;
     return buttonStyle;
+  }
+
+  public void addTableColour(Table table, Color color){
+    Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGB565);
+    tableColour.setColor(color);
+    tableColour.fill();
+    table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
   }
 
   /**
