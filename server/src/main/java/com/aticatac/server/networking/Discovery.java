@@ -24,6 +24,7 @@ public class Discovery implements Runnable {
    * Instantiates a new Discovery.
    *
    * @param name the name
+   *
    * @throws IOException the io exception
    */
   Discovery(String name) throws IOException {
@@ -65,7 +66,7 @@ public class Discovery implements Runnable {
 
   private void broadcast() throws IOException {
     if (Server.ServerData.INSTANCE.refreshBroadcast()) {
-      buildPackets(Server.ServerData.INSTANCE.playerCount() + "/" + Server.ServerData.INSTANCE.getMaxPlayers());
+      buildPackets(name);
     }
     for (DatagramPacket packet : this.packets) {
       Server.ServerData.INSTANCE.broadcastPacket(packet);
