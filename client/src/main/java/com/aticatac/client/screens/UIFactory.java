@@ -1,7 +1,6 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -73,6 +72,14 @@ public class UIFactory {
    */
   static TextButton createStartButton(String text) {
     return new TextButton(text, Styles.INSTANCE.getStartButtonStyle());
+  }
+
+  static TextButton createLessSubtleButton(String text) {
+    return new TextButton(text, Styles.INSTANCE.getLessSubtleButtonStyle());
+  }
+
+  static TextButton createSubtleButton(String text) {
+    return new TextButton(text, Styles.INSTANCE.getSubtleButtonStyle());
   }
 
   /**

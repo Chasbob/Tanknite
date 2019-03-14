@@ -28,7 +28,6 @@ public enum Screens {
         screens.put(MainMenuScreen.class, new MainMenuScreen());
         screens.put(ServerScreen.class, new ServerScreen());
         screens.put(SettingsScreen.class, new SettingsScreen());
-        screens.put(MultiplayerScreen.class, new MultiplayerScreen());
         screens.put(SplashScreen.class, new SplashScreen());
         screens.put(UsernameScreen.class, new UsernameScreen());
         logger = Logger.getLogger(getClass());

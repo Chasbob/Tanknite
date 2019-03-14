@@ -66,7 +66,7 @@ public class UsernameScreen extends AbstractScreen {
     dataTable.add(submitButton);
     //create custom listener for submit button to get text field text
     submitButton.addListener(UIFactory.newListenerEvent(() -> {
-      if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
+      if (!Data.INSTANCE.isHosting() && Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
         //join single player server
         Response response = Data.INSTANCE.connect(usernameTextField.getText(), true);
         switch (response) {
@@ -80,7 +80,7 @@ public class UsernameScreen extends AbstractScreen {
             break;
         }
         return false;
-      } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
+      } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Data.INSTANCE.isHosting()) {
         Response response;
         if (Data.INSTANCE.isManualConfigForServer()) {
           //join server with ip

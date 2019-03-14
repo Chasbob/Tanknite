@@ -59,7 +59,6 @@ public class ServerScreen extends AbstractScreen {
     buttonTable.add(manualButton);
     //add table to store all current open servers
     Table serversTable = new Table();
-    //serversTable.setFillParent(true);
     serversTable.defaults().pad(10).width(400).padLeft(100);
     serversTable.top().padTop(50);
     Table playersTable = new Table();

@@ -68,6 +68,7 @@ public class LobbyScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
+    Data.INSTANCE.setHosting(false);
   }
 
   @Override
@@ -75,6 +76,7 @@ public class LobbyScreen extends AbstractScreen {
     super.render(delta);
     if (Data.INSTANCE.isStarted()) {
       Screens.INSTANCE.showScreen(GameScreen.class);
+      refresh();
     }
   }
 }
