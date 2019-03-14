@@ -5,6 +5,7 @@ package com.aticatac.common.model;
  */
 public class CommandModel extends Model {
   private final Command command;
+  private int bearing;
 
   /**
    * Instantiates a new Model.
@@ -15,6 +16,24 @@ public class CommandModel extends Model {
   public CommandModel(String id, Command command) {
     super(id);
     this.command = command;
+  }
+
+  /**
+   * Gets bearing.
+   *
+   * @return the bearing
+   */
+  public int getBearing() {
+    return bearing;
+  }
+
+  /**
+   * Sets bearing.
+   *
+   * @param bearing the bearing
+   */
+  public void setBearing(int bearing) {
+    this.bearing = bearing;
   }
 
   /**
@@ -29,7 +48,7 @@ public class CommandModel extends Model {
   @Override
   public String toString() {
     return "CommandModel{" +
-    "command=" + command +
-    '}';
+        "command=" + command +
+        '}';
   }
 }

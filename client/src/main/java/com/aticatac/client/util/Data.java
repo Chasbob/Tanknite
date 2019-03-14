@@ -54,6 +54,11 @@ public enum Data {
     this.clients = new ArrayList<>();
   }
 
+  /**
+   * Is started boolean.
+   *
+   * @return the boolean
+   */
   public boolean isStarted() {
     return client.isStarted();
   }
@@ -85,6 +90,11 @@ public enum Data {
     return client.nextUpdate();
   }
 
+  /**
+   * Peek update update.
+   *
+   * @return the update
+   */
   public Update peekUpdate() {
     return client.peekUpdate();
   }
@@ -129,6 +139,7 @@ public enum Data {
    * Gets player.
    *
    * @param i the
+   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -202,6 +213,7 @@ public enum Data {
    *
    * @param id           the id
    * @param singlePlayer the single player
+   *
    * @return the response
    */
   public Response connect(String id, boolean singlePlayer) {
@@ -217,6 +229,17 @@ public enum Data {
     }
   }
 
+  /**
+   * Connect response.
+   *
+   * @param id           the id
+   * @param singleplayer the singleplayer
+   * @param host         the host
+   *
+   * @return the response
+   *
+   * @throws UnknownHostException the unknown host exception
+   */
   public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
     this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
     return connect(id, singleplayer);
@@ -242,18 +265,42 @@ public enum Data {
     this.client.sendCommand(command);
   }
 
+  public void sendCommand(Command command, int bearing) {
+    this.client.sendCommand(command, bearing);
+  }
+
+  /**
+   * Is manual config for server boolean.
+   *
+   * @return the boolean
+   */
   public boolean isManualConfigForServer() {
     return manualConfigForServer;
   }
 
+  /**
+   * Sets manual config for server.
+   *
+   * @param manualConfigForServer the manual config for server
+   */
   public void setManualConfigForServer(boolean manualConfigForServer) {
     this.manualConfigForServer = manualConfigForServer;
   }
 
+  /**
+   * Is hosting boolean.
+   *
+   * @return the boolean
+   */
   public boolean isHosting() {
     return isHosting;
   }
 
+  /**
+   * Sets hosting.
+   *
+   * @param hosting the hosting
+   */
   public void setHosting(boolean hosting) {
     isHosting = hosting;
   }}

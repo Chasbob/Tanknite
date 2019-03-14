@@ -81,7 +81,9 @@ public class Client {
    *
    * @param server the server
    * @param id     the id
+   *
    * @return the boolean
+   *
    * @throws IOException  the io exception
    * @throws InvalidBytes the invalid bytes
    */
@@ -145,15 +147,20 @@ public class Client {
    *
    * @param command the command
    */
-  public void sendCommand(Command command) {
+  public void sendCommand(Command command, int bearing) {
     if (!this.connected) {
       return;
     }
     this.logger.trace("Sending command: " + command);
     CommandModel commandModel = new CommandModel(this.id, command);
+    commandModel.setBearing(bearing);
     this.logger.trace("Writing command to output stream.");
     String json = modelReader.toJson(commandModel);
     this.printer.println(json);
     this.logger.trace("Sent command: " + command);
+  }
+
+  public void sendCommand(Command command) {
+    sendCommand(command, 0);
   }
 }

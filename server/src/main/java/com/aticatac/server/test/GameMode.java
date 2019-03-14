@@ -4,7 +4,7 @@ import com.aticatac.common.components.DataServer;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
-import com.aticatac.common.model.Command;
+import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.common.prefabs.TankObject;
@@ -50,6 +50,14 @@ abstract class GameMode implements Game {
   }
 
   @Override
+  public void addPlayer(String player) {
+    if (!playerMap.containsKey(player)) {
+      playerMap.put(player, createTank(player, false));
+      Position p = playerMap.get(player).getTransform().getPosition();
+    }
+  }
+
+  @Override
   public void removePlayer(String player) {
     playerMap.remove(player);
   }
@@ -59,38 +67,30 @@ abstract class GameMode implements Game {
   }
 
   @Override
-  public void playerInput(String player, Command cmd) {
+  public void playerInput(CommandModel model) {
     //Gets the tank that the command came from
-    var tank = playerMap.get(player);
-    switch (cmd) {
+    var tank = playerMap.get(model.getId());
+    switch (model.getCommand()) {
       //TODO set name of tank game object to player id and pass that in to logic.
       case UP:
         tank.getComponent(TankController.class).moveUp();
-        logger.trace("Player: " + player + " sent command: " + cmd);
+        logger.trace("Player: " + model.getId() + " sent command: " + model.getCommand());
         break;
       case DOWN:
         tank.getComponent(TankController.class).moveDown();
-        logger.trace("Player: " + player + " sent command: " + cmd);
+        logger.trace("Player: " + model.getId() + " sent command: " + model.getCommand());
         break;
       case LEFT:
         tank.getComponent(TankController.class).moveLeft();
-        logger.trace("Player: " + player + " sent command: " + cmd);
+        logger.trace("Player: " + model.getId() + " sent command: " + model.getCommand());
         break;
       case RIGHT:
         tank.getComponent(TankController.class).moveRight();
-        logger.trace("Player: " + player + " sent command: " + cmd);
+        logger.trace("Player: " + model.getId() + " sent command: " + model.getCommand());
         break;
       case SHOOT:
         tank.getComponent(TankController.class).shoot();
-        logger.trace("Player: " + player + " sent command: " + cmd);
-    }
-  }
-
-  @Override
-  public void addPlayer(String player) {
-    if (!playerMap.containsKey(player)) {
-      playerMap.put(player, createTank(player, false));
-      Position p = playerMap.get(player).getTransform().getPosition();
+        logger.trace("Player: " + model.getId() + " sent command: " + model.getCommand());
     }
   }
 

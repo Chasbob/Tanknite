@@ -125,7 +125,8 @@ public class Server extends Thread {
         if (current.getCommand() == Command.QUIT) {
           disconnectClient(current);
         } else {
-          ServerData.INSTANCE.getGame().playerInput(current.getId(), current.getCommand());
+//          ServerData.INSTANCE.getGame().playerInput(current.getId(), current.getCommand());
+          ServerData.INSTANCE.getGame().playerInput(current);
         }
       }
     }
@@ -287,6 +288,7 @@ public class Server extends Thread {
      * Broadcast packet.
      *
      * @param packet the packet
+     *
      * @throws IOException the io exception
      */
     public void broadcastPacket(DatagramPacket packet) throws IOException {
@@ -297,6 +299,7 @@ public class Server extends Thread {
      * Multicast packet.
      *
      * @param packet the packet
+     *
      * @throws IOException the io exception
      */
     public void multicastPacket(DatagramPacket packet) throws IOException {
