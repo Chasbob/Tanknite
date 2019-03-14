@@ -193,17 +193,16 @@ public class Physics extends Component {
      * @param oldPosition The new calculates position of the tank
      * @return An array of the collision type and the new position
      */
-    //TODO new bullet collision method
     private Object[] collision (Position newPosition, Position oldPosition, String objectType) {
 
 
-      if(objectType == "tank"){
+      if(objectType.equals("tank")){
 
-        //creates and sets the new box coords based on the new position
+        //gets the old box position
         ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
-        //removes the old positions
+        //removes the old positions form data server
         this.getGameObject().getComponent(CollisionBox.class).removeBoxFromData(box);
-        //sets the new positions
+        //sets a new collision box using new position
         this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(newPosition);
         //gets new position box
         box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
@@ -223,12 +222,32 @@ public class Physics extends Component {
             this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
             return returnPosition;
           }
-
         }
-
-
         //adds the box positions to the server
         this.getGameObject().getComponent(CollisionBox.class).addBoxToData(box, this.getGameObject().getName());
+      }
+
+      if(objectType.equals("bullet")){
+
+        //sets the new positions in collision box
+        this.getGameObject().getComponent(BulletCollisionBox.class).setCollisionBox(newPosition);
+        //gets new position box
+        ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+
+        //checks the box collision coords against the occupied
+        for(int i=0; i<box.size(); i++){
+
+          //map of the coordinates that are occupied
+          HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+
+          Position position = box.get(i);
+          Object[] returnPosition = getCollisionArray(position, oldPosition, occupiedCoordinates);
+          if(returnPosition != null){
+            //sets the box positions back to the old ones and puts that back into the data server
+            this.getGameObject().getComponent(BulletCollisionBox.class).setCollisionBox(oldPosition);
+            return returnPosition;
+          }
+        }
 
       }
 
@@ -239,7 +258,7 @@ public class Physics extends Component {
       HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
 
-      //checks the position of the tank against the occupied coordinates
+      //checks the position of the object against the occupied coordinates
       Object[] returnPosition = getCollisionArray(newPosition, oldPosition, occupiedCoordinates);
       if (returnPosition != null) return returnPosition;
 

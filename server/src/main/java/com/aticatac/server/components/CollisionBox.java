@@ -11,6 +11,10 @@ public class CollisionBox extends Component {
   /***/
   private ArrayList<Position> box = new ArrayList<>();
 
+  /**
+   *
+   * @param gameObject
+   */
   public CollisionBox(GameObject gameObject) {
     super(gameObject);
   }
@@ -21,7 +25,7 @@ public class CollisionBox extends Component {
    */
   public void setCollisionBox(Position tankPosition) {
 
-    if(box != null) {
+    if(box!=null){
       box.clear();
     }
 
@@ -64,6 +68,8 @@ public class CollisionBox extends Component {
 
     }
 
+
+
   /**
    *
    * @return
@@ -75,6 +81,11 @@ public class CollisionBox extends Component {
   }
 
 
+  /**
+   *
+   * @param box
+   * @param tankID
+   */
   public void addBoxToData(ArrayList<Position> box, String tankID){
 
     for(int i=0; i<box.size(); i++){
@@ -86,6 +97,10 @@ public class CollisionBox extends Component {
 
   }
 
+  /**
+   *
+   * @param box
+   */
   public void removeBoxFromData(ArrayList<Position> box){
 
     for(int i=0; i<box.size(); i++){
