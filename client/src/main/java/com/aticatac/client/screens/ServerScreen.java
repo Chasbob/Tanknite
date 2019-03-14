@@ -61,10 +61,10 @@ public class ServerScreen extends AbstractScreen {
     Table serversTable = new Table();
     //serversTable.setFillParent(true);
     serversTable.defaults().pad(10).width(400).padLeft(100);
-    serversTable.top().padTop(150);
+    serversTable.top().padTop(50);
     Table playersTable = new Table();
     playersTable.defaults().pad(10);
-    playersTable.top().padTop(150);
+    playersTable.top().padTop(50);
     listServers = new ListServers(serversTable, playersTable);
     listServers.update();
     new Thread(() -> {
