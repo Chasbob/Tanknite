@@ -5,6 +5,7 @@ import com.aticatac.client.screens.Screens;
 import com.aticatac.client.screens.ServerScreen;
 import com.aticatac.client.screens.UIFactory;
 import com.aticatac.common.model.ServerInformation;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
@@ -74,8 +75,10 @@ public class ListServers {
         }else{
           labels.get(i).setText("FULL");
         }
+        buttons.get(i).setTouchable(Touchable.enabled);
       } else {
         buttons.get(i).getLabel().setText("<EMPTY>");
+        buttons.get(i).setTouchable(Touchable.disabled);
       }
       buttons.get(i).getLabel().setStyle(Styles.INSTANCE.getBaseLabelStyle());
     }
