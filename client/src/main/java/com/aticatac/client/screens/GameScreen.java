@@ -61,8 +61,8 @@ public class GameScreen extends AbstractScreen {
         try {
             player = new Container();
             ammoValue = UIFactory.createGameLabel("");
-            killCount = UIFactory.createGameLabel("0 ");
-            playerCount = UIFactory.createGameLabel("1 ");
+            killCount = UIFactory.createGameLabel(" 0 ");
+            playerCount = UIFactory.createGameLabel(" 1 ");
             fpsValue = UIFactory.createGameLabel("");
             tankXY = UIFactory.createGameLabel("");
             direction = UIFactory.createGameLabel("");
@@ -119,16 +119,16 @@ public class GameScreen extends AbstractScreen {
     }
 
     private Table createTopLeft(){
-        Table countTable = new Table();
-        countTable.top().left();
-        countTable.defaults().padTop(10).padLeft(10).left();
+        Table topLeftTable = new Table();
+        topLeftTable.top().left();
+        topLeftTable.defaults().padTop(10).padLeft(10).left();
         Table aliveTable = new Table();
         Table aliveLabelTable = new Table();
         Styles.INSTANCE.addTableColour(aliveLabelTable, Color.GRAY);
         Label aliveLabel = UIFactory.createGameLabel("Alive");
         aliveLabelTable.add(aliveLabel);
         Table playerCountTable = new Table();
-        playerCountTable.add(playerCount);
+        playerCountTable.add(playerCount).center();
         Styles.INSTANCE.addTableColour(playerCountTable, Color.BLACK);
         aliveTable.add(playerCountTable);
         aliveTable.add(aliveLabelTable);
@@ -142,9 +142,9 @@ public class GameScreen extends AbstractScreen {
         killCountTable.add(killCount);
         killTable.add(killCountTable);
         killTable.add(killLableTable);
-        countTable.add(aliveTable);
-        countTable.add(killTable);
-        return countTable;
+        topLeftTable.add(aliveTable);
+        topLeftTable.add(killTable);
+        return topLeftTable;
     }
 
     private Table createTopRight(){
@@ -162,13 +162,21 @@ public class GameScreen extends AbstractScreen {
     }
 
     private Table createBottomRight(){
+        Table bottomRightTable = new Table();
+        bottomRightTable.bottom().right();
+        bottomRightTable.defaults().padRight(10).padTop(10).padBottom(20).left();
         Table ammoTable = new Table();
-        ammoTable.bottom().right();
-        ammoTable.defaults().padRight(10).padTop(10).padBottom(20).left();
-        Label ammo = UIFactory.createGameLabel("ammo: ");
-        ammoTable.add(ammo);
-        ammoTable.add(ammoValue);
-        return ammoTable;
+        Table ammoValueTable = new Table();
+        Styles.INSTANCE.addTableColour(ammoValueTable, Color.BLACK);
+        ammoValueTable.add(ammoValue);
+        Label ammoLabel = UIFactory.createGameLabel("ammo");
+        Table ammoLabelTable = new Table();
+        Styles.INSTANCE.addTableColour(ammoLabelTable, Color.GRAY);
+        ammoLabelTable.add(ammoLabel);
+        ammoTable.add(ammoValueTable);
+        ammoTable.add(ammoLabelTable);
+        bottomRightTable.add(ammoTable);
+        return bottomRightTable;
     }
 
     private Table createPopUp(){
