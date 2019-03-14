@@ -18,6 +18,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -264,6 +266,15 @@ public class GameScreen extends AbstractScreen {
         tanks.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
     }
 
+    private int getBearing() {
+        Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Vector2 mouseMapPos = new Vector2(mouseMapPos3.x, mouseMapPos3.y);
+        Vector2 tankVec = new Vector2(player.getX(), player.getY());
+        Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
+        return Math.round(mouseRel.angle());
+    }
+
+
     private void backgroundInput() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             //show the pop up table
@@ -280,6 +291,10 @@ public class GameScreen extends AbstractScreen {
                 Data.INSTANCE.sendCommand(Command.DOWN);
             }
         }
+        if (Gdx.input.isButtonPressed(0)) {
+            Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+        }
+
     }
 
     private void healthBar() {
