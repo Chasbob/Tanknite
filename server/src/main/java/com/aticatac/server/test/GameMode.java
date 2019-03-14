@@ -84,40 +84,24 @@ abstract class GameMode implements Game {
 
     boolean positionClean = false;
     Position position = new Position();
-    System.out.println("Before While");
 
     //while loop generating positions until finds one that isn't occupied
     while (!positionClean) {
-
-      System.out.println("Position not clean");
 
       //creates random position
       position = new Position(ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1),
           ThreadLocalRandom.current().nextInt(Manager.INSTANCE.getMin(), Manager.INSTANCE.getMax() + 1));
 
       //creates a collision box for tank
-      this.getGameObject().getComponent(CollisionBox.class).setCollisionBox(position);
-
-      //gets the collision box and occupied map
-      ArrayList<Position> box = this.getGameObject().getComponent(CollisionBox.class).getCollisionBox();
+      ArrayList<Position> box = getCollisionBox(position);
       HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
       //checks if any of the positions already exist
       for(int i=0; i<box.size(); i++){
-
-        System.out.println("Checking box");
         positionClean = !occupiedCoordinates.containsKey(box.get(i));
 
       }
     }
-
-    TankObject tank = new TankObject(getGameObject().getChildren().get("Player Container"),
-        player,
-        position,
-        100,
-        30,
-        isAI);
-
     return createTank(player, isAI, position.getX(), position.getY());
   }
 
@@ -141,4 +125,51 @@ abstract class GameMode implements Game {
   public GameObject getRoot() {
     return root;
   }
+
+  private ArrayList<Position> getCollisionBox(Position tankPosition){
+
+    ArrayList<Position> box = new ArrayList<>();
+
+    int lowerY = tankPosition.getY() - 14;
+    int lowerX = tankPosition.getX() - 14;
+
+    int higherY = tankPosition.getY() + 14;
+    int higherX = tankPosition.getX() + 14;
+
+    //positions for bottom of box
+    for (int x = 0; x < 29; x++) {
+
+      Position position = new Position(lowerX+x, lowerY);
+      box.add(position);
+    }
+
+    //positions for left of box
+    for (int y = 0; y < 29; y++) {
+
+      Position position = new Position(lowerX, lowerY+y);
+      box.add(position);
+
+    }
+
+    //positions for top of box
+    for (int x = 0; x < 29; x++) {
+
+      Position position = new Position(lowerX + x, higherY);
+      box.add(position);
+
+    }
+
+    //positions for right of box
+    for (int y = 0; y < 29; y++) {
+
+      Position position = new Position(higherX, lowerY + y);
+      box.add(position);
+
+    }
+
+    return box;
+
+
+  }
+
 }
