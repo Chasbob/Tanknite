@@ -28,13 +28,13 @@ public class SettingsScreen extends AbstractScreen {
     super.addToRoot(toggleTable);
     toggleTable.defaults().pad(10).center();
     TextButton soundButton = UIFactory.createButton("Toggle Sound: ");
-    Label soundLabel = UIFactory.createLabel("ON");
+    Label soundLabel = UIFactory.createSubtleLabel("ON");
     soundButton.addListener(buttonToChangeBool(soundButton, soundLabel));
     toggleTable.add(soundButton);
     toggleTable.add(soundLabel);
     toggleTable.row();
     TextButton musicButton = UIFactory.createButton("Toggle Music: ");
-    Label musicLabel = UIFactory.createLabel("ON");
+    Label musicLabel = UIFactory.createSubtleLabel("ON");
     musicButton.addListener(buttonToChangeBool(musicButton, musicLabel));
     toggleTable.add(musicButton);
     toggleTable.add(musicLabel);
