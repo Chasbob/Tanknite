@@ -41,7 +41,7 @@ public class BulletController extends Component {
           // collided with tank
           // TODO: check when tanks created, if the objects are named after username, (and prevent usernames "none", "health" etc)
           String collidedTankName = collisionType;
-          GameObject collidedTank = this.getGameObject().findObject(collidedTankName, this.getGameObject());
+          GameObject collidedTank = this.getGameObject().findObject(collidedTankName);
           collidedTank.getComponent(TankController.class).isShot(this.getGameObject().getComponent(Damage.class).getDamage());
           GameObject.destroy(getGameObject());
           return;

@@ -8,7 +8,7 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.server.components.*;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.powerupobjects.AmmoObject;
+import com.aticatac.server.powerupobjects.*;
 
 // components for server side make in server or import from common?
 // needs component of Physics
