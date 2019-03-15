@@ -23,57 +23,59 @@ public class PowerUpController extends Component{
 
   public void spawnPowerUps(){
 
-    while (true) {
+    new Thread(() -> {
+      while (true) {
 
-      int randomTime = new Random().nextInt(15);
+        int randomTime = new Random().nextInt(15);
 
-      //delay for randomTime
-      try {
-        Thread.sleep(randomTime * 1000);
-      }
-      catch (InterruptedException ex){
-        Thread.currentThread().interrupt();
-      }
-      int powerUpId = new Random().nextInt(4);
+        //delay for randomTime
+        try {
+          Thread.sleep(randomTime * 1000);
+        } catch (InterruptedException ex) {
+          Thread.currentThread().interrupt();
+        }
+        int powerUpId = new Random().nextInt(4);
 
-      switch (powerUpId) {
-        case 0:
-          HealthObject healthPowerUp = null; // get name of powerUp
-          try {
-            healthPowerUp = new HealthObject("healthPowerUp", this.getGameObject());
-          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
-            invalidClassInstance.printStackTrace();
-          }
-          break;
+        switch (powerUpId) {
+          case 0:
+            HealthObject healthPowerUp = null; // get name of powerUp
+            try {
+              healthPowerUp = new HealthObject("healthPowerUp", this.getGameObject());
+            } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+              invalidClassInstance.printStackTrace();
+            }
+            break;
 
-        case 1:
-          AmmoObject ammoPowerUp = null; // get name of powerUp
-          try {
-            ammoPowerUp = new AmmoObject("ammoPowerUp", this.getGameObject());
-          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
-            invalidClassInstance.printStackTrace();
-          }
-          break;
+          case 1:
+            AmmoObject ammoPowerUp = null; // get name of powerUp
+            try {
+              ammoPowerUp = new AmmoObject("ammoPowerUp", this.getGameObject());
+            } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+              invalidClassInstance.printStackTrace();
+            }
+            break;
 
-        case 2:
-          DamageObject damagePowerUp = null; // get name of powerUp
-          try {
-            damagePowerUp = new DamageObject("damagePowerUp", this.getGameObject());
-          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
-            invalidClassInstance.printStackTrace();
-          }
-          break;
+          case 2:
+            DamageObject damagePowerUp = null; // get name of powerUp
+            try {
+              damagePowerUp = new DamageObject("damagePowerUp", this.getGameObject());
+            } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+              invalidClassInstance.printStackTrace();
+            }
+            break;
 
-        case 3:
-          SpeedObject speedPowerUp = null; // get name of powerUp
-          try {
-            speedPowerUp = new SpeedObject("speedPowerUp", this.getGameObject());
-          } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
-            invalidClassInstance.printStackTrace();
-          }
-          break;
+          case 3:
+            SpeedObject speedPowerUp = null; // get name of powerUp
+            try {
+              speedPowerUp = new SpeedObject("speedPowerUp", this.getGameObject());
+            } catch (InvalidClassInstance | ComponentExistsException invalidClassInstance) {
+              invalidClassInstance.printStackTrace();
+            }
+            break;
+        }
       }
     }
+    );
 
 
 

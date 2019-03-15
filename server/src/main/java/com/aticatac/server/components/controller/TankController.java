@@ -9,6 +9,8 @@ import com.aticatac.server.components.*;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.powerupobjects.*;
+import com.aticatac.server.*;
+// import com.aticatac.server.test.GameMode;
 
 // components for server side make in server or import from common?
 // needs component of Physics
@@ -175,6 +177,7 @@ public class TankController extends Component {
   }
 
   public void dying() {
+    new Thread(() -> {
     try {
       Thread.sleep(20000);
     }
@@ -183,15 +186,18 @@ public class TankController extends Component {
     }
   die();
   }
+    );
+  }
 
 
   /**
    * Die.
    */
 
-  public void die() {
+  public void die (){
 
     DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
+    //int numberOfPlayersLeft = this.getGame().playerCount();
 
     //add a powerup into the data that says that this is a power up with location.
     //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
@@ -204,7 +210,8 @@ public class TankController extends Component {
     }
     GameObject.destroy(getGameObject());
 
-    //TODO: potentially not relevant in here
+
+    //TODO: score player based on number of players left, and end game if 1 left
     //Check if the number of tanks alive is 1, if so end the game
     //if not then remove this tank from number of tanks on the map
 
