@@ -1,6 +1,6 @@
 package com.aticatac.server.components.ai;
 
-import com.aticatac.common.components.transform.Position;
+import com.aticatac.server.objectsystem.transform.Position;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;

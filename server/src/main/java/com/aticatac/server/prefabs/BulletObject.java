@@ -2,12 +2,12 @@ package com.aticatac.server.prefabs;
 
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
-import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.server.components.BulletCollisionBox;
 import com.aticatac.server.components.Damage;
-import com.aticatac.server.components.Physics;
 import com.aticatac.server.components.Time;
 import com.aticatac.server.components.controller.BulletController;
+import com.aticatac.server.components.physics.Physics;
+import com.aticatac.server.objectsystem.GameObject;
 
 public class BulletObject extends GameObject {
     /**

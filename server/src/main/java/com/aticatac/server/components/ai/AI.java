@@ -1,14 +1,12 @@
 package com.aticatac.server.components.ai;
 
-import com.aticatac.common.components.Ammo;
-import com.aticatac.common.components.Component;
-import com.aticatac.common.components.Health;
-import com.aticatac.common.components.Ammo;
-import com.aticatac.common.components.Health;
-import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.Component;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.transform.Position;
+import com.aticatac.server.objectsystem.transform.Transform;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -91,8 +89,9 @@ public class AI extends Component {
     state = getStateChange();
     // Return a decision
     Command command = performStateAction();
-    if (!commandHistory.contains(command))
+    if (!commandHistory.contains(command)) {
       commandHistory.clear();
+    }
     commandHistory.add(command);
     return new Decision(performStateAction(), angleChange);
   }
@@ -339,6 +338,7 @@ public class AI extends Component {
    * Returns the correct command to travel to a node.
    *
    * @param node The node to travel to
+   *
    * @return A command that executes the path
    */
   private Command commandToPerform(SearchNode node) {
@@ -417,6 +417,7 @@ public class AI extends Component {
    *
    * @param from Start position
    * @param to   End position
+   *
    * @return True if there is a line of sight between
    */
   private boolean checkLineOfSightToPosition(Position from, Position to) {
@@ -433,6 +434,7 @@ public class AI extends Component {
    *
    * @param position The center position to check from
    * @param range    The range
+   *
    * @return A list of enemies in range of the position
    */
   private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
@@ -452,6 +454,7 @@ public class AI extends Component {
    * Gets a list of power-ups that are in a given range from a given position.
    *
    * @param position The center position to check from
+   *
    * @return A list of power-up in range of the position
    */
   private ArrayList<GameObject> getPowerupsInRange(Position position) {
@@ -490,6 +493,7 @@ public class AI extends Component {
    * @param position   Center position to check from
    * @param range      Range of consideration
    * @param allObjects GameObjects to consider
+   *
    * @return All specified GameObjects in range
    */
   private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
@@ -507,6 +511,7 @@ public class AI extends Component {
    * Gets the closest specified GameObject to the tank.
    *
    * @param objectsInRange GameObjects in range to consider
+   *
    * @return The closest specified GameObject
    */
   private GameObject getClosestObject(ArrayList<GameObject> objectsInRange) {
@@ -523,8 +528,7 @@ public class AI extends Component {
   }
 
   /**
-   * Calculates an angle change to apply to the aiming of the turret.
-   * Change is proportional to error.
+   * Calculates an angle change to apply to the aiming of the turret. Change is proportional to error.
    *
    * @return An angle change
    */

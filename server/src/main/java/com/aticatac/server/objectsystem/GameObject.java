@@ -1,14 +1,16 @@
-package com.aticatac.common.objectsystem;
+package com.aticatac.server.objectsystem;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.components.Texture;
-import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
-
+import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.Component;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.Texture;
+import com.aticatac.server.components.physics.Entity;
+import com.aticatac.server.objectsystem.transform.Transform;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,11 +24,13 @@ public class GameObject {
   private final ConcurrentHashMap<Class<?>, Component> components;
   private final ConcurrentHashMap<String, GameObject> children;
   private final Optional<GameObject> parent;
+  private Entity entity;
 
   /**
    * Instantiates a new Game object.
    *
    * @param name the name
+   *
    * @throws InvalidClassInstance     the invalid class instance
    * @throws ComponentExistsException the component exists exception
    */
@@ -39,11 +43,12 @@ public class GameObject {
    *
    * @param name       the name
    * @param objectType the object type
+   *
    * @throws InvalidClassInstance     the invalid class instance
    * @throws ComponentExistsException the component exists exception
    */
   public GameObject(String name, ObjectType objectType)
-  throws InvalidClassInstance, ComponentExistsException {
+      throws InvalidClassInstance, ComponentExistsException {
     this.name = name;
     this.children = new ConcurrentHashMap<>();
     this.components = new ConcurrentHashMap<>();
@@ -57,11 +62,12 @@ public class GameObject {
    *
    * @param name   the name
    * @param parent the parent
+   *
    * @throws InvalidClassInstance     the invalid class instance
    * @throws ComponentExistsException the component exists exception
    */
   public GameObject(String name, GameObject parent)
-  throws InvalidClassInstance, ComponentExistsException {
+      throws InvalidClassInstance, ComponentExistsException {
     this(name, parent, ObjectType.OTHER);
   }
 
@@ -71,11 +77,12 @@ public class GameObject {
    * @param name       the name
    * @param parent     the parent
    * @param objectType the object type
+   *
    * @throws InvalidClassInstance     the invalid class instance
    * @throws ComponentExistsException the component exists exception
    */
   public GameObject(String name, GameObject parent, ObjectType objectType)
-  throws InvalidClassInstance, ComponentExistsException {
+      throws InvalidClassInstance, ComponentExistsException {
     this.parent = Optional.of(parent);
     this.name = name;
     this.children = new ConcurrentHashMap<>();
@@ -91,6 +98,20 @@ public class GameObject {
    * @param g the g
    */
   public static void destroy(GameObject g) {
+  }
+
+  public Entity getEntity() {
+    if (entity != null) {
+      return entity;
+    } else {
+      entity = new Entity(name, Entity.EntityType.NONE);
+      return entity;
+    }
+  }
+
+  public Container getContainer() {
+    //todo this will shit out nulls
+    return new Container(getTexture(), getTransform().getX(), getTransform().getY(), getTransform().getRotation(), getComponent(Health.class).getHealth(), getComponent(Ammo.class).getAmmo(), getName(), getObjectType());
   }
 
   /**
@@ -143,12 +164,14 @@ public class GameObject {
    *
    * @param <T>  the type parameter
    * @param type the type
+   *
    * @return the t
+   *
    * @throws ComponentExistsException the component exists exception
    * @throws InvalidClassInstance     the invalid class instance
    */
   public <T extends Component> T addComponent(Class<T> type)
-  throws ComponentExistsException, InvalidClassInstance {
+      throws ComponentExistsException, InvalidClassInstance {
     if (componentExists(type)) {
       throw new ComponentExistsException(type.getName() + "exists");
     }
@@ -166,10 +189,20 @@ public class GameObject {
    *
    * @param <T>  the type parameter
    * @param type the type
+   *
    * @return the component
    */
   public <T extends Component> T getComponent(Class<T> type) {
-    return type.cast(components.get(type));
+    if (componentExists(type)) {
+      return type.cast(components.get(type));
+    } else {
+      try {
+        return addComponent(type);
+      } catch (ComponentExistsException | InvalidClassInstance e) {
+        e.printStackTrace();
+      }
+      return null;
+    }
   }
 
   /**
@@ -177,6 +210,7 @@ public class GameObject {
    *
    * @param <T>  the type parameter
    * @param type the type
+   *
    * @return the boolean
    */
   public <T extends Component> boolean componentExists(Class<T> type) {
@@ -223,6 +257,7 @@ public class GameObject {
    * Find object game object.
    *
    * @param tag the tag
+   *
    * @return the game object
    */
   public GameObject findObject(String tag) {
@@ -237,7 +272,7 @@ public class GameObject {
   public ArrayList<GameObject> getTextured() {
     ArrayList<GameObject> out = new ArrayList<>();
     for (GameObject c :
-    this.children.values()) {
+        this.children.values()) {
       if (c.componentExists(Texture.class)) {
         out.add(c);
       }
@@ -336,16 +371,16 @@ public class GameObject {
   @Override
   public String toString() {
     return "GameObject{"
-    +
-    "transform="
-    +
-    ", name='"
-    +
-    name
-    +
-    '\''
-    +
-    '}'
-    ;
+        +
+        "transform="
+        +
+        ", name='"
+        +
+        name
+        +
+        '\''
+        +
+        '}'
+        ;
   }
 }

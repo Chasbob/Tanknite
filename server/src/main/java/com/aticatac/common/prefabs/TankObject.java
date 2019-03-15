@@ -1,25 +1,22 @@
 package com.aticatac.common.prefabs;
 
-import com.aticatac.common.components.Acceleration;
-import com.aticatac.common.components.Ammo;
-import com.aticatac.common.components.BulletDamage;
-import com.aticatac.common.components.CollisionBox;
-import com.aticatac.common.components.Health;
-import com.aticatac.common.components.Physics;
-import com.aticatac.common.components.Texture;
-import com.aticatac.common.components.Time;
-import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
-import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.common.components.Ammo;
-import com.aticatac.common.components.Health;
-import com.aticatac.common.components.Physics;
-import com.aticatac.common.components.Time;
+import com.aticatac.server.components.Acceleration;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.BulletDamage;
+import com.aticatac.server.components.CollisionBox;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.PlayerKilledCount;
+import com.aticatac.server.components.Texture;
+import com.aticatac.server.components.Time;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
+import com.aticatac.server.components.physics.Physics;
+import com.aticatac.server.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.transform.Position;
+import com.aticatac.server.objectsystem.transform.Transform;
 
 
 public class TankObject extends GameObject {

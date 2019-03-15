@@ -1,12 +1,15 @@
 package com.aticatac.server.components.controller;
 
-import com.aticatac.common.components.Component;
+import com.aticatac.server.components.Acceleration;
+import com.aticatac.server.components.Ammo;
+import com.aticatac.server.components.BulletDamage;
+import com.aticatac.server.components.Component;
 import com.aticatac.server.components.DataServer;
-import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.components.transform.Transform;
-import com.aticatac.common.objectsystem.GameObject;
-import com.aticatac.server.components.*;
-
+import com.aticatac.server.components.Health;
+import com.aticatac.server.components.physics.Physics;
+import com.aticatac.server.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.transform.Position;
+import com.aticatac.server.objectsystem.transform.Transform;
 // components for server side make in server or import from common?
 // needs component of Physics
 
@@ -39,7 +42,7 @@ public class TankController extends Component {
 
       else {
         this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
         this.getGameObject().getComponent(Transform.class).setRotation(0);
         powerUpCheck(oldPosition, physicsData, newPosition);
       }
@@ -61,7 +64,7 @@ public class TankController extends Component {
 
       else {
         this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
         this.getGameObject().getComponent(Transform.class).setRotation(90);
         powerUpCheck(oldPosition, physicsData, newPosition);
 
@@ -86,7 +89,7 @@ public class TankController extends Component {
 
       else {
         this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
         this.getGameObject().getComponent(Transform.class).setRotation(270);
         powerUpCheck(oldPosition, physicsData, newPosition);
       }
@@ -108,7 +111,7 @@ public class TankController extends Component {
       if (oldPosition.equals(newPosition)) return false;
       else {
         this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName());
+        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
         this.getGameObject().getComponent(Transform.class).setRotation(180);
         powerUpCheck(oldPosition, physicsData, newPosition);
       }
@@ -116,7 +119,7 @@ public class TankController extends Component {
     }
 
   private void powerUpCheck(Position oldPosition, Object[] physicsData, Position newPosition) {
-    DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getName(), oldPosition);
+    DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity(), oldPosition);
     if (physicsData[0] == "ammo"){
       pickUpAmmo();
       // destroy powerup object too

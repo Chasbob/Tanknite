@@ -1,15 +1,12 @@
 package com.aticatac.server.components;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.GameObject;
 
 public class PlayerKilledCount extends Component {
-
   /***/
   private int playerKilledCount = 0;
 
   /**
-   *
    * @param gameObject
    */
   public PlayerKilledCount(GameObject gameObject) {
@@ -17,21 +14,16 @@ public class PlayerKilledCount extends Component {
   }
 
   /**
-   *
-   * @param count
-   */
-  public void setPlayerKilledCount(int count){
-
-    playerKilledCount = count;
-
-  }
-
-  /**
-   *
    * @return
    */
-  public int getPlayerKilledCount(){
+  public int getPlayerKilledCount() {
     return playerKilledCount;
   }
 
+  /**
+   * @param count
+   */
+  public void setPlayerKilledCount(int count) {
+    playerKilledCount = count;
+  }
 }

@@ -1,7 +1,7 @@
-package com.aticatac.common.components.transform;
+package com.aticatac.server.objectsystem.transform;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.Component;
+import com.aticatac.server.objectsystem.GameObject;
 
 /**
  * The type Transform.

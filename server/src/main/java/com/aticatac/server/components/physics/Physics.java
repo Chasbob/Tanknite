@@ -1,11 +1,14 @@
-package com.aticatac.server.components;
+package com.aticatac.server.components.physics;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.components.transform.Position;
-import com.aticatac.common.components.transform.Transform;
-import com.aticatac.common.objectsystem.GameObject;
-import org.apache.commons.collections4.BidiMap;
-
+import com.aticatac.server.components.Acceleration;
+import com.aticatac.server.components.BulletCollisionBox;
+import com.aticatac.server.components.CollisionBox;
+import com.aticatac.server.components.Component;
+import com.aticatac.server.components.DataServer;
+import com.aticatac.server.components.Health;
+import com.aticatac.server.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.transform.Position;
+import com.aticatac.server.objectsystem.transform.Transform;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -133,9 +136,9 @@ public class Physics extends Component {
     //Distance it moves is the change in time * the above velocity
     int distance = dt * velocity;
     //distance travelled in x direction is cos theta * distance
-    int distanceX = distance * (int) Math.round(Math.cos(rotation));
+    int distanceX = distance * (int) Math.round(Math.cos(Math.toRadians(rotation)));
     //distance travelled in y direction is sin theta * distance
-    int distanceY = distance * (int) Math.round(Math.sin(rotation));
+    int distanceY = distance * (int) Math.round(Math.sin(Math.toRadians(rotation)));
     //then add those to the original x and y
     int newX = xCoord + distanceX;
     int newY = yCoord + distanceY;
@@ -212,7 +215,7 @@ public class Physics extends Component {
         for(int i=0; i<box.size(); i++){
 
           //map of the coordinates that are occupied
-          HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+          HashMap<Position, Entity> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
           Position position = box.get(i);
           Object[] returnPosition = getCollisionArray(position, oldPosition, occupiedCoordinates);
@@ -238,7 +241,7 @@ public class Physics extends Component {
         for(int i=0; i<box.size(); i++){
 
           //map of the coordinates that are occupied
-          HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+          HashMap<Position, Entity> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
           Position position = box.get(i);
           Object[] returnPosition = getCollisionArray(position, oldPosition, occupiedCoordinates);
@@ -255,7 +258,7 @@ public class Physics extends Component {
       String collisionType;
 
       //map of the coordinates that are occupied
-      HashMap<Position, String> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
+      HashMap<Position, Entity> occupiedCoordinates = DataServer.INSTANCE.getOccupiedCoordinates();
 
 
       //checks the position of the object against the occupied coordinates
@@ -281,16 +284,15 @@ public class Physics extends Component {
    * @param occupiedCoordinates
    * @return
    */
-    private Object[] getCollisionArray(Position newPosition, Position oldPosition, HashMap<Position, String> occupiedCoordinates) {
-
-      String collisionType;
+  private Object[] getCollisionArray(Position newPosition, Position oldPosition, HashMap<Position, Entity> occupiedCoordinates) {
+    Entity collisionType;
 
       if (occupiedCoordinates.containsKey(newPosition)) {
 
         collisionType = occupiedCoordinates.get(newPosition);
 
         //checks the coordinate is not itself
-        if (collisionType.equals(this.getGameObject().getName())) {
+        if (collisionType.getName().equals(this.getGameObject().getName())) {
           return null;
         }
 

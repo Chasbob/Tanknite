@@ -9,5 +9,7 @@ public interface Game {
 
   void startGame();
 
+  void gameOver();
+
   void playerInput(CommandModel model);
 }

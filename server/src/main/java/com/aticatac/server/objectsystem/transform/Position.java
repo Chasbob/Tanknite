@@ -1,6 +1,5 @@
-package com.aticatac.common.components.transform;
-
-//import com.aticatac.server.components.DataServer;
+package com.aticatac.server.objectsystem.transform;
+//import DataServer;
 
 /**
  * The type Position.
@@ -73,6 +72,12 @@ public class Position {
     '}';
   }
 
+  @Override
+  public int hashCode() {
+    int result = 0;
+    result = x + y;
+    return result;
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -88,18 +93,7 @@ public class Position {
     }
 
     // instanceof Check and actual value check
-    if ((o instanceof Position) && (((Position) o).getX() == this.x) &&  (((Position) o).getY() == this.y)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    int result = 0;
-    result = (int) (x+y);
-    return result;
+    return (o instanceof Position) && (((Position) o).getX() == this.x) && (((Position) o).getY() == this.y);
   }
 }
 

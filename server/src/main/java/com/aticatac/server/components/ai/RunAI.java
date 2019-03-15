@@ -1,8 +1,8 @@
 package com.aticatac.server.components.ai;
 
-import com.aticatac.common.objectsystem.GameObject;
 import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.networking.Server;
+import com.aticatac.server.objectsystem.GameObject;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 

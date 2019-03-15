@@ -2,8 +2,7 @@ package com.aticatac.server.networking;
 
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.GameObject;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import org.apache.log4j.Logger;
@@ -35,7 +34,7 @@ public class Updater implements Runnable {
     this.update.setStart(Server.ServerData.INSTANCE.isStart());
     for (GameObject c :
         Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
-      this.update.addPlayer(new Container(c));
+      this.update.addPlayer(c.getContainer());
     }
   }
 
