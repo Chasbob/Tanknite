@@ -6,7 +6,9 @@ import com.aticatac.server.components.BulletDamage;
 import com.aticatac.server.components.Component;
 import com.aticatac.server.components.DataServer;
 import com.aticatac.server.components.Health;
+import com.aticatac.server.components.physics.Entity;
 import com.aticatac.server.components.physics.Physics;
+import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.objectsystem.GameObject;
 import com.aticatac.server.objectsystem.transform.Position;
 import com.aticatac.server.objectsystem.transform.Transform;
@@ -27,76 +29,68 @@ public class TankController extends Component {
   }
   //when sound plays check all tanks in that area and play noise to all those players
 
-    /**
-     * call method when up arrow/w pressed
-     *
-     * @return the boolean @
-     */
-    //physics manager will return a value. 0 = no collision, any other will mean collision.
-    //else set position to new transform
-    public boolean moveUp() {
-      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
-      Position newPosition = (Position) physicsData[1];
-      if (oldPosition.equals(newPosition)) return false;
-
-      else {
-        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
-        this.getGameObject().getComponent(Transform.class).setRotation(0);
-        powerUpCheck(oldPosition, physicsData, newPosition);
-      }
-      return true;
+  /**
+   * call method when up arrow/w pressed
+   *
+   * @return the boolean @
+   */
+  //physics manager will return a value. 0 = no collision, any other will mean collision.
+  //else set position to new transform
+  public boolean moveUp() {
+    Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+    PhysicsResponse physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
+    if (oldPosition.equals(physicsData.getPosition())) {
+      return false;
+    } else {
+      this.getGameObject().getComponent(Transform.class).setPosition(physicsData.getPosition().getX(), physicsData.getPosition().getY());
+      DataServer.INSTANCE.setCoordinates(physicsData.getPosition(), this.getGameObject().getEntity());
+      this.getGameObject().getComponent(Transform.class).setRotation(0);
+      powerUpCheck(oldPosition, physicsData, physicsData.getPosition());
     }
+    return true;
+  }
 
-    /**
-     * Move right boolean.
-     *
-     * @return the boolean
-     */
-    // when right arrow/d pressed
-    public boolean moveRight() {
-      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
-      Position newPosition = (Position) physicsData[1];
-
-      if (oldPosition.equals(newPosition)) return false;
-
-      else {
-        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
-        this.getGameObject().getComponent(Transform.class).setRotation(90);
-        powerUpCheck(oldPosition, physicsData, newPosition);
-
-      }
-      //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
-      //bullet disappears, other collisions have no effect, just stop the current move from happening
-      return true;
+  /**
+   * Move right boolean.
+   *
+   * @return the boolean
+   */
+  // when right arrow/d pressed
+  public boolean moveRight() {
+    Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+    PhysicsResponse physicsData = this.getGameObject().getComponent(Physics.class).moveRight();
+    if (oldPosition.equals(physicsData.getPosition())) {
+      return false;
+    } else {
+      this.getGameObject().getComponent(Transform.class).setPosition(physicsData.getPosition().getX(), physicsData.getPosition().getY());
+      DataServer.INSTANCE.setCoordinates(physicsData.getPosition(), this.getGameObject().getEntity());
+      this.getGameObject().getComponent(Transform.class).setRotation(90);
+      powerUpCheck(oldPosition, physicsData, physicsData.getPosition());
     }
+    //physics tells what type of collision, if bullet + tank then call isShot, if bullet and anything else
+    //bullet disappears, other collisions have no effect, just stop the current move from happening
+    return true;
+  }
 
-
-    /**
-     * Move left boolean.
-     *
-     * @return the boolean
-     */
-    // when left arrow/a pressed
-    public boolean moveLeft() {
-      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
-      Position newPosition = (Position) physicsData[1];
-      if (oldPosition.equals(newPosition)) return false;
-
-      else {
-        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
-        this.getGameObject().getComponent(Transform.class).setRotation(270);
-        powerUpCheck(oldPosition, physicsData, newPosition);
-      }
-
-
-      return true;
+  /**
+   * Move left boolean.
+   *
+   * @return the boolean
+   */
+  // when left arrow/a pressed
+  public boolean moveLeft() {
+    Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+    PhysicsResponse physicsData = this.getGameObject().getComponent(Physics.class).moveLeft();
+    if (oldPosition.equals(physicsData.getPosition())) {
+      return false;
+    } else {
+      this.getGameObject().getComponent(Transform.class).setPosition(physicsData.getPosition().getX(), physicsData.getPosition().getY());
+      DataServer.INSTANCE.setCoordinates(physicsData.getPosition(), this.getGameObject().getEntity());
+      this.getGameObject().getComponent(Transform.class).setRotation(270);
+      powerUpCheck(oldPosition, physicsData, physicsData.getPosition());
     }
+    return true;
+  }
 
   /**
    * Move backwards boolean.
@@ -104,37 +98,34 @@ public class TankController extends Component {
    * @return the boolean
    */
 // when down arrow/s pressed
-    public boolean moveDown() {
-      Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
-      Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
-      Position newPosition = (Position) physicsData[1];
-      if (oldPosition.equals(newPosition)) return false;
-      else {
-        this.getGameObject().getComponent(Transform.class).setPosition(newPosition.getX(), newPosition.getY());
-        DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity());
-        this.getGameObject().getComponent(Transform.class).setRotation(180);
-        powerUpCheck(oldPosition, physicsData, newPosition);
-      }
-      return true;
+  public boolean moveDown() {
+    Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
+    PhysicsResponse physicsData = this.getGameObject().getComponent(Physics.class).moveDown();
+    if (oldPosition.equals(physicsData.getPosition())) {
+      return false;
+    } else {
+      this.getGameObject().getComponent(Transform.class).setPosition(physicsData.getPosition().getX(), physicsData.getPosition().getY());
+      DataServer.INSTANCE.setCoordinates(physicsData.getPosition(), this.getGameObject().getEntity());
+      this.getGameObject().getComponent(Transform.class).setRotation(180);
+      powerUpCheck(oldPosition, physicsData, physicsData.getPosition());
     }
+    return true;
+  }
 
-  private void powerUpCheck(Position oldPosition, Object[] physicsData, Position newPosition) {
+  private void powerUpCheck(Position oldPosition, PhysicsResponse physicsData, Position newPosition) {
     DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity(), oldPosition);
-    if (physicsData[0] == "ammo"){
+    if (physicsData.getEntity().getType() == Entity.EntityType.AMMO_POWERUP) {
       pickUpAmmo();
       // destroy powerup object too
     }
-    if (physicsData[0] == "health"){
+    if (physicsData.getEntity().getType() == Entity.EntityType.HEALTH_POWERUP) {
       pickUpHealth();
-
     }
-    if (physicsData[0] == "speed"){
+    if (physicsData.getEntity().getType() == Entity.EntityType.SPEED_POWERUP) {
       pickUpSpeed();
-
     }
-    if (physicsData[0] == "damage"){
+    if (physicsData.getEntity().getType() == Entity.EntityType.BULLET_POWERUP) {
       pickUpDamage();
-
     }
   }
 
@@ -144,99 +135,86 @@ public class TankController extends Component {
    * @return the boolean
    */
 // call method when space bar pressed
-    public boolean shoot() {
-      int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-      if (currentAmmo == 0) return false;
-      this.getGameObject().getComponent(Ammo.class).getAmmo();
-      return this.getGameObject().getComponent(TurretController.class).shoot();
+  public boolean shoot() {
+    int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+    if (currentAmmo == 0) {
+      return false;
     }
+    this.getGameObject().getComponent(Ammo.class).getAmmo();
+    return this.getGameObject().getComponent(TurretController.class).shoot();
+  }
 
-    /**
-     * Is shot.
-     */
-    public void isShot(int damage) {
-        int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
-        int newHealth = currentHealth - damage;
-        this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-        if (newHealth > 0 && newHealth <=10){
-            dying();
-        }
-        else if (newHealth <= 0){
-            die();
-        }
+  /**
+   * Is shot.
+   */
+  public void isShot(int damage) {
+    int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
+    int newHealth = currentHealth - damage;
+    this.getGameObject().getComponent(Health.class).setHealth(newHealth);
+    if (newHealth > 0 && newHealth <= 10) {
+      dying();
+    } else if (newHealth <= 0) {
+      die();
     }
+  }
 
-    public void dying() {
+  public void dying() {
 //        // can no longer move and will die in 20 seconds
-        //Physics will check the health and prevent it moving if less than 10
+    //Physics will check the health and prevent it moving if less than 10
 //        //delay
 //        die();
   }
 
-    /**
-     * Die.
-     */
-    public void die () {
+  /**
+   * Die.
+   */
+  public void die() {
+    //remove it from data coordinates
+    DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
+    //add a powerup into the data that says that this is a power up with location.
+    //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
+    GameObject.destroy(getGameObject());
+    //TODO make this thread safe
+    DataServer.INSTANCE.setPlayerCount(DataServer.INSTANCE.getPlayerCount() - 1);
+  }
 
-        //remove it from data coordinates
-        DataServer.INSTANCE.deleteCoordinates(this.getGameObject().getComponent(Transform.class).getPosition());
-
-        //add a powerup into the data that says that this is a power up with location.
-        //DataServer.INITIALISE.setOccupiedCoordinates("ammopowerup", this.getGameObject.getComponent(Transform.class).GetPosition());
-        GameObject.destroy(getGameObject());
-
-        //TODO make this thread safe
-        DataServer.INSTANCE.setPlayerCount(DataServer.INSTANCE.getPlayerCount()-1);
-
+  /**
+   * Pick up health.
+   */
+  public void pickUpHealth() {
+    int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
+    int newHealth = currentHealth + 10;
+    if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()) {
+      this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
+    } else {
+      this.getGameObject().getComponent(Health.class).setHealth(newHealth);
     }
+    // only gain health up to maximum
+  }
 
+  /**
+   * Pick up ammo.
+   */
+  public void pickUpAmmo() {
+    int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
+    this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo + 10);
+  }
 
+  /**
+   * Pick up speed.
+   */
+  public void pickUpSpeed() {
+    this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(true);
+    //make this a thread which waits for certain time then
+    // this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(false);
+  }
 
-    /**
-     * Pick up health.
-     */
-    public void pickUpHealth () {
-
-      int currentHealth = this.getGameObject().getComponent(Health.class).getHealth();
-      int newHealth = currentHealth + 10;
-      if (newHealth > this.getGameObject().getComponent(Health.class).getMaxHealth()) {
-        this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getMaxHealth());
-      } else this.getGameObject().getComponent(Health.class).setHealth(newHealth);
-      // only gain health up to maximum
-    }
-
-    /**
-     * Pick up ammo.
-     */
-    public void pickUpAmmo() {
-
-        int currentAmmo = this.getGameObject().getComponent(Ammo.class).getAmmo();
-        this.getGameObject().getComponent(Ammo.class).setAmmo(currentAmmo + 10);
-
-    }
-
-    /**
-     * Pick up speed.
-     */
-    public void pickUpSpeed() {
-
-       this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(true);
-       //make this a thread which waits for certain time then
-        // this.getGameObject().getComponent(Acceleration.class).setPowerUpExists(false);
-
-    }
-
-
-    /**
-     * Pick up damage.
-     */
-    public void pickUpDamage() {
-
-        this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
-        //make this a thread which waits for certain time then
-        // this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(false);
-
-    }
-
-
+  /**
+   * Pick up damage.
+   */
+  public void pickUpDamage() {
+    this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(true);
+    //make this a thread which waits for certain time then
+    // this.getGameObject().getComponent(BulletDamage.class).setPowerUpExists(false);
+  }
 }
