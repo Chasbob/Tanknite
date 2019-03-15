@@ -37,6 +37,7 @@ public class GameScreen extends AbstractScreen {
     private Label ammoValue;
     private Label killCount;
     private Label playerCount;
+  private float health;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
     private Camera camera;
@@ -46,7 +47,8 @@ public class GameScreen extends AbstractScreen {
     private Label direction;
     private Container player;
     private HudUpdate hudUpdate;
-    private boolean traction;
+  private boolean tractionHealth;
+  private boolean tractionPopUp;
 
     /**
      * Instantiates a new Game screen.
@@ -65,7 +67,8 @@ public class GameScreen extends AbstractScreen {
             direction = UIFactory.createGameLabel("");
             map = new TmxMapLoader().load("maps/map.tmx");
             tankTexture = new Texture("img/tank.png");
-            traction = true;
+          tractionHealth = true;
+          tractionPopUp = true;
             renderer = new OrthogonalTiledMapRenderer(map);
             this.camera = new Camera(maxX, maxY, 640, 640);
             Gdx.input.setInputProcessor(this);
@@ -127,7 +130,7 @@ public class GameScreen extends AbstractScreen {
         aliveLabelTable.add(aliveLabel);
         Table playerCountTable = new Table();
         playerCountTable.add(playerCount).center();
-        Styles.INSTANCE.addTableColour(playerCountTable, Color.BLACK);
+      Styles.INSTANCE.addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
         aliveTable.add(playerCountTable);
         aliveTable.add(aliveLabelTable);
         Table killTable = new Table();
@@ -136,7 +139,7 @@ public class GameScreen extends AbstractScreen {
         Label killLabel = UIFactory.createGameLabel("Killed");
         killLableTable.add(killLabel);
         Table killCountTable = new Table();
-        Styles.INSTANCE.addTableColour(killCountTable, Color.BLACK);
+      Styles.INSTANCE.addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
         killCountTable.add(killCount);
         killTable.add(killCountTable);
         killTable.add(killLableTable);
@@ -165,7 +168,7 @@ public class GameScreen extends AbstractScreen {
         bottomRightTable.defaults().padRight(10).padTop(10).padBottom(20).left();
         Table ammoTable = new Table();
         Table ammoValueTable = new Table();
-        Styles.INSTANCE.addTableColour(ammoValueTable, Color.BLACK);
+      Styles.INSTANCE.addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
         ammoValueTable.add(ammoValue);
         Label ammoLabel = UIFactory.createGameLabel("ammo");
         Table ammoLabelTable = new Table();
@@ -185,6 +188,9 @@ public class GameScreen extends AbstractScreen {
         //create resume button
         TextButton resumeButton = UIFactory.createButton("resume");
         resumeButton.addListener(UIFactory.newListenerEvent(() -> {
+          if (health > 0.1f) {
+            tractionPopUp = true;
+          }
             popUpTable.setVisible(false);
             return false;
         }));
@@ -199,7 +205,7 @@ public class GameScreen extends AbstractScreen {
             return true;
         }));
         popUpTable.add(quitButton);
-        Styles.INSTANCE.addTableColour(popUpTable, Color.BLACK);
+      Styles.INSTANCE.addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
         return popUpTable;
     }
 
@@ -263,7 +269,7 @@ public class GameScreen extends AbstractScreen {
 
     private void healthBar() {
         //healthBackgroundBatch.setColor(Color.BLACK);
-        final float health = hudUpdate.getHealth();
+      health = hudUpdate.getHealth();
         healthColourBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
         healthColourBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 20);
         if (health > 0.6f) {
@@ -275,10 +281,10 @@ public class GameScreen extends AbstractScreen {
         }
         healthColourBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 20);
         if (health <= 0.1f) {
-            traction = false;
+          tractionHealth = false;
             alertTable.setVisible(true);
         } else {
-            traction = true;
+          tractionHealth = true;
             alertTable.setVisible(false);
         }
     }
@@ -303,8 +309,9 @@ public class GameScreen extends AbstractScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             //show the pop up table
             popUpTable.setVisible(true);
+          tractionPopUp = false;
         }
-        if (traction) {
+      if (tractionHealth && tractionPopUp) {
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 Data.INSTANCE.sendCommand(Command.LEFT);
             } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
@@ -315,10 +322,9 @@ public class GameScreen extends AbstractScreen {
                 Data.INSTANCE.sendCommand(Command.DOWN);
             }
         }
-        if (Gdx.input.isButtonPressed(0)) {
+      if (Gdx.input.isButtonPressed(Input.Keys.SPACE)) {
             Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
         }
-
     }
 
     @Override
@@ -338,6 +344,6 @@ public class GameScreen extends AbstractScreen {
         direction = UIFactory.createGameLabel("");
         popUpTable.setVisible(false);
         alertTable.setVisible(false);
-        traction = true;
+      tractionHealth = true;
     }
 }

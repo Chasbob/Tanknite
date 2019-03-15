@@ -125,7 +125,8 @@ public enum Styles {
     }
 
     public void addTableColour(Table table, Color color) {
-        Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGB565);
+        Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        tableColour.setBlending(Pixmap.Blending.None);
         tableColour.setColor(color);
         tableColour.fill();
         table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
