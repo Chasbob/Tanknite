@@ -25,7 +25,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
-    private final SpriteBatch batch;
+    private final SpriteBatch healthColourBatch;
+    private final SpriteBatch healthBackgroundBatch;
     private final SpriteBatch tanks;
     private final int maxX;
     private final int maxY;
@@ -71,7 +72,8 @@ public class GameScreen extends AbstractScreen {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        batch = new SpriteBatch();
+        healthColourBatch = new SpriteBatch();
+        healthBackgroundBatch = new SpriteBatch();
         tanks = new SpriteBatch();
     }
 
@@ -204,7 +206,7 @@ public class GameScreen extends AbstractScreen {
     private Table createHudAlertTable(){
         alertTable = new Table();
         alertTable.bottom();
-        alertTable.defaults().padBottom(20);
+        alertTable.defaults().padBottom(40);
         Label alertLabel = UIFactory.createGameLabel("TRACTION DISABLED");
         alertTable.add(alertLabel);
         alertTable.setVisible(false);
@@ -247,13 +249,38 @@ public class GameScreen extends AbstractScreen {
         if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
             hudUpdate.update(update);
         }
-        batch.begin();
         //health bar
+        healthColourBatch.begin();
+        //healthBackgroundBatch.begin();
         healthBar();
-        batch.setColor(Color.WHITE);
-        batch.end();
+        healthColourBatch.setColor(Color.WHITE);
+        healthBackgroundBatch.setColor(Color.WHITE);
+        healthColourBatch.end();
+        //healthBackgroundBatch.end();
         super.act(delta);
         super.draw();
+    }
+
+    private void healthBar() {
+        //healthBackgroundBatch.setColor(Color.BLACK);
+        final float health = hudUpdate.getHealth();
+        healthColourBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
+        healthColourBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 20);
+        if (health > 0.6f) {
+            healthColourBatch.setColor(Color.GREEN);
+        } else if (health <= 0.6f && health > 0.2f) {
+            healthColourBatch.setColor(Color.ORANGE);
+        } else {
+            healthColourBatch.setColor(Color.RED);
+        }
+        healthColourBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 20);
+        if (health <= 0.1f) {
+            traction = false;
+            alertTable.setVisible(true);
+        } else {
+            traction = true;
+            alertTable.setVisible(false);
+        }
     }
 
     private void renderContainer(Container c) {
@@ -294,31 +321,12 @@ public class GameScreen extends AbstractScreen {
 
     }
 
-    private void healthBar() {
-        final float health = hudUpdate.getHealth();
-        if (health > 0.6f) {
-            batch.setColor(Color.GREEN);
-        } else if (health <= 0.6f && health > 0.2f) {
-            batch.setColor(Color.ORANGE);
-        } else {
-            batch.setColor(Color.RED);
-        }
-        batch.draw(Styles.getInstance().getBlank(), 0, 0, Gdx.graphics.getWidth() * health, 5);
-        if (health <= 0.1f) {
-            traction = false;
-            alertTable.setVisible(true);
-        } else {
-            traction = true;
-            alertTable.setVisible(false);
-        }
-    }
-
     @Override
     public void dispose() {
         super.dispose();
         map.dispose();
         renderer.dispose();
-        batch.dispose();
+        healthColourBatch.dispose();
     }
 
     @Override

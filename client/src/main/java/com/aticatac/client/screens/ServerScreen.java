@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.networking.Servers;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListServers;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -44,11 +45,11 @@ public class ServerScreen extends AbstractScreen {
     buttonTable.defaults().padLeft(25).padRight(25);
     buttonTable.add(joinButton);
     joinButton.addListener(UIFactory.newListenerEvent(() -> {
-      if (serverSelected) {
-        UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+        if (serverSelected) {
+          UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+        }
+        return false;
       }
-      return false;
-    }
     ));
     TextButton manualButton = UIFactory.createStartButton("Manual");
     manualButton.addListener(UIFactory.newListenerEvent(() -> {
@@ -64,7 +65,6 @@ public class ServerScreen extends AbstractScreen {
     Table playersTable = new Table();
     playersTable.defaults().pad(10);
     playersTable.top().padTop(50);
-    //TODO still coming up with server if i quit game when hosting...cant join it tho
     listServers = new ListServers(serversTable, playersTable);
     listServers.update();
     new Thread(() -> {
