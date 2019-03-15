@@ -9,7 +9,7 @@ import com.aticatac.server.components.Component;
 import com.aticatac.server.components.Health;
 import com.aticatac.server.components.Texture;
 import com.aticatac.server.components.physics.Entity;
-import com.aticatac.server.objectsystem.transform.Transform;
+import com.aticatac.server.components.transform.Transform;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;

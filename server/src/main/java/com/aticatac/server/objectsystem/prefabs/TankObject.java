@@ -1,4 +1,4 @@
-package com.aticatac.common.prefabs;
+package com.aticatac.server.objectsystem.prefabs;
 
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
@@ -14,9 +14,9 @@ import com.aticatac.server.components.Time;
 import com.aticatac.server.components.ai.AI;
 import com.aticatac.server.components.controller.TankController;
 import com.aticatac.server.components.physics.Physics;
+import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.components.transform.Transform;
 import com.aticatac.server.objectsystem.GameObject;
-import com.aticatac.server.objectsystem.transform.Position;
-import com.aticatac.server.objectsystem.transform.Transform;
 
 
 public class TankObject extends GameObject {

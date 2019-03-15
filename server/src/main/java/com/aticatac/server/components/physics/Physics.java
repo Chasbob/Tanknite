@@ -6,10 +6,9 @@ import com.aticatac.server.components.BulletCollisionBox;
 import com.aticatac.server.components.CollisionBox;
 import com.aticatac.server.components.Component;
 import com.aticatac.server.components.DataServer;
-import com.aticatac.server.components.Health;
+import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.components.transform.Transform;
 import com.aticatac.server.objectsystem.GameObject;
-import com.aticatac.server.objectsystem.transform.Position;
-import com.aticatac.server.objectsystem.transform.Transform;
 import java.util.ArrayList;
 import java.util.HashMap;
 

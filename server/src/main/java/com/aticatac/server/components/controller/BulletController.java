@@ -1,6 +1,11 @@
 package com.aticatac.server.components.controller;
 
 import com.aticatac.server.components.Component;
+import com.aticatac.server.components.physics.Entity;
+import com.aticatac.server.components.physics.Physics;
+import com.aticatac.server.components.physics.PhysicsResponse;
+import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.components.transform.Transform;
 import com.aticatac.server.objectsystem.GameObject;
 
 /**

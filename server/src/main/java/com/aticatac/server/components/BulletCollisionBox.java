@@ -1,7 +1,7 @@
 package com.aticatac.server.components;
 
+import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.GameObject;
-import com.aticatac.server.objectsystem.transform.Position;
 import java.util.ArrayList;
 
 public class BulletCollisionBox extends Component {

@@ -10,28 +10,6 @@ public class Container {
   private final String id;
   private final ObjectType objectType;
 
-  //  public Container(GameObject g) {
-//    this.id = g.getName();
-//    objectType = g.getObjectType();
-//    if (g.componentExists(Texture.class)) {
-//      this.texture = g.getComponent(Texture.class).getTexture();
-//    } else {
-//      this.texture = "";
-//    }
-//    this.x = g.getTransform().getX();
-//    this.y = g.getTransform().getY();
-//    this.r = g.getTransform().getRotation();
-//    if (g.componentExists(Health.class)) {
-//      this.health = g.getComponent(Health.class).getHealth();
-//    } else {
-//      this.health = 0;
-//    }
-//    if (g.componentExists(Ammo.class)) {
-//      this.ammo = g.getComponent(Ammo.class).getAmmo();
-//    } else {
-//      this.ammo = 0;
-//    }
-//  }
   public Container(String texture, int x, int y, int r, int health, int ammo, String id, ObjectType objectType) {
     this.texture = texture;
     this.x = x;
