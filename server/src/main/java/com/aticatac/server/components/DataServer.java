@@ -166,21 +166,21 @@ public enum DataServer {
    */
   private void createCollisionBox(int mapX, int mapY) {
 
-    int mapPositionX = (32*(mapX))+28;
-    int mapPositionY = (32*(mapY))+28;
+    int mapPositionX = (32*(mapX));
+    int mapPositionY = (32*(mapY));
 
     //adds centre of the element to the occupied
     Position centrePosition = new Position(mapPositionX, mapPositionY);
     setCoordinates(centrePosition, "wall");
 
-    int lowerY = mapPositionX - 14;
-    int lowerX = mapPositionY - 14;
+    int lowerY = mapPositionX+2;
+    int lowerX = mapPositionY+2;
 
-    int higherY = mapPositionX + 14;
-    int higherX = mapPositionY + 14;
+    int higherY = mapPositionX+30;
+    int higherX = mapPositionY+30;
 
     //positions for bottom of box
-    for (int x = 0; x < 29; x++) {
+    for (int x = 0; x < 31; x++) {
 
       Position position = new Position(lowerX + x, lowerY);
       setCoordinates(position, "wall");
@@ -188,7 +188,7 @@ public enum DataServer {
     }
 
     //positions for left of box
-    for (int y = 0; y < 29; y++) {
+    for (int y = 0; y < 31; y++) {
 
       Position position = new Position(lowerX, lowerY + y);
       setCoordinates(position, "wall");
@@ -196,7 +196,7 @@ public enum DataServer {
     }
 
     //positions for top of box
-    for (int x = 0; x < 29; x++) {
+    for (int x = 0; x < 31; x++) {
 
       Position position = new Position(lowerX + x, higherY);
       setCoordinates(position, "wall");
@@ -204,7 +204,7 @@ public enum DataServer {
     }
 
     //positions for right of box
-    for (int y = 0; y < 29; y++) {
+    for (int y = 0; y < 31; y++) {
 
       Position position = new Position(higherX, lowerY + y);
       setCoordinates(position, "wall");
