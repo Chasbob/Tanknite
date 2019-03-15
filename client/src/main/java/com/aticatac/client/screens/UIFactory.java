@@ -38,7 +38,7 @@ public class UIFactory {
    * @param text the text
    * @return the text button
    */
-  static TextButton createButton(String text) {
+  public static TextButton createButton(String text) {
     return new TextButton(text, Styles.INSTANCE.getBaseButtonStyle());
   }
 
@@ -74,7 +74,7 @@ public class UIFactory {
     return new TextButton(text, Styles.INSTANCE.getStartButtonStyle());
   }
 
-  static TextButton createLessSubtleButton(String text) {
+  public static TextButton createLessSubtleButton(String text) {
     return new TextButton(text, Styles.INSTANCE.getLessSubtleButtonStyle());
   }
 

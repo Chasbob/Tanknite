@@ -1,9 +1,6 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.Camera;
-import com.aticatac.client.util.Data;
-import com.aticatac.client.util.HudUpdate;
-import com.aticatac.client.util.Styles;
+import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -20,18 +17,19 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 /**
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
-  private final SpriteBatch healthColourBatch;
-  private final SpriteBatch healthBackgroundBatch;
+  private final SpriteBatch healthBarBatch;
   private final SpriteBatch tanks;
   private final int maxX;
   private final int maxY;
   private Update update;
   private Table popUpTable;
+  public VerticalGroup verticalGroup;
   private Table alertTable;
   private Table killLogTable;
   private Label ammoValue;
@@ -75,8 +73,7 @@ public class GameScreen extends AbstractScreen {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    healthColourBatch = new SpriteBatch();
-    healthBackgroundBatch = new SpriteBatch();
+    healthBarBatch = new SpriteBatch();
     tanks = new SpriteBatch();
   }
 
@@ -102,6 +99,9 @@ public class GameScreen extends AbstractScreen {
     //create alert table - BOTTOM MIDDLE
     super.addToRoot(createHudAlertTable());
     //create pop up table
+    popUpTable = new Table();
+    popUpTable.center();
+    popUpTable.setVisible(false);
     rootTable.add(createHudPopUp());
     new Thread(() -> {
       while (!Thread.currentThread().isInterrupted()) {
@@ -181,10 +181,9 @@ public class GameScreen extends AbstractScreen {
   }
 
   private Table createHudPopUp() {
-    popUpTable = new Table();
-    popUpTable.center();
-    popUpTable.setVisible(false);
-    popUpTable.defaults().pad(10).width(150);
+    verticalGroup = new VerticalGroup();
+    verticalGroup.space(20);
+    popUpTable.add(verticalGroup).padLeft(50).padRight(50).padTop(20).padBottom(20);
     //create resume button
     TextButton resumeButton = UIFactory.createButton("resume");
     resumeButton.addListener(UIFactory.newListenerEvent(() -> {
@@ -194,15 +193,14 @@ public class GameScreen extends AbstractScreen {
       popUpTable.setVisible(false);
       return false;
     }));
-    popUpTable.add(resumeButton);
-    popUpTable.row();
+    verticalGroup.addActor(resumeButton);
     //create settings button
     TextButton settingsButton = UIFactory.createButton("settings");
     settingsButton.addListener(UIFactory.newListenerEvent(() -> {
+      createSettingsChildren();
       return false;
     }));
-    popUpTable.add(settingsButton);
-    popUpTable.row();
+    verticalGroup.addActor(settingsButton);
     //create quit button go back to the main menu and disconnect form server
     TextButton quitButton = UIFactory.createBackButton("quit");
     quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
@@ -211,15 +209,28 @@ public class GameScreen extends AbstractScreen {
       refresh();
       return true;
     }));
-    popUpTable.add(quitButton);
+    verticalGroup.addActor(quitButton);
     Styles.INSTANCE.addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
     return popUpTable;
+  }
+
+  private void createSettingsChildren() {
+    verticalGroup.clear();
+    Settings.createSettings();
+    //create back button
+    TextButton backButton = UIFactory.createButton("back");
+    backButton.addListener(UIFactory.newListenerEvent(() -> {
+      popUpTable.reset();
+      createHudPopUp();
+      return false;
+    }));
+    verticalGroup.addActor(backButton);
   }
 
   private Table createHudAlertTable() {
     alertTable = new Table();
     alertTable.bottom();
-    alertTable.defaults().padBottom(40);
+    alertTable.defaults().padBottom(100);
     Label alertLabel = UIFactory.createGameLabel("TRACTION DISABLED");
     alertTable.add(alertLabel);
     alertTable.setVisible(false);
@@ -263,30 +274,26 @@ public class GameScreen extends AbstractScreen {
       hudUpdate.update(update);
     }
     //health bar
-    healthColourBatch.begin();
-    //healthBackgroundBatch.begin();
+    healthBarBatch.begin();
     healthBar();
-    healthColourBatch.setColor(Color.WHITE);
-    healthBackgroundBatch.setColor(Color.WHITE);
-    healthColourBatch.end();
-    //healthBackgroundBatch.end();
+    healthBarBatch.setColor(Color.WHITE);
+    healthBarBatch.end();
     super.act(delta);
     super.draw();
   }
 
   private void healthBar() {
-    //healthBackgroundBatch.setColor(Color.BLACK);
     health = hudUpdate.getHealth();
-    healthColourBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
-    healthColourBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 20);
+    healthBarBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
+    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 20);
     if (health > 0.6f) {
-      healthColourBatch.setColor(Color.GREEN);
+      healthBarBatch.setColor(Color.GREEN);
     } else if (health <= 0.6f && health > 0.2f) {
-      healthColourBatch.setColor(Color.ORANGE);
+      healthBarBatch.setColor(Color.ORANGE);
     } else {
-      healthColourBatch.setColor(Color.RED);
+      healthBarBatch.setColor(Color.RED);
     }
-    healthColourBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 20);
+    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 20);
     if (health <= 0.1f) {
       tractionHealth = false;
       alertTable.setVisible(true);
@@ -339,7 +346,7 @@ public class GameScreen extends AbstractScreen {
     super.dispose();
     map.dispose();
     renderer.dispose();
-    healthColourBatch.dispose();
+    healthBarBatch.dispose();
   }
 
   @Override

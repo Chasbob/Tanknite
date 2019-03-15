@@ -3,7 +3,6 @@ package com.aticatac.client.screens;
 import com.aticatac.client.util.Data;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -16,15 +15,13 @@ public class MainMenuScreen extends AbstractScreen {
 
   private boolean wantsToPlay;
   private boolean wantsToPlayMultiplayer;
-  private VerticalGroup verticalGroup;
+  VerticalGroup verticalGroup;
   private Table modeTable;
   private Table multiplayerTable;
-  private Table soundTable;
-  private Table musicTable;
+  Table soundTable;
+  Table musicTable;
   private boolean changeSettings;
-  private boolean sound;
-  private boolean music;
-  private int offsetForPosition;
+  int offsetForPosition;
 
   /**
    * Instantiates a new Main menu screen.
@@ -98,12 +95,10 @@ public class MainMenuScreen extends AbstractScreen {
           offsetForPosition--;
         }
         verticalGroup.pack();
-        System.out.println(offsetForPosition);
       } else {
         wantsToPlay = true;
         createPlayChildren();
         offsetForPosition++;
-        System.out.println(offsetForPosition);
       }
       return false;
     }));
@@ -119,7 +114,6 @@ public class MainMenuScreen extends AbstractScreen {
     singlePlayerButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
       Server server = new Server(true, "Single-Player");
-      System.out.println(Data.INSTANCE.isManualConfigForServer());
       server.start();
       refresh();
       UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
@@ -129,18 +123,15 @@ public class MainMenuScreen extends AbstractScreen {
     //create button for multi player
     TextButton multiPlayerButton = UIFactory.createLessSubtleButton("Multi-Player");
     multiPlayerButton.addListener(UIFactory.newListenerEvent(() -> {
-      System.out.println(wantsToPlayMultiplayer);
       if (wantsToPlayMultiplayer) {
         wantsToPlayMultiplayer = false;
         verticalGroup.removeActor(multiplayerTable);
         offsetForPosition--;
         verticalGroup.pack();
-        System.out.println(offsetForPosition);
       } else {
         wantsToPlayMultiplayer = true;
         createMultiplayerChildren();
         offsetForPosition++;
-        System.out.println(offsetForPosition);
       }
       return false;
     }));
@@ -184,72 +175,17 @@ public class MainMenuScreen extends AbstractScreen {
         verticalGroup.removeActor(soundTable);
         verticalGroup.removeActor(musicTable);
         offsetForPosition = offsetForPosition - 2;
-        System.out.println(offsetForPosition);
       } else {
         changeSettings = true;
-        createSettingsChildren();
+        Settings.createSettings();
         offsetForPosition = offsetForPosition + 2;
-        System.out.println(offsetForPosition);
       }
       return false;
     }));
     verticalGroup.addActor(settingsButton);
   }
 
-  private void createSettingsChildren() {
-    //create table to store setting toggles
-    soundTable = createToggle("Toggle Sound: ");
-    musicTable = createToggle("Toggle Music: ");
-    verticalGroup.addActorAt(offsetForPosition + 5, soundTable);
-    verticalGroup.addActorAt(offsetForPosition + 6, musicTable);
-  }
 
-  private Table createToggle(String labelString) {
-    Table table = new Table().padLeft(20);
-    table.defaults().padRight(10);
-    TextButton button = UIFactory.createLessSubtleButton(labelString);
-    Label label;
-    if ((labelString.equals("Toggle Sound: ") && sound) || (labelString.equals("Toggle Music: ") && music)) {
-      label = UIFactory.createSubtleLabel("ON");
-    } else {
-      label = UIFactory.createSubtleLabel("OFF");
-    }
-    button.addListener(buttonToChangeBool(button, label));
-    table.add(button);
-    table.add(label);
-    return table;
-  }
-
-  private InputListener buttonToChangeBool(TextButton button, Label label) {
-    return UIFactory.newListenerEvent(() -> {
-      if (button.getText().toString().equals("Toggle Sound: ")) {
-        if (sound) {
-          setSound(false);
-          label.setText("OFF");
-        } else {
-          setSound(true);
-          label.setText("ON");
-        }
-      } else {
-        if (music) {
-          setMusic(false);
-          label.setText("OFF");
-        } else {
-          setMusic(true);
-          label.setText("ON");
-        }
-      }
-      return false;
-    });
-  }
-
-  private void setMusic(boolean music) {
-    this.music = music;
-  }
-
-  private void setSound(boolean sound) {
-    this.sound = sound;
-  }
 
   @Override
   public void refresh() {

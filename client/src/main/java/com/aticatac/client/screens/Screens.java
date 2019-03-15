@@ -31,6 +31,10 @@ public enum Screens {
         logger = Logger.getLogger(getClass());
     }
 
+    public Class getCurrentScreen() {
+        return currentScreen;
+    }
+
     /**
      * Gets previous screen.
      *
