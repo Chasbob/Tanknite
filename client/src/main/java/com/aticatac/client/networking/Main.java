@@ -1,8 +1,10 @@
 package com.aticatac.client.networking;
 
+import com.aticatac.common.CommonData;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.security.SecureRandom;
 import java.util.Random;
 import org.apache.log4j.Logger;
@@ -23,7 +25,9 @@ public class Main {
     logger.info("Starting...");
     try {
       Client client = new Client();
-      ServerInformation information = new BroadcastListener().call();
+      DatagramSocket socket = new DatagramSocket(CommonData.INSTANCE.getDiscoveryPort());
+      BroadcastListener listener = new BroadcastListener(socket);
+      ServerInformation information = listener.call();
       logger.trace(information.toString());
       logger.trace("Got address: " + information.getAddress() + ":" + information.getPort());
       client.connect(information, NameGenerator.generateName());

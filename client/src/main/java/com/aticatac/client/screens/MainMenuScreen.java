@@ -22,31 +22,36 @@ public class MainMenuScreen extends AbstractScreen {
   @Override
   public void buildStage() {
     //create root table
-    Table rootTable = new Table();
+    rootTable = new Table();
     rootTable.setFillParent(true);
     addActor(rootTable);
-    Label screenTitle = UIFactory.createTitleLabel("Main Menu");
+    //create title
+    Label screenTitle = UIFactory.createTitleLabel("TANK TROUBLE");
     screenTitle.setFillParent(true);
     rootTable.add(screenTitle).padTop(50).top();
     //create table to store all buttons
     Table buttonTable = new Table();
-    buttonTable.setFillParent(true);
-    rootTable.addActor(buttonTable);
+    super.addToRoot(buttonTable);
     buttonTable.defaults().pad(10).width(100).center();
     //create button for single player
     TextButton singlePlayerButton = UIFactory.createButton("single player");
     singlePlayerButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
-      Server server = new Server();
+      Server server = new Server(true, "SinglePlayer");
       server.start();
+      //reload the username screen and show it to show relevant fields
+      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
     }));
-    singlePlayerButton.addListener(UIFactory.newChangeScreenEvent(UsernameScreen.class));
     buttonTable.add(singlePlayerButton);
     buttonTable.row();
     //create button for multi player
     TextButton multiPlayerButton = UIFactory.createButton("Multi Player");
-    multiPlayerButton.addListener(UIFactory.newChangeScreenEvent(MultiplayerScreen.class));
+    multiPlayerButton.addListener(UIFactory.newListenerEvent(()->{
+      Screens.INSTANCE.getScreen(MultiplayerScreen.class).refresh();
+      Screens.INSTANCE.showScreen(MultiplayerScreen.class);
+      return false;
+    }));
     buttonTable.add(multiPlayerButton);
     buttonTable.row();
     //create button for leaderboard
@@ -67,4 +72,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     buttonTable.add(exitButton);
   }
+
+  @Override
+  public void refresh() { }
 }

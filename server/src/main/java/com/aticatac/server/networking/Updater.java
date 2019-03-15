@@ -18,6 +18,7 @@ public class Updater implements Runnable {
   private final ModelReader modelReader;
   private Update update;
   private boolean changes;
+  private boolean shutdown;
 
   /**
    * Instantiates a new Updater.
@@ -26,12 +27,14 @@ public class Updater implements Runnable {
     this.logger = Logger.getLogger(getClass());
     this.update = new Update(true);
     this.changes = true;
+    this.shutdown = false;
     this.modelReader = new ModelReader();
   }
 
   private void updatePlayers() {
+    this.update.setStart(Server.ServerData.INSTANCE.isStart());
     for (GameObject c :
-    Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
+        Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
       this.update.addPlayer(new Container(c));
     }
   }
@@ -39,27 +42,17 @@ public class Updater implements Runnable {
   @Override
   public void run() {
     this.logger.trace("Running...");
-    while (!Thread.currentThread().isInterrupted()) {
-      double stime = System.nanoTime();
-      try {
-        updatePlayers();
-//        this.update.setRootContainer(new Container(Manager.INSTANCE.getRoot()));
-        if (this.changes) {
-          this.logger.info("Changes detected.");
-          this.logger.trace("players: " + this.update.getPlayers().toString());
-          this.logger.trace("Broadcasting...");
-          broadcast();
-          this.logger.trace("Setting changes to false.");
-          this.changes = false;
-        } else {
-          this.logger.trace("Broadcasting no changes.");
-        }
-        broadcast();
-      } catch (IOException e) {
-        this.logger.error(e);
-        return;
-      }
-      while (System.nanoTime() - stime < 1000000000 / 60) {
+    while (!Thread.currentThread().isInterrupted() && !shutdown) {
+      double nanoTime = System.nanoTime();
+      updatePlayers();
+      tcpBroadcast();
+//      try {
+//        broadcast();
+//      } catch (IOException e) {
+//        this.logger.info("stopping due to IO");
+//        this.shutdown = true;
+//      }
+      while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
         } catch (InterruptedException e) {
@@ -68,6 +61,22 @@ public class Updater implements Runnable {
       }
     }
     this.logger.warn("Finished!");
+  }
+
+  private void tcpBroadcast() {
+    this.logger.trace("Broadcasting...");
+    final Server.ServerData s = Server.ServerData.INSTANCE;
+    for (Client c : s.getClients().values()) {
+      c.sendUpdate(this.update);
+    }
+  }
+
+  void tcpBroadcast(Update update) {
+    this.logger.trace("Broadcasting...");
+    final Server.ServerData s = Server.ServerData.INSTANCE;
+    for (Client c : s.getClients().values()) {
+      c.sendUpdate(update);
+    }
   }
 
   private void broadcast() throws IOException {

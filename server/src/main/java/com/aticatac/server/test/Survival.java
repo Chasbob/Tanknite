@@ -6,6 +6,4 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 public class Survival extends GameMode {
   public Survival() throws InvalidClassInstance, ComponentExistsException {
   }
-
-
 }

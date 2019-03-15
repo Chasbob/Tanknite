@@ -9,7 +9,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * The type Single player test.
  */
-public class SinglePlayerTest extends Game {
+public class SinglePlayer extends Game {
   private BlockingQueue<Update> updates;
 
   @Override

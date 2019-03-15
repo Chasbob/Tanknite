@@ -1,5 +1,7 @@
 package com.aticatac.client.screens;
 
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
@@ -7,33 +9,71 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
  * The type Settings screen.
  */
 public class SettingsScreen extends AbstractScreen {
+
+  private boolean sound;
+  private boolean music;
   /**
    * Instantiates a new Settings screen.
    */
   SettingsScreen() {
     super();
+    refresh();
   }
 
   @Override
   public void buildStage() {
-    //create root table
-    Table rootTable = new Table();
-    rootTable.setFillParent(true);
-    addActor(rootTable);
+    super.buildStage();
     //create table to store setting toggles
     Table toggleTable = new Table();
-    toggleTable.setFillParent(true);
-    rootTable.addActor(toggleTable);
-    TextButton soundButton = UIFactory.createButton("Toggle Sound");
+    super.addToRoot(toggleTable);
+    toggleTable.defaults().pad(10).center();
+    TextButton soundButton = UIFactory.createButton("Toggle Sound: ");
+    Label soundLabel = UIFactory.createLabel("ON");
+    soundButton.addListener(buttonToChangeBool(soundButton, soundLabel));
     toggleTable.add(soundButton);
-    //create table to store back button
-    Table backTable = new Table();
-    backTable.setFillParent(true);
-    rootTable.addActor(backTable);
-    backTable.bottom();
-    //create back button
-    TextButton backButton = UIFactory.createBackButton("back");
-    backTable.add(backButton).bottom().padBottom(10);
-    backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+    toggleTable.add(soundLabel);
+    toggleTable.row();
+    TextButton musicButton = UIFactory.createButton("Toggle Music: ");
+    Label musicLabel = UIFactory.createLabel("ON");
+    musicButton.addListener(buttonToChangeBool(musicButton, musicLabel));
+    toggleTable.add(musicButton);
+    toggleTable.add(musicLabel);
+  }
+
+  private InputListener buttonToChangeBool(TextButton button, Label label){
+    return UIFactory.newListenerEvent(()->{
+      if (button.getText().equals("Toggle Sound: ")){
+        if(sound){
+          setSound(false);
+          label.setText("ON");
+        }else{
+          setSound(true);
+          label.setText("OFF");
+        }
+      }else{
+        if(music){
+          setMusic(false);
+          label.setText("ON");
+        }else{
+          setMusic(true);
+          label.setText("OFF");
+        }
+      }
+      return false;
+    });
+  }
+
+  @Override
+  public void refresh() {
+    sound = true;
+    music = true;
+  }
+
+  private void setMusic(boolean music) {
+    this.music = music;
+  }
+
+  private void setSound(boolean sound) {
+    this.sound = sound;
   }
 }

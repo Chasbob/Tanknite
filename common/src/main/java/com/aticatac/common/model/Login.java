@@ -1,10 +1,12 @@
 package com.aticatac.common.model;
 
+import com.aticatac.common.model.Updates.Response;
+
 /**
  * The type Login.
  */
 public class Login extends Model {
-  private boolean authenticated;
+  private Response authenticated;
   private int mapID;
   private String multicast;
 
@@ -58,7 +60,7 @@ public class Login extends Model {
    *
    * @return the boolean
    */
-  public boolean isAuthenticated() {
+  public Response isAuthenticated() {
     return authenticated;
   }
 
@@ -67,7 +69,7 @@ public class Login extends Model {
    *
    * @param authenticated the authenticated
    */
-  public void setAuthenticated(boolean authenticated) {
+  public void setAuthenticated(Response authenticated) {
     this.authenticated = authenticated;
   }
 }

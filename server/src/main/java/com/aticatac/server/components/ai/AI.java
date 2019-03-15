@@ -1,18 +1,23 @@
 package com.aticatac.server.components.ai;
 
+import com.aticatac.common.components.Ammo;
 import com.aticatac.common.components.Component;
-import com.aticatac.server.components.Ammo;
-import com.aticatac.server.components.Health;
+import com.aticatac.common.components.Health;
+import com.aticatac.common.components.Ammo;
+import com.aticatac.common.components.Health;
 import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
 // Things left TODO:
 //  - line of sight
 //  - powerup stuff
 //  - getting information, all enemies, all powerups
+
 /**
  * The AI component. Where would life be without the AI component?
  *
@@ -20,7 +25,7 @@ import java.util.*;
  */
 public class AI extends Component {
   private final static int VIEW_RANGE = 640; // some value equivalent to the actual view range that a player would have
-  private final static Graph graph = new Graph();
+  private final Graph graph;
   private final GameObject tank;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
@@ -28,6 +33,8 @@ public class AI extends Component {
   private State prevState;
   private Queue<SearchNode> searchPath; // current path being executed
   private ArrayList<Position> recentlyVisitedNodes; // current path being executed
+  private ArrayList<SearchNode> occupiedNodes;
+  private ArrayList<Command> commandHistory = new ArrayList<>();
   private ArrayList<GameObject> enemiesInRange;
   private ArrayList<GameObject> powerupsInRange;
   //private Something idealPowerup;
@@ -52,6 +59,7 @@ public class AI extends Component {
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
+    this.graph = new Graph();
   }
 
   /**
@@ -60,7 +68,7 @@ public class AI extends Component {
    * @return A decision
    */
   public Decision getDecision() {
-    checkLineOfSightToPosition(tankPos, new Position(0,0));
+    checkLineOfSightToPosition(tankPos, new Position(0, 0));
     // Update information
     tankPos = tank.getComponent(Transform.class).getPosition();
     tankHealth = tank.getComponent(Health.class).getHealth();
@@ -72,7 +80,7 @@ public class AI extends Component {
     int angleChange = getAngleChange();
     aimAngle += angleChange;
     // Poll search path if close enough to node
-    double threshold = 4;
+    double threshold = 32;
     if (!searchPath.isEmpty()) {
       if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold && Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
         SearchNode visited = searchPath.poll();
@@ -82,6 +90,10 @@ public class AI extends Component {
     // Check for a state change
     state = getStateChange();
     // Return a decision
+    Command command = performStateAction();
+    if (!commandHistory.contains(command))
+      commandHistory.clear();
+    commandHistory.add(command);
     return new Decision(performStateAction(), angleChange);
   }
 
@@ -227,12 +239,12 @@ public class AI extends Component {
    */
   private Command performSearchingAction() {
     // Keep going along the same path if still searching
-    if (prevState == State.SEARCHING && !searchPath.isEmpty()) {
+    if (prevState == State.SEARCHING && !searchPath.isEmpty() && commandHistory.size() < 50) {
       return commandToPerform(searchPath.peek());
     }
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
-    searchPath = graph.getPathToLocation(tankPos, goal);
+    searchPath = graph.getPathToLocation(tankPos, goal/*, occupiedNodes*/);
     Command c = commandToPerform(searchPath.peek());
     if (c != null) {
       return c;
@@ -257,15 +269,15 @@ public class AI extends Component {
     if (checkLineOfSightToPosition(tankPos, nearestEnemy) && aimed) {
       return Command.SHOOT;
     } else {
-      Queue<SearchNode> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy);
+      Queue<SearchNode> pathToEnemy = graph.getPathToLocation(tankPos, nearestEnemy/*, occupiedNodes*/);
       if (pathToEnemy.isEmpty()) {
         return null;
       }
       // Is a path from tank -> power-up -> enemy viable?
       if (!powerupsInRange.isEmpty()) {
         Position nearPowerup = getClosestPowerup().getTransform().getPosition();
-        Queue<SearchNode> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup);
-        Queue<SearchNode> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy);
+        Queue<SearchNode> tankToPowerup = graph.getPathToLocation(tankPos, nearPowerup/*, occupiedNodes*/);
+        Queue<SearchNode> powerupToEnemy = graph.getPathToLocation(nearPowerup, nearestEnemy/*, occupiedNodes*/);
         Queue<SearchNode> tankToPowerupToEnemy = new LinkedList<>();
         tankToPowerupToEnemy.addAll(tankToPowerup);
         tankToPowerupToEnemy.addAll(powerupToEnemy);
@@ -289,7 +301,7 @@ public class AI extends Component {
     // Pick a position in range of the agent that is clear of enemies and travel there
     Position goal = getClosestClearPosition();
     if (!(goal == null)) {
-      Queue<SearchNode> path = graph.getPathToLocation(tankPos, goal);
+      Queue<SearchNode> path = graph.getPathToLocation(tankPos, goal/*, occupiedNodes*/);
       if (!path.isEmpty()) {
         return commandToPerform(path.peek());
       }
@@ -316,7 +328,7 @@ public class AI extends Component {
     if (idealPowerup != null) {
       powerupLocation = idealPowerup.getTransform().getPosition();
     }
-    searchPath = graph.getPathToLocation(tankPos, powerupLocation);
+    searchPath = graph.getPathToLocation(tankPos, powerupLocation/*, occupiedNodes*/);
     if (searchPath.isEmpty()) {
       return Command.DOWN;
     }
@@ -331,13 +343,13 @@ public class AI extends Component {
    */
   private Command commandToPerform(SearchNode node) {
     // these are actually right
-    if (tankPos.getX() > node.getX() && Math.abs(tankPos.getX() - node.getX()) > 2) {
+    if (tankPos.getX() > node.getX() && Math.abs(tankPos.getX() - node.getX()) > 16) {
       return Command.RIGHT;
-    } else if (tankPos.getX() < node.getX() && Math.abs(tankPos.getX() - node.getX()) > 2) {
+    } else if (tankPos.getX() < node.getX() && Math.abs(tankPos.getX() - node.getX()) > 16) {
       return Command.LEFT;
-    } else if (tankPos.getY() > node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
+    } else if (tankPos.getY() > node.getY() && Math.abs(tankPos.getY() - node.getY()) > 16) {
       return Command.UP;
-    } else if (tankPos.getY() < node.getY() && Math.abs(tankPos.getY() - node.getY()) > 2) {
+    } else if (tankPos.getY() < node.getY() && Math.abs(tankPos.getY() - node.getY()) > 16) {
       return Command.DOWN;
     }
     return null;
@@ -374,8 +386,7 @@ public class AI extends Component {
     }
     if (!newClearPositions.isEmpty()) {
       clearPositions = newClearPositions;
-    }
-    else {
+    } else {
       recentlyVisitedNodes.clear();
     }
     Random rand = new Random();
@@ -412,8 +423,8 @@ public class AI extends Component {
     String[][] map = graph.getMap();
     SearchNode fromNode = graph.getNearestNode(from);
     SearchNode toNode = graph.getNearestNode(to);
-    System.out.println("From " + from + ", Array[" + fromNode.getX()/32 + "][" + fromNode.getY()/32 + "]");
-    System.out.println("To " + to + ", Array[" + toNode.getX()/32 + "][" + toNode.getY()/32 + "]");
+    System.out.println("From " + from + ", Array[" + fromNode.getX() / 32 + "][" + fromNode.getY() / 32 + "]");
+    System.out.println("To " + to + ", Array[" + toNode.getX() / 32 + "][" + toNode.getY() / 32 + "]");
     return true;
   }
 
@@ -485,7 +496,7 @@ public class AI extends Component {
     ArrayList<GameObject> inRange = new ArrayList<>();
     for (GameObject enemy : allObjects) {
       if (Math.abs(enemy.getTransform().getX() - position.getX()) <= range ||
-      Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
+          Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
         inRange.add(enemy);
       }
     }
