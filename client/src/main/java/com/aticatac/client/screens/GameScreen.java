@@ -196,6 +196,13 @@ public class GameScreen extends AbstractScreen {
     }));
     popUpTable.add(resumeButton);
     popUpTable.row();
+    //create settings button
+    TextButton settingsButton = UIFactory.createButton("settings");
+    settingsButton.addListener(UIFactory.newListenerEvent(() -> {
+      return false;
+    }));
+    popUpTable.add(settingsButton);
+    popUpTable.row();
     //create quit button go back to the main menu and disconnect form server
     TextButton quitButton = UIFactory.createBackButton("quit");
     quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
@@ -322,7 +329,7 @@ public class GameScreen extends AbstractScreen {
         Data.INSTANCE.sendCommand(Command.DOWN);
       }
     }
-    if (Gdx.input.isButtonPressed(Input.Keys.SPACE)) {
+    if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
       Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
     }
   }
