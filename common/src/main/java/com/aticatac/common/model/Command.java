@@ -1,7 +1,12 @@
 package com.aticatac.common.model;
 
 public enum Command {
-  UP, DOWN, LEFT, RIGHT, MOVE, SHOOT, QUIT, START, FILL_AI;
+  DEFAULT(new Vector(0, 0)), UP(new Vector(0, 1)), DOWN(new Vector(0, -1)), LEFT(new Vector(-1, 0)), RIGHT(new Vector(1, 0)), MOVE(new Vector(0, 0)), SHOOT(new Vector(0, 0)), QUIT(new Vector(0, 0)), START(new Vector(0, 0)), FILL_AI(new Vector(0, 0));
+  public final Vector vector;
+
+  Command(final Vector v) {
+    vector = v;
+  }
 
   public int getAngle() {
     switch (this) {
@@ -35,3 +40,4 @@ public enum Command {
     }
   }
 }
+

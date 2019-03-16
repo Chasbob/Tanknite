@@ -3,7 +3,7 @@ package com.aticatac.server.components.ai;
 import com.aticatac.common.model.Command;
 
 /**
- * A decision made by an AI tank.
+ * A decision made by an AiTank tank.
  */
 public class Decision {
   private final Command command;

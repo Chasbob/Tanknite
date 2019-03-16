@@ -9,9 +9,7 @@ application {
 
 dependencies {
     compile project(':common')
-    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+    
 }
 task execServer(type: JavaExec) {
     main = "com.aticatac.server.Main"

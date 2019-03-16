@@ -2,7 +2,7 @@ package com.aticatac.server.networking;
 
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.server.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.entities.Tank;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import org.apache.log4j.Logger;
@@ -31,10 +31,20 @@ public class Updater implements Runnable {
   }
 
   private void updatePlayers() {
+    this.logger.trace("updating players");
     this.update.setStart(Server.ServerData.INSTANCE.isStart());
-    for (GameObject c :
-        Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
+    this.logger.trace("Game started: " + Server.ServerData.INSTANCE.isStart());
+    this.update.clearPlayers();
+    this.update.clearProjectiles();
+    for (Tank c : Server.ServerData.INSTANCE.getGame().getPlayerMap().values()) {
+      this.logger.trace("Adding tank: " + c.getName());
       this.update.addPlayer(c.getContainer());
+//      for (GameObject cc : c.getChildren().values()) {
+//        if (cc.getObjectType().isProjectile()) {
+//          this.logger.info("Adding projectile: " + c.getName());
+//          this.update.addProjectile(c.getContainer());
+//        }
+//      }
     }
   }
 
@@ -45,17 +55,11 @@ public class Updater implements Runnable {
       double nanoTime = System.nanoTime();
       updatePlayers();
       tcpBroadcast();
-//      try {
-//        broadcast();
-//      } catch (IOException e) {
-//        this.logger.info("stopping due to IO");
-//        this.shutdown = true;
-//      }
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          this.logger.error(e);
         }
       }
     }

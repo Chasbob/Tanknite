@@ -1,5 +1,5 @@
 package com.aticatac.server.components.transform;
-//import DataServer;
+//import com.aticatac.server.components.DataServer;
 
 /**
  * The type Position.
@@ -26,6 +26,11 @@ public class Position {
   public Position(int xs, int ys) {
     x = xs;
     y = ys;
+  }
+
+  public void set(Position p) {
+    x = p.x;
+    y = p.y;
   }
 
   /**
@@ -65,14 +70,6 @@ public class Position {
   }
 
   @Override
-  public String toString() {
-    return "Position{" +
-    "x=" + x +
-    ", y=" + y +
-    '}';
-  }
-
-  @Override
   public int hashCode() {
     int result = 0;
     result = x + y;
@@ -81,19 +78,24 @@ public class Position {
 
   @Override
   public boolean equals(Object o) {
-
     // null check
     if (o == null) {
       return false;
     }
-
     // this instance check
     if (this == o) {
       return true;
     }
-
     // instanceof Check and actual value check
     return (o instanceof Position) && (((Position) o).getX() == this.x) && (((Position) o).getY() == this.y);
+  }
+
+  @Override
+  public String toString() {
+    return "Position{" +
+        "x=" + x +
+        ", y=" + y +
+        '}';
   }
 }
 

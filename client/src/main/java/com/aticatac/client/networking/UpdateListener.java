@@ -36,6 +36,19 @@ class UpdateListener extends Thread {
     this.reader = reader;
   }
 
+  UpdateListener(ConcurrentLinkedQueue<Update> queue, BufferedReader reader) {
+    this.logger = Logger.getLogger(getClass());
+    try {
+      this.multicastSocket = new MulticastSocket();
+    } catch (IOException e) {
+      this.logger.error(e);
+      throw new ExceptionInInitializerError(e);
+    }
+    this.queue = queue;
+    this.modelReader = new ModelReader();
+    this.reader = reader;
+  }
+
   @Override
   public void run() {
     logger.trace("Running...");

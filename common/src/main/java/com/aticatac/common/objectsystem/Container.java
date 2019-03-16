@@ -10,8 +10,8 @@ public class Container {
   private final String id;
   private final ObjectType objectType;
 
-  public Container(String texture, int x, int y, int r, int health, int ammo, String id, ObjectType objectType) {
-    this.texture = texture;
+  public Container(int x, int y, int r, int health, int ammo, String id, ObjectType objectType) {
+    this.texture = "";
     this.x = x;
     this.y = y;
     this.r = r;

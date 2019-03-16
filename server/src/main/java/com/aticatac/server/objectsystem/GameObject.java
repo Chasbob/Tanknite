@@ -4,27 +4,26 @@ import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.ObjectType;
-import com.aticatac.server.components.Ammo;
 import com.aticatac.server.components.Component;
-import com.aticatac.server.components.Health;
 import com.aticatac.server.components.Texture;
-import com.aticatac.server.components.physics.Entity;
 import com.aticatac.server.components.transform.Transform;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.log4j.Logger;
 
 /**
  * The type GameObject.
  */
 public class GameObject {
+  protected final Logger logger;
+  protected final String name;
   //  private final Transform transform;
   private final ObjectType objectType;
-  private final String name;
   private final ConcurrentHashMap<Class<?>, Component> components;
   private final ConcurrentHashMap<String, GameObject> children;
-  private final Optional<GameObject> parent;
-  private Entity entity;
+  protected Entity entity;
+  private Optional<GameObject> parent;
 
   /**
    * Instantiates a new Game object.
@@ -55,6 +54,7 @@ public class GameObject {
     this.addComponent(Transform.class);
     this.objectType = objectType;
     this.parent = Optional.empty();
+    this.logger = Logger.getLogger(getClass());
   }
 
   /**
@@ -90,14 +90,21 @@ public class GameObject {
     this.parent.get().addChild(this);
     this.addComponent(Transform.class);
     this.objectType = objectType;
+    this.logger = Logger.getLogger(getClass());
   }
 
-  /**
-   * destroy.
-   *
-   * @param g the g
-   */
-  public static void destroy(GameObject g) {
+  public void destroy() {
+    if (parent.isPresent()) {
+      this.parent.get().deleteChild(this.name);
+    }
+    this.setParent(Optional.empty());
+    for (var c : children.values()) {
+      c.destroy();
+    }
+  }
+
+  private void deleteChild(String name) {
+    children.remove(name);
   }
 
   public Entity getEntity() {
@@ -111,7 +118,20 @@ public class GameObject {
 
   public Container getContainer() {
     //todo this will shit out nulls
-    return new Container(getTexture(), getTransform().getX(), getTransform().getY(), getTransform().getRotation(), getComponent(Health.class).getHealth(), getComponent(Ammo.class).getAmmo(), getName(), getObjectType());
+//    return new Container(getTexture(), getTransform().getX(), getTransform().getY(), getTransform().getRotation(), getComponent(Health.class).getHealth(), getComponent(Ammo.class).getAmmo(), getName(), getObjectType());
+    return new Container(getX(), getY(), getR(), 100, 30, getName(), getObjectType());
+  }
+
+  public int getX() {
+    return getTransform().getX();
+  }
+
+  public int getY() {
+    return getTransform().getY();
+  }
+
+  public int getR() {
+    return getTransform().getRotation();
   }
 
   /**
@@ -193,16 +213,17 @@ public class GameObject {
    * @return the component
    */
   public <T extends Component> T getComponent(Class<T> type) {
-    if (componentExists(type)) {
-      return type.cast(components.get(type));
-    } else {
-      try {
-        return addComponent(type);
-      } catch (ComponentExistsException | InvalidClassInstance e) {
-        e.printStackTrace();
-      }
-      return null;
-    }
+//    if (componentExists(type)) {
+//      return type.cast(components.get(type));
+//    } else {
+//      try {
+//        return addComponent(type);
+//      } catch (ComponentExistsException | InvalidClassInstance e) {
+//        e.printStackTrace();
+//      }
+//      return null;
+//    }
+    return type.cast(components.get(type));
   }
 
   /**
@@ -326,6 +347,10 @@ public class GameObject {
     return parent.get();
   }
 
+  public void setParent(final Optional<GameObject> parent) {
+    this.parent = parent;
+  }
+
   /**
    * Gets children.
    *
@@ -370,17 +395,13 @@ public class GameObject {
 
   @Override
   public String toString() {
-    return "GameObject{"
-        +
-        "transform="
-        +
-        ", name='"
-        +
-        name
-        +
-        '\''
-        +
-        '}'
-        ;
+    return "GameObject{" +
+        "objectType=" + objectType +
+        ", name='" + name + '\'' +
+        ", components=" + components +
+        ", children=" + children +
+        ", parent=" + parent +
+        ", entity=" + entity +
+        '}';
   }
 }

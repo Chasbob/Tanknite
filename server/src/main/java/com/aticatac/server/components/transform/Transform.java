@@ -1,4 +1,4 @@
-package com.aticatac.server.objectsystem.transform;
+package com.aticatac.server.components.transform;
 
 import com.aticatac.server.components.Component;
 import com.aticatac.server.objectsystem.GameObject;
@@ -7,7 +7,7 @@ import com.aticatac.server.objectsystem.GameObject;
  * The type Transform.
  */
 public class Transform extends Component {
-  private Position position;
+  private final Position position;
   private int rotation = 0;
 
   /**
@@ -20,13 +20,17 @@ public class Transform extends Component {
     this.position = new Position(0, 0);
   }
 
+  public Transform(Position position) {
+    this.position = position;
+  }
+
   /**
    * Gets position.
    *
    * @return the position
    */
   public Position getPosition() {
-    return position;
+    return new Position(getX(), getY());
   }
 
   /**
@@ -35,11 +39,15 @@ public class Transform extends Component {
    * @param transform the transform
    */
   public void setPosition(Transform transform) {
-    this.setPosition(transform.getRelativeX(), transform.getRelativeY());
+    this.position.set(transform.position);
   }
 //    public void setPosition(double x, double y) {
 //        position = new Position(x, y);
 //    }
+
+  public void setPosition(final Position position) {
+    this.position.set(position);
+  }
 
   /**
    * Gets x.
@@ -59,6 +67,28 @@ public class Transform extends Component {
 //            return getRelativeX();
 //        }
     return getRelativeX();
+  }
+
+  private int getParentX() {
+    if (this.getGameObject().hasParent()) {
+      GameObject parent = this.getGameObject().getParent();
+      if (parent.componentExists(Transform.class)) {
+        Transform transform = parent.getTransform();
+        return transform.getX();
+      }
+    }
+    return getX();
+  }
+
+  private int getParentY() {
+    if (this.getGameObject().hasParent()) {
+      GameObject parent = this.getGameObject().getParent();
+      if (parent.componentExists(Transform.class)) {
+        Transform transform = parent.getTransform();
+        return transform.getY();
+      }
+    }
+    return getX();
   }
 
   /**
@@ -134,13 +164,13 @@ public class Transform extends Component {
   @Override
   public String toString() {
     return "setPosition{"
-    +
-    "position=" + position
-    +
-    ", rotation=" + rotation
-    +
-    '}'
-    ;
+        +
+        "position=" + position
+        +
+        ", rotation=" + rotation
+        +
+        '}'
+        ;
   }
 //
 //    public Position getScreenPosition() {

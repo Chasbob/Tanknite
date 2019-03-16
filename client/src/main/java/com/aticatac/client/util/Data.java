@@ -42,16 +42,18 @@ public enum Data {
     serverSelected = false;
     manualConfigForServer = false;
     isHosting = false;
-    try {
-      //TODO don't hard code the port.
-      final Server.ServerData s = Server.ServerData.INSTANCE;
-      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), s.getPort(), s.getMaxPlayers(), s.playerCount());
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
-    }
     players = new HashMap<>();
-    this.update = new Update(true);
+    this.update = new Update(false);
     this.clients = new ArrayList<>();
+  }
+
+  public void initialise() {
+    try {
+      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), 5000);
+    } catch (UnknownHostException e) {
+      this.logger.error(e);
+      throw new ExceptionInInitializerError(e);
+    }
   }
 
   /**
@@ -154,22 +156,6 @@ public enum Data {
   public Container getPlayerPos() {
     return playerPos;
   }
-//  /**
-//   * Sets update.
-//   *
-//   * @param update the update
-//   */
-//  public void setUpdate(Update update) {
-//    this.update = update;
-//    this.players = this.update.getPlayers();
-//    if (playerPos != null) {
-//      if (Math.abs(this.playerPos.getX() - this.players.get(client.getId()).getX()) > 1) {
-//        this.logger.info("moved");
-//      }
-//    }
-//    this.playerPos = this.players.get(client.getId());
-//    this.playerList = getPlayers();
-//  }
 
   /**
    * Gets me.
@@ -262,7 +248,7 @@ public enum Data {
    * @param command the command
    */
   public void sendCommand(Command command) {
-    this.client.sendCommand(command);
+    sendCommand(command, command.getAngle());
   }
 
   public void sendCommand(Command command, int bearing) {
