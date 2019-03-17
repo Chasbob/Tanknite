@@ -310,7 +310,13 @@ public class GameScreen extends AbstractScreen {
       }
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+        for (int i = 0; i < 360; i++) {
+          Data.INSTANCE.sendCommand(Command.SHOOT, i);
+        }
+      } else {
+        Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      }
     }
   }
 

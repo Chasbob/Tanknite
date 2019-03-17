@@ -13,7 +13,6 @@ import com.aticatac.server.bus.listener.PlayerOutputListener;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
-import com.aticatac.server.objectsystem.GameObject;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
@@ -55,10 +54,6 @@ public abstract class GameMode implements Game {
   private final int max = 1920 - 320;
 //  private GameObject root;
 
-  public CopyOnWriteArraySet<Bullet> getBullets() {
-    return bullets;
-  }
-
   /**
    * Instantiates a new Game mode.
    *
@@ -88,6 +83,10 @@ public abstract class GameMode implements Game {
     return (v.x < maxXY.x && v.y < maxXY.y);
   }
 
+  public CopyOnWriteArraySet<Bullet> getBullets() {
+    return bullets;
+  }
+
   public ConcurrentHashMap<String, Tank> getPlayerMap() {
     return playerMap;
   }
@@ -106,13 +105,13 @@ public abstract class GameMode implements Game {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
-      EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD,tank.getContainer()));
+      EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
     }
   }
 
   @Override
   public void removePlayer(String player) {
-    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE,playerMap.get(player).getContainer()));
+    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     playerMap.remove(player);
   }
 
@@ -152,7 +151,6 @@ public abstract class GameMode implements Game {
     DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
     return tank;
   }
-
   /**
    * Gets root.
    *
