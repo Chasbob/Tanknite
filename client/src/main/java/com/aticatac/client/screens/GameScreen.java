@@ -281,7 +281,9 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderProjectile(Container c) {
-    tanks.draw(projectileTexture, maxX - c.getX(), maxY - c.getY());
+//    if (camera.getCamera().frustum.pointInFrustum(new Vector3(c.getX(), c.getY(), 0))) {
+//    }
+      tanks.draw(projectileTexture, maxX - c.getX(), maxY - c.getY());
   }
 
   private int getBearing() {
