@@ -3,12 +3,12 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
-import com.aticatac.server.objectsystem.IO.outputs.PlayerOutput;
 import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
@@ -24,6 +24,7 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
   private final Queue<PlayerInput> frames;
   private final Entity entity;
   private final Logger logger;
+  private final PlayerOutputService outputService;
   //  private final String name;
   private Position position;
   private PlayerInput input;
@@ -32,7 +33,6 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
   private int maxHealth;
   private int maxAmmo;
   private int ammo;
-  private PlayerOutput output;
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
@@ -47,7 +47,7 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
     this.health = health;
     this.ammo = ammo;
     this.maxAmmo = 30;
-    this.output = new PlayerOutput();
+    this.outputService = new PlayerOutputService();
   }
 
   public Position getPosition() {
@@ -68,9 +68,8 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
   }
 
   @Override
-  public PlayerOutput tick() {
+  public void tick() {
     logger.trace("tick");
-    output.reset();
     if (!frames.isEmpty()) {
       input = frames.poll();
       this.logger.trace(input.shoot);
@@ -90,12 +89,12 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
       }
       if (input.shoot) {
         this.logger.info("shoot");
-        output.addBullet(new Bullet(entity, position, input.bearing));
+        outputService.addBullet(new Bullet(entity, position, input.bearing));
 //        this.getComponent(TurretController.class).shoot(input.bearing);
       }
 //      output.setTurretOutput(this.getComponent(TurretController.class).tick());
+      outputService.send();
     }
-    return output.finalise();
   }
 
   public void addFrame(final PlayerInput frame) {
@@ -120,6 +119,7 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
     } else {
       this.logger.info(physicsData);
     }
+    outputService.setHit(physicsData.entity);
   }
 
   private void updateCollisionBox(Position newPosition) {

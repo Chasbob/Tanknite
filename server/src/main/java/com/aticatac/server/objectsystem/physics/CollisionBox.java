@@ -3,6 +3,7 @@ package com.aticatac.server.objectsystem.physics;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.Entity;
 import java.util.ArrayList;
+import java.util.Objects;
 import org.apache.log4j.Logger;
 
 public class CollisionBox {
@@ -58,5 +59,24 @@ public class CollisionBox {
 
   public ArrayList<Position> getBox() {
     return box;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(radius, position, getBox());
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final CollisionBox that = (CollisionBox) o;
+    return radius == that.radius &&
+        position.equals(that.position) &&
+        getBox().equals(that.getBox());
   }
 }

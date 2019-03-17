@@ -6,6 +6,7 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
+import com.aticatac.server.bus.service.PlayerInputService;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.test.Survival;
@@ -32,6 +33,7 @@ public class Server extends Thread {
   private final ExecutorService executorService;
   private final String id;
   private final boolean singleplayer;
+  private final PlayerInputService playerInputService;
   private volatile boolean shutdown;
   private String host;
   private boolean started;
@@ -54,6 +56,7 @@ public class Server extends Thread {
     this.id = id;
     ServerData.INSTANCE.initialise("225.4.5.6", 5500, 5000, id);
 //    this.ai = new Thread(new RunAI());
+    playerInputService = new PlayerInputService();
   }
 
   @Override
@@ -123,7 +126,8 @@ public class Server extends Thread {
         if (current.getCommand() == Command.QUIT) {
           disconnectClient(current);
         } else {
-          ServerData.INSTANCE.getGame().playerInput(current);
+          playerInputService.onClientInput(current);
+//          ServerData.INSTANCE.getGame().playerInput(current);
         }
       }
     }

@@ -7,6 +7,7 @@ import com.aticatac.server.objectsystem.IO.outputs.BulletOutput;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.aticatac.server.objectsystem.physics.CallablePhysics;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import java.util.Objects;
 import org.apache.log4j.Logger;
 
 public class Bullet implements Tickable {
@@ -30,7 +31,7 @@ public class Bullet implements Tickable {
   }
 
   @Override
-  public BulletOutput tick() {
+  public void tick() {
     this.logger.trace("Tick.");
     output.reset();
     try {
@@ -38,7 +39,7 @@ public class Bullet implements Tickable {
     } catch (Exception e) {
       this.logger.error(e);
     }
-    return output;
+//    return output;
   }
 
   private Entity move() throws Exception {
@@ -66,5 +67,26 @@ public class Bullet implements Tickable {
     setPosition(newPosition);
     //add new box to map
 //    DataServer.INSTANCE.addBoxToData(box, entity);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(shooter, entity, bearing, position, box);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Bullet bullet = (Bullet) o;
+    return bearing == bullet.bearing &&
+        shooter.equals(bullet.shooter) &&
+        entity.equals(bullet.entity) &&
+        position.equals(bullet.position) &&
+        box.equals(bullet.box);
   }
 }

@@ -5,6 +5,10 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayerInputEvent;
+import com.aticatac.server.bus.listener.PlayerInputListener;
+import com.aticatac.server.bus.listener.PlayerOutputListener;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
@@ -13,8 +17,7 @@ import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,7 +43,7 @@ abstract class GameMode implements Game {
   /**
    * The Player map.
    */
-  protected final LinkedHashMap<String, Tank> playerMap;
+  protected final ConcurrentHashMap<String, Tank> playerMap;
   protected final CopyOnWriteArraySet<Bullet> bullets;
 //  protected final ArrayList<Bullet> bullets;
   /**
@@ -61,10 +64,12 @@ abstract class GameMode implements Game {
   GameMode() throws InvalidClassInstance, ComponentExistsException {
 //    this.root = new GameObject("root", ObjectType.ROOT);
 //    new GameObject("Player Container", root, ObjectType.PLAYER_CONTAINER);
-    this.playerMap = new LinkedHashMap<>();
+    this.playerMap = new ConcurrentHashMap<>();
     this.logger = Logger.getLogger(getClass());
     frame = new Update(true);
     bullets = new CopyOnWriteArraySet<>();
+    EventBusFactory.getEventBus().register(new PlayerInputListener(this.playerMap));
+    EventBusFactory.getEventBus().register(new PlayerOutputListener(this.bullets));
   }
 
   /**
@@ -78,7 +83,7 @@ abstract class GameMode implements Game {
     return (v.x < maxXY.x && v.y < maxXY.y);
   }
 
-  public HashMap<String, Tank> getPlayerMap() {
+  public ConcurrentHashMap<String, Tank> getPlayerMap() {
     return playerMap;
   }
 
@@ -120,6 +125,11 @@ abstract class GameMode implements Game {
     tank.addFrame(input);
   }
 
+  @Subscribe
+  private void clientInputEvent(PlayerInputEvent event) {
+    playerMap.get(event.commandModel.id).addFrame(new PlayerInput(event.commandModel));
+  }
+
   private Tank createTank(String player, boolean isAI) {
     ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
     Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
@@ -136,12 +146,7 @@ abstract class GameMode implements Game {
 
   private Tank createTank(String player, boolean isAI, int x, int y) {
     Position position = new Position(x, y);
-    Tank tank = new Tank(
-        player,
-        position,
-        100,
-        30
-    );
+    Tank tank = new Tank(player, position, 100, 30);
     DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
     return tank;
   }

@@ -18,6 +18,10 @@ public class PlayerOutput extends Output {
     newBullets = new ArrayList<>();
   }
 
+  public Entity getHit() {
+    return hit;
+  }
+
   /**
    * Add bullet.
    *
@@ -25,6 +29,14 @@ public class PlayerOutput extends Output {
    */
   public void addBullet(Bullet b) {
     newBullets.add(b);
+  }
+
+  public void setHit(final Entity hit) {
+    this.hit = hit;
+  }
+
+  public void addBullets(ArrayList<Bullet> bullets) {
+    newBullets.addAll(bullets);
   }
 
   /**
