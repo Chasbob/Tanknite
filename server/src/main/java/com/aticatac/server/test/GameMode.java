@@ -6,7 +6,7 @@ import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.event.PlayerInputEvent;
+import com.aticatac.server.bus.listener.BulletCollisionListener;
 import com.aticatac.server.bus.listener.PlayerInputListener;
 import com.aticatac.server.bus.listener.PlayerOutputListener;
 import com.aticatac.server.components.transform.Position;
@@ -17,7 +17,6 @@ import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -70,6 +69,7 @@ abstract class GameMode implements Game {
     bullets = new CopyOnWriteArraySet<>();
     EventBusFactory.getEventBus().register(new PlayerInputListener(this.playerMap));
     EventBusFactory.getEventBus().register(new PlayerOutputListener(this.bullets));
+    EventBusFactory.getEventBus().register(new BulletCollisionListener(this.playerMap, this.bullets));
   }
 
   /**
@@ -123,11 +123,6 @@ abstract class GameMode implements Game {
     PlayerInput input = new PlayerInput(model);
     var tank = playerMap.get(model.getId());
     tank.addFrame(input);
-  }
-
-  @Subscribe
-  private void clientInputEvent(PlayerInputEvent event) {
-    playerMap.get(event.commandModel.id).addFrame(new PlayerInput(event.commandModel));
   }
 
   private Tank createTank(String player, boolean isAI) {

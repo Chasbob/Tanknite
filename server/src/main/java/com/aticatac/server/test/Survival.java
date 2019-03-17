@@ -52,7 +52,6 @@ public class Survival extends GameMode implements Runnable {
 //            playerMap.get(output.hit.name).destroy();
 //        }
       }
-      this.logger.info("No. Bullets: " + bullets.size());
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);

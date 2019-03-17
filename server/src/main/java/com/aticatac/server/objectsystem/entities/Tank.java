@@ -47,7 +47,7 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
     this.health = health;
     this.ammo = ammo;
     this.maxAmmo = 30;
-    this.outputService = new PlayerOutputService();
+    this.outputService = new PlayerOutputService(entity);
   }
 
   public Position getPosition() {
@@ -89,11 +89,10 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
       }
       if (input.shoot) {
         this.logger.info("shoot");
-        outputService.addBullet(new Bullet(entity, position, input.bearing));
+        outputService.addBullet(new Bullet(entity, position, input.bearing, 10));
 //        this.getComponent(TurretController.class).shoot(input.bearing);
       }
 //      output.setTurretOutput(this.getComponent(TurretController.class).tick());
-      outputService.send();
     }
   }
 
@@ -116,10 +115,10 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
     if (!position.equals(physicsData.getPosition())) {
       this.logger.trace(physicsData);
       updateCollisionBox(physicsData.position);
-    } else {
-      this.logger.info(physicsData);
     }
-    outputService.setHit(physicsData.entity);
+    if (physicsData.entity.type != Entity.EntityType.NONE) {
+      outputService.onPlayerHit(physicsData.entity);
+    }
   }
 
   private void updateCollisionBox(Position newPosition) {
