@@ -57,7 +57,7 @@ public class Entity {
   }
 
   public enum EntityType {
-    NONE, TANK(14, 5), BULLET(2, 1), WALL(15), AMMO_POWERUP, SPEED_POWERUP, HEALTH_POWERUP, BULLET_POWERUP;
+    NONE, TANK(14, 5), BULLET(2, 10), WALL(15), AMMO_POWERUP, SPEED_POWERUP, HEALTH_POWERUP, BULLET_POWERUP;
     public final int radius;
     public final int velocity;
 

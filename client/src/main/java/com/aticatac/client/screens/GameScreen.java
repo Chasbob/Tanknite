@@ -281,8 +281,7 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderProjectile(Container c) {
-    this.logger.info(c);
-    tanks.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
+    tanks.draw(projectileTexture, maxX - c.getX(), maxY - c.getY());
   }
 
   private int getBearing() {
