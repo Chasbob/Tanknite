@@ -6,6 +6,7 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
+import com.aticatac.common.model.Updates.Update;
 import com.aticatac.server.bus.service.PlayerInputService;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
@@ -50,7 +51,7 @@ public class Server extends Thread {
     this.logger.info("Constructing server...");
     this.singleplayer = singleplayer;
     //TODO check if additional users are allowed.
-    executorService = Executors.newFixedThreadPool(20);
+    this.executorService = Executors.newFixedThreadPool(20);
     this.shutdown = false;
     this.started = false;
     this.id = id;

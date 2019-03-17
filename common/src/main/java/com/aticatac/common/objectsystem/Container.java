@@ -1,5 +1,7 @@
 package com.aticatac.common.objectsystem;
 
+import java.util.Objects;
+
 public class Container {
   private final String texture;
   private final int x;
@@ -42,6 +44,44 @@ public class Container {
 
   public String getTexture() {
     return texture;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Container container = (Container) o;
+    return getX() == container.getX() &&
+        getY() == container.getY() &&
+        getR() == container.getR() &&
+        getHealth() == container.getHealth() &&
+        getAmmo() == container.getAmmo() &&
+        getTexture().equals(container.getTexture()) &&
+        getId().equals(container.getId()) &&
+        getObjectType() == container.getObjectType();
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getTexture(), getX(), getY(), getR(), getHealth(), getAmmo(), getId(), getObjectType());
+  }
+
+  @Override
+  public String toString() {
+    return "Container{" +
+        "texture='" + texture + '\'' +
+        ", x=" + x +
+        ", y=" + y +
+        ", r=" + r +
+        ", health=" + health +
+        ", ammo=" + ammo +
+        ", id='" + id + '\'' +
+        ", objectType=" + objectType +
+        '}';
   }
 
   public int getX() {

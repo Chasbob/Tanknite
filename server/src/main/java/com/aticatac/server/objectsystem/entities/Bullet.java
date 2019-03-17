@@ -1,5 +1,7 @@
 package com.aticatac.server.objectsystem.entities;
 
+import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.bus.service.BulletOutputService;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
@@ -72,7 +74,7 @@ public class Bullet implements Tickable {
   @Override
   public void tick() {
     if (!prevPosistion.equals(position)) {
-      this.logger.info(position);
+      this.logger.trace(position);
       prevPosistion = position;
     }
     try {
@@ -89,6 +91,7 @@ public class Bullet implements Tickable {
     this.logger.trace("Move.");
     CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
     PhysicsResponse physicsData = physics.call();
+    this.logger.trace(physicsData.position);
     if (physicsData.entity.type == Entity.EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
       updateCollisionBox(physicsData.position);
       return Entity.empty;
@@ -110,6 +113,24 @@ public class Bullet implements Tickable {
     setPosition(newPosition);
     //add new box to map
 //    DataServer.INSTANCE.addBoxToData(box, entity);
+  }
+
+  @Override
+  public String toString() {
+    return "Bullet{" +
+        "shooter=" + shooter +
+        ", entity=" + entity +
+        ", bearing=" + bearing +
+        ", damage=" + damage +
+        ", outputService=" + outputService +
+        ", position=" + position +
+        ", prevPosistion=" + prevPosistion +
+        ", box=" + box +
+        '}';
+  }
+
+  public Container getContainer() {
+    return new Container(position.getX(), position.getY(), bearing, 0, 0, entity.name, ObjectType.BULLET);
   }
 
   @Override

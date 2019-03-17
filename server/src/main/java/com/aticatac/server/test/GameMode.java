@@ -6,6 +6,7 @@ import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.listener.BulletCollisionListener;
 import com.aticatac.server.bus.listener.PlayerInputListener;
 import com.aticatac.server.bus.listener.PlayerOutputListener;
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
  * The type Game mode.
  */
 @SuppressWarnings("ALL")
-abstract class GameMode implements Game {
+public abstract class GameMode implements Game {
   /**
    * The constant maxXY.
    */
@@ -52,7 +53,11 @@ abstract class GameMode implements Game {
   protected final Logger logger;
   private final int min = 320;
   private final int max = 1920 - 320;
-  private GameObject root;
+//  private GameObject root;
+
+  public CopyOnWriteArraySet<Bullet> getBullets() {
+    return bullets;
+  }
 
   /**
    * Instantiates a new Game mode.
@@ -101,11 +106,13 @@ abstract class GameMode implements Game {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
+      EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD,tank.getContainer()));
     }
   }
 
   @Override
   public void removePlayer(String player) {
+    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE,playerMap.get(player).getContainer()));
     playerMap.remove(player);
   }
 
@@ -151,9 +158,9 @@ abstract class GameMode implements Game {
    *
    * @return the root
    */
-  public GameObject getRoot() {
-    return root;
-  }
+//  public GameObject getRoot() {
+//    return root;
+//  }
 
   /**
    * N add ai.

@@ -57,7 +57,8 @@ public class Client {
   public ArrayList<String> getPlayers() {
     if (this.queue.peek() != null) {
       this.players.clear();
-      this.players.addAll(this.queue.peek().getPlayers().keySet());
+      assert this.queue.peek() != null;
+      this.players.addAll(this.queue.peek().getPlayerNames());
     }
     return this.players;
   }

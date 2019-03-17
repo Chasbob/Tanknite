@@ -3,6 +3,7 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
@@ -14,6 +15,7 @@ import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.CallablePhysics;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import com.google.common.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Queue;
@@ -117,7 +119,8 @@ public class Tank implements DependantTickable<PlayerInput>, Hurtable {
       updateCollisionBox(physicsData.position);
     }
     if (physicsData.entity.type != Entity.EntityType.NONE) {
-      outputService.onPlayerHit(physicsData.entity);
+      outputService.onPlayerHit(physicsData.entity,getContainer());
+
     }
   }
 

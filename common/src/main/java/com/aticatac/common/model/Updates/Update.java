@@ -3,20 +3,20 @@ package com.aticatac.common.model.Updates;
 import com.aticatac.common.model.Model;
 import com.aticatac.common.objectsystem.Container;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type Update.
  */
 public class Update extends Model {
   private final boolean changed;
-  private boolean start;
   /**
    * The Players.
    */
-  private LinkedHashMap<String, Container> players;
-  private ArrayList<Container> projectiles;
+  private final ConcurrentHashMap<String, Container> players;
+  private final ArrayList<Container> projectiles;
+  private boolean start;
   //    private boolean objectChanged;
 //  private Container rootContainer;
   private boolean playersChanged;
@@ -29,7 +29,7 @@ public class Update extends Model {
   public Update(boolean changed) {
     super("update");
     this.changed = changed;
-    this.players = new LinkedHashMap<>();
+    this.players = new ConcurrentHashMap<>();
     this.playersChanged = true;
     this.start = false;
     this.projectiles = new ArrayList<>();
@@ -94,7 +94,7 @@ public class Update extends Model {
    *
    * @return the players
    */
-  public HashMap<String, Container> getPlayers() {
+  public ConcurrentHashMap<String, Container> getPlayers() {
     return players;
   }
 
@@ -114,6 +114,10 @@ public class Update extends Model {
    */
   public void addProjectile(Container c) {
     this.projectiles.add(c);
+  }
+
+  public void addProjectiles(ArrayList<Container> cs) {
+    this.projectiles.addAll(cs);
   }
 
   /**
@@ -146,5 +150,13 @@ public class Update extends Model {
 
   public ArrayList<Container> getProjectiles() {
     return projectiles;
+  }
+
+  public int playerSize() {
+    return players.size();
+  }
+
+  public Collection<String> getPlayerNames() {
+    return players.keySet();
   }
 }

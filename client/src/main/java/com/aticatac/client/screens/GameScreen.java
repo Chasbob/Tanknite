@@ -150,7 +150,7 @@ public class GameScreen extends AbstractScreen {
     tanks.begin();
     tanks.setColor(Color.CORAL);
     if (update != null) {
-      for (int i = 0; i < update.getPlayers().values().size(); i++) {
+      for (int i = 0; i < update.playerSize(); i++) {
         renderContainer(update.getI(i));
       }
       for (int i = 0; i < update.getProjectiles().size(); i++) {
@@ -281,6 +281,7 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderProjectile(Container c) {
+    this.logger.info(c);
     tanks.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
   }
 

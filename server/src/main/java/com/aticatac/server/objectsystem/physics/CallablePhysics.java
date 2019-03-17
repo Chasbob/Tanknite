@@ -1,9 +1,11 @@
 package com.aticatac.server.objectsystem.physics;
 
+import com.aticatac.common.model.Vector;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
+import com.aticatac.server.test.GameMode;
 import java.util.concurrent.Callable;
 
 /**
@@ -114,6 +116,9 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
 //          d.addBoxToData(box.getBox(), new Entity(name, entity.type));
         return returnPosition;
       }
+      if (entity.type == Entity.EntityType.BULLET) {
+        return returnPosition;
+      }
 //      }
       //adds the box positions to the server
 //      d.addBoxToData(box.getBox(), new Entity(name, Entity.EntityType.TANK));
@@ -145,17 +150,21 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
   }
 
   private PhysicsResponse findCollisions(Position newPosition, Position oldPosition) {
-    Entity collisionType;
-    if (d.occupied(newPosition)) {
-      collisionType = d.getEntity(newPosition);
-      //checks the coordinate is not itself
-      if (collisionType.equals(entity) && !collisionType.equals(ignore)) {
-        return new PhysicsResponse(newPosition);
+    if (GameMode.inMap(new Vector(newPosition.getX(), newPosition.getY()))) {
+      Entity collisionType;
+      if (d.occupied(newPosition)) {
+        collisionType = d.getEntity(newPosition);
+        //checks the coordinate is not itself
+        if (collisionType.equals(entity) && !collisionType.equals(ignore)) {
+          return new PhysicsResponse(newPosition);
+        }
+        //Returning a collision type and also the position
+        return new PhysicsResponse(collisionType, oldPosition);
       }
-      //Returning a collision type and also the position
-      return new PhysicsResponse(collisionType, oldPosition);
+      return new PhysicsResponse(newPosition);
+    } else {
+      return new PhysicsResponse(oldPosition);
     }
-    return new PhysicsResponse(newPosition);
   }
 
   @Override

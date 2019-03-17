@@ -85,7 +85,7 @@ class UpdateListener extends Thread {
     logger.trace("Packet received!");
     Update update = modelReader.toModel(bytes, Update.class);
     //TODO refactor to use queue all the way down
-    this.logger.trace("Player count: " + update.getPlayers().size());
+    this.logger.trace("Player count: " + update.playerSize());
     if (update.isChanged()) {
       //todo figure out what to do instead of clearing.
       this.queue.add(update);

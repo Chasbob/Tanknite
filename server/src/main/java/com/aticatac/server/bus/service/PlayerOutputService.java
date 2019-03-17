@@ -1,6 +1,8 @@
 package com.aticatac.server.bus.service;
 
+import com.aticatac.common.objectsystem.Container;
 import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.ShootEvent;
 import com.aticatac.server.bus.event.TankCollisionEvent;
 import com.aticatac.server.objectsystem.Entity;
@@ -34,7 +36,8 @@ public class PlayerOutputService {
 //    output.addBullet(bullet);
   }
 
-  public void onPlayerHit(Entity entity) {
+  public void onPlayerHit(Entity entity, final Container container) {
+    bus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, container));
     bus.post(new TankCollisionEvent(me, entity));
   }
 }

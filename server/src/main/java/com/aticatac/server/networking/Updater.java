@@ -2,6 +2,9 @@ package com.aticatac.server.networking;
 
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.listener.UpdateChangesListener;
+import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -15,7 +18,7 @@ import org.apache.log4j.Logger;
 public class Updater implements Runnable {
   private final Logger logger;
   private final ModelReader modelReader;
-  private Update update;
+  private final Update update;
   private boolean changes;
   private boolean shutdown;
 
@@ -28,23 +31,23 @@ public class Updater implements Runnable {
     this.changes = true;
     this.shutdown = false;
     this.modelReader = new ModelReader();
+    EventBusFactory.getEventBus().register(new UpdateChangesListener(update.getPlayers(), update.getProjectiles()));
   }
 
   private void updatePlayers() {
     this.logger.trace("updating players");
-    this.update.setStart(Server.ServerData.INSTANCE.isStart());
-    this.logger.trace("Game started: " + Server.ServerData.INSTANCE.isStart());
+    final Server.ServerData d = Server.ServerData.INSTANCE;
+    this.update.setStart(d.isStart());
+    this.logger.trace("Game started: " + d.isStart());
     this.update.clearPlayers();
     this.update.clearProjectiles();
-    for (Tank c : Server.ServerData.INSTANCE.getGame().getPlayerMap().values()) {
+    for (Bullet b : d.getGame().getBullets()) {
+      this.update.addProjectile(b.getContainer());
+      this.logger.trace(b.getContainer());
+    }
+    for (Tank c : d.getGame().getPlayerMap().values()) {
       this.logger.trace("Adding tank: " + c.getName());
       this.update.addPlayer(c.getContainer());
-//      for (GameObject cc : c.getChildren().values()) {
-//        if (cc.getObjectType().isProjectile()) {
-//          this.logger.info("Adding projectile: " + c.getName());
-//          this.update.addProjectile(c.getContainer());
-//        }
-//      }
     }
   }
 
@@ -84,7 +87,7 @@ public class Updater implements Runnable {
 
   private void broadcast() throws IOException {
     this.logger.trace("Broadcasting...");
-    this.logger.trace("Player count: " + this.update.getPlayers().size());
+    this.logger.trace("Player count: " + this.update.playerSize());
     byte[] bytes = modelReader.toBytes(this.update);
 //    this.logger.info(bytes.length);
     final Server.ServerData s = Server.ServerData.INSTANCE;
