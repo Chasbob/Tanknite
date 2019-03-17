@@ -281,8 +281,7 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderProjectile(Container c) {
-    this.logger.info(c);
-    tanks.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
+    tanks.draw(projectileTexture, maxX - c.getX(), maxY - c.getY());
   }
 
   private int getBearing() {
@@ -310,7 +309,13 @@ public class GameScreen extends AbstractScreen {
       }
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+        for (int i = 0; i < 360; i++) {
+          Data.INSTANCE.sendCommand(Command.SHOOT, i);
+        }
+      } else {
+        Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      }
     }
   }
 

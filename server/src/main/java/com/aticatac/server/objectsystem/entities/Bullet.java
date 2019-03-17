@@ -27,7 +27,7 @@ public class Bullet implements Tickable {
   /**
    * The Bearing.
    */
-  public final int bearing;
+  public  int bearing;
   /**
    * The Output.
    */
@@ -134,11 +134,6 @@ public class Bullet implements Tickable {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(shooter, entity, bearing, position, box);
-  }
-
-  @Override
   public boolean equals(final Object o) {
     if (this == o) {
       return true;
@@ -148,9 +143,14 @@ public class Bullet implements Tickable {
     }
     final Bullet bullet = (Bullet) o;
     return bearing == bullet.bearing &&
+        getDamage() == bullet.getDamage() &&
         shooter.equals(bullet.shooter) &&
         entity.equals(bullet.entity) &&
-        position.equals(bullet.position) &&
-        box.equals(bullet.box);
+        position.equals(bullet.position);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(shooter, entity, bearing, getDamage(), position);
   }
 }

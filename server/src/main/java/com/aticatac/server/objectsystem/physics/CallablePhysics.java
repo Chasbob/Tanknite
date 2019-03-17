@@ -79,15 +79,15 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
     //Distance it moves is the change in time * the above velocity
     int distance = dt * velocity;
     //distance travelled in x direction is cos theta * distance
-    int xr = (int) Math.cos(Math.toRadians(rotation));
-    int distanceX = distance * -xr;
+    double xr = Math.cos(Math.toRadians(rotation));
+    double distanceX = distance * -xr;
     //distance travelled in y direction is sin theta * distance
-    int yr = (int) Math.sin(Math.toRadians(rotation));
-    int distanceY = distance * -yr;
+    double yr = Math.sin(Math.toRadians(rotation));
+    double distanceY = distance * -yr;
     //then add those to the original x and y
-    int newX = xCoord + distanceX;
-    int newY = yCoord + distanceY;
-    Position newPosition = new Position(newX, newY);
+    double newX = xCoord + distanceX;
+    double newY = yCoord + distanceY;
+    Position newPosition = new Position((int) newX, (int) newY);
     //returning a collision type and also the position
     return collision(newPosition, position);
   }
@@ -155,7 +155,7 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
       if (d.occupied(newPosition)) {
         collisionType = d.getEntity(newPosition);
         //checks the coordinate is not itself
-        if (collisionType.equals(entity) && !collisionType.equals(ignore)) {
+        if (collisionType.equals(entity) || !collisionType.equals(ignore)) {
           return new PhysicsResponse(newPosition);
         }
         //Returning a collision type and also the position
