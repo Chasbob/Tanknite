@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Dylan
  */
-@SuppressWarnings("ALL")
+//@SuppressWarnings("ALL")
 public class AI {
   private final static int VIEW_RANGE = 320; // some value equivalent to the actual view range that a player would have
   private final static CopyOnWriteArraySet<SearchNode> occupiedNodes = new CopyOnWriteArraySet<>();
@@ -62,7 +62,7 @@ public class AI {
     tankHealth = input.me.health;
     tankAmmo = input.ammo;
     enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
-    powerupsInRange = getPowerupsInRange(tankPos);
+    powerupsInRange = getPowerUpsInRange(tankPos, input.getPowerups());
     // Change aim angle
     aimed = false;
     int angleChange = getAngleChange();
@@ -239,14 +239,13 @@ public class AI {
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we searching
     searchPath = getPath(tankPos, goal);
-    if (searchPath.peek() == null) {
+    if (searchPath.isEmpty())
       return null;
+    while (commandToPerform(searchPath.peek()) == null) {
+      searchPath.poll();
+      if (searchPath.isEmpty())
+        return null;
     }
-    Command c = commandToPerform(searchPath.peek());
-    if (c != null) {
-      return c;
-    }
-    searchPath.poll();
     return commandToPerform(searchPath.peek());
   }
 
@@ -469,13 +468,11 @@ public class AI {
    */
   private ArrayList<PlayerState> getEnemiesInRange(Position position, int range) {
     ArrayList<PlayerState> inRange = new ArrayList<>();
-    for (PlayerState enemy : enemiesInRange) {
-      if (Math.abs(enemy.getX() - position.getX()) <= range ||
-              Math.abs(enemy.getY() - position.getY()) <= range) {
+    for (PlayerState enemy : currentInput.getPlayers()) {
+      if (Math.abs(enemy.getX() - position.getX()) <= range && Math.abs(enemy.getY() - position.getY()) <= range) {
         inRange.add(enemy);
       }
     }
-    //todo make sure this is working...
     inRange.remove(currentInput.me);
     return inRange;
   }
@@ -536,17 +533,6 @@ public class AI {
   }
 
   /**
-   * Gets a list of power-ups that are in a given range from a given position.
-   *
-   * @param position The center position to check from
-   *
-   * @return A list of power-up in range of the position
-   */
-  private ArrayList<PowerUpState> getPowerupsInRange(Position position) {
-    return getPowerUpsInRange(position, VIEW_RANGE, /*All power-ups in game right now*/new ArrayList<>()); // TODO: get this INFO BOI
-  }
-
-  /**
    * Gets the closest ideal power-up to the tank.
    *
    * @return The closest ideal power-up to the tank
@@ -567,16 +553,15 @@ public class AI {
    * Gets all of the power-ups in range of the tank.
    *
    * @param position   Center position to check from
-   * @param range      Range of consideration
    * @param powerUps Power-ups to consider
    *
    * @return All specified GameObjects in range
    */
-  private ArrayList<PowerUpState> getPowerUpsInRange(Position position, int range, Collection<PowerUpState> powerUps) {
+  private ArrayList<PowerUpState> getPowerUpsInRange(Position position, Collection<PowerUpState> powerUps) {
     ArrayList<PowerUpState> inRange = new ArrayList<>();
     for (PowerUpState enemy : powerUps) {
-      if (Math.abs(enemy.getX() - position.getX()) <= range ||
-          Math.abs(enemy.getY() - position.getY()) <= range) {
+      if (Math.abs(enemy.getX() - position.getX()) <= VIEW_RANGE ||
+          Math.abs(enemy.getY() - position.getY()) <= VIEW_RANGE) {
         inRange.add(enemy);
       }
     }
