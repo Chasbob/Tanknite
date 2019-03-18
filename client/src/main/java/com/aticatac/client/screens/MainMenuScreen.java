@@ -1,8 +1,10 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Data;
+import com.aticatac.client.util.Styles;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -38,11 +40,12 @@ public class MainMenuScreen extends AbstractScreen {
     //create root table
     rootTable = new Table();
     rootTable.setFillParent(true);
+    Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
     //create title table
     Table titleTable = new Table().top().left().padTop(50).padLeft(50);
     super.addToRoot(titleTable);
-    Label screenTitle = UIFactory.createTitleLabel("TANK TROUBLE");
+    Label screenTitle = UIFactory.createTitleLabel("TANKNITE");
     titleTable.setFillParent(true);
     titleTable.add(screenTitle);
     //create table to store all buttons

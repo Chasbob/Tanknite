@@ -282,7 +282,7 @@ public class GameScreen extends AbstractScreen {
     minimap();
     tanksMiniMap.begin();
     tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
-    tanksMiniMap.setColor(Color.GREEN);
+    tanksMiniMap.setColor(Color.CYAN);
     if (newUpdate != null) {
       renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
     }

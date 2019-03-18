@@ -72,11 +72,11 @@ public enum Styles {
         //create error label style
         errorStyle = createLabelStyle(buttonFont, Color.RED);
         //create style to hide error label - set to black
-        hideLabelStyle = createLabelStyle(buttonFont, Color.BLACK);
+        hideLabelStyle = createLabelStyle(buttonFont, Color.valueOf("363636"));
         //create style for game screen labels
         gameLabelStyle = createLabelStyle(gameLabelFont, Color.WHITE);
         //create style for subtle labels
-        subtleStyle = createLabelStyle(buttonFont, Color.DARK_GRAY);
+        subtleStyle = createLabelStyle(buttonFont, Color.CYAN);
         //create text field style with cursor
         textFieldStyle = new TextField.TextFieldStyle();
         textFieldStyle.font = buttonFont;
@@ -101,11 +101,11 @@ public enum Styles {
         //create a style for start buttons
         startButtonStyle = createButtonStyle(buttonFont, Color.CORAL);
         //create style for back buttons
-        backButtonStyle = createButtonStyle(buttonFont, Color.SLATE);
+        backButtonStyle = createButtonStyle(buttonFont, Color.GRAY);
         //create style for less subtle buttons
-        lessSubtleButtonStyle = createButtonStyle(buttonFont, Color.GRAY);
+        lessSubtleButtonStyle = createButtonStyle(buttonFont, Color.TEAL);
         //create style for subtle buttons
-        subtleButtonStyle = createButtonStyle(buttonFont, Color.DARK_GRAY);
+        subtleButtonStyle = createButtonStyle(buttonFont, Color.CYAN);
         //load in blank texture for healthbar
         blank = new Texture(Gdx.files.internal("img/white.png"));
     }

@@ -1,7 +1,9 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -36,6 +38,7 @@ public class AbstractScreen extends Stage implements Screen {
     //create root table
     rootTable = new Table();
     rootTable.setFillParent(true);
+    Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
     //create table to store back button
     Table backTable = new Table();
