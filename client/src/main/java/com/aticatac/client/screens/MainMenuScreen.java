@@ -185,8 +185,6 @@ public class MainMenuScreen extends AbstractScreen {
     verticalGroup.addActor(settingsButton);
   }
 
-
-
   @Override
   public void refresh() {
     wantsToPlay = false;

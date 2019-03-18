@@ -7,6 +7,8 @@ import com.aticatac.common.objectsystem.Container;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -25,11 +27,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 public class GameScreen extends AbstractScreen {
   private final SpriteBatch healthBarBatch;
   private final SpriteBatch tanks;
+  private final SpriteBatch tanks2;
   private final int maxX;
   private final int maxY;
   private Update update;
   private Table popUpTable;
-  public VerticalGroup verticalGroup;
+  VerticalGroup verticalGroup;
   private Table alertTable;
   private Table killLogTable;
   private Label ammoValue;
@@ -39,6 +42,7 @@ public class GameScreen extends AbstractScreen {
   private TiledMap map;
   private OrthogonalTiledMapRenderer renderer;
   private Camera camera;
+  private MinimapViewport minimapViewport;
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
@@ -68,19 +72,24 @@ public class GameScreen extends AbstractScreen {
       tractionHealth = true;
       tractionPopUp = true;
       renderer = new OrthogonalTiledMapRenderer(map);
+      minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
+      minimapViewport.setWorldSize(maxX, maxY);
       this.camera = new Camera(maxX, maxY, 640, 640);
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();
+
     }
     healthBarBatch = new SpriteBatch();
     tanks = new SpriteBatch();
+    tanks2 = new SpriteBatch();
   }
 
   @Override
   public void resize(int width, int height) {
     super.resize(width, height);
     this.camera.getViewport().update(width, height);
+    this.minimapViewport.update(width, height, true);
   }
 
   @Override
@@ -146,11 +155,6 @@ public class GameScreen extends AbstractScreen {
     topLeftTable.add(aliveTable);
     topLeftTable.add(killTable);
     return topLeftTable;
-  }
-
-  private Table createHudTopRight() {
-    //todo..radar
-    return new Table();
   }
 
   private Table createHudBottomLeft() {
@@ -230,7 +234,7 @@ public class GameScreen extends AbstractScreen {
   private Table createHudAlertTable() {
     alertTable = new Table();
     alertTable.bottom();
-    alertTable.defaults().padBottom(100);
+    alertTable.defaults().padBottom(60);
     Label alertLabel = UIFactory.createGameLabel("TRACTION DISABLED");
     alertTable.add(alertLabel);
     alertTable.setVisible(false);
@@ -239,7 +243,8 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void render(float delta) {
-    super.render(delta);
+    Gdx.gl.glClearColor(0, 0, 0, 1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
@@ -259,33 +264,49 @@ public class GameScreen extends AbstractScreen {
         this.direction.setText("LEFT");
       }
     }
+    //main viewport
+    camera.getViewport().apply();
     renderer.setView(this.camera.getCamera());
     renderer.render();
-    tanks.setProjectionMatrix(this.camera.getCamera().combined);
-    tanks.begin();
-    tanks.setColor(Color.CORAL);
-    if (update != null) {
-      for (int i = 0; i < update.getPlayers().values().size(); i++) {
-        renderContainer(update.getI(i));
-      }
-    }
-    tanks.end();
-    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
-      hudUpdate.update(update);
-    }
     //health bar
     healthBarBatch.begin();
     healthBar();
     healthBarBatch.setColor(Color.WHITE);
     healthBarBatch.end();
+    //tanks
+    tanks.setProjectionMatrix(this.camera.getCamera().combined);
+    tanks.setColor(Color.CORAL);
+    tanks.begin();
+    renderTanks(tanks);
+    //mini viewport
+    minimapViewport.apply();
+    tanks2.begin();
+    tanks2.setProjectionMatrix(minimapViewport.getCamera().combined);
+    tanks2.setColor(Color.CORAL);
+    renderTanks(tanks2);
+    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
+      hudUpdate.update(update);
+    }
     super.act(delta);
+    //hud viewport
+    super.getViewport().apply();
     super.draw();
+  }
+
+  private void renderTanks(SpriteBatch tanks) {
+    if (update != null) {
+      for (int i = 0; i < update.getPlayers().values().size(); i++) {
+        Container updater = update.getI(i);
+        renderContainer(updater, tanks);
+      }
+    }
+    tanks.end();
   }
 
   private void healthBar() {
     health = hudUpdate.getHealth();
     healthBarBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
-    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 20);
+    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 15);
     if (health > 0.6f) {
       healthBarBatch.setColor(Color.GREEN);
     } else if (health <= 0.6f && health > 0.2f) {
@@ -293,7 +314,7 @@ public class GameScreen extends AbstractScreen {
     } else {
       healthBarBatch.setColor(Color.RED);
     }
-    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 20);
+    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 15);
     if (health <= 0.1f) {
       tractionHealth = false;
       alertTable.setVisible(true);
@@ -303,11 +324,11 @@ public class GameScreen extends AbstractScreen {
     }
   }
 
-  private void renderContainer(Container c) {
+  private void renderContainer(Container c, SpriteBatch batch) {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-    tanks.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
+    batch.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
   }
 
   private int getBearing() {
