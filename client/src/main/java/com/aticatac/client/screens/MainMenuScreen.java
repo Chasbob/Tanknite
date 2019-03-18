@@ -54,7 +54,7 @@ public class MainMenuScreen extends AbstractScreen {
     //create vertical group to store buttons
     verticalGroup = new VerticalGroup();
     verticalGroup.columnLeft();
-    verticalGroup.space(15);
+    verticalGroup.space(5);
     buttonTable.add(verticalGroup);
     //play button with child buttons
     createPlay();

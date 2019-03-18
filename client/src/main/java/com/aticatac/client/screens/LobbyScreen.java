@@ -59,7 +59,7 @@ public class LobbyScreen extends AbstractScreen {
     //add table to store players joining server
     Table playersTable = new Table();
     playersTable.setFillParent(true);
-    playersTable.defaults().pad(10).left().width(450);
+    playersTable.defaults().pad(5).left().width(450);
     playersTable.top().padTop(150);
     PopulatePlayers populatePlayers = new PopulatePlayers(playersTable, countLabel, lookingLabel);
     populatePlayers.start();

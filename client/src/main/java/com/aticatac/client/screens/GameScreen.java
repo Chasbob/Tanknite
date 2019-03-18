@@ -176,7 +176,7 @@ public class GameScreen extends AbstractScreen {
     Table ammoValueTable = new Table();
     Styles.INSTANCE.addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
     ammoValueTable.add(ammoValue);
-    Label ammoLabel = UIFactory.createGameLabel("ammo");
+    Label ammoLabel = UIFactory.createGameLabel("Ammo");
     Table ammoLabelTable = new Table();
     Styles.INSTANCE.addTableColour(ammoLabelTable, Color.GRAY);
     ammoLabelTable.add(ammoLabel);
@@ -191,7 +191,7 @@ public class GameScreen extends AbstractScreen {
     verticalGroup.space(20);
     popUpTable.add(verticalGroup).padLeft(50).padRight(50).padTop(20).padBottom(20);
     //create resume button
-    TextButton resumeButton = UIFactory.createButton("resume");
+    TextButton resumeButton = UIFactory.createButton("Resume");
     resumeButton.addListener(UIFactory.newListenerEvent(() -> {
       if (health > 0.1f) {
         tractionPopUp = true;
@@ -201,14 +201,14 @@ public class GameScreen extends AbstractScreen {
     }));
     verticalGroup.addActor(resumeButton);
     //create settings button
-    TextButton settingsButton = UIFactory.createButton("settings");
+    TextButton settingsButton = UIFactory.createButton("Settings");
     settingsButton.addListener(UIFactory.newListenerEvent(() -> {
       createSettingsChildren();
       return false;
     }));
     verticalGroup.addActor(settingsButton);
     //create quit button go back to the main menu and disconnect form server
-    TextButton quitButton = UIFactory.createBackButton("quit");
+    TextButton quitButton = UIFactory.createBackButton("Quit");
     quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
     quitButton.addListener(UIFactory.newListenerEvent(() -> {
       Data.INSTANCE.quit();
@@ -224,7 +224,7 @@ public class GameScreen extends AbstractScreen {
     verticalGroup.clear();
     Settings.createSettings();
     //create back button
-    TextButton backButton = UIFactory.createButton("back");
+    TextButton backButton = UIFactory.createButton("Back");
     backButton.addListener(UIFactory.newListenerEvent(() -> {
       popUpTable.reset();
       createHudPopUp();

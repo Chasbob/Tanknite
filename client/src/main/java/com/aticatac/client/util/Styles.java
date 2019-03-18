@@ -51,17 +51,18 @@ public enum Styles {
 
     private void loadStyles() {
         //load in font
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/barcadebrawl.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
+        FreeTypeFontGenerator generator_title = new FreeTypeFontGenerator(Gdx.files.internal("styles/title_font.ttf"));
         System.out.println("Loaded ttf");
         FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter10.size = 10;
-        parameter15.size = 15;
-        parameter40.size = 40;
+        parameter10.size = 15;
+        parameter15.size = 25;
+        parameter40.size = 70;
         BitmapFont gameLabelFont = generator.generateFont(parameter10);
         BitmapFont buttonFont = generator.generateFont(parameter15);
-        BitmapFont titleFont = generator.generateFont(parameter40);
+        BitmapFont titleFont = generator_title.generateFont(parameter40);
         generator.dispose();
         //create title label style
         titleStyle = createLabelStyle(titleFont, Color.CORAL);
