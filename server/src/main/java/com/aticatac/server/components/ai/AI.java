@@ -9,10 +9,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArraySet;
 // Things left TODO:
-//  - line of sight
 //  - powerup stuff
-//  - getting information, all enemies, all powerups
-
 /**
  * The AI component. Where would life be without the AI component?
  *
@@ -350,25 +347,6 @@ public class AI {
     occupiedNodes.addAll(path);
     return path;
   }
-//  /**
-//   * Gets a set of occupied nodes in the graph.
-//   *
-//   * @return A set of occupied nodes in the graph
-//   */
-//  private Set<SearchNode> getOccupiedNodes() {
-//    Set<SearchNode> occupiedNodes = new HashSet<>();
-//    for (GameObject g : tank.getParent().getChildren().values()) {
-//      if (!g.equals(tank)) {
-//        if (g.componentExists(AI.class) && g.getComponent(AI.class).searchPath != null && !g.getComponent(AI.class).searchPath.isEmpty()) {
-//          for (SearchNode node : g.getComponent(AI.class).searchPath) {
-//            occupiedNodes.addAll(node.getSubGraph(2));
-//          }
-//        }
-//        occupiedNodes.addAll(graph.getNearestNode(g.getTransform().getPosition()).getSubGraph(2));
-//      }
-//    }
-//    return occupiedNodes;
-//  }
 
   /**
    * Returns the correct command to travel to a node.
@@ -490,12 +468,23 @@ public class AI {
    * @return A list of enemies in range of the position
    */
   private ArrayList<PlayerState> getEnemiesInRange(Position position, int range) {
-    ArrayList<PlayerState> inRange = getPlayersInRange(position, range, currentInput.getPlayers());
+    ArrayList<PlayerState> inRange = new ArrayList<>();
+    for (PlayerState enemy : enemiesInRange) {
+      if (Math.abs(enemy.getX() - position.getX()) <= range ||
+              Math.abs(enemy.getY() - position.getY()) <= range) {
+        inRange.add(enemy);
+      }
+    }
     //todo make sure this is working...
     inRange.remove(currentInput.me);
     return inRange;
   }
 
+  /**
+   * Gets a list of enemies that have a line of sight to the tank.
+   *
+   * @return A list of enemies in sight
+   */
   private ArrayList<PlayerState> getEnemiesInSight() {
     ArrayList<PlayerState> enemiesInSight = new ArrayList<>();
     for (PlayerState enemy : enemiesInRange) {
@@ -519,10 +508,31 @@ public class AI {
     ArrayList<PlayerState> enemiesInSight = getEnemiesInSight();
     // Target closest in sight
     if (!enemiesInSight.isEmpty()) {
-      return getClosestPlayer(enemiesInSight);
+      return getClosestEnemy(enemiesInSight);
     }
     // If none in sight, target closest in range
-    return getClosestPlayer(enemiesInRange);
+    return getClosestEnemy(enemiesInRange);
+  }
+
+  /**
+   * Gets the closest specified enemy to the tank.
+   *
+   * @param enemies Enemies to consider
+   * @return The closest enemy
+   */
+  private PlayerState getClosestEnemy(ArrayList<PlayerState> enemies) {
+    PlayerState closestObject = null;
+    double distanceToClosestObject = Double.MAX_VALUE;
+    for (PlayerState object : enemies) {
+      // no need for sqrt
+      double distanceToTank = Math.pow(object.getY() - tankPos.getY(), 2)
+              + Math.pow(object.getX() - tankPos.getX(), 2);
+      if (distanceToTank < distanceToClosestObject) {
+        closestObject = object;
+        distanceToClosestObject = distanceToTank;
+      }
+    }
+    return closestObject;
   }
 
   /**
@@ -554,38 +564,17 @@ public class AI {
   }
 
   /**
-   * Gets all of the specified GameObjects in range of the tank.
+   * Gets all of the power-ups in range of the tank.
    *
    * @param position   Center position to check from
    * @param range      Range of consideration
-   * @param allObjects GameObjects to consider
+   * @param powerUps Power-ups to consider
    *
    * @return All specified GameObjects in range
    */
-//  private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, Collection<GameObject> allObjects) {
-//    ArrayList<GameObject> inRange = new ArrayList<>();
-//    for (GameObject enemy : allObjects) {
-//      if (Math.abs(enemy.getTransform().getX() - position.getX()) <= range ||
-//          Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
-//        inRange.add(enemy);
-//      }
-//    }
-//    return inRange;
-//  }
-  private ArrayList<PowerUpState> getPowerUpsInRange(Position position, int range, Collection<PowerUpState> allObjects) {
+  private ArrayList<PowerUpState> getPowerUpsInRange(Position position, int range, Collection<PowerUpState> powerUps) {
     ArrayList<PowerUpState> inRange = new ArrayList<>();
-    for (PowerUpState enemy : allObjects) {
-      if (Math.abs(enemy.getX() - position.getX()) <= range ||
-          Math.abs(enemy.getY() - position.getY()) <= range) {
-        inRange.add(enemy);
-      }
-    }
-    return inRange;
-  }
-
-  private ArrayList<PlayerState> getPlayersInRange(Position position, int range, Collection<PlayerState> allObjects) {
-    ArrayList<PlayerState> inRange = new ArrayList<>();
-    for (PlayerState enemy : allObjects) {
+    for (PowerUpState enemy : powerUps) {
       if (Math.abs(enemy.getX() - position.getX()) <= range ||
           Math.abs(enemy.getY() - position.getY()) <= range) {
         inRange.add(enemy);
@@ -595,31 +584,15 @@ public class AI {
   }
 
   /**
-   * Gets the closest specified GameObject to the tank.
+   * Gets the closest power-up to the tank.
    *
-   * @param objectsInRange GameObjects in range to consider
-   *
-   * @return The closest specified GameObject
+   * @param powerUps Power-ups to consider
+   * @return The closest power-up
    */
-  private PlayerState getClosestPlayer(ArrayList<PlayerState> objectsInRange) {
-    PlayerState closestObject = null;
-    double distanceToClosestObject = Double.MAX_VALUE;
-    for (PlayerState object : objectsInRange) {
-      // no need for sqrt
-      double distanceToTank = Math.pow(object.getY() - tankPos.getY(), 2)
-          + Math.pow(object.getX() - tankPos.getX(), 2);
-      if (distanceToTank < distanceToClosestObject) {
-        closestObject = object;
-        distanceToClosestObject = distanceToTank;
-      }
-    }
-    return closestObject;
-  }
-
-  private PowerUpState getClosestPowerUp(ArrayList<PowerUpState> objectsInRange) {
+  private PowerUpState getClosestPowerUp(ArrayList<PowerUpState> powerUps) {
     PowerUpState closestObject = null;
     double distanceToClosestObject = Double.MAX_VALUE;
-    for (PowerUpState object : objectsInRange) {
+    for (PowerUpState object : powerUps) {
       // no need for sqrt
       double distanceToTank = Math.pow(object.getY() - tankPos.getY(), 2)
           + Math.pow(object.getX() - tankPos.getX(), 2);
