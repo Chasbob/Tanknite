@@ -27,7 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 public class GameScreen extends AbstractScreen {
   private final SpriteBatch healthBarBatch;
   private final SpriteBatch tanks;
-  private final SpriteBatch tanks2;
+  private final SpriteBatch tanksMiniMap;
   private final int maxX;
   private final int maxY;
   private Update update;
@@ -82,7 +82,7 @@ public class GameScreen extends AbstractScreen {
     }
     healthBarBatch = new SpriteBatch();
     tanks = new SpriteBatch();
-    tanks2 = new SpriteBatch();
+    tanksMiniMap = new SpriteBatch();
   }
 
   @Override
@@ -280,17 +280,17 @@ public class GameScreen extends AbstractScreen {
     renderTanks(tanks);
     //mini viewport
     minimapViewport.apply();
-    tanks2.begin();
-    tanks2.setProjectionMatrix(minimapViewport.getCamera().combined);
-    tanks2.setColor(Color.CORAL);
-    renderTanks(tanks2);
+    tanksMiniMap.begin();
+    tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
+    tanksMiniMap.setColor(Color.CORAL);
+    renderTanks(tanksMiniMap);
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
       hudUpdate.update(update);
     }
-    super.act(delta);
     //hud viewport
-    super.getViewport().apply();
-    super.draw();
+    act(delta);
+    getViewport().apply();
+    draw();
   }
 
   private void renderTanks(SpriteBatch tanks) {
@@ -367,6 +367,8 @@ public class GameScreen extends AbstractScreen {
     super.dispose();
     map.dispose();
     renderer.dispose();
+    tanks.dispose();
+    tanksMiniMap.dispose();
     healthBarBatch.dispose();
   }
 

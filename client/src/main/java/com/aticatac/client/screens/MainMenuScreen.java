@@ -40,13 +40,13 @@ public class MainMenuScreen extends AbstractScreen {
     rootTable.setFillParent(true);
     addActor(rootTable);
     //create title table
-    Table titleTable = new Table().top().left().padTop(50);
+    Table titleTable = new Table().top().left().padTop(50).padLeft(50);
     super.addToRoot(titleTable);
     Label screenTitle = UIFactory.createTitleLabel("TANK TROUBLE");
     titleTable.setFillParent(true);
     titleTable.add(screenTitle);
     //create table to store all buttons
-    Table buttonTable = new Table().left();
+    Table buttonTable = new Table().left().padLeft(50);
     super.addToRoot(buttonTable);
     //create vertical group to store buttons
     verticalGroup = new VerticalGroup();
