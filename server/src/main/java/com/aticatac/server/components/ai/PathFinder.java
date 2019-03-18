@@ -72,7 +72,7 @@ class PathFinder {
         f.put(connectedNode, g.get(connectedNode) + getCostEstimate(connectedNode, goal));
       }
     }
-    return null;
+    return new LinkedList<>();
   }
 
   /**

@@ -4,11 +4,10 @@ import com.aticatac.common.model.Command;
 import com.aticatac.server.components.transform.Position;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
-import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 // Things left TODO:
 //  - line of sight
 //  - powerup stuff
@@ -22,7 +21,7 @@ import java.util.Set;
 @SuppressWarnings("ALL")
 public class AI {
   private final static int VIEW_RANGE = 320; // some value equivalent to the actual view range that a player would have
-  private static Set<SearchNode> occupiedNodes = new HashSet<>();
+  private final static CopyOnWriteArraySet<SearchNode> occupiedNodes = new CopyOnWriteArraySet<>();
   private final Graph graph;
   private final PathFinder pathFinder;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
@@ -243,6 +242,9 @@ public class AI {
     // Make new path if transitioned to searching state or previous path was completed
     Position goal = getRandomClearPosition(); // there should always be a clear position given we searching
     searchPath = getPath(tankPos, goal);
+    if (searchPath.peek() == null) {
+      return null;
+    }
     Command c = commandToPerform(searchPath.peek());
     if (c != null) {
       return c;
