@@ -28,6 +28,7 @@ public class GameScreen extends AbstractScreen {
   private final SpriteBatch healthBarBatch;
   private final SpriteBatch tanks;
   private final SpriteBatch tanksMiniMap;
+  private final SpriteBatch minimapBackGround;
   private final int maxX;
   private final int maxY;
   private Update update;
@@ -83,6 +84,7 @@ public class GameScreen extends AbstractScreen {
     healthBarBatch = new SpriteBatch();
     tanks = new SpriteBatch();
     tanksMiniMap = new SpriteBatch();
+    minimapBackGround = new SpriteBatch();
   }
 
   @Override
@@ -269,10 +271,7 @@ public class GameScreen extends AbstractScreen {
     renderer.setView(this.camera.getCamera());
     renderer.render();
     //health bar
-    healthBarBatch.begin();
     healthBar();
-    healthBarBatch.setColor(Color.WHITE);
-    healthBarBatch.end();
     //tanks
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
     tanks.setColor(Color.CORAL);
@@ -280,10 +279,14 @@ public class GameScreen extends AbstractScreen {
     renderTanks(tanks);
     //mini viewport
     minimapViewport.apply();
+    minimap();
     tanksMiniMap.begin();
     tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
-    tanksMiniMap.setColor(Color.CORAL);
-    renderTanks(tanksMiniMap);
+    tanksMiniMap.setColor(Color.GREEN);
+    if (newUpdate != null) {
+      renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
+    }
+    tanksMiniMap.end();
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
       hudUpdate.update(update);
     }
@@ -303,7 +306,17 @@ public class GameScreen extends AbstractScreen {
     tanks.end();
   }
 
+  private void minimap() {
+    minimapBackGround.begin();
+    minimapBackGround.setColor(Color.CORAL);
+    minimapBackGround.draw(Styles.getInstance().getBlank(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    minimapBackGround.setColor(Color.DARK_GRAY);
+    minimapBackGround.draw(Styles.getInstance().getBlank(), 10, 10, Gdx.graphics.getWidth() - 20, Gdx.graphics.getHeight() - 20);
+    minimapBackGround.end();
+  }
+
   private void healthBar() {
+    healthBarBatch.begin();
     health = hudUpdate.getHealth();
     healthBarBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
     healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 15);
@@ -322,6 +335,8 @@ public class GameScreen extends AbstractScreen {
       tractionHealth = true;
       alertTable.setVisible(false);
     }
+    healthBarBatch.setColor(Color.WHITE);
+    healthBarBatch.end();
   }
 
   private void renderContainer(Container c, SpriteBatch batch) {

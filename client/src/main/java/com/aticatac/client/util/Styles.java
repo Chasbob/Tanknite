@@ -64,11 +64,11 @@ public enum Styles {
         BitmapFont titleFont = generator.generateFont(parameter40);
         generator.dispose();
         //create title label style
-        titleStyle = createLabelStyle(titleFont, Color.FOREST);
+        titleStyle = createLabelStyle(titleFont, Color.CORAL);
         //create base label style
         baseLabelStyle = createLabelStyle(buttonFont, Color.WHITE);
         //create coloured label style
-        colouredLabelStyle = createLabelStyle(buttonFont, Color.FOREST);
+        colouredLabelStyle = createLabelStyle(buttonFont, Color.CORAL);
         //create error label style
         errorStyle = createLabelStyle(buttonFont, Color.RED);
         //create style to hide error label - set to black
@@ -87,7 +87,7 @@ public enum Styles {
         Pixmap cursorColor = new Pixmap((int) cursorImage.getWidth(),
           (int) cursorImage.getHeight(),
           Pixmap.Format.RGB888);
-        cursorColor.setColor(Color.FOREST);
+        cursorColor.setColor(Color.CORAL);
         cursorColor.fill();
         textFieldStyle.cursor = new Image(new Texture(cursorColor)).getDrawable();
         Pixmap textFieldColour = new Pixmap(150, 15, Pixmap.Format.RGB888);
@@ -99,9 +99,9 @@ public enum Styles {
         //create a style for selected buttons
         selectedButtonStyle = createButtonStyle(buttonFont, Color.GRAY);
         //create a style for start buttons
-        startButtonStyle = createButtonStyle(buttonFont, Color.FOREST);
+        startButtonStyle = createButtonStyle(buttonFont, Color.CORAL);
         //create style for back buttons
-        backButtonStyle = createButtonStyle(buttonFont, Color.YELLOW);
+        backButtonStyle = createButtonStyle(buttonFont, Color.SLATE);
         //create style for less subtle buttons
         lessSubtleButtonStyle = createButtonStyle(buttonFont, Color.GRAY);
         //create style for subtle buttons
