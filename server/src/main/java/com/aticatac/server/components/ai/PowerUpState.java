@@ -16,6 +16,10 @@ public class PowerUpState {
     return position;
   }
 
+  public Entity.EntityType getType() {
+    return type;
+  }
+
   public int getX() {
     return position.getX();
   }

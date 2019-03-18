@@ -2,20 +2,18 @@ package com.aticatac.server.components.ai;
 
 import com.aticatac.common.model.Command;
 import com.aticatac.server.components.transform.Position;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+import com.aticatac.server.objectsystem.Entity;
+
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 // Things left TODO:
-//  - powerup stuff
+//  - hmmm
 /**
  * The AI component. Where would life be without the AI component?
  *
  * @author Dylan
  */
-//@SuppressWarnings("ALL")
+@SuppressWarnings("ALL")
 public class AI {
   private final static int VIEW_RANGE = 320; // some value equivalent to the actual view range that a player would have
   private final static CopyOnWriteArraySet<SearchNode> occupiedNodes = new CopyOnWriteArraySet<>();
@@ -26,11 +24,11 @@ public class AI {
   private State state;
   private State prevState;
   private Queue<SearchNode> searchPath; // current path being executed
-  //  private Set<Position> recentlyVisitedNodes;
+  private Set<Position> recentlyVisitedNodes;
   private ArrayList<Command> commandHistory = new ArrayList<>();
   private ArrayList<PlayerState> enemiesInRange;
   private ArrayList<PowerUpState> powerupsInRange;
-  //private Something idealPowerup;
+  private Entity.EntityType idealPowerup;
   private Position tankPos;
   private int tankHealth;
   private int tankAmmo;
@@ -42,7 +40,7 @@ public class AI {
     this.pathFinder = new PathFinder();
     this.state = State.SEARCHING;
     this.searchPath = new LinkedList<>();
-//    this.recentlyVisitedNodes = new HashSet<>();
+    this.recentlyVisitedNodes = new HashSet<>();
     this.aggression = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
@@ -74,7 +72,7 @@ public class AI {
           Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
         SearchNode visited = searchPath.poll();
         occupiedNodes.remove(visited);
-//        recentlyVisitedNodes.addAll(visited.getSubGraph(5));
+        recentlyVisitedNodes.addAll(visited.getSubGraph(5));
       }
     }
     // Check for a state change
@@ -85,9 +83,6 @@ public class AI {
       commandHistory.clear();
     }
     commandHistory.add(command);
-//    System.out.println(tank.getName() + ": " + getEnemiesInRange(tank.getTransform().getPosition(), VIEW_RANGE).size() + " enemies in range");
-//    System.out.println(tank.getName() + ": " + getEnemiesInSight().size() + " enemies in sight");
-//    System.out.println(searchPath);
     return new Decision(performStateAction(), angleChange);
   }
 
@@ -186,22 +181,20 @@ public class AI {
       // can't move -> can't obtain
       return 0;
     }
-        /*
-        if (tankAmmo <= 5 && ammo powerup is in powerupsInRange){
-            idealPowerup = ammo powerup;
-            return (int)Math.round(100 * collectiveness);
-        }
-        if (tankHealth <= 30 && health power up is in powerupsInRange){
-            idealPowerup = health powerup;
-            return (int)Math.round(100 * collectiveness);
-        }
-        if (Damage powerup in powerupsInRange) {
-            return (int)Math.round(80 * collectiveness)
-        }
-        if (ANY power up near) {
-            return (int)Math.round(50 * collectiveness)
-        }
-        */
+    if (tankAmmo <= 5 && powerupsInRange.stream().map(PowerUpState::getType).filter(Entity.EntityType.AMMO_POWERUP::equals).findFirst().isPresent()){
+      idealPowerup = Entity.EntityType.AMMO_POWERUP;
+      return (int)Math.round(100 * collectiveness);
+    }
+    if (tankHealth <= 30 && powerupsInRange.stream().map(PowerUpState::getType).filter(Entity.EntityType.HEALTH_POWERUP::equals).findFirst().isPresent()){
+      idealPowerup = Entity.EntityType.HEALTH_POWERUP;
+      return (int)Math.round(100 * collectiveness);
+    }
+    if (powerupsInRange.stream().map(PowerUpState::getType).filter(Entity.EntityType.BULLET_POWERUP::equals).findFirst().isPresent()) {
+      return (int)Math.round(80 * collectiveness);
+    }
+    if (!powerupsInRange.isEmpty()) {
+      return (int)Math.round(50 * collectiveness);
+    }
     return 0;
   }
 
@@ -391,18 +384,18 @@ public class AI {
    */
   private Position getRandomClearPosition() {
     ArrayList<Position> clearPositions = getClearPositions();
-//    ArrayList<Position> newClearPositions = new ArrayList<>();
-//    for (Position position : clearPositions) {
-//      if (!recentlyVisitedNodes.contains(position)) {
-//        newClearPositions.add(position);
-//      }
-//    }
-//    if (!newClearPositions.isEmpty()) {
-//      clearPositions = newClearPositions;
-//    }
-//    else {
-//      recentlyVisitedNodes.clear();
-//    }
+    ArrayList<Position> newClearPositions = new ArrayList<>();
+    for (Position position : clearPositions) {
+      if (!recentlyVisitedNodes.contains(position)) {
+        newClearPositions.add(position);
+      }
+    }
+    if (!newClearPositions.isEmpty()) {
+      clearPositions = newClearPositions;
+    }
+    else {
+      recentlyVisitedNodes.clear();
+    }
     Random rand = new Random();
     return clearPositions.get(rand.nextInt(clearPositions.size()));
   }
@@ -540,11 +533,9 @@ public class AI {
   private PowerUpState getIdealPowerup() {
     ArrayList<PowerUpState> idealInRange = new ArrayList<>();
     for (PowerUpState powerup : powerupsInRange) {
-            /*
-            if (powerup == idealPowerup) {
-                idealInRange.add(powerup);
-            }
-            */
+      if (powerup.type == idealPowerup) {
+        idealInRange.add(powerup);
+      }
     }
     return getClosestPowerUp(idealInRange);
   }
