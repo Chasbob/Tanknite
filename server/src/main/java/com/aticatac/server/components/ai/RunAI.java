@@ -1,8 +1,8 @@
 //package com.aticatac.server.components.ai;
 //
+//import com.aticatac.common.objectsystem.GameObject;
 //import com.aticatac.common.objectsystem.ObjectType;
 //import com.aticatac.server.networking.Server;
-//import com.aticatac.server.objectsystem.GameObject;
 //import java.util.concurrent.ConcurrentHashMap;
 //import org.apache.log4j.Logger;
 //
@@ -20,7 +20,7 @@
 //  public RunAI() {
 //    run = true;
 //    logger = Logger.getLogger(getClass());
-//    this.players = Server.ServerData.INSTANCE.getGame().getRoot().findObject(ObjectType.PLAYER_CONTAINER).getChildren();
+////    this.players = Server.ServerData.INSTANCE.getGame().getRoot().findObject(ObjectType.PLAYER_CONTAINER).getChildren();
 //  }
 //
 //  /**
@@ -34,8 +34,8 @@
 //  public void run() {
 //    while (!Thread.currentThread().isInterrupted() && run) {
 //      double nanoTime = System.nanoTime();
-////      for (String g : Server.ServerData.INSTANCE.getGame().getAi()) {
-////        Server.ServerData.INSTANCE.getGame().playerInput(g, this.players.get(g).getComponent(AiTank.class).getDecision().getCommand());
+////      for (GameObject g : Server.ServerData.INSTANCE.getGame().getAI()) {
+////        Server.ServerData.INSTANCE.getGame().playerInput(g.getName(), g.getComponent(AI.class).getDecision().getCommand());
 ////      }
 //      while (System.nanoTime() - nanoTime < 1000000000 / 60) {
 //        try {

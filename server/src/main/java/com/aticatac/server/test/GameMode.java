@@ -14,6 +14,7 @@ import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
+import com.aticatac.server.objectsystem.entities.AITank;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
@@ -106,6 +107,11 @@ public abstract class GameMode implements Game {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
       EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
+      for (int i = 0; i < 10; i++) {
+        Tank tank2 = createTank(player + " AI" + i, true);
+        playerMap.put(player + " AI" + i, tank2);
+        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
+      }
     }
   }
 
@@ -147,9 +153,15 @@ public abstract class GameMode implements Game {
 
   private Tank createTank(String player, boolean isAI, int x, int y) {
     Position position = new Position(x, y);
-    Tank tank = new Tank(player, position, 100, 30);
-    DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
-    return tank;
+    if (isAI) {
+      AITank tank = new AITank(player, position, 100, 30);
+      DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
+      return tank;
+    } else {
+      Tank tank = new Tank(player, position, 100, 30);
+      DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
+      return tank;
+    }
   }
   /**
    * Gets root.

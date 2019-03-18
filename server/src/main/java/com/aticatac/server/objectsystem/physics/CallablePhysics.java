@@ -168,7 +168,7 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
   }
 
   @Override
-  public PhysicsResponse call() throws Exception {
+  public PhysicsResponse call() {
     return move(rotation);
   }
 }
