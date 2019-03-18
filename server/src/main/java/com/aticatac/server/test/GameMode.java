@@ -17,8 +17,14 @@ import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.entities.AITank;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
+import com.aticatac.server.objectsystem.entities.powerups.AmmoPowerup;
+import com.aticatac.server.objectsystem.entities.powerups.DamagePowerup;
+import com.aticatac.server.objectsystem.entities.powerups.HealthPowerup;
+import com.aticatac.server.objectsystem.entities.powerups.SpeedPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import java.util.ArrayList;
+
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -179,6 +185,72 @@ public abstract class GameMode implements Game {
 //  public GameObject getRoot() {
 //    return root;
 //  }
+
+  public void createPowerUps() {
+    // TODO: Make PowerUpController tick based
+    // TODO: Where should this method be called?
+     new Thread(() -> {
+      while (true) {
+
+        int randomTime = new Random().nextInt(15);
+
+        //delay for randomTime
+        try {
+          Thread.sleep(randomTime * 1000);
+        } catch (InterruptedException ex) {
+          Thread.currentThread().interrupt();
+        }
+        int powerUpId = new Random().nextInt(4);
+
+        switch (powerUpId) {
+          case 0:
+            HealthPowerup healthPowerUp = null; // get name of powerUp
+            Position healthPosition = powerupPosition();
+            healthPowerUp = new HealthPowerup("healthPowerUp", healthPosition);
+            DataServer.INSTANCE.setCoordinates(healthPosition, healthPowerUp);
+          break;
+
+          case 1:
+            AmmoPowerup ammoPowerUp = null; // get name of powerUp
+            Position ammoPosition = powerupPosition();
+            ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
+            DataServer.INSTANCE.setCoordinates(ammoPosition, ammoPowerUp);
+            break;
+
+          case 2:
+            DamagePowerup damagePowerUp = null; // get name of powerUp
+            Position damagePosition = powerupPosition();
+            damagePowerUp = new DamagePowerup("damagePowerUp", damagePosition);
+            DataServer.INSTANCE.setCoordinates(damagePosition, damagePowerUp);
+            break;
+
+          case 3:
+            SpeedPowerup speedPowerUp = null; // get name of powerUp
+            Position speedPosition = powerupPosition();
+            speedPowerUp = new SpeedPowerup("speedPowerUp", speedPosition);
+            DataServer.INSTANCE.setCoordinates(speedPosition, speedPowerUp);
+        }
+      }
+    }
+    );
+
+
+
+  }
+
+  public Position powerupPosition (){
+    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
+    Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
+        ThreadLocalRandom.current().nextInt(min, max + 1));
+        CollisionBox box = new CollisionBox(position, Entity.EntityType.TANK.radius); // TODO: will tank have same radius as power ups?
+    //checks if this is a valid coordinate when generated is not in the map then moves on.
+    while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position) || DataServer.INSTANCE.containsBox(box)) {
+      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
+          ThreadLocalRandom.current().nextInt(min, max + 1));
+      box.setPosition(position);
+    }
+    return position;
+  }
 
   /**
    * N add ai.
