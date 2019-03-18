@@ -7,6 +7,10 @@ import com.aticatac.common.components.transform.Position;
 import com.aticatac.common.components.transform.Transform;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.GameObject;
+import jdk.jfr.Experimental;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 // Things left TODO:
@@ -19,7 +23,7 @@ import java.util.*;
  * @author Dylan
  */
 public class AI extends Component {
-  private final static int VIEW_RANGE = 640; // some value equivalent to the actual view range that a player would have
+  private final static int VIEW_RANGE = 192; // some value equivalent to the actual view range that a player would have
   private final Graph graph;
   private final GameObject tank;
   private final PathFinder pathFinder;
@@ -27,8 +31,9 @@ public class AI extends Component {
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
   private State state;
   private State prevState;
+  private static Set<SearchNode> occupiedNodes = new HashSet<>();
   private Queue<SearchNode> searchPath; // current path being executed
-  private Set<Position> recentlyVisitedNodes;
+  //  private Set<Position> recentlyVisitedNodes;
   private ArrayList<Command> commandHistory = new ArrayList<>();
   private ArrayList<GameObject> enemiesInRange;
   private ArrayList<GameObject> powerupsInRange;
@@ -50,7 +55,7 @@ public class AI extends Component {
     this.pathFinder = new PathFinder();
     this.state = State.SEARCHING;
     this.searchPath = new LinkedList<>();
-    this.recentlyVisitedNodes = new HashSet<>();
+//    this.recentlyVisitedNodes = new HashSet<>();
     this.aggression = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
     this.aimAngle = 0; // or whichever direction the tank faces at start
@@ -75,11 +80,13 @@ public class AI extends Component {
     int angleChange = getAngleChange();
     aimAngle += angleChange;
     // Poll search path if close enough to node
-    double threshold = 16;
+    double threshold = 8;
     if (!searchPath.isEmpty()) {
-      if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold && Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
+      if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold &&
+              Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
         SearchNode visited = searchPath.poll();
-        recentlyVisitedNodes.addAll(visited.getSubGraph(5));
+        occupiedNodes.remove(visited);
+//        recentlyVisitedNodes.addAll(visited.getSubGraph(5));
       }
     }
     // Check for a state change
@@ -89,6 +96,8 @@ public class AI extends Component {
     if (!commandHistory.contains(command))
       commandHistory.clear();
     commandHistory.add(command);
+    System.out.println(tank.getName() + ": " + getEnemiesInRange(tank.getTransform().getPosition(), VIEW_RANGE).size() + " enemies in range");
+    System.out.println(tank.getName() + ": " + getEnemiesInSight().size() + " enemies in sight");
     return new Decision(performStateAction(), angleChange);
   }
 
@@ -127,7 +136,7 @@ public class AI extends Component {
    * @return The utility score for the SEARCHING state
    */
   private int getSearchingUtility() {
-    return 30;
+    return 3000; // TODO change back to 30, currently always searching
   }
 
   /**
@@ -161,7 +170,7 @@ public class AI extends Component {
       // Enemies near and tank has no ammo
       return 90;
     }
-    int closestEnemyHealth = getClosestEnemy().getComponent(Health.class).getHealth();
+    int closestEnemyHealth = getTargetedEnemy().getComponent(Health.class).getHealth();
     if (tankHealth <= 30 && closestEnemyHealth > tankHealth) {
       if (getClearPositions().isEmpty()) {
         // Low health and nowhere to run
@@ -234,11 +243,11 @@ public class AI extends Component {
    */
   private Command performSearchingAction() {
     // Keep going along the same path if still searching
-    if (prevState == State.SEARCHING && !searchPath.isEmpty() && commandHistory.size() < 50) {
+    if (prevState == State.SEARCHING && !searchPath.isEmpty() && commandHistory.size() < 60) {
       return commandToPerform(searchPath.peek());
     }
     // Make new path if transitioned to searching state or previous path was completed
-    Position goal = getRandomClearPosition(); // there should always be a clear position given we are in the searching state
+    Position goal = getRandomClearPosition(); // there should always be a clear position given we searching
     searchPath = getPath(tankPos, goal);
     Command c = commandToPerform(searchPath.peek());
     if (c != null) {
@@ -258,7 +267,7 @@ public class AI extends Component {
    */
   private Command performAttackingAction() {
     // target closest enemy
-    Position nearestEnemy = getClosestEnemy().getComponent(Transform.class).getPosition();
+    Position nearestEnemy = getTargetedEnemy().getComponent(Transform.class).getPosition();
     // if aimed at enemy and line of sight clear: shoot
     // else travel a path to the enemy
     if (checkLineOfSightToPosition(tankPos, nearestEnemy) && aimed) {
@@ -338,29 +347,32 @@ public class AI extends Component {
    * @return A path from one position to another
    */
   private LinkedList<SearchNode> getPath(Position from, Position to) {
-    pathFinder.setOccupiedNodes(getOccupiedNodes());
-    return pathFinder.getPathToLocation(graph.getNearestNode(from), graph.getNearestNode(to));
+    occupiedNodes.removeAll(searchPath);
+    pathFinder.setOccupiedNodes(occupiedNodes);
+    LinkedList<SearchNode> path = pathFinder.getPathToLocation(graph.getNearestNode(from), graph.getNearestNode(to));
+    occupiedNodes.addAll(path);
+    return path;
   }
 
-  /**
-   * Gets a set of occupied nodes in the graph.
-   *
-   * @return A set of occupied nodes in the graph
-   */
-  private Set<SearchNode> getOccupiedNodes() {
-    Set<SearchNode> occupiedNodes = new HashSet<>();
-    for (GameObject g : tank.getParent().getChildren().values()) {
-      if (!g.equals(tank)) {
-        if (g.componentExists(AI.class) && g.getComponent(AI.class).searchPath != null && !g.getComponent(AI.class).searchPath.isEmpty()) {
-          for (SearchNode node : g.getComponent(AI.class).searchPath) {
-            occupiedNodes.addAll(node.getSubGraph(2));
-          }
-        }
-        occupiedNodes.addAll(graph.getNearestNode(g.getTransform().getPosition()).getSubGraph(2));
-      }
-    }
-    return occupiedNodes;
-  }
+//  /**
+//   * Gets a set of occupied nodes in the graph.
+//   *
+//   * @return A set of occupied nodes in the graph
+//   */
+//  private Set<SearchNode> getOccupiedNodes() {
+//    Set<SearchNode> occupiedNodes = new HashSet<>();
+//    for (GameObject g : tank.getParent().getChildren().values()) {
+//      if (!g.equals(tank)) {
+//        if (g.componentExists(AI.class) && g.getComponent(AI.class).searchPath != null && !g.getComponent(AI.class).searchPath.isEmpty()) {
+//          for (SearchNode node : g.getComponent(AI.class).searchPath) {
+//            occupiedNodes.addAll(node.getSubGraph(2));
+//          }
+//        }
+//        occupiedNodes.addAll(graph.getNearestNode(g.getTransform().getPosition()).getSubGraph(2));
+//      }
+//    }
+//    return occupiedNodes;
+//  }
 
   /**
    * Returns the correct command to travel to a node.
@@ -391,7 +403,7 @@ public class AI extends Component {
     ArrayList<Position> clearPositions = new ArrayList<>();
     ArrayList<SearchNode> nodes = graph.getNodesInRange(tankPos, VIEW_RANGE);
     for (SearchNode node : nodes) {
-      if (getEnemiesInRange(node, VIEW_RANGE / 4).isEmpty() && !getOccupiedNodes().contains(node)) {
+      if (getEnemiesInRange(node, VIEW_RANGE / 4).isEmpty() && !occupiedNodes.contains(node)) {
         clearPositions.add(node);
       }
     }
@@ -405,18 +417,18 @@ public class AI extends Component {
    */
   private Position getRandomClearPosition() {
     ArrayList<Position> clearPositions = getClearPositions();
-    ArrayList<Position> newClearPositions = new ArrayList<>();
-    for (Position position : clearPositions) {
-      if (!recentlyVisitedNodes.contains(position)) {
-        newClearPositions.add(position);
-      }
-    }
-    if (!newClearPositions.isEmpty()) {
-      clearPositions = newClearPositions;
-    }
-    else {
-      recentlyVisitedNodes.clear();
-    }
+//    ArrayList<Position> newClearPositions = new ArrayList<>();
+//    for (Position position : clearPositions) {
+//      if (!recentlyVisitedNodes.contains(position)) {
+//        newClearPositions.add(position);
+//      }
+//    }
+//    if (!newClearPositions.isEmpty()) {
+//      clearPositions = newClearPositions;
+//    }
+//    else {
+//      recentlyVisitedNodes.clear();
+//    }
     Random rand = new Random();
     return clearPositions.get(rand.nextInt(clearPositions.size()));
   }
@@ -431,7 +443,8 @@ public class AI extends Component {
     Position closestClearPosition = null;
     double distanceToClosestPosition = Double.MAX_VALUE;
     for (Position clearPosition : clearPositions) {
-      double distanceToTank = Math.pow(clearPosition.getY() - tankPos.getY(), 2) + Math.pow(clearPosition.getX() - tankPos.getX(), 2);
+      double distanceToTank = Math.pow(clearPosition.getY() - tankPos.getY(), 2)
+              + Math.pow(clearPosition.getX() - tankPos.getX(), 2);
       if (distanceToTank < distanceToClosestPosition) {
         closestClearPosition = clearPosition;
         distanceToClosestPosition = distanceToTank;
@@ -448,11 +461,27 @@ public class AI extends Component {
    * @return True if there is a line of sight between
    */
   private boolean checkLineOfSightToPosition(Position from, Position to) {
-//    String[][] map = graph.getMap();
-//    SearchNode fromNode = graph.getNearestNode(from);
-//    SearchNode toNode = graph.getNearestNode(to);
-//    System.out.println("From " + from + ", Array[" + fromNode.getX()/32 + "][" + fromNode.getY()/32 + "]");
-//    System.out.println("To " + to + ", Array[" + toNode.getX()/32 + "][" + toNode.getY()/32 + "]");
+    String[][] map = graph.getMap();
+    ArrayList<Position> linePoints = new ArrayList<>();
+
+    Position start = new Position(Math.round((float)from.getX()/32), Math.round((float)from.getY()/32));
+    Position end = new Position(Math.round((float)to.getX()/32), Math.round((float)to.getY()/32));
+
+    int steps = Math.max(Math.abs(start.getX() - end.getX()), Math.abs(start.getY() - end.getY()));
+    for (int i = 0; i <= steps; i++) {
+      float point;
+      if (i == 0)
+        point = 0;
+      else
+        point = (float)i / steps;
+      linePoints.add(new Position(Math.round(start.getX() + point*(end.getX()-start.getX())), Math.round(start.getY() + point*(end.getY()-start.getY()))));
+    }
+
+    for (Position point : linePoints) {
+      if (!map[point.getX()][point.getY()].equals("0")) {
+        return false;
+      }
+    }
     return true;
   }
 
@@ -464,15 +493,36 @@ public class AI extends Component {
    * @return A list of enemies in range of the position
    */
   private ArrayList<GameObject> getEnemiesInRange(Position position, int range) {
-    return getGameObjectsInRange(position, range, /*All enemies in game right now*/new ArrayList<>()); // TODO: GeT tHiS iNfO
+    ArrayList<GameObject> inRange = getGameObjectsInRange(position, range, tank.getParent().getChildren().values());
+    inRange.remove(tank);
+    return inRange;
+  }
+
+  private ArrayList<GameObject> getEnemiesInSight() {
+    ArrayList<GameObject> enemiesInSight = new ArrayList<>();
+    for (GameObject enemy : enemiesInRange) {
+      if (checkLineOfSightToPosition(tankPos, enemy.getTransform().getPosition())) {
+        enemiesInSight.add(enemy);
+      }
+    }
+    return enemiesInSight;
   }
 
   /**
-   * Gets the closest enemy to the tank.
+   * Targets an enemy to attack.
+   * <p>
+   * If there are enemies with a line of sight to the tank, the closest one is targeted. Otherwise the closest enemy
+   * in range is targeted.
    *
-   * @return The closest enemy to the tank
+   * @return The targeted enemy
    */
-  private GameObject getClosestEnemy() {
+  private GameObject getTargetedEnemy() {
+    // Prioritize targeting enemies in sight
+    ArrayList<GameObject> enemiesInSight = getEnemiesInSight();
+    // Target closest in sight
+    if (!enemiesInSight.isEmpty())
+      return getClosestObject(enemiesInSight);
+    // If none in sight, target closest in range
     return getClosestObject(enemiesInRange);
   }
 
@@ -520,11 +570,11 @@ public class AI extends Component {
    * @param allObjects GameObjects to consider
    * @return All specified GameObjects in range
    */
-  private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, ArrayList<GameObject> allObjects) {
+  private ArrayList<GameObject> getGameObjectsInRange(Position position, int range, Collection<GameObject> allObjects) {
     ArrayList<GameObject> inRange = new ArrayList<>();
     for (GameObject enemy : allObjects) {
       if (Math.abs(enemy.getTransform().getX() - position.getX()) <= range ||
-          Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
+              Math.abs(enemy.getTransform().getY() - position.getY()) <= range) {
         inRange.add(enemy);
       }
     }
@@ -541,7 +591,9 @@ public class AI extends Component {
     GameObject closestObject = null;
     double distanceToClosestObject = Double.MAX_VALUE;
     for (GameObject object : objectsInRange) {
-      double distanceToTank = Math.pow(object.getComponent(Transform.class).getY() - tankPos.getY(), 2) + Math.pow(object.getComponent(Transform.class).getX() - tankPos.getX(), 2);
+      // no need for sqrt
+      double distanceToTank = Math.pow(object.getComponent(Transform.class).getY() - tankPos.getY(), 2)
+              + Math.pow(object.getComponent(Transform.class).getX() - tankPos.getX(), 2);
       if (distanceToTank < distanceToClosestObject) {
         closestObject = object;
         distanceToClosestObject = distanceToTank;
@@ -561,7 +613,7 @@ public class AI extends Component {
     if (enemiesInRange.isEmpty()) {
       return 0;
     }
-    Position target = getClosestEnemy().getTransform().getPosition();
+    Position target = getTargetedEnemy().getTransform().getPosition();
     double angle = Math.atan2(target.getX() - tankPos.getX(), tankPos.getY() - target.getY());
     if (angle < 0) {
       angle += (Math.PI * 2);

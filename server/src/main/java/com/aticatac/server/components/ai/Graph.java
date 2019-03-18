@@ -62,26 +62,6 @@ class Graph {
     }
   }
 
-  private static void getTranspose(String[][] map) {
-    for (int i = 0; i < map.length; i++) {
-      for (int j = i + 1; j < map.length; j++) {
-        String temp = map[i][j];
-        map[i][j] = map[j][i];
-        map[j][i] = temp;
-      }
-    }
-  }
-
-  private static void rotateAlongMidRow(String[][] map) {
-    for (int i = 0; i < map.length / 2; i++) {
-      for (int j = 0; j < map.length; j++) {
-        String temp = map[i][j];
-        map[i][j] = map[map.length - 1 - i][j];
-        map[map.length - 1 - i][j] = temp;
-      }
-    }
-  }
-
   /**
    * Gets the node in the graph that has the nearest position to a given position.
    *
@@ -150,7 +130,27 @@ class Graph {
     return map;
   }
 
-  private static void removePositionsNextToWalls(String[][] map) {
+  private void getTranspose(String[][] map) {
+    for (int i = 0; i < map.length; i++) {
+      for (int j = i + 1; j < map.length; j++) {
+        String temp = map[i][j];
+        map[i][j] = map[j][i];
+        map[j][i] = temp;
+      }
+    }
+  }
+
+  private void rotateAlongMidRow(String[][] map) {
+    for (int i = 0; i < map.length / 2; i++) {
+      for (int j = 0; j < map.length; j++) {
+        String temp = map[i][j];
+        map[i][j] = map[map.length - 1 - i][j];
+        map[map.length - 1 - i][j] = temp;
+      }
+    }
+  }
+
+  private void removePositionsNextToWalls(String[][] map) {
     for (int x = 0; x < map.length; x++) {
       for (int y = 0; y < map.length; y++) {
         if (map[x][y].equals("0")) {
