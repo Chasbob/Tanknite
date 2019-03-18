@@ -18,6 +18,7 @@ import com.aticatac.server.objectsystem.entities.AITank;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -107,11 +108,11 @@ public abstract class GameMode implements Game {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
       EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
-      for (int i = 0; i < 10; i++) {
-        Tank tank2 = createTank(player + " AI" + i, true);
-        playerMap.put(player + " AI" + i, tank2);
-        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
-      }
+//      for (int i = 0; i < 10; i++) {
+//        Tank tank2 = createTank(player + " AI" + i, true);
+//        playerMap.put(player + " AI" + i, tank2);
+//        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
+//      }
     }
   }
 
@@ -138,15 +139,22 @@ public abstract class GameMode implements Game {
   }
 
   private Tank createTank(String player, boolean isAI) {
+    //I can't be bothered to reason how this would work with booleans so you get this counter
+    int count = 1;
+    Position position = new Position();
     ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
-    Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-        ThreadLocalRandom.current().nextInt(min, max + 1));
-    CollisionBox box = new CollisionBox(position, Entity.EntityType.TANK.radius);
-    //checks if this is a valid coordinate when generated is not in the map then moves on.
-    while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position) || DataServer.INSTANCE.containsBox(box)) {
+    while (count > 0) {
+      count = 0;
       position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
           ThreadLocalRandom.current().nextInt(min, max + 1));
-      box.setPosition(position);
+      this.logger.info("Trying position: " + position.toString());
+      CollisionBox box = new CollisionBox(position, Entity.EntityType.TANK.radius);
+      ArrayList<Position> boxCheck = box.getBox();
+      for (int i = 0; i < boxCheck.size(); i++) {
+        if (map.containsKey(boxCheck.get(i))) {
+          count++;
+        }
+      }
     }
     return createTank(player, isAI, position.getX(), position.getY());
   }
