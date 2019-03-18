@@ -79,7 +79,7 @@ public class Bullet implements Tickable {
     }
     try {
       Entity hit = move();
-      if (hit.type != Entity.EntityType.NONE) {
+      if (hit.type != Entity.EntityType.NONE && hit.type != Entity.EntityType.BULLET_POWERUP && hit.type != Entity.EntityType.HEALTH_POWERUP && hit.type != Entity.EntityType.SPEED_POWERUP && hit.type != Entity.EntityType.BULLET_POWERUP) {
         outputService.onBulletCollision(hit);
       }
     } catch (Exception e) {
@@ -92,7 +92,7 @@ public class Bullet implements Tickable {
     CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
     PhysicsResponse physicsData = physics.call();
     this.logger.trace(physicsData.position);
-    if (physicsData.entity.type == Entity.EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
+    if (physicsData.entity.type == Entity.EntityType.NONE || physicsData.entity.name.equals(shooter.name) || physicsData.entity.type == Entity.EntityType.AMMO_POWERUP || physicsData.entity.type == Entity.EntityType.HEALTH_POWERUP || physicsData.entity.type == Entity.EntityType.SPEED_POWERUP || physicsData.entity.type == Entity.EntityType.BULLET_POWERUP){
       updateCollisionBox(physicsData.position);
       return Entity.empty;
     } else {

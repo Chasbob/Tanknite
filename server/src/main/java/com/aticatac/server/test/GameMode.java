@@ -160,6 +160,9 @@ public abstract class GameMode implements Game {
 //    return root;
 //  }
 
+  public void createPowerUps() {
+    // TODO: Move PowerUpController here
+  }
   /**
    * N add ai.
    *
