@@ -155,7 +155,7 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
       if (d.occupied(newPosition)) {
         collisionType = d.getEntity(newPosition);
         //checks the coordinate is not itself
-        if (collisionType.equals(entity) || !collisionType.equals(ignore)) {
+        if (collisionType.equals(entity)) {
           return new PhysicsResponse(newPosition);
         }
         //Returning a collision type and also the position
@@ -168,7 +168,7 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
   }
 
   @Override
-  public PhysicsResponse call() throws Exception {
+  public PhysicsResponse call() {
     return move(rotation);
   }
 }

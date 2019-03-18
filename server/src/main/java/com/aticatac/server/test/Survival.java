@@ -3,13 +3,15 @@ package com.aticatac.server.test;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.server.objectsystem.entities.Bullet;
+import com.aticatac.server.bus.service.AIUpdateService;
 import com.aticatac.server.objectsystem.entities.Tank;
 
 public class Survival extends GameMode implements Runnable {
+  private final AIUpdateService aiUpdateService;
   private volatile boolean run;
 
   public Survival() throws InvalidClassInstance, ComponentExistsException {
+    aiUpdateService = new AIUpdateService(playerMap);
   }
 
   @Override
@@ -32,26 +34,10 @@ public class Survival extends GameMode implements Runnable {
     while (run) {
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
-      bullets.parallelStream().forEach(Bullet::tick);
-//      for (int i = 0; i < bullets.size(); i++) {
-//        Output output = bullets.get(i).tick();
-//      }
-      for (Tank t : playerMap.values()) {
-//        PlayerOutput output = t.tick();
-        t.tick();
-//        bullets.addAll(output.getNewBullets());
-//        if (output.isHit()) {
-//          for (Entity e : output.getTurretOutput().collisions) {
-//            if (e.type == Entity.EntityType.TANK) {
-//            }
-//            this.logger.info(e);
-//          }
-//        }
-//        switch (output.hit.type){
-//          case TANK:
-//            playerMap.get(output.hit.name).destroy();
-//        }
-      }
+      aiUpdateService.update();
+//      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
+      playerMap.values().parallelStream().forEach(Tank::tick);
+//      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);

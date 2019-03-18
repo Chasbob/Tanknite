@@ -25,15 +25,15 @@ public class Bullet implements Tickable {
    */
   public final Entity entity;
   /**
-   * The Bearing.
-   */
-  public  int bearing;
-  /**
    * The Output.
    */
   private final Logger logger;
   private final int damage;
   private final BulletOutputService outputService;
+  /**
+   * The Bearing.
+   */
+  public int bearing;
   /**
    * The Position.
    */
@@ -115,22 +115,13 @@ public class Bullet implements Tickable {
 //    DataServer.INSTANCE.addBoxToData(box, entity);
   }
 
-  @Override
-  public String toString() {
-    return "Bullet{" +
-        "shooter=" + shooter +
-        ", entity=" + entity +
-        ", bearing=" + bearing +
-        ", damage=" + damage +
-        ", outputService=" + outputService +
-        ", position=" + position +
-        ", prevPosistion=" + prevPosistion +
-        ", box=" + box +
-        '}';
-  }
-
   public Container getContainer() {
     return new Container(position.getX(), position.getY(), bearing, 0, 0, entity.name, ObjectType.BULLET);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(shooter, entity, bearing, getDamage(), position);
   }
 
   @Override
@@ -150,7 +141,16 @@ public class Bullet implements Tickable {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(shooter, entity, bearing, getDamage(), position);
+  public String toString() {
+    return "Bullet{" +
+        "shooter=" + shooter +
+        ", entity=" + entity +
+        ", bearing=" + bearing +
+        ", damage=" + damage +
+        ", outputService=" + outputService +
+        ", position=" + position +
+        ", prevPosistion=" + prevPosistion +
+        ", box=" + box +
+        '}';
   }
 }

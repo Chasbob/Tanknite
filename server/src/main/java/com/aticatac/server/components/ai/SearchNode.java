@@ -39,6 +39,7 @@ class SearchNode extends Position {
    * Gets the nodes of a sub graph of specified depth.
    *
    * @param depth the sub graph depth
+   *
    * @return The nodes of a sub graph
    */
   ArrayList<SearchNode> getSubGraph(int depth) {
@@ -61,4 +62,6 @@ class SearchNode extends Position {
   void addConnection(SearchNode node) {
     connectedNodes.add(node);
   }
+
+
 }
