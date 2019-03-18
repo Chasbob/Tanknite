@@ -161,7 +161,7 @@ public abstract class GameMode implements Game {
 //  }
 
   public void createPowerUps() {
-    // TODO: Move PowerUpController here
+    // TODO: Move PowerUpController here, make tick based
   }
   /**
    * N add ai.

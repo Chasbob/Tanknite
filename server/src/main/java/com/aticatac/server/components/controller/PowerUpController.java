@@ -94,7 +94,7 @@
 
 
   //created as component for map before game starts, and have spawnPowerUps() method called
-  // TODO: Have power ups actually be created as gameObjects
+  // TODO: Have power ups actually be created as entities
   //after set time, picks random powerup, creates object of it and decides co ordinates of it on the map
 
 //}
