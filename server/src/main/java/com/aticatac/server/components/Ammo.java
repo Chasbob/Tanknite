@@ -1,7 +1,6 @@
 package com.aticatac.server.components;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.GameObject;
 
 public class Ammo extends Component {
   private int ammo = 0;
@@ -17,5 +16,13 @@ public class Ammo extends Component {
 
   public void setAmmo(int ammo) {
     this.ammo = ammo;
+  }
+
+  public boolean hasAmmo() {
+    return ammo > 0;
+  }
+
+  public void use() {
+    ammo -= 1;
   }
 }

@@ -1,22 +1,19 @@
 package com.aticatac.server.components;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.GameObject;
 
-public class Damage extends Component{
+public class Damage extends Component {
   private int damage = 10;
 
-public Damage(GameObject parent){
-  super(parent);
-}
+  public Damage(GameObject parent) {
+    super(parent);
+  }
 
-public int getDamage() {
-  return damage;
-}
+  public int getDamage() {
+    return damage;
+  }
 
-public void setDamage(int damage) {
-  this.damage = damage;
-}
-
-
+  public void setDamage(int damage) {
+    this.damage = damage;
+  }
 }

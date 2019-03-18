@@ -1,6 +1,6 @@
 package com.aticatac.server.components.ai;
 
-import com.aticatac.common.components.transform.Position;
+import com.aticatac.server.components.transform.Position;
 import java.util.ArrayList;
 
 /**

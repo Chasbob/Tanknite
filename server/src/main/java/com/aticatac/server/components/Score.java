@@ -1,7 +1,6 @@
 package com.aticatac.server.components;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.objectsystem.GameObject;
 
 public class  Score extends Component {
   public int Score = 0;

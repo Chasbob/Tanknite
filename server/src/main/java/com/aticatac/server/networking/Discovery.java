@@ -14,31 +14,39 @@ import org.apache.log4j.Logger;
  * The type Discovery.
  */
 public class Discovery implements Runnable {
-  private final List<DatagramPacket> packets;
   private final Logger logger;
   private final ModelReader modelReader;
+  private final String name;
+  private final ArrayList<ServerInformation> informations;
+  private List<DatagramPacket> packets;
 
   /**
    * Instantiates a new Discovery.
+   *
+   * @param name the name
+   *
+   * @throws IOException the io exception
    */
-  Discovery() throws IOException {
+  Discovery(String name) throws IOException {
+    this.name = name;
     this.modelReader = new ModelReader();
-    this.packets = buildPackets(Server.ServerData.INSTANCE.getId());
+    this.informations = new ArrayList<>();
+    packets = new ArrayList<>();
+    buildPackets(Server.ServerData.INSTANCE.getId());
     this.logger = Logger.getLogger(Discovery.class);
   }
 
-  private List<DatagramPacket> buildPackets(String id) throws IOException {
-    List<DatagramPacket> output = new ArrayList<>();
+  private void buildPackets(String id) throws IOException {
     for (InterfaceAddress current : Data.INSTANCE.getInterfaces()) {
       if (current.getBroadcast() == null) {
         continue;
       }
-      ServerInformation information = new ServerInformation(id, current.getAddress(), Server.ServerData.INSTANCE.getPort());
+      ServerInformation information = new ServerInformation(id, current.getAddress(), Server.ServerData.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
+      informations.add(information);
       byte[] bytes = modelReader.toBytes(information);
       DatagramPacket packet = new DatagramPacket(bytes, bytes.length, current.getBroadcast(), CommonData.INSTANCE.getDiscoveryPort());
-      output.add(packet);
+      packets.add(packet);
     }
-    return output;
   }
 
   @Override
@@ -57,6 +65,9 @@ public class Discovery implements Runnable {
   }
 
   private void broadcast() throws IOException {
+    if (Server.ServerData.INSTANCE.refreshBroadcast()) {
+      buildPackets(name);
+    }
     for (DatagramPacket packet : this.packets) {
       Server.ServerData.INSTANCE.broadcastPacket(packet);
       logger.trace("Sent packet to: " + packet.getAddress());

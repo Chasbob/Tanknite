@@ -1,13 +1,13 @@
 package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
+import com.aticatac.client.networking.Servers;
 import com.aticatac.common.model.Command;
-import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.GameObject;
-import java.io.IOException;
+import com.aticatac.server.networking.Server;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -29,24 +29,58 @@ public enum Data {
   private ServerInformation localhost;
   private ServerInformation currentInformation;
   private boolean singleplayer;
-  private boolean updatePlayers;
   private Client client;
-  private GameObject root;
   private Container playerPos;
   private ArrayList<Container> playerList;
+  private boolean serverSelected;
+  private boolean manualConfigForServer;
+  private boolean isHosting;
 
   Data() {
+    this.logger = Logger.getLogger(getClass());
     client = new Client();
-    try {
-      //TODO don't hard code the port.
-      this.localhost = new ServerInformation("localhost", InetAddress.getLocalHost(), 5500);
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
-    }
+    serverSelected = false;
+    manualConfigForServer = false;
+    isHosting = false;
     players = new HashMap<>();
-    this.update = new Update(true);
+    this.update = new Update(false);
     this.clients = new ArrayList<>();
-    logger = Logger.getLogger(getClass());
+  }
+
+  public void initialise() {
+    try {
+      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), 5000);
+    } catch (UnknownHostException e) {
+      this.logger.error(e);
+      throw new ExceptionInInitializerError(e);
+    }
+  }
+
+  /**
+   * Is started boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isStarted() {
+    return client.isStarted();
+  }
+
+  /**
+   * Is singleplayer boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isSingleplayer() {
+    return singleplayer;
+  }
+
+  /**
+   * Sets singleplayer.
+   *
+   * @param singleplayer the singleplayer
+   */
+  public void setSingleplayer(boolean singleplayer) {
+    this.singleplayer = singleplayer;
   }
 
   /**
@@ -56,6 +90,15 @@ public enum Data {
    */
   public Update nextUpdate() {
     return client.nextUpdate();
+  }
+
+  /**
+   * Peek update update.
+   *
+   * @return the update
+   */
+  public Update peekUpdate() {
+    return client.peekUpdate();
   }
 
   /**
@@ -73,7 +116,7 @@ public enum Data {
    * @return the clients
    */
   public ArrayList<String> getClients() {
-    return clients;
+    return this.client.getPlayers();
   }
 
   /**
@@ -81,8 +124,8 @@ public enum Data {
    *
    * @return the players
    */
-  public ArrayList<Container> getPlayers() {
-    return new ArrayList<>(players.values());
+  public ArrayList<String> getPlayers() {
+    return this.client.getPlayers();
   }
 
   /**
@@ -98,6 +141,7 @@ public enum Data {
    * Gets player.
    *
    * @param i the
+   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -111,28 +155,6 @@ public enum Data {
    */
   public Container getPlayerPos() {
     return playerPos;
-  }
-
-  /**
-   * Sets update.
-   *
-   * @param update the update
-   */
-  public void setUpdate(Update update) {
-    this.update = update;
-    this.players = this.update.getPlayers();
-    if (playerPos != null) {
-      if (Math.abs(this.playerPos.getX() - this.players.get(client.getId()).getX()) > 1) {
-        this.logger.info("moved");
-      }
-    }
-    this.playerPos = this.players.get(client.getId());
-    this.playerList = getPlayers();
-//    try {
-//      this.root = new GameObject(this.update.getRootContainer());
-//    } catch (InvalidClassInstance | ComponentExistsException e) {
-//      this.logger.error(e);
-//    }
   }
 
   /**
@@ -160,39 +182,64 @@ public enum Data {
    */
   public void setCurrentInformation(ServerInformation currentInformation) {
     this.currentInformation = currentInformation;
+    this.serverSelected = true;
   }
 
   /**
-   * Connect boolean.
+   * Is server selected boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isServerSelected() {
+    return serverSelected;
+  }
+
+  /**
+   * Connect response.
    *
    * @param id           the id
-   * @param singleplayer the singleplayer
-   * @return the boolean
-   * @throws IOException  the io exception
-   * @throws InvalidBytes the invalid bytes
+   * @param singlePlayer the single player
+   *
+   * @return the response
    */
-  public boolean connect(String id, boolean singleplayer) throws IOException, InvalidBytes {
-    if (singleplayer) {
+  public Response connect(String id, boolean singlePlayer) {
+    if (singlePlayer) {
       return this.client.connect(this.localhost, id);
     } else {
-      return this.client.connect(this.currentInformation, id);
+      if (this.serverSelected) {
+        return this.client.connect(this.currentInformation, id);
+      } else {
+        //this is just if the user has not selected a server instead of there being no response.
+        return Response.NO_SERVER;
+      }
     }
   }
 
   /**
-   * Gets localhost.
+   * Connect response.
    *
-   * @return the localhost
+   * @param id           the id
+   * @param singleplayer the singleplayer
+   * @param host         the host
+   *
+   * @return the response
+   *
+   * @throws UnknownHostException the unknown host exception
    */
-  public ServerInformation getLocalhost() {
-    return localhost;
+  public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
+    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
+    return connect(id, singleplayer);
   }
 
   /**
    * Quit.
    */
   public void quit() {
-    this.client.quit();
+    if (client != null) {
+      this.client.quit();
+    }
+    if (singleplayer) {
+    }
   }
 
   /**
@@ -201,24 +248,45 @@ public enum Data {
    * @param command the command
    */
   public void sendCommand(Command command) {
-    this.client.sendCommand(command);
+    sendCommand(command, command.getAngle());
+  }
+
+  public void sendCommand(Command command, int bearing) {
+    this.client.sendCommand(command, bearing);
   }
 
   /**
-   * Gets singleplayer.
+   * Is manual config for server boolean.
    *
-   * @return the singleplayer
+   * @return the boolean
    */
-  public boolean getSingleplayer() {
-    return singleplayer;
+  public boolean isManualConfigForServer() {
+    return manualConfigForServer;
   }
 
   /**
-   * Sets singleplayer.
+   * Sets manual config for server.
    *
-   * @param singleplayer the singleplayer
+   * @param manualConfigForServer the manual config for server
    */
-  public void setSingleplayer(boolean singleplayer) {
-    this.singleplayer = singleplayer;
+  public void setManualConfigForServer(boolean manualConfigForServer) {
+    this.manualConfigForServer = manualConfigForServer;
   }
-}
+
+  /**
+   * Is hosting boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isHosting() {
+    return isHosting;
+  }
+
+  /**
+   * Sets hosting.
+   *
+   * @param hosting the hosting
+   */
+  public void setHosting(boolean hosting) {
+    isHosting = hosting;
+  }}

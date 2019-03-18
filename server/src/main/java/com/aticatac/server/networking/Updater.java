@@ -2,8 +2,10 @@ package com.aticatac.server.networking;
 
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.listener.UpdateChangesListener;
+import com.aticatac.server.objectsystem.entities.Bullet;
+import com.aticatac.server.objectsystem.entities.Tank;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import org.apache.log4j.Logger;
@@ -16,8 +18,9 @@ import org.apache.log4j.Logger;
 public class Updater implements Runnable {
   private final Logger logger;
   private final ModelReader modelReader;
-  private Update update;
+  private final Update update;
   private boolean changes;
+  private boolean shutdown;
 
   /**
    * Instantiates a new Updater.
@@ -26,53 +29,65 @@ public class Updater implements Runnable {
     this.logger = Logger.getLogger(getClass());
     this.update = new Update(true);
     this.changes = true;
+    this.shutdown = false;
     this.modelReader = new ModelReader();
+    EventBusFactory.getEventBus().register(new UpdateChangesListener(update.getPlayers(), update.getProjectiles()));
   }
 
   private void updatePlayers() {
-    for (GameObject c :
-    Server.ServerData.INSTANCE.getGame().getRoot().getChildren().get("Player Container").getChildren().values()) {
-      this.update.addPlayer(new Container(c));
+    this.logger.trace("updating players");
+    final Server.ServerData d = Server.ServerData.INSTANCE;
+    this.update.setStart(d.isStart());
+    this.logger.trace("Game started: " + d.isStart());
+    this.update.clearPlayers();
+    this.update.clearProjectiles();
+    for (Bullet b : d.getGame().getBullets()) {
+      this.update.addProjectile(b.getContainer());
+      this.logger.trace(b.getContainer());
+    }
+    for (Tank c : d.getGame().getPlayerMap().values()) {
+      this.logger.trace("Adding tank: " + c.getName());
+      this.update.addPlayer(c.getContainer());
     }
   }
 
   @Override
   public void run() {
     this.logger.trace("Running...");
-    while (!Thread.currentThread().isInterrupted()) {
-      double stime = System.nanoTime();
-      try {
-        updatePlayers();
-//        this.update.setRootContainer(new Container(Manager.INSTANCE.getRoot()));
-        if (this.changes) {
-          this.logger.info("Changes detected.");
-          this.logger.trace("players: " + this.update.getPlayers().toString());
-          this.logger.trace("Broadcasting...");
-          broadcast();
-          this.logger.trace("Setting changes to false.");
-          this.changes = false;
-        } else {
-          this.logger.trace("Broadcasting no changes.");
-        }
-        broadcast();
-      } catch (IOException e) {
-        this.logger.error(e);
-        return;
-      }
-      while (System.nanoTime() - stime < 1000000000 / 60) {
+    while (!Thread.currentThread().isInterrupted() && !shutdown) {
+      double nanoTime = System.nanoTime();
+      updatePlayers();
+      tcpBroadcast();
+      while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          this.logger.error(e);
         }
       }
     }
     this.logger.warn("Finished!");
   }
 
+  private void tcpBroadcast() {
+    this.logger.trace("Broadcasting...");
+    final Server.ServerData s = Server.ServerData.INSTANCE;
+    for (Client c : s.getClients().values()) {
+      c.sendUpdate(this.update);
+    }
+  }
+
+  void tcpBroadcast(Update update) {
+    this.logger.trace("Broadcasting...");
+    final Server.ServerData s = Server.ServerData.INSTANCE;
+    for (Client c : s.getClients().values()) {
+      c.sendUpdate(update);
+    }
+  }
+
   private void broadcast() throws IOException {
     this.logger.trace("Broadcasting...");
-    this.logger.trace("Player count: " + this.update.getPlayers().size());
+    this.logger.trace("Player count: " + this.update.playerSize());
     byte[] bytes = modelReader.toBytes(this.update);
 //    this.logger.info(bytes.length);
     final Server.ServerData s = Server.ServerData.INSTANCE;
