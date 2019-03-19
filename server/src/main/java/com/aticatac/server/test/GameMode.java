@@ -23,13 +23,13 @@ import com.aticatac.server.objectsystem.entities.powerups.DamagePowerup;
 import com.aticatac.server.objectsystem.entities.powerups.HealthPowerup;
 import com.aticatac.server.objectsystem.entities.powerups.SpeedPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import org.apache.log4j.Logger;
+
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Game mode.
@@ -167,8 +167,7 @@ public abstract class GameMode implements Game {
     return createTank(player, isAI, position.getX(), position.getY());
   }
 
-  @NotNull
-  private Position getClearPosition() {
+    private Position getClearPosition() {
     int count = 1;
     Position position = new Position();
     ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
