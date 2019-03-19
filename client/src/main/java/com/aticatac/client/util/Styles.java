@@ -10,29 +10,16 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-/**
- * The enum Styles.
- */
 public enum Styles {
-    /**
-     * Instance styles.
-     */
     INSTANCE;
-    private Label.LabelStyle errorStyle;
-    private Label.LabelStyle hideLabelStyle;
-    private Label.LabelStyle baseLabelStyle;
-    private Label.LabelStyle colouredLabelStyle;
-    private Label.LabelStyle gameLabelStyle;
-    private Label.LabelStyle titleStyle;
-    private Label.LabelStyle subtleStyle;
-    private TextButton.TextButtonStyle baseButtonStyle;
-    private TextButton.TextButtonStyle selectedButtonStyle;
-    private TextButton.TextButtonStyle startButtonStyle;
-    private TextButton.TextButtonStyle backButtonStyle;
-    private TextButton.TextButtonStyle lessSubtleButtonStyle;
-    private TextButton.TextButtonStyle subtleButtonStyle;
     private TextField.TextFieldStyle textFieldStyle;
     private Texture blank;
+    public BitmapFont baseFont;
+    public BitmapFont titleFont;
+    public BitmapFont gameLabelFont;
+    public Color hiddenColour;
+    public Color selectedColour;
+    private Color accentColour;
 
     Styles() {
         System.out.println("Loading styles...");
@@ -40,50 +27,29 @@ public enum Styles {
         System.out.println("Loaded styles!");
     }
 
-    /**
-     * Gets instance.
-     *
-     * @return the instance
-     */
     public static Styles getInstance() {
         return INSTANCE;
     }
 
     private void loadStyles() {
         //load in font
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
-        FreeTypeFontGenerator generator_title = new FreeTypeFontGenerator(Gdx.files.internal("styles/title_font.ttf"));
-        System.out.println("Loaded ttf");
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter10.size = 15;
-        parameter15.size = 25;
-        parameter40.size = 70;
-        BitmapFont gameLabelFont = generator.generateFont(parameter10);
-        BitmapFont buttonFont = generator.generateFont(parameter15);
-        BitmapFont titleFont = generator_title.generateFont(parameter40);
-        generator.dispose();
-        //create title label style
-        titleStyle = createLabelStyle(titleFont, Color.CORAL);
-        //create base label style
-        baseLabelStyle = createLabelStyle(buttonFont, Color.WHITE);
-        //create coloured label style
-        colouredLabelStyle = createLabelStyle(buttonFont, Color.CORAL);
-        //create error label style
-        errorStyle = createLabelStyle(buttonFont, Color.RED);
-        //create style to hide error label - set to black
-        hideLabelStyle = createLabelStyle(buttonFont, Color.valueOf("363636"));
-        //create style for game screen labels
-        gameLabelStyle = createLabelStyle(gameLabelFont, Color.WHITE);
-        //create style for subtle labels
-        subtleStyle = createLabelStyle(buttonFont, Color.CYAN);
+        loadFonts();
         //create text field style with cursor
+        createTextFieldStyle();
+        //assign colours
+        hiddenColour = Color.valueOf("363636");
+        selectedColour = Color.CYAN;
+        accentColour = Color.CORAL;
+        //load in blank texture for healthbar
+        blank = new Texture(Gdx.files.internal("img/white.png"));
+    }
+
+    private void createTextFieldStyle() {
         textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = buttonFont;
+        textFieldStyle.font = baseFont;
         textFieldStyle.fontColor = Color.WHITE;
         Label.LabelStyle cursorStyle = new Label.LabelStyle();
-        cursorStyle.font = buttonFont;
+        cursorStyle.font = baseFont;
         Label cursorImage = new Label("|", cursorStyle);
         Pixmap cursorColor = new Pixmap((int) cursorImage.getWidth(),
           (int) cursorImage.getHeight(),
@@ -95,30 +61,26 @@ public enum Styles {
         textFieldColour.setColor(Color.DARK_GRAY);
         textFieldColour.fill();
         textFieldStyle.background = new Image(new Texture(textFieldColour)).getDrawable();
-        //create a style for basic buttons
-        baseButtonStyle = createButtonStyle(buttonFont, Color.WHITE);
-        //create a style for selected buttons
-        selectedButtonStyle = createButtonStyle(buttonFont, Color.GRAY);
-        //create a style for start buttons
-        startButtonStyle = createButtonStyle(buttonFont, Color.CORAL);
-        //create style for back buttons
-        backButtonStyle = createButtonStyle(buttonFont, Color.GRAY);
-        //create style for less subtle buttons
-        lessSubtleButtonStyle = createButtonStyle(buttonFont, Color.TEAL);
-        //create style for subtle buttons
-        subtleButtonStyle = createButtonStyle(buttonFont, Color.CYAN);
-        //load in blank texture for healthbar
-        blank = new Texture(Gdx.files.internal("img/white.png"));
     }
 
-    private Label.LabelStyle createLabelStyle(BitmapFont font, Color color) {
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = color;
-        return labelStyle;
+    private void loadFonts() {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
+        FreeTypeFontGenerator generator_title = new FreeTypeFontGenerator(Gdx.files.internal("styles/title_font.ttf"));
+        System.out.println("Loaded ttf");
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter10.size = 15;
+        parameter15.size = 25;
+        parameter40.size = 70;
+        gameLabelFont = generator.generateFont(parameter10);
+        baseFont = generator.generateFont(parameter15);
+        titleFont = generator_title.generateFont(parameter40);
+        generator.dispose();
+        generator_title.dispose();
     }
 
-    private TextButton.TextButtonStyle createButtonStyle(BitmapFont font, Color color) {
+    public TextButton.TextButtonStyle createButtonStyle(BitmapFont font, Color color) {
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
         buttonStyle.fontColor = color;
@@ -133,118 +95,62 @@ public enum Styles {
         table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
     }
 
-    /**
-     * Gets error style.
-     *
-     * @return the error style
-     */
-    public Label.LabelStyle getErrorStyle() {
-        return errorStyle;
+    public Label.LabelStyle createLabelStyle(BitmapFont font, Color color) {
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+        labelStyle.fontColor = color;
+        return labelStyle;
     }
 
-    /**
-     * Gets hide label style.
-     *
-     * @return the hide label style
-     */
-    public Label.LabelStyle getHideLabelStyle() {
-        return hideLabelStyle;
+    public TextField createTextField(String text) {
+        return new TextField(text, textFieldStyle);
     }
 
-    /**
-     * Gets label style.
-     *
-     * @return the label style
-     */
-    public Label.LabelStyle getBaseLabelStyle() {
-        return baseLabelStyle;
-    }
-
-    public Label.LabelStyle getColouredLabelStyle() {
-        return colouredLabelStyle;
-    }
-
-    /**
-     * Gets game label style.
-     *
-     * @return the game label style
-     */
-    public Label.LabelStyle getGameLabelStyle() {
-        return gameLabelStyle;
-    }
-
-    public Label.LabelStyle getSubtleStyle() {
-        return subtleStyle;
-    }
-
-    /**
-     * Gets title style.
-     *
-     * @return the title style
-     */
-    public Label.LabelStyle getTitleStyle() {
-        return titleStyle;
-    }
-
-    /**
-     * Gets button style.
-     *
-     * @return the button style
-     */
-    public TextButton.TextButtonStyle getBaseButtonStyle() {
-        return baseButtonStyle;
-    }
-
-    /**
-     * Gets selected button style.
-     *
-     * @return the selected button style
-     */
-    public TextButton.TextButtonStyle getSelectedButtonStyle() {
-        return selectedButtonStyle;
-    }
-
-    /**
-     * Gets start button style.
-     *
-     * @return the start button style
-     */
-    public TextButton.TextButtonStyle getStartButtonStyle() {
-        return startButtonStyle;
-    }
-
-    /**
-     * Gets back button style.
-     *
-     * @return the back button style
-     */
-    public TextButton.TextButtonStyle getBackButtonStyle() {
-        return backButtonStyle;
-    }
-
-    public TextButton.TextButtonStyle getLessSubtleButtonStyle() {
-        return lessSubtleButtonStyle;
-    }
-
-    public TextButton.TextButtonStyle getSubtleButtonStyle() {
-        return subtleButtonStyle;
-    }
-
-    /**
-     * Gets text field style.
-     *
-     * @return the text field style
-     */
-    public TextField.TextFieldStyle getTextFieldStyle() {
-        return textFieldStyle;
-    }
-
-    /**
-     * Gets blank.
-     *
-     * @return the blank
-     */
     public Texture getBlank() {
         return blank;
+    }
+
+    public Label createTitleLabel() {
+        return new Label("TANKNITE", createLabelStyle(INSTANCE.titleFont, accentColour));
+    }
+
+    public Label createLabel(String text) {
+        return new Label(text, createLabelStyle(INSTANCE.baseFont, Color.WHITE));
+    }
+
+    public Label createGameLabel(String text) {
+        return new Label(text, createLabelStyle(INSTANCE.gameLabelFont, Color.WHITE));
+    }
+
+    public Label createColouredLabel() {
+        return new Label("Waiting for Host", createLabelStyle(INSTANCE.baseFont, accentColour));
+    }
+
+    public Label createSubtleLabel(String text) {
+        return new Label(text, createLabelStyle(INSTANCE.baseFont, Color.CYAN));
+    }
+
+    public Label createErrorLabel() {
+        return new Label("Name Taken", createLabelStyle(INSTANCE.baseFont, INSTANCE.hiddenColour));
+    }
+
+    public TextButton createBackButton(String text) {
+        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.GRAY));
+    }
+
+    public TextButton createButton(String text) {
+        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.WHITE));
+    }
+
+    public TextButton createStartButton(String text) {
+        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, accentColour));
+    }
+
+    public TextButton createPopButton(String text) {
+        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.TEAL));
+    }
+
+    public TextButton createLessPopButton(String text) {
+        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.CYAN));
     }
 }

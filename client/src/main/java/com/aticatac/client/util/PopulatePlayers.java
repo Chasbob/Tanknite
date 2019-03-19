@@ -1,5 +1,6 @@
 package com.aticatac.client.util;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class PopulatePlayers extends Thread {
     this.logger = Logger.getLogger(getClass());
     labels = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
-      Label label = new Label("", Styles.INSTANCE.getBaseLabelStyle());
+      Label label = new Label("", Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.baseFont, Color.WHITE));
       this.labels.add(label);
       this.playerTable.add(label);
       this.playerTable.row();

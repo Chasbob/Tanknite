@@ -1,6 +1,8 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.AudioEnum;
+import com.aticatac.client.util.ListenerFactory;
+import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -30,12 +32,12 @@ class Settings {
   private static Table createToggle(String labelString) {
     Table table = new Table().padLeft(20);
     table.defaults().padRight(10);
-    TextButton button = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? UIFactory.createLessSubtleButton(labelString) : UIFactory.createButton(labelString);
+    TextButton button = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createPopButton(labelString) : Styles.INSTANCE.createButton(labelString);
     Label label;
     if ((labelString.equals("Toggle Sound: ") && AudioEnum.INSTANCE.isSound()) || (labelString.equals("Toggle Music: ") && AudioEnum.INSTANCE.isMusic())) {
-      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? UIFactory.createSubtleLabel("ON") : UIFactory.createLabel("ON");
+      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSubtleLabel("ON") : Styles.INSTANCE.createLabel("ON");
     } else {
-      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? UIFactory.createSubtleLabel("OFF") : UIFactory.createLabel("OFF");
+      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSubtleLabel("OFF") : Styles.INSTANCE.createLabel("OFF");
     }
     button.addListener(buttonToChangeBool(button, label));
     table.add(button);
@@ -44,7 +46,7 @@ class Settings {
   }
 
   private static InputListener buttonToChangeBool(TextButton button, Label label) {
-    return UIFactory.newListenerEvent(() -> {
+    return ListenerFactory.newListenerEvent(() -> {
       if (button.getText().toString().equals("Toggle Sound: ")) {
         if (AudioEnum.INSTANCE.isSound()) {
           AudioEnum.INSTANCE.setSound(false);

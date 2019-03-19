@@ -62,12 +62,12 @@ public class GameScreen extends AbstractScreen {
     maxY = 1920;
     try {
       player = new Container();
-      ammoValue = UIFactory.createGameLabel("");
-      killCount = UIFactory.createGameLabel(" 0 ");
-      playerCount = UIFactory.createGameLabel(" 1 ");
-      fpsValue = UIFactory.createGameLabel("");
-      tankXY = UIFactory.createGameLabel("");
-      direction = UIFactory.createGameLabel("");
+      ammoValue = Styles.INSTANCE.createGameLabel("");
+      killCount = Styles.INSTANCE.createGameLabel(" 0 ");
+      playerCount = Styles.INSTANCE.createGameLabel(" 1 ");
+      fpsValue = Styles.INSTANCE.createGameLabel("");
+      tankXY = Styles.INSTANCE.createGameLabel("");
+      direction = Styles.INSTANCE.createGameLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("img/tank.png");
       tractionHealth = true;
@@ -136,21 +136,25 @@ public class GameScreen extends AbstractScreen {
     topLeftTable.defaults().padTop(10).padLeft(10).left();
     Table aliveTable = new Table();
     Table aliveLabelTable = new Table();
-    Styles.INSTANCE.addTableColour(aliveLabelTable, Color.GRAY);
-    Label aliveLabel = UIFactory.createGameLabel("Alive");
+    Styles.INSTANCE
+      .addTableColour(aliveLabelTable, Color.GRAY);
+    Label aliveLabel = Styles.INSTANCE.createGameLabel("Alive");
     aliveLabelTable.add(aliveLabel);
     Table playerCountTable = new Table();
     playerCountTable.add(playerCount).center();
-    Styles.INSTANCE.addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
+    Styles.INSTANCE
+      .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
     aliveTable.add(playerCountTable);
     aliveTable.add(aliveLabelTable);
     Table killTable = new Table();
     Table killLableTable = new Table();
-    Styles.INSTANCE.addTableColour(killLableTable, Color.GRAY);
-    Label killLabel = UIFactory.createGameLabel("Killed");
+    Styles.INSTANCE
+      .addTableColour(killLableTable, Color.GRAY);
+    Label killLabel = Styles.INSTANCE.createGameLabel("Killed");
     killLableTable.add(killLabel);
     Table killCountTable = new Table();
-    Styles.INSTANCE.addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
+    Styles.INSTANCE
+      .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
     killCountTable.add(killCount);
     killTable.add(killCountTable);
     killTable.add(killLableTable);
@@ -163,7 +167,7 @@ public class GameScreen extends AbstractScreen {
     killLogTable = new Table();
     killLogTable.bottom().left();
     killLogTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
-    Label tempKill = UIFactory.createGameLabel("");
+    Label tempKill = Styles.INSTANCE.createGameLabel("");
     killLogTable.add(tempKill);
     return killLogTable;
   }
@@ -174,11 +178,13 @@ public class GameScreen extends AbstractScreen {
     bottomRightTable.defaults().padRight(10).padTop(10).padBottom(20).left();
     Table ammoTable = new Table();
     Table ammoValueTable = new Table();
-    Styles.INSTANCE.addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
+    Styles.INSTANCE
+      .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
     ammoValueTable.add(ammoValue);
-    Label ammoLabel = UIFactory.createGameLabel("Ammo");
+    Label ammoLabel = Styles.INSTANCE.createGameLabel("Ammo");
     Table ammoLabelTable = new Table();
-    Styles.INSTANCE.addTableColour(ammoLabelTable, Color.GRAY);
+    Styles.INSTANCE
+      .addTableColour(ammoLabelTable, Color.GRAY);
     ammoLabelTable.add(ammoLabel);
     ammoTable.add(ammoValueTable);
     ammoTable.add(ammoLabelTable);
@@ -191,8 +197,8 @@ public class GameScreen extends AbstractScreen {
     verticalGroup.space(20);
     popUpTable.add(verticalGroup).padLeft(50).padRight(50).padTop(20).padBottom(20);
     //create resume button
-    TextButton resumeButton = UIFactory.createButton("Resume");
-    resumeButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton resumeButton = Styles.INSTANCE.createButton("Resume");
+    resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (health > 0.1f) {
         tractionPopUp = true;
       }
@@ -201,22 +207,23 @@ public class GameScreen extends AbstractScreen {
     }));
     verticalGroup.addActor(resumeButton);
     //create settings button
-    TextButton settingsButton = UIFactory.createButton("Settings");
-    settingsButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton settingsButton = Styles.INSTANCE.createButton("Settings");
+    settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
       createSettingsChildren();
       return false;
     }));
     verticalGroup.addActor(settingsButton);
     //create quit button go back to the main menu and disconnect form server
-    TextButton quitButton = UIFactory.createBackButton("Quit");
-    quitButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
-    quitButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton quitButton = Styles.INSTANCE.createBackButton("Quit");
+    quitButton.addListener(ListenerFactory.newChangeScreenEvent(MainMenuScreen.class));
+    quitButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.quit();
       refresh();
       return true;
     }));
     verticalGroup.addActor(quitButton);
-    Styles.INSTANCE.addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
+    Styles.INSTANCE
+      .addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
     return popUpTable;
   }
 
@@ -224,8 +231,8 @@ public class GameScreen extends AbstractScreen {
     verticalGroup.clear();
     Settings.createSettings();
     //create back button
-    TextButton backButton = UIFactory.createButton("Back");
-    backButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton backButton = Styles.INSTANCE.createButton("Back");
+    backButton.addListener(ListenerFactory.newListenerEvent(() -> {
       popUpTable.reset();
       createHudPopUp();
       return false;
@@ -237,7 +244,7 @@ public class GameScreen extends AbstractScreen {
     alertTable = new Table();
     alertTable.bottom();
     alertTable.defaults().padBottom(60);
-    Label alertLabel = UIFactory.createGameLabel("TRACTION DISABLED");
+    Label alertLabel = Styles.INSTANCE.createGameLabel("TRACTION DISABLED");
     alertTable.add(alertLabel);
     alertTable.setVisible(false);
     return alertTable;
@@ -309,9 +316,9 @@ public class GameScreen extends AbstractScreen {
   private void minimap() {
     minimapBackGround.begin();
     minimapBackGround.setColor(Color.CORAL);
-    minimapBackGround.draw(Styles.getInstance().getBlank(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    minimapBackGround.draw(Styles.INSTANCE.getBlank(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     minimapBackGround.setColor(Color.DARK_GRAY);
-    minimapBackGround.draw(Styles.getInstance().getBlank(), 10, 10, Gdx.graphics.getWidth() - 20, Gdx.graphics.getHeight() - 20);
+    minimapBackGround.draw(Styles.INSTANCE.getBlank(), 10, 10, Gdx.graphics.getWidth() - 20, Gdx.graphics.getHeight() - 20);
     minimapBackGround.end();
   }
 
@@ -319,7 +326,7 @@ public class GameScreen extends AbstractScreen {
     healthBarBatch.begin();
     health = hudUpdate.getHealth();
     healthBarBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
-    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 15);
+    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 15);
     if (health > 0.6f) {
       healthBarBatch.setColor(Color.GREEN);
     } else if (health <= 0.6f && health > 0.2f) {
@@ -327,7 +334,7 @@ public class GameScreen extends AbstractScreen {
     } else {
       healthBarBatch.setColor(Color.RED);
     }
-    healthBarBatch.draw(Styles.getInstance().getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 15);
+    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 15);
     if (health <= 0.1f) {
       tractionHealth = false;
       alertTable.setVisible(true);
@@ -389,11 +396,11 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
-    ammoValue = UIFactory.createGameLabel("");
-    killCount = UIFactory.createGameLabel("");
-    playerCount = UIFactory.createGameLabel("");
-    tankXY = UIFactory.createGameLabel("");
-    direction = UIFactory.createGameLabel("");
+    ammoValue = Styles.INSTANCE.createGameLabel("");
+    killCount = Styles.INSTANCE.createGameLabel("");
+    playerCount = Styles.INSTANCE.createGameLabel("");
+    tankXY = Styles.INSTANCE.createGameLabel("");
+    direction = Styles.INSTANCE.createGameLabel("");
     popUpTable.setVisible(false);
     alertTable.setVisible(false);
     tractionHealth = true;

@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Data;
+import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
@@ -45,7 +46,7 @@ public class MainMenuScreen extends AbstractScreen {
     //create title table
     Table titleTable = new Table().top().left().padTop(50).padLeft(50);
     super.addToRoot(titleTable);
-    Label screenTitle = UIFactory.createTitleLabel("TANKNITE");
+    Label screenTitle = Styles.INSTANCE.createTitleLabel();
     titleTable.setFillParent(true);
     titleTable.add(screenTitle);
     //create table to store all buttons
@@ -59,14 +60,14 @@ public class MainMenuScreen extends AbstractScreen {
     //play button with child buttons
     createPlay();
     //button for achievements
-    TextButton achievementButton = UIFactory.createButton("Achievements");
+    TextButton achievementButton = Styles.INSTANCE.createButton("Achievements");
     verticalGroup.addActor(achievementButton);
     //button for store
-    TextButton storeButton = UIFactory.createButton("Store");
+    TextButton storeButton = Styles.INSTANCE.createButton("Store");
     verticalGroup.addActor(storeButton);
     //button for leaderboard
-    TextButton leaderboardButton = UIFactory.createButton("Leaderboard");
-    leaderboardButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton leaderboardButton = Styles.INSTANCE.createButton("Leaderboard");
+    leaderboardButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.showScreen(LeaderBoardScreen.class);
       return false;
@@ -75,8 +76,8 @@ public class MainMenuScreen extends AbstractScreen {
     //settings with child buttons
     createSettings();
     //create button to close game
-    TextButton exitButton = UIFactory.createBackButton("Quit");
-    exitButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton exitButton = Styles.INSTANCE.createBackButton("Quit");
+    exitButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Gdx.app.exit();
       return false;
     }));
@@ -85,9 +86,9 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createPlay() {
-    TextButton playButton = UIFactory.createButton("Play");
+    TextButton playButton = Styles.INSTANCE.createButton("Play");
     verticalGroup.addActor(playButton);
-    playButton.addListener(UIFactory.newListenerEvent(() -> {
+    playButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlay) {
         wantsToPlay = false;
         verticalGroup.removeActor(modeTable);
@@ -113,19 +114,19 @@ public class MainMenuScreen extends AbstractScreen {
     modeTable.padLeft(20);
     modeTable.defaults().padRight(20);
     //create button for single player
-    TextButton singlePlayerButton = UIFactory.createLessSubtleButton("Single-Player");
-    singlePlayerButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton singlePlayerButton = Styles.INSTANCE.createPopButton("Single-Player");
+    singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
       Server server = new Server(true, "Single-Player");
       server.start();
       refresh();
-      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
     }));
     modeTable.add(singlePlayerButton);
     //create button for multi player
-    TextButton multiPlayerButton = UIFactory.createLessSubtleButton("Multi-Player");
-    multiPlayerButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton multiPlayerButton = Styles.INSTANCE.createPopButton("Multi-Player");
+    multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlayMultiplayer) {
         wantsToPlayMultiplayer = false;
         verticalGroup.removeActor(multiplayerTable);
@@ -147,19 +148,19 @@ public class MainMenuScreen extends AbstractScreen {
     multiplayerTable = new Table();
     multiplayerTable.defaults().padRight(20);
     //create button for hosting game
-    TextButton hostButton = UIFactory.createSubtleButton("Host");
+    TextButton hostButton = Styles.INSTANCE.createLessPopButton("Host");
     hostButton.padLeft(270);
-    hostButton.addListener(UIFactory.newListenerEvent(() -> {
+    hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setHosting(true);
       //reload username screen and show
       refresh();
-      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
     }));
     multiplayerTable.add(hostButton);
     //create button for joining
-    TextButton joinButton = UIFactory.createSubtleButton("Join");
-    joinButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton joinButton = Styles.INSTANCE.createLessPopButton("Join");
+    joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
       Screens.INSTANCE.showScreen(ServerScreen.class);
@@ -171,8 +172,8 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createSettings() {
-    TextButton settingsButton = UIFactory.createButton("Settings");
-    settingsButton.addListener(UIFactory.newListenerEvent(() -> {
+    TextButton settingsButton = Styles.INSTANCE.createButton("Settings");
+    settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (changeSettings) {
         changeSettings = false;
         verticalGroup.removeActor(soundTable);

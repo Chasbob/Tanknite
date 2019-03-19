@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -9,8 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,9 +45,9 @@ public class AbstractScreen extends Stage implements Screen {
     rootTable.addActor(backTable);
     backTable.bottom();
     //create back button
-    TextButton backButton = UIFactory.createBackButton("back");
+    TextButton backButton = Styles.INSTANCE.createBackButton("back");
     backTable.add(backButton).bottom().padBottom(10);
-    backButton.addListener(UIFactory.newListenerEvent(() -> {
+    backButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.showScreen(MainMenuScreen.class);
       return false;
