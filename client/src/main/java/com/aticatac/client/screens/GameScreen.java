@@ -366,7 +366,7 @@ public class GameScreen extends AbstractScreen {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-    batch.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
+    batch.draw(tankTexture, maxX - c.getX()-16, maxY - c.getY()-16);
   }
 
   private int getBearing() {

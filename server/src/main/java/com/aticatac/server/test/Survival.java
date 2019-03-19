@@ -53,7 +53,7 @@ public class Survival extends GameMode implements Runnable {
 
   private void checkPowerup() {
     counter++;
-    if (counter == 600) {
+    if (counter == 60) {
       createPowerUps();
       counter = 0;
     }

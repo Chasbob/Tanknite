@@ -93,7 +93,7 @@ public class UsernameScreen extends AbstractScreen {
           server.start();
           Data.INSTANCE.setSingleplayer(false);
           //TODO make getter for port and ip
-          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(), InetAddress.getByName("127.0.0.1"), 5500, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
+          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(), InetAddress.getByName("127.0.0.1"), 5000, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
         } else {
           //join server previously collected

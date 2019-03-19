@@ -114,7 +114,7 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
   }
 
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), 0, 100, 30, entity.name, EntityType.TANK);
+    return new Container(position.getX(), position.getY(), 0, health, ammo, entity.name, EntityType.TANK);
   }
 
   public void move(int bearing) {
@@ -171,6 +171,7 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
 
   @Override
   public int hit(final int damage) {
+    this.logger.info(clamp(health - damage));
     return health = clamp(health - damage);
   }
 
