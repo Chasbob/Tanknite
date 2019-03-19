@@ -15,10 +15,11 @@ import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Logger;
 
 public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInput>, Hurtable {
   protected final ConcurrentLinkedQueue<PlayerInput> frames;
@@ -82,7 +83,9 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
         }
         logger.trace("Result: " + result.angle());
         try {
-          move(result.angle());
+          if(health>10) {
+            move(result.angle());
+          }
         } catch (Exception e) {
           this.logger.error(e);
           this.logger.error("Error while moving.");
@@ -90,9 +93,12 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
       }
       if (input.shoot) {
         this.logger.info("shoot");
-        outputService.addBullet(new Bullet(entity, position, input.bearing, 10));
-        DataServer.INSTANCE.addBoxToData(new CollisionBox(entity.getPosition(), EntityType.TANK.radius), entity);
+        if(ammo !=0) {
+          setAmmo(ammo-1);
+          outputService.addBullet(new Bullet(entity, position, input.bearing, 10));
+          DataServer.INSTANCE.addBoxToData(new CollisionBox(entity.getPosition(), EntityType.TANK.radius), entity);
 //        this.getComponent(TurretController.class).shoot(input.bearing);
+        }
       }
 //      output.setTurretOutput(this.getComponent(TurretController.class).tick());
     }
@@ -148,6 +154,14 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
     setPosition(newPosition);
     //add new box to map
     DataServer.INSTANCE.addBoxToData(box, entity);
+  }
+
+  public int getAmmo() {
+    return ammo;
+  }
+
+  public void setAmmo(int ammo) {
+    this.ammo = ammo;
   }
 
   @Override
