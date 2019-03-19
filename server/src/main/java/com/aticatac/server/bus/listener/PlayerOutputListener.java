@@ -23,21 +23,43 @@ public class PlayerOutputListener {
   }
 
   @Subscribe
-  public void processPlayerCollision(TankCollisionEvent tankCollisionEvent) {
-    if (tankCollisionEvent.getHit().type != EntityType.NONE) {
-      if (tankCollisionEvent.getHit().type.isPowerUp()) {
-        for (Entity p : powerups) {
-//          if (p.equals(tankCollisionEvent.getHit())) {
-          if (p.equals(tankCollisionEvent.getHit())) {
-            logger.info(tankCollisionEvent);
-            DataServer.INSTANCE.removeBoxFromData(new CollisionBox(p.getPosition(), p.type));
-            powerups.remove(p);
-          }
-        }
-      }
+  public void processPlayerCollision(TankCollisionEvent e) {
+    switch (e.getHit().type){
+      case NONE:
+        break;
+      case TANK:
+        break;
+      case BULLET:
+        break;
+      case WALL:
+        break;
+      case OUTOFBOUNDS:
+        break;
+      case AMMO_POWERUP:
+        break;
+      case SPEED_POWERUP:
+        break;
+      case HEALTH_POWERUP:
+        break;
+      case DAMAGE_POWERUP:
+        break;
     }
   }
-
+//  @Subscribe
+//  public void processPlayerCollision(TankCollisionEvent tankCollisionEvent) {
+//    if (tankCollisionEvent.getHit().type != EntityType.NONE) {
+//      if (tankCollisionEvent.getHit().type.isPowerUp()) {
+//        for (Entity p : powerups) {
+////          if (p.equals(tankCollisionEvent.getHit())) {
+//          if (p.equals(tankCollisionEvent.getHit())) {
+//            logger.info(tankCollisionEvent);
+//            DataServer.INSTANCE.removeBoxFromData(new CollisionBox(p.getPosition(), p.type));
+//            powerups.remove(p);
+//          }
+//        }
+//      }
+//    }
+//  }
   @Subscribe
   public void processPlayerOutput(ShootEvent output) {
     bullets.add(output.getBullet());

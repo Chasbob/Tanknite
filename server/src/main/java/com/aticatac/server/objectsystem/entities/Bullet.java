@@ -2,6 +2,8 @@ package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.BulletCollisionEvent;
 import com.aticatac.server.bus.service.BulletOutputService;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
@@ -96,9 +98,11 @@ public class Bullet implements Tickable {
     this.logger.trace(physicsData.position);
     switch (physicsData.entity.type) {
       case TANK:
-        if(physicsData.entity.name.equals(shooter.name)){
+        if (physicsData.entity.name.equals(shooter.name)) {
           updateCollisionBox(physicsData.position);
           break;
+        } else {
+          EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, physicsData.entity));
         }
       case WALL:
       case OUTOFBOUNDS:
@@ -154,17 +158,12 @@ public class Bullet implements Tickable {
         position.equals(bullet.position);
   }
 
+
   @Override
   public String toString() {
     return "Bullet{" +
         "shooter=" + shooter +
-        ", entity=" + entity +
-        ", bearing=" + bearing +
         ", damage=" + damage +
-        ", outputService=" + outputService +
-        ", position=" + position +
-        ", prevPosistion=" + prevPosistion +
-        ", box=" + box +
         '}';
   }
 }
