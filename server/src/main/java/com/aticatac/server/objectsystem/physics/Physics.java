@@ -2,6 +2,7 @@ package com.aticatac.server.objectsystem.physics;
 
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Vector;
+import com.aticatac.common.model.VectorF;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
@@ -35,7 +36,7 @@ public class Physics {
   /**
    * The velocity for this tank
    */
-  private int velocity = 5;
+//  private int velocity = 5;
   private Position position;
   private int rotation;
 
@@ -50,7 +51,7 @@ public class Physics {
     int xCoord = this.position.getX();
     int yCoord = this.position.getY();
     int dt = 1;
-    int distance = dt * velocity;
+    int distance = dt * entity.type.velocity;
     double xr = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -xr;
     double yr = Math.sin(Math.toRadians(rotation));
@@ -58,6 +59,23 @@ public class Physics {
     double newX = xCoord + distanceX;
     double newY = yCoord + distanceY;
     Position newPosition = new Position((int) newX, (int) newY);
+    double dx = (newX - xCoord);
+    double dy = (newY - yCoord);
+    double ddx = Math.ceil(dx / entity.type.radius);
+    double ddy = Math.ceil(dy / entity.type.radius);
+    System.out.println(ddx + ", " + ddy);
+    double x = 0;
+    double y = 0;
+    VectorF oV = new VectorF(position.getX(), position.getY());
+    VectorF v = new VectorF((float) newX, (float) newY);
+    VectorF scl = v.cpy().sub(oV);
+    for (int i = 0; i < 10; i++) {
+      oV = v.cpy().add(scl.cpy().scl(i * 0.1f));
+      PhysicsResponse response = collision(new Position((int) oV.x, (int) oV.y), position);
+      if (response.entity.type != EntityType.NONE && !response.entity.name.equals(entity.name)) {
+        return response;
+      }
+    }
     return collision(newPosition, this.position);
   }
 
@@ -71,7 +89,6 @@ public class Physics {
 
   private PhysicsResponse collision(Position newPosition, Position oldPosition) {
     CollisionBox box = new CollisionBox(newPosition, entity.type);
-
     for (int i = 0; i < box.getBox().size(); i++) {
       Position position = box.getBox().get(i);
       PhysicsResponse returnPosition = findCollisions(position, oldPosition);
