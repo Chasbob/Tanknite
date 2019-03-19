@@ -2,6 +2,7 @@ package com.aticatac.server.objectsystem.physics;
 
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Vector;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
@@ -38,9 +39,9 @@ public class Physics {
   private Position position;
   private int rotation;
 
-  public Physics(final Position position, final Entity.EntityType type, final String name) {
+  public Physics(final Position position, final EntityType type, final String name) {
     this.position = position;
-    this.entity = new Entity(name, type);
+    this.entity = new Entity(name, type, position);
     d = DataServer.INSTANCE;
   }
 
@@ -73,7 +74,7 @@ public class Physics {
     for (int i = 0; i < box.getBox().size(); i++) {
       Position position = box.getBox().get(i);
       PhysicsResponse returnPosition = findCollisions(position, oldPosition);
-      if (returnPosition.entity.type != Entity.EntityType.NONE) {
+      if (returnPosition.entity.type != EntityType.NONE) {
         return returnPosition;
       }
     }

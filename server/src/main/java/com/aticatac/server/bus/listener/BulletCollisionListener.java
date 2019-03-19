@@ -1,5 +1,6 @@
 package com.aticatac.server.bus.listener;
 
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.event.BulletCollisionEvent;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.Bullet;
@@ -23,7 +24,7 @@ public class BulletCollisionListener {
   @Subscribe
   public void bulletCollision(BulletCollisionEvent event) {
     this.logger.info(event);
-    if (event.getHit().type == Entity.EntityType.TANK) {
+    if (event.getHit().type == EntityType.TANK) {
       playerMap.get(event.getHit().name).hit(event.getBullet().getDamage());
     }
     bullets.remove(event.getBullet());

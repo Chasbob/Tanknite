@@ -3,6 +3,7 @@ package com.aticatac.server.objectsystem;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.components.Component;
 import com.aticatac.server.components.Texture;
@@ -111,16 +112,16 @@ public class GameObject {
     if (entity != null) {
       return entity;
     } else {
-      entity = new Entity(name, Entity.EntityType.NONE);
+      entity = new Entity(name, EntityType.NONE);
       return entity;
     }
   }
 
-  public Container getContainer() {
-    //todo this will shit out nulls
-//    return new Container(getTexture(), getTransform().getX(), getTransform().getY(), getTransform().getRotation(), getComponent(Health.class).getHealth(), getComponent(Ammo.class).getAmmo(), getName(), getObjectType());
-    return new Container(getX(), getY(), getR(), 100, 30, getName(), getObjectType());
-  }
+//  public Container getContainer() {
+//    //todo this will shit out nulls
+////    return new Container(getTexture(), getTransform().getX(), getTransform().getY(), getTransform().getRotation(), getComponent(Health.class).getHealth(), getComponent(Ammo.class).getAmmo(), getName(), getObjectType());
+//    return new Container(getX(), getY(), getR(), 100, 30, getName(), getObjectType());
+//  }
 
   public int getX() {
     return getTransform().getX();

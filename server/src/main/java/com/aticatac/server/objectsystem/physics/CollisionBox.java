@@ -1,5 +1,6 @@
 package com.aticatac.server.objectsystem.physics;
 
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.Entity;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class CollisionBox {
     this.logger = Logger.getLogger(getClass());
   }
 
-  public CollisionBox(final Position position, final Entity.EntityType type) {
+  public CollisionBox(final Position position, final EntityType type) {
     this(position, type.radius);
   }
 

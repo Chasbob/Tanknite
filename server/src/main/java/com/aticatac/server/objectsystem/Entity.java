@@ -1,25 +1,103 @@
 package com.aticatac.server.objectsystem;
 
+import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.components.transform.Position;
+import java.security.SecureRandom;
 import java.util.Objects;
 
+/**
+ * The type Entity.
+ */
 public class Entity {
-  public static final Entity empty = new Entity("", EntityType.NONE);
-  public static final Entity bullet = new Entity("", EntityType.BULLET);
+  /**
+   * The constant empty.
+   */
+  public static final Entity empty = new Entity(EntityType.NONE);
+  /**
+   * The constant bullet.
+   */
+  public static final Entity bullet = new Entity(EntityType.BULLET);
+  /**
+   * The constant outOfBounds.
+   */
+  public static final Entity outOfBounds = new Entity(EntityType.OUTOFBOUNDS);
+  /**
+   * The Name.
+   */
   public final String name;
-  public final Entity.EntityType type;
+  /**
+   * The Type.
+   */
+  public final EntityType type;
+  private Position position;
 
-  public Entity(final String name, final Entity.EntityType type) {
+  /**
+   * Instantiates a new Entity.
+   *
+   * @param name     the name
+   * @param type     the type
+   * @param position the position
+   */
+  public Entity(final String name, final EntityType type, final Position position) {
     this.name = name;
     this.type = type;
+    this.position = position;
   }
 
-  public Entity(final Entity.EntityType type) {
-    this.name = "";
-    this.type = type;
+  public Entity(final String name, final EntityType type) {
+    this(name, type, Position.zero);
   }
 
+  /**
+   * Instantiates a new Entity.
+   *
+   * @param type the type
+   */
+  public Entity(final EntityType type) {
+    this("", type);
+  }
+
+  /**
+   * Instantiates a new Entity.
+   */
   public Entity() {
-    this("", Entity.EntityType.NONE);
+    this(EntityType.NONE);
+  }
+  public Entity getBaseEntity(){
+    return new Entity(name,type,position);
+  }
+
+  /**
+   * Random power up entity . entity type.
+   *
+   * @return the entity . entity type
+   */
+  public static EntityType randomPowerUP() {
+    SecureRandom random = new SecureRandom();
+    EntityType entityType = EntityType.NONE;
+    while (!entityType.isPowerUp()) {
+      int x = random.nextInt((EntityType.class).getEnumConstants().length);
+      entityType = (EntityType.class).getEnumConstants()[x];
+    }
+    return entityType;
+  }
+
+  /**
+   * Gets x.
+   *
+   * @return the x
+   */
+  public int getX() {
+    return position.getX();
+  }
+
+  /**
+   * Gets y.
+   *
+   * @return the y
+   */
+  public int getY() {
+    return position.getY();
   }
 
   @Override
@@ -48,34 +126,29 @@ public class Entity {
         '}';
   }
 
+  /**
+   * Gets name.
+   *
+   * @return the name
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Gets type.
+   *
+   * @return the type
+   */
   public EntityType getType() {
     return type;
   }
 
-  public enum EntityType {
-    NONE, TANK(14, 5), BULLET(2, 10), WALL(15), AMMO_POWERUP, SPEED_POWERUP, HEALTH_POWERUP, BULLET_POWERUP;
-    public final int radius;
-    public final int velocity;
-
-    EntityType(final int radius, final int velocity) {
-      this.radius = radius;
-      this.velocity = velocity;
-    }
-
-    EntityType(final int radius) {
-      this(radius, 0);
-    }
-
-    EntityType() {
-      this(0);
-    }
-
-    public boolean isPowerUp() {
-      return this.toString().contains("POWERUP");
-    }
+  public Position getPosition() {
+    return position;
   }
+
+  /**
+   * The enum Entity type.
+   */
 }

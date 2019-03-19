@@ -1,5 +1,6 @@
 package com.aticatac.server.bus.listener;
 
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.event.ShootEvent;
 import com.aticatac.server.bus.event.TankCollisionEvent;
 import com.aticatac.server.objectsystem.Entity;
@@ -19,7 +20,7 @@ public class PlayerOutputListener {
 
   @Subscribe
   public void processPlayerCollision(TankCollisionEvent tankCollisionEvent) {
-    if (tankCollisionEvent.getHit().type != Entity.EntityType.NONE) {
+    if (tankCollisionEvent.getHit().type != EntityType.NONE) {
       logger.info(tankCollisionEvent);
     }
   }

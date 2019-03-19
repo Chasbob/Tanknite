@@ -1,6 +1,7 @@
 package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.listener.AIInputListener;
@@ -37,12 +38,12 @@ public class AITank extends Tank {
   //TODO add in the parameter changes everywhere
   public AITank(String name, Position p, int health, int ammo) {
     super(name, p, health, ammo);
-    entity = new Entity(name, Entity.EntityType.TANK);
+    entity = new Entity(name, EntityType.TANK, position);
     frames = new ConcurrentLinkedQueue<>();
 //    input = new AIInput();
     position = p;
     logger = Logger.getLogger(getClass());
-    this.box = new CollisionBox(position, Entity.EntityType.TANK);
+    this.box = new CollisionBox(position, EntityType.TANK);
     this.maxHealth = 100;
     this.health = health;
     this.ammo = ammo;
@@ -92,7 +93,7 @@ public class AITank extends Tank {
   }
 
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), 0, 100, 30, entity.name, ObjectType.TANK);
+    return new Container(position.getX(), position.getY(), 0, 100, 30, entity.name, EntityType.TANK.TANK);
   }
 
   public void move(int bearing) {
@@ -102,7 +103,7 @@ public class AITank extends Tank {
       this.logger.trace(physicsData);
       updateCollisionBox(physicsData.position);
     }
-    if (physicsData.entity.type != Entity.EntityType.NONE) {
+    if (physicsData.entity.type != EntityType.NONE) {
       outputService.onPlayerHit(physicsData.entity, getContainer());
     }
   }

@@ -1,6 +1,7 @@
 package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.ObjectType;
 import com.aticatac.server.bus.service.BulletOutputService;
 import com.aticatac.server.components.physics.PhysicsResponse;
@@ -58,7 +59,7 @@ public class Bullet implements Tickable {
     this.position = position;
     this.prevPosistion = this.position;
     this.bearing = bearing;
-    this.box = new CollisionBox(this.position, Entity.EntityType.BULLET);
+    this.box = new CollisionBox(this.position, EntityType.BULLET);
     outputService = new BulletOutputService(this);
   }
 
@@ -79,7 +80,7 @@ public class Bullet implements Tickable {
     }
     try {
       Entity hit = move();
-      if (hit.type != Entity.EntityType.NONE) {
+      if (hit.type != EntityType.NONE) {
         outputService.onBulletCollision(hit);
       }
     } catch (Exception e) {
@@ -92,7 +93,7 @@ public class Bullet implements Tickable {
     CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
     PhysicsResponse physicsData = physics.call();
     this.logger.trace(physicsData.position);
-    if (physicsData.entity.type == Entity.EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
+    if (physicsData.entity.type == EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
       updateCollisionBox(physicsData.position);
       return Entity.empty;
     } else {
@@ -116,7 +117,7 @@ public class Bullet implements Tickable {
   }
 
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), bearing, 0, 0, entity.name, ObjectType.BULLET);
+    return new Container(position.getX(), position.getY(), bearing, 0, 0, entity.name, EntityType.BULLET);
   }
 
   @Override

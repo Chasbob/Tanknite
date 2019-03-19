@@ -1,7 +1,6 @@
 package com.aticatac.server.objectsystem;
 
-import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import java.io.FileNotFoundException;
@@ -39,7 +38,7 @@ public enum DataServer {
    *
    */
   DataServer() {
-    wall = new Entity(Entity.EntityType.WALL);
+    wall = new Entity(EntityType.WALL);
     //initialises the map
     try {
       map = convertTMXFileToIntArray();
@@ -47,13 +46,13 @@ public enum DataServer {
       System.out.println("Yo where'd the file go");
     }
     //adds the map to occupied coordinates
-    for (int i = 0; i < 60; i++) {
-      for (int j = 0; j < 60; j++) {
-        if ((map[i][j]).equals("2")) {
-          createCollisionBox(i, j);
-        }
-      }
-    }
+//    for (int i = 0; i < 60; i++) {
+//      for (int j = 0; j < 60; j++) {
+//        if ((map[i][j]).equals("2")) {
+//          createCollisionBox(i, j);
+//        }
+//      }
+//    }
   }
 
   public int size() {
@@ -157,8 +156,8 @@ public enum DataServer {
     //adds centre of the element to the occupied
     Position centrePosition = new Position(mapPositionX, mapPositionY);
 //    setCoordinates(centrePosition, wall);
-    int lowerY = mapPositionX ;
-    int lowerX = mapPositionY ;
+    int lowerY = mapPositionX;
+    int lowerX = mapPositionY;
     int higherY = mapPositionX + 32;
     int higherX = mapPositionY + 32;
     //positions for bottom of box
@@ -257,4 +256,7 @@ public enum DataServer {
     }
     return false;
   }
-}
+
+  public void setCoordinates(final Entity entity) {
+    occupiedCoordinates.put(entity.getPosition(), Entity.class.cast(entity));
+  }}

@@ -37,7 +37,7 @@
 //   *
 //   */
 //  DataServer() {
-//    wall = new Entity(Entity.EntityType.WALL);
+//    wall = new Entity(EntityType.WALL);
 //    //initialises the map
 //    try {
 //      map = convertTMXFileToIntArray();
