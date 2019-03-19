@@ -12,7 +12,7 @@ public enum EntityType {
   /**
    * Bullet entity type.
    */
-  BULLET(5, 20),
+  BULLET(5, 10),
   /**
    * Wall entity type.
    */

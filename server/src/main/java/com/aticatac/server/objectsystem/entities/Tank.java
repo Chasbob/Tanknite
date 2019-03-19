@@ -93,7 +93,7 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
       }
       if (input.shoot) {
         this.logger.info("shoot");
-        if(ammo !=0) {
+        if(!(ammo ==0 || health == 0)) {
           setAmmo(ammo-1);
           outputService.addBullet(new Bullet(entity, position, input.bearing, 10));
           DataServer.INSTANCE.addBoxToData(new CollisionBox(entity.getPosition(), EntityType.TANK.radius), entity);
