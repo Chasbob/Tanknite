@@ -9,13 +9,9 @@ import com.aticatac.server.objectsystem.physics.CollisionBox;
 
 public class DamagePowerup extends Entity implements Collidable {
   public DamagePowerup(final String name, Position position) {
-    super(EntityType.DAMAGE_POWERUP);
+    super(name,EntityType.DAMAGE_POWERUP,position);
   }
 
-  @Override
-  public CollisionBox getCollisionBox() {
-    return null;
-  }
 
   @Override
   public boolean intersects(final Collidable collidable) {

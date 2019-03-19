@@ -46,13 +46,13 @@ public enum DataServer {
       System.out.println("Yo where'd the file go");
     }
     //adds the map to occupied coordinates
-//    for (int i = 0; i < 60; i++) {
-//      for (int j = 0; j < 60; j++) {
-//        if ((map[i][j]).equals("2")) {
-//          createCollisionBox(i, j);
-//        }
-//      }
-//    }
+    for (int i = 0; i < 60; i++) {
+      for (int j = 0; j < 60; j++) {
+        if ((map[i][j]).equals("2")) {
+          createCollisionBox(i, j);
+        }
+      }
+    }
   }
 
   public int size() {
@@ -256,7 +256,4 @@ public enum DataServer {
     }
     return false;
   }
-
-  public void setCoordinates(final Entity entity) {
-    occupiedCoordinates.put(entity.getPosition(), Entity.class.cast(entity));
-  }}
+}

@@ -7,26 +7,10 @@ import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 
 public class HealthPowerup extends Entity implements Collidable {
-  private final int health;
-
   public HealthPowerup(final String name, Position position) {
-    super(EntityType.HEALTH_POWERUP);
-    health = 100;
-  }
+    super(name, EntityType.HEALTH_POWERUP,position);  }
 
-  @Override
-  public String toString() {
-    return "HealthPowerup{" +
-        "health=" + health +
-        ", name='" + name + '\'' +
-        ", type=" + type +
-        '}';
-  }
 
-  @Override
-  public CollisionBox getCollisionBox() {
-    return null;
-  }
 
   @Override
   public boolean intersects(final Collidable collidable) {

@@ -157,14 +157,14 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
         collisionType = d.getEntity(newPosition);
         //checks the coordinate is not itself
         if (collisionType.equals(entity)) {
-          return new PhysicsResponse(newPosition);
+          return new PhysicsResponse(collisionType, newPosition);
         }
         //Returning a collision type and also the position
-        return new PhysicsResponse(collisionType, oldPosition);
+        return new PhysicsResponse(collisionType, newPosition);
       }
-      return new PhysicsResponse(newPosition);
+      return new PhysicsResponse(Entity.empty, newPosition);
     } else {
-      return new PhysicsResponse(oldPosition);
+      return new PhysicsResponse(Entity.outOfBounds, oldPosition);
     }
   }
 

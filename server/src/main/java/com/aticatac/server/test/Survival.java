@@ -3,17 +3,16 @@ package com.aticatac.server.test;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.server.bus.service.AIUpdateService;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.google.common.collect.Streams;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Survival extends GameMode implements Runnable {
-  private final AIUpdateService aiUpdateService;
+  //  private final AIUpdateService aiUpdateService;
   private volatile boolean run;
+  private int counter;
 
   public Survival() throws InvalidClassInstance, ComponentExistsException {
-    aiUpdateService = new AIUpdateService(playerMap);
+//    aiUpdateService = new AIUpdateService(playerMap,powerups);
   }
 
   @Override
@@ -31,13 +30,14 @@ public class Survival extends GameMode implements Runnable {
 
   @Override
   public void run() {
+    counter = 0;
     run = true;
     this.logger.trace("Running...");
     while (run) {
-      addPowerUp();
+      checkPowerup();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
-      aiUpdateService.update();
+//      aiUpdateService.update();
       Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
 //      playerMap.values().parallelStream().forEach(Tank::tick);
 //      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
@@ -51,10 +51,11 @@ public class Survival extends GameMode implements Runnable {
     }
   }
 
-  void addPowerUp() {
-    int x = ThreadLocalRandom.current().nextInt(100);
-    if (x == 1) {
-      addPowerUp();
+  private void checkPowerup() {
+    counter++;
+    if (counter == 1) {
+      createPowerUps();
+      counter = 0;
     }
   }
 }

@@ -41,7 +41,7 @@ public class Physics {
 
   public Physics(final Position position, final EntityType type, final String name) {
     this.position = position;
-    this.entity = new Entity(name, type, position);
+    this.entity = new Entity(name, type);
     d = DataServer.INSTANCE;
   }
 
@@ -71,14 +71,16 @@ public class Physics {
 
   private PhysicsResponse collision(Position newPosition, Position oldPosition) {
     CollisionBox box = new CollisionBox(newPosition, entity.type);
+
     for (int i = 0; i < box.getBox().size(); i++) {
       Position position = box.getBox().get(i);
       PhysicsResponse returnPosition = findCollisions(position, oldPosition);
       if (returnPosition.entity.type != EntityType.NONE) {
-        return returnPosition;
+        return new PhysicsResponse(returnPosition.entity, newPosition);
       }
     }
-    return findCollisions(newPosition, oldPosition);
+//    return findCollisions(newPosition, oldPosition);
+    return new PhysicsResponse(Entity.empty, newPosition);
   }
 
   private PhysicsResponse findCollisions(Position newPosition, Position oldPosition) {

@@ -8,13 +8,9 @@ import com.aticatac.server.objectsystem.physics.CollisionBox;
 
 public class SpeedPowerup extends Entity implements Collidable {
   public SpeedPowerup(final String name, Position position) {
-    super(EntityType.SPEED_POWERUP);
+    super(name, EntityType.SPEED_POWERUP, position);
   }
 
-  @Override
-  public CollisionBox getCollisionBox() {
-    return null;
-  }
 
   @Override
   public boolean intersects(final Collidable collidable) {

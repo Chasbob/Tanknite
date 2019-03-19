@@ -2,7 +2,6 @@ package com.aticatac.server.objectsystem.physics;
 
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.transform.Position;
-import com.aticatac.server.objectsystem.Entity;
 import java.util.ArrayList;
 import java.util.Objects;
 import org.apache.log4j.Logger;
@@ -79,5 +78,9 @@ public class CollisionBox {
     return radius == that.radius &&
         position.equals(that.position) &&
         getBox().equals(that.getBox());
+  }
+
+  public Position getPosition() {
+    return position;
   }
 }

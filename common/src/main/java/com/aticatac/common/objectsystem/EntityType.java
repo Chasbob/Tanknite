@@ -24,19 +24,19 @@ public enum EntityType {
   /**
    * Ammo powerup entity type.
    */
-  AMMO_POWERUP,
+  AMMO_POWERUP(10),
   /**
    * Speed powerup entity type.
    */
-  SPEED_POWERUP,
+  SPEED_POWERUP(10),
   /**
    * Health powerup entity type.
    */
-  HEALTH_POWERUP,
+  HEALTH_POWERUP(10),
   /**
    * Damage powerup entity type.
    */
-  DAMAGE_POWERUP;
+  DAMAGE_POWERUP(10);
   /**
    * The Radius.
    */

@@ -4,6 +4,7 @@ import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.listener.UpdateChangesListener;
+import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
 import java.io.IOException;
@@ -44,6 +45,11 @@ public class Updater implements Runnable {
     for (Bullet b : d.getGame().getBullets()) {
       this.update.addProjectile(b.getContainer());
       this.logger.trace(b.getContainer());
+    }
+    for (Entity e :
+        d.getGame().getPowerups()) {
+      this.update.addPowerup(e.getContainer());
+      this.logger.trace(e.getContainer());
     }
     for (Tank c : d.getGame().getPlayerMap().values()) {
       this.logger.trace("Adding tank: " + c.getName());

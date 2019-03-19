@@ -1,7 +1,9 @@
 package com.aticatac.server.objectsystem;
 
+import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.objectsystem.physics.CollisionBox;
 import java.security.SecureRandom;
 import java.util.Objects;
 
@@ -30,6 +32,7 @@ public class Entity {
    */
   public final EntityType type;
   private Position position;
+  private CollisionBox collisionBox;
 
   /**
    * Instantiates a new Entity.
@@ -42,6 +45,7 @@ public class Entity {
     this.name = name;
     this.type = type;
     this.position = position;
+    this.collisionBox = new CollisionBox(this.position, type.radius);
   }
 
   public Entity(final String name, final EntityType type) {
@@ -57,14 +61,15 @@ public class Entity {
     this("", type);
   }
 
+  public Entity(final EntityType type, final Position p) {
+    this("", type, p);
+  }
+
   /**
    * Instantiates a new Entity.
    */
   public Entity() {
     this(EntityType.NONE);
-  }
-  public Entity getBaseEntity(){
-    return new Entity(name,type,position);
   }
 
   /**
@@ -80,6 +85,18 @@ public class Entity {
       entityType = (EntityType.class).getEnumConstants()[x];
     }
     return entityType;
+  }
+
+  public CollisionBox getCollisionBox() {
+    return collisionBox;
+  }
+
+  public Entity getBaseEntity() {
+    return new Entity(name, type, position);
+  }
+
+  public Container getContainer() {
+    return new Container(position.getX(), position.getY(), 0, 0, 0, name, type);
   }
 
   /**
@@ -113,9 +130,10 @@ public class Entity {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    final Entity that = (Entity) o;
-    return getName().equals(that.getName()) &&
-        getType() == that.getType();
+    final Entity entity = (Entity) o;
+    return getName().equals(entity.getName()) &&
+        getType() == entity.getType() &&
+        getPosition().equals(entity.getPosition());
   }
 
   @Override
@@ -147,7 +165,6 @@ public class Entity {
   public Position getPosition() {
     return position;
   }
-
   /**
    * The enum Entity type.
    */
