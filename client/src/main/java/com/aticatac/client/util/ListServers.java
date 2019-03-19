@@ -3,9 +3,10 @@ package com.aticatac.client.util;
 import com.aticatac.client.networking.Servers;
 import com.aticatac.client.screens.Screens;
 import com.aticatac.client.screens.ServerScreen;
-import com.aticatac.client.screens.UIFactory;
 import com.aticatac.common.model.ServerInformation;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
@@ -33,19 +34,19 @@ public class ListServers {
     for (int i = 0; i < tableSize; i++) {
       ServerButton serverButton = new ServerButton();
       serverButton.getLabel().setAlignment(Align.left);
-      serverButton.setStyle(Styles.INSTANCE.getBaseButtonStyle());
-      serverButton.addListener(UIFactory.newListenerEvent(() -> {
+      serverButton.setStyle(buttonStyle());
+      serverButton.addListener(ListenerFactory.newListenerEvent(() -> {
         this.logger.info("Server Button clicked");
         deselect();
         Screens.INSTANCE.getScreen(ServerScreen.class).setServerSelected(true);
         Data.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
-        serverButton.setStyle(Styles.INSTANCE.getSelectedButtonStyle());
+        serverButton.setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Styles.INSTANCE.selectedColour));
         return false;
       }));
       serverTable.add(serverButton);
       serverTable.row();
       buttons.add(serverButton);
-      Label playersLabel = UIFactory.createSubtleLabel("");
+      Label playersLabel = Styles.INSTANCE.createSubtleLabel("");
       playersLabel.setAlignment(Align.left);
       labels.add(playersLabel);
       playerTable.add(playersLabel);
@@ -55,7 +56,7 @@ public class ListServers {
 
   private void deselect() {
     for (ServerButton b : buttons) {
-      b.setStyle(Styles.INSTANCE.getBaseButtonStyle());
+      b.setStyle(buttonStyle());
     }
   }
 
@@ -64,7 +65,7 @@ public class ListServers {
     for (int i = 0; i < buttons.size(); i++) {
       if (i < servers.size()) {
         if (!buttons.get(i).getLabel().getText().toString().equals(servers.get(i).getId())) {
-          buttons.get(i).setStyle(Styles.INSTANCE.getBaseButtonStyle());
+          buttons.get(i).setStyle(buttonStyle());
         }
         buttons.get(i).getLabel().setText(servers.get(i).getId());
         buttons.get(i).setServerInformation(servers.get(i));
@@ -80,7 +81,11 @@ public class ListServers {
         buttons.get(i).getLabel().setText("<EMPTY>");
         buttons.get(i).setTouchable(Touchable.disabled);
       }
-      buttons.get(i).getLabel().setStyle(Styles.INSTANCE.getBaseLabelStyle());
+      buttons.get(i).getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.baseFont, Color.WHITE));
     }
+  }
+
+  private Button.ButtonStyle buttonStyle() {
+    return Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE);
   }
 }
