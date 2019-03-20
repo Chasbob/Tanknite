@@ -35,7 +35,7 @@ public class TankController extends Component {
   //physics manager will return a value. 0 = no collision, any other will mean collision.
   //else set position to new transform
   public boolean moveUp() {
-    this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getHealth() - 1);
+    //this.getGameObject().getComponent(Health.class).setHealth(this.getGameObject().getComponent(Health.class).getHealth() - 1);
     Position oldPosition = this.getGameObject().getComponent(Transform.class).getPosition();
     Object[] physicsData = this.getGameObject().getComponent(Physics.class).moveUp();
     Position newPosition = (Position) physicsData[1];

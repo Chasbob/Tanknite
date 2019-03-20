@@ -36,6 +36,7 @@ public class Camera {
     this.viewport.apply(true);
     logger = Logger.getLogger(getClass());
     this.camera.setToOrtho(false);
+    this.camera.zoom=0.5f;
   }
 
   public Viewport getViewport() {
@@ -83,8 +84,10 @@ public class Camera {
    * @param y the y
    */
   public void setPosititon(float x, float y) {
-    camera.position.x = MathUtils.clamp(x, camera.viewportWidth / 2f, 1920f - camera.viewportWidth / 2f);
-    camera.position.y = MathUtils.clamp(y, camera.viewportHeight / 2f, 1920f - camera.viewportHeight / 2f);
+//    camera.position.x = MathUtils.clamp(x, camera.viewportWidth / 2f, 1920f - camera.viewportWidth / 2f);
+//    camera.position.y = MathUtils.clamp(y, camera.viewportHeight / 2f, 1920f - camera.viewportHeight / 2f);
+    camera.position.x=x;
+    camera.position.y=y;
     camera.update();
   }
 }

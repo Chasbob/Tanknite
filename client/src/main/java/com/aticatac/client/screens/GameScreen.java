@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.isometric.Helper;
 import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
@@ -11,9 +12,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -41,7 +43,7 @@ public class GameScreen extends AbstractScreen {
   private Label playerCount;
   private float health;
   private TiledMap map;
-  private OrthogonalTiledMapRenderer renderer;
+  private IsometricTiledMapRenderer renderer;
   private Camera camera;
   private MinimapViewport minimapViewport;
   private Label fpsValue;
@@ -69,10 +71,10 @@ public class GameScreen extends AbstractScreen {
       tankXY = UIFactory.createGameLabel("");
       direction = UIFactory.createGameLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
-      tankTexture = new Texture("img/tank.png");
+      tankTexture = new Texture("maps/box.png");
       tractionHealth = true;
       tractionPopUp = true;
-      renderer = new OrthogonalTiledMapRenderer(map);
+      renderer = new IsometricTiledMapRenderer(map);
       minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
       minimapViewport.setWorldSize(maxX, maxY);
       this.camera = new Camera(maxX, maxY, 640, 640);
@@ -152,6 +154,9 @@ public class GameScreen extends AbstractScreen {
     Table killCountTable = new Table();
     Styles.INSTANCE.addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
     killCountTable.add(killCount);
+    killTable.row();
+    killTable.add(tankXY);
+    killTable.row();
     killTable.add(killCountTable);
     killTable.add(killLableTable);
     topLeftTable.add(aliveTable);
@@ -253,16 +258,21 @@ public class GameScreen extends AbstractScreen {
       update = newUpdate;
       player = update.getMe(Data.INSTANCE.getID());
     }
+    this.camera.setPosititon(0,0);
     if (player != null) {
-      this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
+      var Pos = Helper.CartesianToIsometric(maxX - player.getX(), maxY - player.getY());
+      this.camera.setPosititon(Pos.getX(),Pos.getY());
       this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
       if (player.getR() == 0) {
         this.direction.setText("UP");
-      } else if (player.getR() == 90) {
+      }
+      if (player.getR() == 90) {
         this.direction.setText("RIGHT");
-      } else if (player.getR() == 180) {
+      }
+      if (player.getR() == 180) {
         this.direction.setText("DOWN");
-      } else if (player.getR() == 270) {
+      }
+      if (player.getR() == 270) {
         this.direction.setText("LEFT");
       }
     }
@@ -343,7 +353,8 @@ public class GameScreen extends AbstractScreen {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-    batch.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
+    var pos = Helper.CartesianToIsometric(maxX - c.getX(), maxY - c.getY());
+    batch.draw(tankTexture, pos.getX(),pos.getY());
   }
 
   private int getBearing() {
@@ -363,13 +374,20 @@ public class GameScreen extends AbstractScreen {
     }
     if (tractionHealth && tractionPopUp) {
       if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-        Data.INSTANCE.sendCommand(Command.LEFT);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-        Data.INSTANCE.sendCommand(Command.RIGHT);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-        Data.INSTANCE.sendCommand(Command.UP);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
         Data.INSTANCE.sendCommand(Command.DOWN);
+        Data.INSTANCE.sendCommand(Command.LEFT);
+      }
+      if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        Data.INSTANCE.sendCommand(Command.UP);
+        Data.INSTANCE.sendCommand(Command.RIGHT);
+      }
+      if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        Data.INSTANCE.sendCommand(Command.UP);
+        Data.INSTANCE.sendCommand(Command.LEFT);
+      }
+      if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        Data.INSTANCE.sendCommand(Command.DOWN);
+        Data.INSTANCE.sendCommand(Command.RIGHT);
       }
     }
     if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {

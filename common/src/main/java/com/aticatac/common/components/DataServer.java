@@ -45,7 +45,7 @@ public enum DataServer {
     for (int i = 0; i < 60; i++) {
       for (int j = 0; j < 60; j++) {
 
-        if ((map[i][j]).equals("2")) {
+        if ((map[i][j]).equals("1")) {
 
           createCollisionBox(i, j);
 
@@ -64,12 +64,12 @@ public enum DataServer {
    */
   private String[][] convertTMXFileToIntArray() throws FileNotFoundException {
 
-    //reads in the file
+//    //reads in the file
     Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
 
     //reads the file line by line
     // map starts at line 71
-    for (int i = 0; i < 70; i++) {
+    for (int i = 0; i < 69; i++) {
       s.nextLine();
     }
 

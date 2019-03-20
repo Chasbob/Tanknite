@@ -33,7 +33,7 @@ public class Physics extends Component {
   /**
    * The velocity for this tank
    */
-  private int velocity = 10;
+  private int velocity = 3;
 
   /**
    * Creates a new Physics with a parent.
