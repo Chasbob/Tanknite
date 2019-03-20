@@ -6,6 +6,7 @@ import com.aticatac.client.util.HudUpdate;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MinimapViewport;
 import com.aticatac.client.util.Styles;
+import com.aticatac.client.isometric.Helper;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -16,9 +17,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -46,7 +48,7 @@ public class GameScreen extends AbstractScreen {
   private Label playerCount;
   private float health;
   private TiledMap map;
-  private OrthogonalTiledMapRenderer renderer;
+  private IsometricTiledMapRenderer renderer;
   private Camera camera;
   private MinimapViewport minimapViewport;
   private Label fpsValue;
@@ -75,11 +77,10 @@ public class GameScreen extends AbstractScreen {
       tankXY = Styles.INSTANCE.createGameLabel("");
       direction = Styles.INSTANCE.createGameLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
-      tankTexture = new Texture("img/tank.png");
-      projectileTexture = new Texture("img/bullet.png");
+      tankTexture = new Texture("maps/box.png");
       tractionHealth = true;
       tractionPopUp = true;
-      renderer = new OrthogonalTiledMapRenderer(map);
+      renderer = new IsometricTiledMapRenderer(map);
       minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
       minimapViewport.setWorldSize(maxX, maxY);
       this.camera = new Camera(maxX, maxY, 640, 640);
@@ -237,6 +238,9 @@ public class GameScreen extends AbstractScreen {
     Styles.INSTANCE
         .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
     killCountTable.add(killCount);
+    killTable.row();
+    killTable.add(tankXY);
+    killTable.row();
     killTable.add(killCountTable);
     killTable.add(killLableTable);
     topLeftTable.add(aliveTable);
@@ -428,6 +432,8 @@ public class GameScreen extends AbstractScreen {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
+//    var pos = Helper.CartesianToIsometric(maxX - c.getX(), maxY - c.getY());
+//    batch.draw(tankTexture, pos.getX(),pos.getY());
     batch.draw(tankTexture, maxX - c.getX() - 16, maxY - c.getY() - 16);
   }
 
@@ -447,13 +453,20 @@ public class GameScreen extends AbstractScreen {
     }
     if (tractionHealth && tractionPopUp) {
       if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-        Data.INSTANCE.sendCommand(Command.LEFT);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-        Data.INSTANCE.sendCommand(Command.RIGHT);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-        Data.INSTANCE.sendCommand(Command.UP);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
         Data.INSTANCE.sendCommand(Command.DOWN);
+        Data.INSTANCE.sendCommand(Command.LEFT);
+      }
+      if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        Data.INSTANCE.sendCommand(Command.UP);
+        Data.INSTANCE.sendCommand(Command.RIGHT);
+      }
+      if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        Data.INSTANCE.sendCommand(Command.UP);
+        Data.INSTANCE.sendCommand(Command.LEFT);
+      }
+      if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        Data.INSTANCE.sendCommand(Command.DOWN);
+        Data.INSTANCE.sendCommand(Command.RIGHT);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
         this.camera.getCamera().zoom -= 0.1f;
