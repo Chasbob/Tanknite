@@ -1,7 +1,9 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.Data;
+import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.PopulatePlayers;
+import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.Command;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -27,11 +29,11 @@ public class LobbyScreen extends AbstractScreen {
     //create table for waiting for players label and player count for the lobby
     Table lobbyDetailsTable = super.createTopLabelTable(dataTable);
     //add labels to lobbyDetailsTable
-    Label lookingLabel = UIFactory.createLabel("");
+    Label lookingLabel = Styles.INSTANCE.createLabel("");
     lobbyDetailsTable.add(lookingLabel);
-    Label countLabel = UIFactory.createLabel("0");
+    Label countLabel = Styles.INSTANCE.createLabel("0");
     lobbyDetailsTable.add(countLabel);
-    Label maxLabel = UIFactory.createLabel("/10");
+    Label maxLabel = Styles.INSTANCE.createLabel("/10");
     lobbyDetailsTable.add(maxLabel);
     //add table with start button or waiting for host label
     Table startTable = new Table();
@@ -39,20 +41,20 @@ public class LobbyScreen extends AbstractScreen {
     startTable.setFillParent(true);
     startTable.top().padTop(100);
     if (Data.INSTANCE.isHosting()) {
-      TextButton startButton = UIFactory.createStartButton("Start");
+      TextButton startButton = Styles.INSTANCE.createStartButton("Start");
       startTable.add(startButton);
-      TextButton aiButton = UIFactory.createStartButton("Fill AI");
-      aiButton.addListener(UIFactory.newListenerEvent(() -> {
+      TextButton aiButton = Styles.INSTANCE.createStartButton("Fill AI");
+      aiButton.addListener(ListenerFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.FILL_AI);
         return true;
       }));
       startTable.add(aiButton);
-      startButton.addListener(UIFactory.newListenerEvent(() -> {
+      startButton.addListener(ListenerFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.START);
         return true;
       }));
     } else {
-      Label waitingLabel = UIFactory.createColouredLabel("Waiting for Host");
+      Label waitingLabel = Styles.INSTANCE.createColouredLabel();
       startTable.add(waitingLabel);
     }
     dataTable.addActor(startTable);

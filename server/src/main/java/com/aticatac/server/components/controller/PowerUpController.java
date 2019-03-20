@@ -1,9 +1,9 @@
 package com.aticatac.server.components.controller;
 
-import com.aticatac.common.components.Component;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.server.components.Component;
+import com.aticatac.server.objectsystem.GameObject;
 
-public class PowerUpController extends Component{
+public class PowerUpController extends Component {
 
   public PowerUpController(GameObject gameobject) {
     super(gameobject);

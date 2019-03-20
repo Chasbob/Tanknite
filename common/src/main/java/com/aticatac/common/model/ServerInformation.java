@@ -40,6 +40,10 @@ public class ServerInformation extends Model {
     this.playerCount = playerCount;
   }
 
+  public ServerInformation(String id, InetAddress address, int port) {
+    this(id, address, port, 0, 0);
+  }
+
   /**
    * Gets max players.
    *

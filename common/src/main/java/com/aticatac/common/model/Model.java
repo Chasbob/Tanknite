@@ -4,7 +4,7 @@ package com.aticatac.common.model;
  * The type Model.
  */
 public abstract class Model {
-  private final String id;
+  public final String id;
   private final String className;
 
   /**

@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -58,7 +57,8 @@ public class Client {
   public ArrayList<String> getPlayers() {
     if (this.queue.peek() != null) {
       this.players.clear();
-      this.players.addAll(this.queue.peek().getPlayers().keySet());
+      assert this.queue.peek() != null;
+      this.players.addAll(this.queue.peek().getPlayerNames());
     }
     return this.players;
   }
@@ -125,9 +125,9 @@ public class Client {
   private void initUpdateSocket(InetAddress address, int port) throws IOException {
     this.logger.trace("Initialising update socket...");
     this.logger.trace("Joining multicast: " + address + ":" + port);
-    MulticastSocket multicastSocket = new MulticastSocket(port);
-    multicastSocket.joinGroup(address);
-    updateListener = new UpdateListener(multicastSocket, queue, this.reader);
+//    MulticastSocket multicastSocket = new MulticastSocket(port);
+//    multicastSocket.joinGroup(address);
+    updateListener = new UpdateListener(queue, this.reader);
     updateListener.start();
     this.logger.trace("Started update listener!");
   }
@@ -161,6 +161,6 @@ public class Client {
   }
 
   public void sendCommand(Command command) {
-    sendCommand(command, 0);
+    sendCommand(command, command.getAngle());
   }
 }
