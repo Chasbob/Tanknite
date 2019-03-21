@@ -1,12 +1,15 @@
 package com.aticatac.client.util;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 public class MenuTable extends Table {
 
-  private VerticalGroup group;
+  private Group group;
+  private TextButton button;
   private boolean showGroup;
   private boolean tab;
 
@@ -17,11 +20,11 @@ public class MenuTable extends Table {
     this.tab = tab;
   }
 
-  public VerticalGroup getGroup() {
+  public Group getGroup() {
     return group;
   }
 
-  public void setGroup(VerticalGroup group) {
+  public void setGroup(Group group) {
     this.group = group;
   }
 
@@ -40,5 +43,14 @@ public class MenuTable extends Table {
       Styles.INSTANCE.addTableColour(this, new Color(0f, 0f, 0f, 0.25f));
     }
     this.showGroup = showGroup;
+  }
+
+  public TextButton getButton() {
+    return button;
+  }
+
+  public void setButton(TextButton button) {
+    this.button = button;
+    this.add(button);
   }
 }
