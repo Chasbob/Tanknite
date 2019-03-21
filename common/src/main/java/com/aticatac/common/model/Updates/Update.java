@@ -16,6 +16,7 @@ public class Update extends Model {
    */
   private final ConcurrentHashMap<String, Container> players;
   private final ArrayList<Container> projectiles;
+  private final ArrayList<Container> powerups;
   private boolean start;
   //    private boolean objectChanged;
 //  private Container rootContainer;
@@ -33,6 +34,7 @@ public class Update extends Model {
     this.playersChanged = true;
     this.start = false;
     this.projectiles = new ArrayList<>();
+    powerups = new ArrayList<>();
   }
 
   /**
@@ -47,6 +49,10 @@ public class Update extends Model {
    */
   public void clearProjectiles() {
     this.projectiles.clear();
+  }
+
+  public void clearPowerups() {
+    this.powerups.clear();
   }
 
   /**
@@ -105,6 +111,10 @@ public class Update extends Model {
    */
   public void addPlayer(Container c) {
     this.players.put(c.getId(), c);
+  }
+
+  public void addPowerup(Container c) {
+    this.powerups.add(c);
   }
 
   /**

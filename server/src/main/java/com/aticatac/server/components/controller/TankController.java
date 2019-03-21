@@ -54,17 +54,17 @@
 //
 //  private void powerUpCheck(Position oldPosition, PhysicsResponse physicsData, Position newPosition) {
 //    DataServer.INSTANCE.setCoordinates(newPosition, this.getGameObject().getEntity(), oldPosition);
-//    if (physicsData.getEntity().getType() == Entity.EntityType.AMMO_POWERUP) {
+//    if (physicsData.getEntity().getType() == EntityType.AMMO_POWERUP) {
 //      pickUpAmmo();
 //      // destroy powerup object too
 //    }
-//    if (physicsData.getEntity().getType() == Entity.EntityType.HEALTH_POWERUP) {
+//    if (physicsData.getEntity().getType() == EntityType.HEALTH_POWERUP) {
 //      pickUpHealth();
 //    }
-//    if (physicsData.getEntity().getType() == Entity.EntityType.SPEED_POWERUP) {
+//    if (physicsData.getEntity().getType() == EntityType.SPEED_POWERUP) {
 //      pickUpSpeed();
 //    }
-//    if (physicsData.getEntity().getType() == Entity.EntityType.BULLET_POWERUP) {
+//    if (physicsData.getEntity().getType() == EntityType.BULLET_POWERUP) {
 //      pickUpDamage();
 //    }
 //  }

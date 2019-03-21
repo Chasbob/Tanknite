@@ -1,5 +1,6 @@
 package com.aticatac.server.bus.listener;
 
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.event.TankCollisionEvent;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.Bullet;
@@ -22,7 +23,7 @@ public class PlayerCollisionListener {
 
   @Subscribe
   private void collision(TankCollisionEvent e) {
-    if (e.getHit().type != Entity.EntityType.NONE) {
+    if (e.getHit().type != EntityType.NONE) {
       this.logger.info(e);
     }
   }

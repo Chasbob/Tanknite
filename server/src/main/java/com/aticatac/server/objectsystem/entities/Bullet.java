@@ -1,14 +1,16 @@
 package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.BulletCollisionEvent;
 import com.aticatac.server.bus.service.BulletOutputService;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
-import com.aticatac.server.objectsystem.physics.CallablePhysics;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import com.aticatac.server.objectsystem.physics.Physics;
 import java.util.Objects;
 import org.apache.log4j.Logger;
 
@@ -30,6 +32,7 @@ public class Bullet implements Tickable {
   private final Logger logger;
   private final int damage;
   private final BulletOutputService outputService;
+  private final Physics physics;
   /**
    * The Bearing.
    */
@@ -58,8 +61,9 @@ public class Bullet implements Tickable {
     this.position = position;
     this.prevPosistion = this.position;
     this.bearing = bearing;
-    this.box = new CollisionBox(this.position, Entity.EntityType.BULLET);
+    this.box = new CollisionBox(this.position, EntityType.BULLET);
     outputService = new BulletOutputService(this);
+    physics = new Physics(this.position, entity.type, entity.name);
   }
 
   /**
@@ -78,27 +82,41 @@ public class Bullet implements Tickable {
       prevPosistion = position;
     }
     try {
-      Entity hit = move();
-      if (hit.type != Entity.EntityType.NONE) {
-        outputService.onBulletCollision(hit);
-      }
+      move();
+//      if (hit.type != EntityType.NONE) {
+//        outputService.onBulletCollision(hit);
+//      }
     } catch (Exception e) {
       this.logger.error(e);
     }
   }
 
-  private Entity move() throws Exception {
+  private void move() throws Exception {
     this.logger.trace("Move.");
-    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-    PhysicsResponse physicsData = physics.call();
+//    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
+    PhysicsResponse physicsData = physics.move(bearing, position);
     this.logger.trace(physicsData.position);
-    if (physicsData.entity.type == Entity.EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
-      updateCollisionBox(physicsData.position);
-      return Entity.empty;
-    } else {
-      this.logger.info(physicsData);
-      return physicsData.entity;
+    switch (physicsData.entity.type) {
+      case TANK:
+        if (physicsData.entity.name.equals(shooter.name)) {
+          updateCollisionBox(physicsData.position);
+          break;
+        } else {
+          EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, physicsData.entity));
+        }
+      case WALL:
+      case OUTOFBOUNDS:
+        outputService.onBulletCollision(physicsData.entity);
+      default:
+        updateCollisionBox(physicsData.position);
     }
+//    if (physicsData.entity.type == EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
+//      updateCollisionBox(physicsData.position);
+//      return Entity.empty;
+//    } else {
+//      this.logger.info(physicsData);
+//      return physicsData.entity;
+//    }
   }
 
   private void setPosition(Position p) {
@@ -116,7 +134,7 @@ public class Bullet implements Tickable {
   }
 
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), bearing, 0, 0, entity.name, ObjectType.BULLET);
+    return new Container(position.getX(), position.getY(), bearing, 0, 0, entity.name, EntityType.BULLET);
   }
 
   @Override
@@ -140,17 +158,12 @@ public class Bullet implements Tickable {
         position.equals(bullet.position);
   }
 
+
   @Override
   public String toString() {
     return "Bullet{" +
         "shooter=" + shooter +
-        ", entity=" + entity +
-        ", bearing=" + bearing +
         ", damage=" + damage +
-        ", outputService=" + outputService +
-        ", position=" + position +
-        ", prevPosistion=" + prevPosistion +
-        ", box=" + box +
         '}';
   }
 }

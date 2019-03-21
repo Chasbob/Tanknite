@@ -10,9 +10,9 @@ public class Container {
   private final int health;
   private final int ammo;
   private final String id;
-  private final ObjectType objectType;
+  private final EntityType objectType;
 
-  public Container(int x, int y, int r, int health, int ammo, String id, ObjectType objectType) {
+  public Container(int x, int y, int r, int health, int ammo, String id, EntityType objectType) {
     this.texture = "";
     this.x = x;
     this.y = y;
@@ -31,7 +31,7 @@ public class Container {
     this.health = 100;
     this.ammo = 30;
     this.id = "";
-    this.objectType = ObjectType.OTHER;
+    this.objectType = EntityType.NONE;
   }
 
   public int getHealth() {
@@ -100,7 +100,7 @@ public class Container {
     return id;
   }
 
-  public ObjectType getObjectType() {
+  public EntityType getObjectType() {
     return objectType;
   }
 }
