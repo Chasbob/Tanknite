@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
  * @author Charles de Freitas
  */
 public class Updater implements Runnable {
+  final Server.ServerData d = Server.ServerData.INSTANCE;
   private final Logger logger;
   private final ModelReader modelReader;
   private final Update update;
@@ -42,7 +43,6 @@ public class Updater implements Runnable {
 
   private void updatePlayers() {
     this.logger.trace("updating players");
-    final Server.ServerData d = Server.ServerData.INSTANCE;
     this.update.setStart(d.isStart());
     this.logger.trace("Game started: " + d.isStart());
     this.update.clearPlayers();
@@ -67,6 +67,7 @@ public class Updater implements Runnable {
     this.logger.trace("Running...");
     while (!Thread.currentThread().isInterrupted() && !shutdown) {
       double nanoTime = System.nanoTime();
+      this.update.setStart(d.isStart());
 //      updatePlayers();
       tcpBroadcast();
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {

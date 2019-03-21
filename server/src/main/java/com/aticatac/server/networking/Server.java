@@ -55,7 +55,12 @@ public class Server extends Thread {
     ServerData.INSTANCE.initialise("225.4.5.6", 5500, 5000, id);
 //    this.ai = new Thread(new RunAI());
     playerInputService = new PlayerInputService();
+  }
 
+  public Server(boolean singleplayer, String id, String host) {
+    this(singleplayer, id);
+    ServerData.INSTANCE.getGame().addPlayer("admin");
+    this.host = host;
   }
 
   @Override
