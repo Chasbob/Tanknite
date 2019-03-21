@@ -123,7 +123,7 @@ public enum Styles {
     }
 
     public Label createColouredLabel() {
-        return new Label("Waiting for Host", createLabelStyle(INSTANCE.baseFont, accentColour));
+        return new Label("WAITING FOR HOST", createLabelStyle(INSTANCE.baseFont, accentColour));
     }
 
     public Label createSubtleLabel(String text) {
@@ -131,7 +131,7 @@ public enum Styles {
     }
 
     public Label createErrorLabel() {
-        return new Label("Name Taken", createLabelStyle(INSTANCE.baseFont, INSTANCE.hiddenColour));
+        return new Label("NAME TAKEN", createLabelStyle(INSTANCE.baseFont, INSTANCE.hiddenColour));
     }
 
     public TextButton createBackButton(String text) {

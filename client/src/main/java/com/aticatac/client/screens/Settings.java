@@ -13,8 +13,8 @@ class Settings {
 
   static void createSettings() {
     //create table to store setting toggles
-    Table soundTable = createToggle("Toggle Sound: ");
-    Table musicTable = createToggle("Toggle Music: ");
+    Table soundTable = createToggle("TOGGLE SOUND: ");
+    Table musicTable = createToggle("TOGGLE MUSIC: ");
     if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
       VerticalGroup verticalGroup = Screens.INSTANCE.getScreen(MainMenuScreen.class).verticalGroup;
       int offsetForPosition = Screens.INSTANCE.getScreen(MainMenuScreen.class).offsetForPosition;
@@ -34,7 +34,7 @@ class Settings {
     table.defaults().padRight(10);
     TextButton button = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createPopButton(labelString) : Styles.INSTANCE.createButton(labelString);
     Label label;
-    if ((labelString.equals("Toggle Sound: ") && AudioEnum.INSTANCE.isSound()) || (labelString.equals("Toggle Music: ") && AudioEnum.INSTANCE.isMusic())) {
+    if ((labelString.equals("TOGGLE SOUND: ") && AudioEnum.INSTANCE.isSound()) || (labelString.equals("TOGGLE MUSIC: ") && AudioEnum.INSTANCE.isMusic())) {
       label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSubtleLabel("ON") : Styles.INSTANCE.createLabel("ON");
     } else {
       label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSubtleLabel("OFF") : Styles.INSTANCE.createLabel("OFF");
@@ -47,7 +47,7 @@ class Settings {
 
   private static InputListener buttonToChangeBool(TextButton button, Label label) {
     return ListenerFactory.newListenerEvent(() -> {
-      if (button.getText().toString().equals("Toggle Sound: ")) {
+      if (button.getText().toString().equals("TOGGLE SOUND: ")) {
         if (AudioEnum.INSTANCE.isSound()) {
           AudioEnum.INSTANCE.setSound(false);
           label.setText("OFF");

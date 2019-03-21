@@ -44,7 +44,7 @@ public class MainMenuScreen extends AbstractScreen {
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
     //create title table
-    Table titleTable = new Table().top().left().padTop(50).padLeft(50);
+    Table titleTable = new Table().top().left().padTop(30).padLeft(50);
     super.addToRoot(titleTable);
     Label screenTitle = Styles.INSTANCE.createTitleLabel();
     titleTable.setFillParent(true);
@@ -60,13 +60,13 @@ public class MainMenuScreen extends AbstractScreen {
     //play button with child buttons
     createPlay();
     //button for achievements
-    TextButton achievementButton = Styles.INSTANCE.createButton("Achievements");
+    TextButton achievementButton = Styles.INSTANCE.createButton("ACHIEVEMENTS");
     verticalGroup.addActor(achievementButton);
     //button for store
-    TextButton storeButton = Styles.INSTANCE.createButton("Store");
+    TextButton storeButton = Styles.INSTANCE.createButton("STORE");
     verticalGroup.addActor(storeButton);
     //button for leaderboard
-    TextButton leaderboardButton = Styles.INSTANCE.createButton("Leaderboard");
+    TextButton leaderboardButton = Styles.INSTANCE.createButton("LEADERBOARD");
     leaderboardButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.showScreen(LeaderBoardScreen.class);
@@ -76,7 +76,7 @@ public class MainMenuScreen extends AbstractScreen {
     //settings with child buttons
     createSettings();
     //create button to close game
-    TextButton exitButton = Styles.INSTANCE.createBackButton("Quit");
+    TextButton exitButton = Styles.INSTANCE.createBackButton("QUIT");
     exitButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Gdx.app.exit();
       return false;
@@ -86,7 +86,7 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createPlay() {
-    TextButton playButton = Styles.INSTANCE.createButton("Play");
+    TextButton playButton = Styles.INSTANCE.createButton("PLAY");
     verticalGroup.addActor(playButton);
     playButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlay) {
@@ -114,7 +114,7 @@ public class MainMenuScreen extends AbstractScreen {
     modeTable.padLeft(20);
     modeTable.defaults().padRight(20);
     //create button for single player
-    TextButton singlePlayerButton = Styles.INSTANCE.createPopButton("Single-Player");
+    TextButton singlePlayerButton = Styles.INSTANCE.createPopButton("SINGLE-PLAYER");
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
       Server server = new Server(true, "Single-Player");
@@ -125,7 +125,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     modeTable.add(singlePlayerButton);
     //create button for multi player
-    TextButton multiPlayerButton = Styles.INSTANCE.createPopButton("Multi-Player");
+    TextButton multiPlayerButton = Styles.INSTANCE.createPopButton("MULTI-PLAYER");
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlayMultiplayer) {
         wantsToPlayMultiplayer = false;
@@ -148,7 +148,7 @@ public class MainMenuScreen extends AbstractScreen {
     multiplayerTable = new Table();
     multiplayerTable.defaults().padRight(20);
     //create button for hosting game
-    TextButton hostButton = Styles.INSTANCE.createLessPopButton("Host");
+    TextButton hostButton = Styles.INSTANCE.createLessPopButton("HOST");
     hostButton.padLeft(270);
     hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setHosting(true);
@@ -159,7 +159,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     multiplayerTable.add(hostButton);
     //create button for joining
-    TextButton joinButton = Styles.INSTANCE.createLessPopButton("Join");
+    TextButton joinButton = Styles.INSTANCE.createLessPopButton("JOIN");
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
@@ -172,7 +172,7 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createSettings() {
-    TextButton settingsButton = Styles.INSTANCE.createButton("Settings");
+    TextButton settingsButton = Styles.INSTANCE.createButton("SETTINGS");
     settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (changeSettings) {
         changeSettings = false;
