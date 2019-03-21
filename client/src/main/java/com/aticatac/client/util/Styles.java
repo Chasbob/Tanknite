@@ -71,7 +71,7 @@ public enum Styles {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter10.size = 15;
-        parameter15.size = 25;
+        parameter15.size = 20;
         parameter40.size = 70;
         gameLabelFont = generator.generateFont(parameter10);
         baseFont = generator.generateFont(parameter15);

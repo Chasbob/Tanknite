@@ -59,35 +59,45 @@ public class MainMenuScreen extends AbstractScreen {
     buttonTable.add(verticalGroup);
     //play button with child buttons
     createPlay();
-    //button for achievements
+    //achievements
+    Table achievementTable = createMenuTable();
     TextButton achievementButton = Styles.INSTANCE.createButton("ACHIEVEMENTS");
-    verticalGroup.addActor(achievementButton);
-    //button for store
-    TextButton storeButton = Styles.INSTANCE.createButton("STORE");
-    verticalGroup.addActor(storeButton);
-    //button for leaderboard
+    achievementTable.add(achievementButton);
+    verticalGroup.addActor(achievementTable);
+    //customize
+    Table customizeTable = createMenuTable();
+    TextButton storeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
+    customizeTable.add(storeButton);
+    verticalGroup.addActor(customizeTable);
+    //leaderboard
+    Table leaderboardTable = createMenuTable();
     TextButton leaderboardButton = Styles.INSTANCE.createButton("LEADERBOARD");
+    leaderboardTable.add(leaderboardButton);
+    verticalGroup.addActor(leaderboardTable);
     leaderboardButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.showScreen(LeaderBoardScreen.class);
       return false;
     }));
-    verticalGroup.addActor(leaderboardButton);
     //settings with child buttons
     createSettings();
     //create button to close game
+    Table exitTable = createMenuTable();
     TextButton exitButton = Styles.INSTANCE.createBackButton("QUIT");
+    exitTable.add(exitButton);
+    verticalGroup.addActor(exitTable);
     exitButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Gdx.app.exit();
       return false;
     }));
-    verticalGroup.addActor(exitButton);
     verticalGroup.pack();
   }
 
   private void createPlay() {
+    Table playTable = createMenuTable();
     TextButton playButton = Styles.INSTANCE.createButton("PLAY");
-    verticalGroup.addActor(playButton);
+    playTable.add(playButton);
+    verticalGroup.addActor(playTable);
     playButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlay) {
         wantsToPlay = false;
@@ -115,6 +125,7 @@ public class MainMenuScreen extends AbstractScreen {
     modeTable.defaults().padRight(20);
     //create button for single player
     TextButton singlePlayerButton = Styles.INSTANCE.createPopButton("SINGLE-PLAYER");
+    modeTable.add(singlePlayerButton);
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
       Server server = new Server(true, "Single-Player");
@@ -123,9 +134,9 @@ public class MainMenuScreen extends AbstractScreen {
       ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
     }));
-    modeTable.add(singlePlayerButton);
     //create button for multi player
     TextButton multiPlayerButton = Styles.INSTANCE.createPopButton("MULTI-PLAYER");
+    modeTable.add(multiPlayerButton);
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlayMultiplayer) {
         wantsToPlayMultiplayer = false;
@@ -139,7 +150,6 @@ public class MainMenuScreen extends AbstractScreen {
       }
       return false;
     }));
-    modeTable.add(multiPlayerButton);
     verticalGroup.addActorAt(1, modeTable);
     verticalGroup.pack();
   }
@@ -172,7 +182,10 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createSettings() {
+    Table settingsTable = createMenuTable();
     TextButton settingsButton = Styles.INSTANCE.createButton("SETTINGS");
+    settingsTable.add(settingsButton);
+    verticalGroup.addActor(settingsTable);
     settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (changeSettings) {
         changeSettings = false;
@@ -186,7 +199,6 @@ public class MainMenuScreen extends AbstractScreen {
       }
       return false;
     }));
-    verticalGroup.addActor(settingsButton);
   }
 
   @Override
@@ -200,6 +212,13 @@ public class MainMenuScreen extends AbstractScreen {
     verticalGroup.removeActor(soundTable);
     verticalGroup.pack();
     offsetForPosition = 0;
+  }
+
+  private Table createMenuTable() {
+    Table table = new Table();
+    Styles.INSTANCE.addTableColour(table, new Color(0f, 0f, 0f, 0.25f));
+    table.defaults().padTop(5).padBottom(5).padLeft(10).padRight(10);
+    return table;
   }
 
 
