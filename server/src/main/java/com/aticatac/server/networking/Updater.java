@@ -32,7 +32,8 @@ public class Updater implements Runnable {
     this.changes = true;
     this.shutdown = false;
     this.modelReader = new ModelReader();
-    EventBusFactory.getEventBus().register(new UpdateChangesListener(update.getPlayers(), update.getProjectiles()));
+    EventBusFactory.getEventBus().register(new UpdateChangesListener(update.getPlayers(), update.getProjectiles(), update.getPowerups()));
+    updatePlayers();
   }
 
   private void updatePlayers() {
@@ -62,7 +63,7 @@ public class Updater implements Runnable {
     this.logger.trace("Running...");
     while (!Thread.currentThread().isInterrupted() && !shutdown) {
       double nanoTime = System.nanoTime();
-      updatePlayers();
+//      updatePlayers();
       tcpBroadcast();
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
@@ -93,7 +94,6 @@ public class Updater implements Runnable {
 
   private void broadcast() throws IOException {
     this.logger.trace("Broadcasting...");
-    this.logger.trace("Player count: " + this.update.playerSize());
     byte[] bytes = modelReader.toBytes(this.update);
 //    this.logger.info(bytes.length);
     final Server.ServerData s = Server.ServerData.INSTANCE;

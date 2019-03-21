@@ -8,10 +8,10 @@ import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
+import com.aticatac.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.server.bus.listener.BulletCollisionListener;
 import com.aticatac.server.bus.listener.PlayerInputListener;
 import com.aticatac.server.bus.listener.PlayerOutputListener;
-import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
@@ -23,13 +23,13 @@ import com.aticatac.server.objectsystem.entities.powerups.DamagePowerup;
 import com.aticatac.server.objectsystem.entities.powerups.HealthPowerup;
 import com.aticatac.server.objectsystem.entities.powerups.SpeedPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import org.apache.log4j.Logger;
-
+import com.aticatac.server.transform.Position;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
+import org.apache.log4j.Logger;
 
 /**
  * The type Game mode.
@@ -167,7 +167,7 @@ public abstract class GameMode implements Game {
     return createTank(player, isAI, position.getX(), position.getY());
   }
 
-    private Position getClearPosition() {
+  private Position getClearPosition() {
     int count = 1;
     Position position = new Position();
     ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
@@ -200,20 +200,10 @@ public abstract class GameMode implements Game {
     }
   }
 
-  /**
-   * Gets root.
-   *
-   * @return the root
-   */
-//  public GameObject getRoot() {
-//    return root;
-//  }
   protected void createPowerUps() {
 // TODO: Make PowerUpController tick based
 // TODO: Where should this method be called?
     EntityType powerUpId = Entity.randomPowerUP();
-//do we want to keep track of the power ups that exist or just put them in the map?
-    this.logger.info(powerUpId +" "+ Integer.toString(DataServer.INSTANCE.getOccupiedCoordinates().size()));
     switch (powerUpId) {
       case HEALTH_POWERUP:
         HealthPowerup healthPowerUp = null; // get name of powerUp
@@ -221,6 +211,7 @@ public abstract class GameMode implements Game {
         healthPowerUp = new HealthPowerup("healthPowerUp", healthPosition);
         DataServer.INSTANCE.addBoxToData(healthPowerUp.getCollisionBox(), healthPowerUp);
         powerups.add(healthPowerUp);
+        EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, healthPowerUp.getContainer()));
         this.logger.trace("Adding: " + healthPowerUp.toString());
         break;
       case AMMO_POWERUP:
@@ -229,6 +220,7 @@ public abstract class GameMode implements Game {
         ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
         DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
         powerups.add(ammoPowerUp);
+        EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, ammoPowerUp.getContainer()));
         this.logger.trace("Adding: " + ammoPowerUp.toString());
         break;
       case DAMAGE_POWERUP:
@@ -237,6 +229,7 @@ public abstract class GameMode implements Game {
         damagePowerUp = new DamagePowerup("damagePowerUp", damagePosition);
         DataServer.INSTANCE.addBoxToData(damagePowerUp.getCollisionBox(), damagePowerUp);
         powerups.add(damagePowerUp);
+        EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, damagePowerUp.getContainer()));
         this.logger.trace("Adding: " + damagePowerUp.toString());
         break;
       case SPEED_POWERUP:
@@ -245,22 +238,10 @@ public abstract class GameMode implements Game {
         speedPowerUp = new SpeedPowerup("speedPowerUp", speedPosition);
         DataServer.INSTANCE.addBoxToData(speedPowerUp.getCollisionBox(), speedPowerUp);
         powerups.add(speedPowerUp);
+        EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, speedPowerUp.getContainer()));
         this.logger.trace("Adding: " + speedPowerUp.toString());
     }
   }
-//  public Position powerupPosition() {
-//    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
-//    Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-//        ThreadLocalRandom.current().nextInt(min, max + 1));
-//    CollisionBox box = new CollisionBox(position, EntityType.TANK.radius); // TODO: will tank have same radius as power ups?
-//    //checks if this is a valid coordinate when generated is not in the map then moves on.
-//    while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position) || DataServer.INSTANCE.containsBox(box)) {
-//      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-//          ThreadLocalRandom.current().nextInt(min, max + 1));
-//      box.setPosition(position);
-//    }
-//    return position;
-//  }
 
   /**
    * N add ai.

@@ -3,9 +3,10 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.ai.PlayerState;
-import com.aticatac.server.transform.Position;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.TankCollisionEvent;
+import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
@@ -14,6 +15,7 @@ import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
+import com.aticatac.server.transform.Position;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -119,13 +121,13 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
           case OUTOFBOUNDS:
             return;
           case AMMO_POWERUP:
-            break;
+            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
           case SPEED_POWERUP:
-            break;
+            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
           case HEALTH_POWERUP:
-            break;
+            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
           case DAMAGE_POWERUP:
-            break;
+            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
         }
       }
       setPosition(response.getPosition());

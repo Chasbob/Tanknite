@@ -62,7 +62,6 @@ public class Physics {
     double dy = (newY - yCoord);
     double ddx = Math.ceil(dx / entity.type.radius);
     double ddy = Math.ceil(dy / entity.type.radius);
-    System.out.println(ddx + ", " + ddy);
     double x = 0;
     double y = 0;
     VectorF oV = new VectorF(position.getX(), position.getY());
