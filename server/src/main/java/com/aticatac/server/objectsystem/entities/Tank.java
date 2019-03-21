@@ -5,6 +5,7 @@ import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.ai.PlayerState;
 import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.TankCollisionEvent;
 import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.objectsystem.DataServer;
@@ -13,7 +14,6 @@ import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
-import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
 import com.aticatac.server.transform.Position;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   protected int maxHealth;
   protected int maxAmmo;
   protected int ammo;
+  private int framesToShoot;
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
@@ -51,6 +52,7 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
     this.maxAmmo = 30;
     this.outputService = new PlayerOutputService(getBaseEntity());
     physics = new Physics(position, type, name);
+    framesToShoot = 120;
   }
 
   public Entity getEntity() {
@@ -80,16 +82,19 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
         }
       }
       if (input.shoot) {
-        this.logger.info("shoot");
-        if (!(ammo == 0 || health == 0)) {
+        this.logger.trace("shoot");
+        if (!(ammo == 0 || health == 0) && framesToShoot < 0) {
           setAmmo(ammo - 1);
-          outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 10));
-          DataServer.INSTANCE.addBoxToData(new CollisionBox(position, EntityType.TANK.radius), getBaseEntity());
-//        this.getComponent(TurretController.class).shoot(input.bearing);
+          outputService.addBullet(new Bullet(getBaseEntity(), position.copy(), input.bearing, 10));
+          framesToShoot = 60;
         }
       }
-//      output.setTurretOutput(this.getComponent(TurretController.class).tick());
     }
+    if (framesToShoot == 1) {
+      this.logger.info("Ready to fire!");
+    }
+    framesToShoot--;
+//    framesToShoot = clamp(framesToShoot - 1);
   }
 
   public void addFrame(final PlayerInput frame) {
@@ -106,6 +111,9 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
     if (!response.getCollisions().contains(outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {
+        if (e.type != EntityType.NONE && e.type!=EntityType.WALL && !e.name.equals(name)) {
+          this.logger.info(e);
+        }
         switch (e.type) {
           case NONE:
             break;
@@ -121,16 +129,14 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
           case OUTOFBOUNDS:
             return;
           case AMMO_POWERUP:
-            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
           case SPEED_POWERUP:
-            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
           case HEALTH_POWERUP:
-            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
           case DAMAGE_POWERUP:
             EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
         }
       }
-      setPosition(response.getPosition());
+      setPosition(response.getPosition(), true);
+      EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
     }
   }
 

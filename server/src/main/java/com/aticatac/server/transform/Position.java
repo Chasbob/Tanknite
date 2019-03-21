@@ -5,7 +5,7 @@ package com.aticatac.server.transform;
  * The type Position.
  */
 public class Position {
-  public static final Position zero = new Position(0,0);
+  public static final Position zero = new Position(0, 0);
   /**
    * The x and y coordinates for the position
    */
@@ -68,6 +68,10 @@ public class Position {
    */
   public void setY(int y) {
     this.y = y;
+  }
+
+  public Position copy() {
+    return new Position(x, y);
   }
 
   @Override

@@ -85,12 +85,5 @@ public class AITank extends Tank {
     return position;
   }
 
-  private void updateCollisionBox(Position newPosition) {
-    //remove old box
-    DataServer.INSTANCE.removeBoxFromData(box);
-    //set new position and box
-    setPosition(newPosition);
-    //add new box to map
-    DataServer.INSTANCE.addBoxToData(box, entity);
-  }
+
 }

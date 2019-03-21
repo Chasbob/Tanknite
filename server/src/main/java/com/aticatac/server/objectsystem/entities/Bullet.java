@@ -2,19 +2,21 @@ package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.BulletCollisionEvent;
+import com.aticatac.server.bus.event.BulletsChangedEvent;
 import com.aticatac.server.bus.service.BulletOutputService;
-import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
-import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
+import com.aticatac.server.transform.Position;
 import java.util.Objects;
 import org.apache.log4j.Logger;
 
 /**
  * The type Bullet.
  */
-public class Bullet implements Tickable {
+public class Bullet extends Entity implements Tickable {
   /**
    * The Shooter.
    */
@@ -22,7 +24,6 @@ public class Bullet implements Tickable {
   /**
    * The Entity.
    */
-  public final Entity entity;
   /**
    * The Output.
    */
@@ -37,9 +38,7 @@ public class Bullet implements Tickable {
   /**
    * The Position.
    */
-  public Position position;
   private Position prevPosistion;
-  private CollisionBox box;
 
   /**
    * Instantiates a new Bullet.
@@ -50,17 +49,16 @@ public class Bullet implements Tickable {
    * @param damage   the damage
    */
   public Bullet(final Entity shooter, final Position position, final int bearing, final int damage) {
+    super(Integer.toString(Objects.hash(shooter, position, bearing, damage)), EntityType.BULLET, position);
     this.damage = damage;
     this.logger = Logger.getLogger(getClass());
-    this.logger.info(shooter.toString() + position.toString() + bearing);
+    this.logger.info(shooter.toString() + position.toString() + "\t" + bearing);
     this.shooter = shooter;
-    this.entity = Entity.bullet;
     this.position = position;
     this.prevPosistion = this.position;
     this.bearing = bearing;
-    this.box = new CollisionBox(this.position, EntityType.BULLET);
     outputService = new BulletOutputService(this);
-    physics = new Physics(this.position, entity.type, entity.name);
+    physics = new Physics(this.position, type, name);
   }
 
   /**
@@ -78,83 +76,50 @@ public class Bullet implements Tickable {
       this.logger.trace(position);
       prevPosistion = position;
     }
-    try {
-      move();
-//      if (hit.type != EntityType.NONE) {
-//        outputService.onBulletCollision(hit);
-//      }
-    } catch (Exception e) {
-      this.logger.error(e);
+    move();
+  }
+
+  private void move() {
+    var response = physics.move(bearing, position);
+    if (!response.getCollisions().contains(Entity.outOfBounds)) {
+      for (Entity e :
+          response.getCollisions()) {
+        if (e.type != EntityType.NONE) {
+          this.logger.info("Hit: " + e);
+        }
+        switch (e.type) {
+          case NONE:
+            break;
+          case WALL:
+          case OUTOFBOUNDS:
+            EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
+            return;
+          case TANK:
+            if (!e.name.equals(shooter.name)) {
+              EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
+            }
+            break;
+          case BULLET:
+            break;
+          case AMMO_POWERUP:
+            break;
+          case SPEED_POWERUP:
+            break;
+          case HEALTH_POWERUP:
+            break;
+          case DAMAGE_POWERUP:
+            break;
+        }
+      }
+      setPosition(response.getPosition(), false);
+      EventBusFactory.getEventBus().post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
+      this.logger.trace(position);
     }
-  }
-
-  private void move() throws Exception {
-//    this.logger.trace("Move.");
-////    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-//    PhysicsResponse physicsData = physics.move(bearing, position);
-//    this.logger.trace(physicsData.position);
-//    switch (physicsData.entity.type) {
-//      case TANK:
-//        if (physicsData.entity.name.equals(shooter.name)) {
-//          updateCollisionBox(physicsData.position);
-//          break;
-//        } else {
-//          EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, physicsData.entity));
-//        }
-//      case WALL:
-//      case OUTOFBOUNDS:
-//        outputService.onBulletCollision(physicsData.entity);
-//      default:
-//        updateCollisionBox(physicsData.position);
-//    }
-////    if (physicsData.entity.type == EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
-////      updateCollisionBox(physicsData.position);
-////      return Entity.empty;
-////    } else {
-////      this.logger.info(physicsData);
-////      return physicsData.entity;
-////    }
-  }
-
-  private void setPosition(Position p) {
-    this.position = p;
-    box.setPosition(p);
-  }
-
-  private void updateCollisionBox(Position newPosition) {
-    //remove old box
-//    DataServer.INSTANCE.removeBoxFromData(box);
-    //set new position and box
-    setPosition(newPosition);
-    //add new box to map
-//    DataServer.INSTANCE.addBoxToData(box, entity);
   }
 
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), bearing, 0, 0, entity.name, EntityType.BULLET);
+    return new Container(position.getX(), position.getY(), bearing, 0, 0, name, EntityType.BULLET);
   }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(shooter, entity, bearing, getDamage(), position);
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    final Bullet bullet = (Bullet) o;
-    return bearing == bullet.bearing &&
-        getDamage() == bullet.getDamage() &&
-        shooter.equals(bullet.shooter) &&
-        entity.equals(bullet.entity) &&
-        position.equals(bullet.position);
-  }
-
 
   @Override
   public String toString() {

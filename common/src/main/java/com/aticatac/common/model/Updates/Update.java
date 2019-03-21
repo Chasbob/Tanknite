@@ -16,13 +16,15 @@ public class Update extends Model {
    * The Players.
    */
   private final ConcurrentHashMap<String, Container> players;
-  private final ArrayList<Container> projectiles;
+  private final HashMap<String, Container> projectiles;
   private final ArrayList<Container> powerups;
   private final ConcurrentHashMap<Integer, Container> powerupmap;
+  private final HashMap<String, Container> newShots;
   private boolean start;
   //    private boolean objectChanged;
 //  private Container rootContainer;
   private boolean playersChanged;
+
   /**
    * Instantiates a new Model.
    *
@@ -34,9 +36,10 @@ public class Update extends Model {
     this.players = new ConcurrentHashMap<>();
     this.playersChanged = true;
     this.start = false;
-    this.projectiles = new ArrayList<>();
+    this.projectiles = new HashMap<>();
     powerups = new ArrayList<>();
     powerupmap = new ConcurrentHashMap<>();
+    newShots = new HashMap<>();
   }
 
   public ConcurrentHashMap<Integer, Container> getPowerupmap() {
@@ -123,9 +126,17 @@ public class Update extends Model {
     this.players.put(c.getId(), c);
   }
 
+  public void removePlayer(Container c) {
+    this.players.remove(c.getId());
+  }
+
+  public void removePowerup(Container c) {
+    this.powerups.add(c);
+  }
+
   public void addPowerup(Container c) {
     this.powerups.add(c);
-    this.powerupmap.put(c.hashCode(), c);
+//    this.powerupmap.put(c.hashCode(), c);
   }
 
   /**
@@ -134,11 +145,19 @@ public class Update extends Model {
    * @param c the c
    */
   public void addProjectile(Container c) {
-    this.projectiles.add(c);
+    this.projectiles.put(c.getId(), c);
   }
 
-  public void addProjectiles(ArrayList<Container> cs) {
-    this.projectiles.addAll(cs);
+  public void addNewShot(Container c) {
+    this.newShots.put(c.getId(), c);
+  }
+
+  public void removeNewShot(Container c) {
+    this.newShots.remove(c.getId());
+  }
+
+  public void removeProjectile(Container c) {
+    this.projectiles.remove(c.getId());
   }
 
   /**
@@ -170,6 +189,10 @@ public class Update extends Model {
   }
 
   public ArrayList<Container> getProjectiles() {
+    return new ArrayList<>(projectiles.values());
+  }
+
+  public HashMap<String, Container> projectileMap() {
     return projectiles;
   }
 
@@ -179,5 +202,9 @@ public class Update extends Model {
 
   public Collection<String> getPlayerNames() {
     return players.keySet();
+  }
+
+  public HashMap<String, Container> getNewShots() {
+    return newShots;
   }
 }
