@@ -17,7 +17,7 @@ public class PowerUpState {
     return position;
   }
 
-  public Entity.EntityType getType() {
+  public EntityType getType() {
     return type;
   }
 
