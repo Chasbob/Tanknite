@@ -111,7 +111,7 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
     if (!response.getCollisions().contains(outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {
-        if (e.type != EntityType.NONE && e.type!=EntityType.WALL && !e.name.equals(name)) {
+        if (e.type != EntityType.NONE && e.type != EntityType.WALL && !e.name.equals(name)) {
           this.logger.info(e);
         }
         switch (e.type) {
@@ -188,6 +188,12 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   @Override
   public void addToData() {
     DataServer.INSTANCE.addBoxToData(getCollisionBox(), getBaseEntity());
+  }
+
+  public void move(int x, int y) {
+    setPosition(new Position(x, y), true);
+    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
+
   }
 
   public PlayerState getPlayerState() {

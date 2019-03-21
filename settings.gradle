@@ -3,3 +3,5 @@ include 'common'
 include 'server'
 include 'client'
 include 'desktop'
+include 'database'
+

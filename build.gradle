@@ -13,7 +13,6 @@ buildscript {
 
 apply plugin: 'docker-compose'
 
-
 subprojects {
 
     apply plugin: 'java'
