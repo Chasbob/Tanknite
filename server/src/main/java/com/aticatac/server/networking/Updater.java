@@ -36,6 +36,10 @@ public class Updater implements Runnable {
     updatePlayers();
   }
 
+  public void shutdown() {
+    this.shutdown = true;
+  }
+
   private void updatePlayers() {
     this.logger.trace("updating players");
     final Server.ServerData d = Server.ServerData.INSTANCE;

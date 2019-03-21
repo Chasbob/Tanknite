@@ -6,7 +6,6 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
-import com.aticatac.common.model.Updates.Update;
 import com.aticatac.server.bus.service.PlayerInputService;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
@@ -20,8 +19,7 @@ import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,14 +29,15 @@ import org.apache.log4j.Logger;
  */
 public class Server extends Thread {
   private final Logger logger;
-  private final ExecutorService executorService;
   private final String id;
   private final boolean singleplayer;
   private final PlayerInputService playerInputService;
   private volatile boolean shutdown;
   private String host;
-  private boolean started;
-  private Thread ai;
+  private Updater updater;
+  private Discovery discovery;
+  private NewClients newClients;
+//  private
 
   /**
    * Instantiates a new Server.
@@ -51,13 +50,12 @@ public class Server extends Thread {
     this.logger.info("Constructing server...");
     this.singleplayer = singleplayer;
     //TODO check if additional users are allowed.
-    this.executorService = Executors.newFixedThreadPool(20);
     this.shutdown = false;
-    this.started = false;
     this.id = id;
     ServerData.INSTANCE.initialise("225.4.5.6", 5500, 5000, id);
 //    this.ai = new Thread(new RunAI());
     playerInputService = new PlayerInputService();
+
   }
 
   @Override
@@ -78,11 +76,14 @@ public class Server extends Thread {
       this.logger.trace("Setting up multi player");
       try {
         this.logger.info("Single player: " + singleplayer);
-        this.executorService.submit(new Discovery(this.id));
+        this.discovery = new Discovery(this.id);
+        new Thread(discovery).start();
         this.logger.trace("added discovery");
-        this.executorService.submit(new NewClients());
+        newClients = new NewClients();
+        new Thread(newClients).start();
         this.logger.trace("added new clients");
-        this.executorService.submit(new Updater());
+        updater = new Updater();
+        new Thread(updater).start();
         this.logger.trace("added updater");
       } catch (IOException e) {
         this.logger.error(e);
@@ -113,7 +114,8 @@ public class Server extends Thread {
         }
       }
     } else {
-      this.executorService.submit(new Updater());
+      updater = new Updater();
+      new Thread(updater).start();
       this.logger.trace("added updater");
     }
     ServerData.INSTANCE.clearRequests();
@@ -148,9 +150,13 @@ public class Server extends Thread {
   /**
    * Shutdown.
    */
-  void shutdown() {
+  public void shutdown() {
     this.shutdown = true;
-    this.executorService.shutdown();
+    if (!singleplayer) {
+      discovery.shutdown();
+      newClients.shutdown();
+    }
+    updater.shutdown();
     ServerData.INSTANCE.shutdown();
   }
 
@@ -213,6 +219,7 @@ public class Server extends Thread {
         this.logger.error(e);
       }
       DataServer.INSTANCE.getPlayerCount();
+      this.logger.info("Done!");
     }
 
     void startGame() {
