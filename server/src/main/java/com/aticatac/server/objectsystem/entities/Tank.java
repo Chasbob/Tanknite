@@ -189,7 +189,9 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   @Override
   public int hit(final int damage) {
     this.logger.info(clamp(health - damage));
-    if (health <= 10 && health > 0); // TODO, call remove player after 20 seconds (in terms of ticks)
+    if (health <= 10 && health > 0){
+      // TODO, Thread to call remove player after 20 seconds (in terms of ticks)
+    }
     Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
     return health = clamp(health - damage);
 

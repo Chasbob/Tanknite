@@ -255,19 +255,6 @@ public abstract class GameMode implements Game {
         this.logger.trace("Adding: " + speedPowerUp.toString());
     }
   }
-  public Position powerupPosition(String power) {
-    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
-    Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-        ThreadLocalRandom.current().nextInt(min, max + 1));
-    CollisionBox box = new CollisionBox(position, EntityType.AMMO_POWERUP.radius); // TODO: will tank have same radius as power ups?
-    //checks if this is a valid coordinate when generated is not in the map then moves on.
-    while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position) || DataServer.INSTANCE.containsBox(box)) {
-      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-          ThreadLocalRandom.current().nextInt(min, max + 1));
-      box.setPosition(position);
-    }
-    return position;
-  }
 
   /**
    * N add ai.
