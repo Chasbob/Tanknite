@@ -36,7 +36,7 @@ public class Physics {
   /**
    * The velocity for this tank
    */
-//  private int velocity = 5;
+  private int velocity;
   private Position position;
   private int rotation;
 
@@ -46,12 +46,17 @@ public class Physics {
     d = DataServer.INSTANCE;
   }
 
-  public PhysicsResponse move(int rotation, final Position position) {
+  public PhysicsResponse move(int rotation, final Position position, boolean speedPowerUp) {
     this.position = position;
     int xCoord = this.position.getX();
     int yCoord = this.position.getY();
+
+
     int dt = 1;
-    int distance = dt * entity.type.velocity;
+    setAcceleration("positive", speedPowerUp);
+    velocity += acceleration*dt;
+
+    int distance = dt * velocity;
     double xr = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -xr;
     double yr = Math.sin(Math.toRadians(rotation));
@@ -81,7 +86,8 @@ public class Physics {
 
   public PhysicsResponse inputCommand(Command command) {
     if (command.isMovement()) {
-      return move(command.vector.angle(), position);
+      boolean speedPowerUp = false;
+      return move(command.vector.angle(), position, speedPowerUp);
     } else {
       return new PhysicsResponse(Entity.empty, position);
     }
@@ -117,4 +123,28 @@ public class Physics {
       return new PhysicsResponse(Entity.outOfBounds, oldPosition);
     }
   }
+
+
+  /**
+   * Sets acceleration for the object.
+   */
+  //Allows for power ups that increase this, to happen.
+  private void setAcceleration(String sign, boolean speedPowerUp) {
+    if(sign.equals("positive")) {
+      if(speedPowerUp){
+        acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+      }else {
+        if (velocity != entity.type.velocity) {
+          acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+        } else if (velocity >= entity.type.velocity) {
+          velocity = entity.type.velocity;
+          acceleration = 0;
+        }
+      }
+    }else{
+      acceleration = -(gravity *((0 + objectMass) + thrust))/objectMass;
+    }
+  }
+
+
 }

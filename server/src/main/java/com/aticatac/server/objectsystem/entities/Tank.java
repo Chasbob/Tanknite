@@ -3,8 +3,6 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.components.ai.PlayerState;
 import com.aticatac.server.components.physics.PhysicsResponse;
@@ -13,19 +11,16 @@ import com.aticatac.server.networking.Server;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
-import com.aticatac.server.objectsystem.entities.powerups.AmmoPowerup;
 import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
-import com.aticatac.server.objectsystem.physics.CallablePhysics;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import com.aticatac.server.test.GameMode;
-import org.apache.log4j.Logger;
 
 public class Tank<T extends PlayerInput> extends Entity implements DependantTickable<PlayerInput>, Hurtable {
   protected final ConcurrentLinkedQueue<PlayerInput> frames;
@@ -113,7 +108,7 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
 
   public void move(int bearing, boolean speedIncrease) {
   //CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-    PhysicsResponse physicsData = physics.move(bearing, position);
+    PhysicsResponse physicsData = physics.move(bearing, position, speedIncrease);
     this.logger.trace(physicsData.entity);
     switch (physicsData.entity.type) {
       case TANK:
