@@ -5,6 +5,7 @@ import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.listener.BulletCollisionListener;
@@ -17,12 +18,18 @@ import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.entities.AITank;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
+import com.aticatac.server.objectsystem.entities.powerups.AmmoPowerup;
+import com.aticatac.server.objectsystem.entities.powerups.DamagePowerup;
+import com.aticatac.server.objectsystem.entities.powerups.HealthPowerup;
+import com.aticatac.server.objectsystem.entities.powerups.SpeedPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import org.apache.log4j.Logger;
+
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.log4j.Logger;
 
 /**
  * The type Game mode.
@@ -46,14 +53,15 @@ public abstract class GameMode implements Game {
    */
   protected final ConcurrentHashMap<String, Tank> playerMap;
   protected final CopyOnWriteArraySet<Bullet> bullets;
+  protected final CopyOnWriteArraySet<Entity> powerups;
 //  protected final ArrayList<Bullet> bullets;
   /**
    * The Frame.
    */
   protected final Update frame;
   protected final Logger logger;
-  private final int min = 320;
-  private final int max = 1920 - 320;
+  private final int min = 0;
+  private final int max = 1920;
 //  private GameObject root;
 
   /**
@@ -69,8 +77,9 @@ public abstract class GameMode implements Game {
     this.logger = Logger.getLogger(getClass());
     frame = new Update(true);
     bullets = new CopyOnWriteArraySet<>();
+    powerups = new CopyOnWriteArraySet<>();
     EventBusFactory.getEventBus().register(new PlayerInputListener(this.playerMap));
-    EventBusFactory.getEventBus().register(new PlayerOutputListener(this.bullets));
+    EventBusFactory.getEventBus().register(new PlayerOutputListener(this.bullets, this.powerups));
     EventBusFactory.getEventBus().register(new BulletCollisionListener(this.playerMap, this.bullets));
   }
 
@@ -83,6 +92,20 @@ public abstract class GameMode implements Game {
    */
   public static boolean inMap(Vector v) {
     return (v.x < maxXY.x && v.y < maxXY.y);
+  }
+
+  private static EntityType randomPowerUP() {
+    SecureRandom random = new SecureRandom();
+    EntityType entityType = EntityType.NONE;
+    while (!entityType.isPowerUp()) {
+      int x = random.nextInt((EntityType.class).getEnumConstants().length);
+      entityType = (EntityType.class).getEnumConstants()[x];
+    }
+    return entityType;
+  }
+
+  public CopyOnWriteArraySet<Entity> getPowerups() {
+    return powerups;
   }
 
   public CopyOnWriteArraySet<Bullet> getBullets() {
@@ -108,11 +131,11 @@ public abstract class GameMode implements Game {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
       EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
-//      for (int i = 0; i < 10; i++) {
-//        Tank tank2 = createTank(player + " AI" + i, true);
-//        playerMap.put(player + " AI" + i, tank2);
-//        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
-//      }
+      for (int i = 0; i < 1; i++) {
+        Tank tank2 = createTank(player + " AI" + i, true);
+        playerMap.put(player + " AI" + i, tank2);
+        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
+      }
     }
   }
 
@@ -132,14 +155,19 @@ public abstract class GameMode implements Game {
 
   @Override
   public void playerInput(CommandModel model) {
-    //Gets the tank that the command came from
+//Gets the tank that the command came from
     PlayerInput input = new PlayerInput(model);
     var tank = playerMap.get(model.getId());
     tank.addFrame(input);
   }
 
   private Tank createTank(String player, boolean isAI) {
-    //I can't be bothered to reason how this would work with booleans so you get this counter
+//I can't be bothered to reason how this would work with booleans so you get this counter
+    Position position = getClearPosition();
+    return createTank(player, isAI, position.getX(), position.getY());
+  }
+
+    private Position getClearPosition() {
     int count = 1;
     Position position = new Position();
     ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
@@ -147,8 +175,8 @@ public abstract class GameMode implements Game {
       count = 0;
       position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
           ThreadLocalRandom.current().nextInt(min, max + 1));
-      this.logger.info("Trying position: " + position.toString());
-      CollisionBox box = new CollisionBox(position, Entity.EntityType.TANK.radius);
+      this.logger.trace("Trying position: " + position.toString());
+      CollisionBox box = new CollisionBox(position, EntityType.TANK.radius);
       ArrayList<Position> boxCheck = box.getBox();
       for (int i = 0; i < boxCheck.size(); i++) {
         if (map.containsKey(boxCheck.get(i))) {
@@ -156,7 +184,7 @@ public abstract class GameMode implements Game {
         }
       }
     }
-    return createTank(player, isAI, position.getX(), position.getY());
+    return position;
   }
 
   private Tank createTank(String player, boolean isAI, int x, int y) {
@@ -171,6 +199,7 @@ public abstract class GameMode implements Game {
       return tank;
     }
   }
+
   /**
    * Gets root.
    *
@@ -178,6 +207,59 @@ public abstract class GameMode implements Game {
    */
 //  public GameObject getRoot() {
 //    return root;
+//  }
+  protected void createPowerUps() {
+// TODO: Make PowerUpController tick based
+// TODO: Where should this method be called?
+    EntityType powerUpId = Entity.randomPowerUP();
+//do we want to keep track of the power ups that exist or just put them in the map?
+    this.logger.info(powerUpId +" "+ Integer.toString(DataServer.INSTANCE.getOccupiedCoordinates().size()));
+    switch (powerUpId) {
+      case HEALTH_POWERUP:
+        HealthPowerup healthPowerUp = null; // get name of powerUp
+        Position healthPosition = getClearPosition();
+        healthPowerUp = new HealthPowerup("healthPowerUp", healthPosition);
+        DataServer.INSTANCE.addBoxToData(healthPowerUp.getCollisionBox(), healthPowerUp);
+        powerups.add(healthPowerUp);
+        this.logger.trace("Adding: " + healthPowerUp.toString());
+        break;
+      case AMMO_POWERUP:
+        AmmoPowerup ammoPowerUp = null; // get name of powerUp
+        Position ammoPosition = getClearPosition();
+        ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
+        DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
+        powerups.add(ammoPowerUp);
+        this.logger.trace("Adding: " + ammoPowerUp.toString());
+        break;
+      case DAMAGE_POWERUP:
+        DamagePowerup damagePowerUp = null; // get name of powerUp
+        Position damagePosition = getClearPosition();
+        damagePowerUp = new DamagePowerup("damagePowerUp", damagePosition);
+        DataServer.INSTANCE.addBoxToData(damagePowerUp.getCollisionBox(), damagePowerUp);
+        powerups.add(damagePowerUp);
+        this.logger.trace("Adding: " + damagePowerUp.toString());
+        break;
+      case SPEED_POWERUP:
+        SpeedPowerup speedPowerUp = null; // get name of powerUp
+        Position speedPosition = getClearPosition();
+        speedPowerUp = new SpeedPowerup("speedPowerUp", speedPosition);
+        DataServer.INSTANCE.addBoxToData(speedPowerUp.getCollisionBox(), speedPowerUp);
+        powerups.add(speedPowerUp);
+        this.logger.trace("Adding: " + speedPowerUp.toString());
+    }
+  }
+//  public Position powerupPosition() {
+//    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
+//    Position position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
+//        ThreadLocalRandom.current().nextInt(min, max + 1));
+//    CollisionBox box = new CollisionBox(position, EntityType.TANK.radius); // TODO: will tank have same radius as power ups?
+//    //checks if this is a valid coordinate when generated is not in the map then moves on.
+//    while (DataServer.INSTANCE.getOccupiedCoordinates().containsKey(position) || DataServer.INSTANCE.containsBox(box)) {
+//      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
+//          ThreadLocalRandom.current().nextInt(min, max + 1));
+//      box.setPosition(position);
+//    }
+//    return position;
 //  }
 
   /**

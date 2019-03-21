@@ -1,6 +1,7 @@
 package com.aticatac.server.objectsystem.physics;
 
 import com.aticatac.common.model.Vector;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
@@ -101,7 +102,7 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
    * @return An array of the collision type and the new position
    */
   private PhysicsResponse collision(Position newPosition, Position oldPosition) {
-//    if (entity.type == Entity.EntityType.TANK) {
+//    if (entity.type == EntityType.TANK) {
     //gets the old box position
     //removes the old positions form data server
 //      d.removeBoxFromData(box);
@@ -111,17 +112,17 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
       //map of the coordinates that are occupied
       Position position = box.getBox().get(i);
       PhysicsResponse returnPosition = findCollisions(position, oldPosition);
-      if (returnPosition.entity.type != Entity.EntityType.NONE) {
+      if (returnPosition.entity.type != EntityType.NONE) {
         //sets the box positions back to the old ones and puts that back into the data server
 //          d.addBoxToData(box.getBox(), new Entity(name, entity.type));
         return returnPosition;
       }
-      if (entity.type == Entity.EntityType.BULLET) {
+      if (entity.type == EntityType.BULLET) {
         return returnPosition;
       }
 //      }
       //adds the box positions to the server
-//      d.addBoxToData(box.getBox(), new Entity(name, Entity.EntityType.TANK));
+//      d.addBoxToData(box.getBox(), new Entity(name, EntityType.TANK));
     }
 //    else if (getGameObject().getObjectType() == ObjectType.BULLET) {
 //      //sets the new positions in collision box
@@ -156,14 +157,14 @@ public class CallablePhysics implements Callable<PhysicsResponse> {
         collisionType = d.getEntity(newPosition);
         //checks the coordinate is not itself
         if (collisionType.equals(entity)) {
-          return new PhysicsResponse(newPosition);
+          return new PhysicsResponse(collisionType, newPosition);
         }
         //Returning a collision type and also the position
-        return new PhysicsResponse(collisionType, oldPosition);
+        return new PhysicsResponse(collisionType, newPosition);
       }
-      return new PhysicsResponse(newPosition);
+      return new PhysicsResponse(Entity.empty, newPosition);
     } else {
-      return new PhysicsResponse(oldPosition);
+      return new PhysicsResponse(Entity.outOfBounds, oldPosition);
     }
   }
 

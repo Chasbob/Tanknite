@@ -17,7 +17,7 @@ public class AIInputListener {
 
   @Subscribe
   private void aiInput(AIInput input) {
-    AIInput i = new AIInput(me, 30, input.getPlayers(), input.getPowerups());
+    AIInput i = new AIInput(30, input.getPlayers(), input.getPowerups());
     frames.add(i);
   }
 }

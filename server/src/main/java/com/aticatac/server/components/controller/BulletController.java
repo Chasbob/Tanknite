@@ -30,7 +30,7 @@
 //    PhysicsResponse physicsData = this.getGameObject().getComponent(Physics.class).move(this.getGameObject().getComponent(Transform.class).getRotation());
 ////        this.logger.info(physicsData);
 //    //0 nothing, 1 is a wall, 2 is a tank
-//    if (physicsData.getEntity().getType() == Entity.EntityType.WALL) {
+//    if (physicsData.getEntity().getType() == EntityType.WALL) {
 //      this.logger.warn("Bullet hit a wall!");
 //    } else if (!physicsData.entity.getName().equals(gameObject.getName())) {
 //      this.logger.trace(physicsData);
@@ -40,8 +40,8 @@
 //      getGameObject().getComponent(Transform.class).setPosition(physicsData.getPosition());
 //    }
 //    return physicsData.getEntity();
-////        if (physicsData.getEntity().getType() != Entity.EntityType.NONE) {
-////          if (physicsData.getEntity().getType() != Entity.EntityType.TANK) {
+////        if (physicsData.getEntity().getType() != EntityType.NONE) {
+////          if (physicsData.getEntity().getType() != EntityType.TANK) {
 ////            GameObject.destroy(getGameObject());
 ////          }
 ////
