@@ -91,6 +91,7 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
       }
 //      output.setTurretOutput(this.getComponent(TurretController.class).tick());
     }
+
   }
 
   public void addFrame(final PlayerInput frame) {
@@ -106,20 +107,21 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
 //    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
     PhysicsResponse physicsData = physics.move(bearing, position);
     this.logger.trace(physicsData.entity);
-    switch (physicsData.entity.type) {
-      case TANK:
-        if (physicsData.entity.equals(getBaseEntity())) {
-          updateCollisionBox(physicsData.position);
-          break;
-        }
-      case OUTOFBOUNDS:
-      case WALL:
-        outputService.onPlayerHit(physicsData.entity, getContainer());
-        break;
-      default:
-        outputService.onPlayerHit(physicsData.entity, getContainer());
+//    switch (physicsData.entity.type) {
+//      case TANK:
+//        if (physicsData.entity.equals(getBaseEntity())) {
+//          updateCollisionBox(physicsData.position);
+//          break;
+//        }
+//      case OUTOFBOUNDS:
+//      case WALL:
+//        outputService.onPlayerHit(physicsData.entity, getContainer());
+//        break;
+//      default:
+//        outputService.onPlayerHit(physicsData.entity, getContainer());
+//        updateCollisionBox(physicsData.position);
+//    }
         updateCollisionBox(physicsData.position);
-    }
 //    if (!position.equals(physicsData.getPosition())) {
 //      this.logger.trace(physicsData);
 //      updateCollisionBox(physicsData.position);

@@ -39,7 +39,7 @@ public class AITank extends Tank {
     this.maxAmmo = 30;
     this.outputService = new PlayerOutputService(getBaseEntity());
     ai = new AI();
-    EventBusFactory.getEventBus().register(new AIInputListener(frames, this.position, this.health));
+    EventBusFactory.getEventBus().register(new AIInputListener(frames));
   }
 
   public Position getPosition() {
