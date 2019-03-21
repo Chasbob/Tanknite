@@ -184,9 +184,15 @@ public class GameScreen extends AbstractScreen {
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
       renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
     }
-    if (update != null &&update.getPowerups() != null) {
+    if (update != null && update.getPowerups() != null) {
       renderPowerups(tanksMiniMap);
-
+    }
+    if (update != null && update.getNewShots() != null) {
+      tanksMiniMap.setColor(Color.RED);
+      for (Container c :
+          update.getNewShots().values()) {
+        renderContainer(c, tanksMiniMap);
+      }
     }
     tanksMiniMap.end();
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
@@ -456,7 +462,7 @@ public class GameScreen extends AbstractScreen {
         this.camera.getCamera().zoom += 0.1f;
       }
     }
-    if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
     }
   }

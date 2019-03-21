@@ -4,8 +4,8 @@ import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
-import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import com.aticatac.server.transform.Position;
 import java.security.SecureRandom;
 import java.util.Objects;
 
@@ -168,12 +168,16 @@ public class Entity {
     return position;
   }
 
-  protected void setPosition(Position newPosition) {
-    DataServer.INSTANCE.removeBoxFromData(collisionBox);
-    this.position.set(newPosition);
-    this.collisionBox.setPosition(this.position);
-    DataServer.INSTANCE.addBoxToData(collisionBox, getBaseEntity());
-    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE,getContainer()));
+  protected void setPosition(Position newPosition, boolean collidable) {
+    if (collidable) {
+      DataServer.INSTANCE.removeBoxFromData(collisionBox);
+      this.position.set(newPosition);
+      this.collisionBox.setPosition(this.position);
+      DataServer.INSTANCE.addBoxToData(collisionBox, getBaseEntity());
+    } else {
+      this.position.set(newPosition);
+      this.collisionBox.setPosition(this.position);
+    }
   }
   /**
    * The enum Entity type.

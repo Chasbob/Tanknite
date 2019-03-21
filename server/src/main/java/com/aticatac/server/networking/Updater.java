@@ -32,7 +32,7 @@ public class Updater implements Runnable {
     this.changes = true;
     this.shutdown = false;
     this.modelReader = new ModelReader();
-    EventBusFactory.getEventBus().register(new UpdateChangesListener(update.getPlayers(), update.getProjectiles(), update.getPowerups()));
+    EventBusFactory.getEventBus().register(new UpdateChangesListener(update));
     updatePlayers();
   }
 
