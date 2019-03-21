@@ -15,6 +15,7 @@ import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
+import com.aticatac.server.objectsystem.physics.CallablePhysics;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
 import java.util.ArrayList;
@@ -107,31 +108,47 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
 //    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
     PhysicsResponse physicsData = physics.move(bearing, position);
     this.logger.trace(physicsData.entity);
-//    switch (physicsData.entity.type) {
-//      case TANK:
-//        if (physicsData.entity.equals(getBaseEntity())) {
-//          updateCollisionBox(physicsData.position);
-//          break;
-//        }
-//      case OUTOFBOUNDS:
-//      case WALL:
-//        outputService.onPlayerHit(physicsData.entity, getContainer());
-//        break;
-//      default:
-//        outputService.onPlayerHit(physicsData.entity, getContainer());
-//        updateCollisionBox(physicsData.position);
-//    }
+    switch (physicsData.entity.type) {
+      case TANK:
+        if (physicsData.entity.equals(getBaseEntity())) {
+          updateCollisionBox(physicsData.position);
+          break;
+        }
+      case OUTOFBOUNDS:
+      case WALL:
+        outputService.onPlayerHit(physicsData.entity, getContainer());
+        break;
+      case AMMO_POWERUP:
+        int newAmmo = ammo + 10;
+        if (newAmmo > maxAmmo) ammo = maxAmmo;
+        else ammo = newAmmo;
+        break;
+      case HEALTH_POWERUP:
+        int newHealth = health + 10;
+        if (newHealth > maxHealth) health = maxHealth;
+        else health = newHealth;
+        break;
+      case DAMAGE_POWERUP:
+        //
+        break;
+      case SPEED_POWERUP:
+        //
+        break;
+      default:
+        outputService.onPlayerHit(physicsData.entity, getContainer());
         updateCollisionBox(physicsData.position);
-//    if (!position.equals(physicsData.getPosition())) {
-//      this.logger.trace(physicsData);
-//      updateCollisionBox(physicsData.position);
-//    }
-//    if (physicsData.entity.type != EntityType.NONE) {
-//      if (physicsData.entity.type.isPowerUp()) {
-//        updateCollisionBox(physicsData.position);
-//      }
-//      outputService.onPlayerHit(physicsData.entity, getContainer());
-//    }
+    }
+        updateCollisionBox(physicsData.position);
+    if (!position.equals(physicsData.getPosition())) {
+      this.logger.trace(physicsData);
+      updateCollisionBox(physicsData.position);
+    }
+    if (physicsData.entity.type != EntityType.NONE) {
+      if (physicsData.entity.type.isPowerUp()) {
+        updateCollisionBox(physicsData.position);
+      }
+      outputService.onPlayerHit(physicsData.entity, getContainer());
+    }
   }
 
   private void updateCollisionBox(Position newPosition) {
