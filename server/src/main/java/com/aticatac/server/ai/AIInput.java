@@ -1,4 +1,4 @@
-package com.aticatac.server.components.ai;
+package com.aticatac.server.ai;
 
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import java.util.ArrayList;

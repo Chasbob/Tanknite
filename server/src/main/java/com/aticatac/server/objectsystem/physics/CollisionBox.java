@@ -1,7 +1,7 @@
 package com.aticatac.server.objectsystem.physics;
 
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import java.util.ArrayList;
 import java.util.Objects;
 import org.apache.log4j.Logger;

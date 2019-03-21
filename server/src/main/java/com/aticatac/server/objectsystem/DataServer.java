@@ -1,7 +1,7 @@
 package com.aticatac.server.objectsystem;
 
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

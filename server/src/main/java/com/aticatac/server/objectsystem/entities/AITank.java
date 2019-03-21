@@ -3,17 +3,17 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.ai.AI;
+import com.aticatac.server.ai.AIInput;
+import com.aticatac.server.ai.Decision;
+import com.aticatac.server.ai.PlayerState;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.listener.AIInputListener;
 import com.aticatac.server.bus.service.PlayerOutputService;
-import com.aticatac.server.components.ai.AI;
-import com.aticatac.server.components.ai.AIInput;
-import com.aticatac.server.components.ai.Decision;
-import com.aticatac.server.components.ai.PlayerState;
-import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import com.aticatac.server.transform.Position;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
@@ -51,21 +51,8 @@ public class AITank extends Tank {
     EventBusFactory.getEventBus().register(new AIInputListener(frames, this.position, this.health));
   }
 
-  public Position getPosition() {
-    return position;
-  }
-
-  private void setPosition(Position p) {
-    this.position = p;
-    box.setPosition(p);
-  }
-
   public Entity getEntity() {
     return entity;
-  }
-
-  public String getName() {
-    return entity.name;
   }
 
   @Override
@@ -73,7 +60,6 @@ public class AITank extends Tank {
     logger.trace("tick");
     if (!frames.isEmpty()) {
       input = frames.poll();
-//      try {
       AIInput i = new AIInput(new PlayerState(position, health), 30, input.getPlayers(), input.getPowerups());
       Decision decision = ai.getDecision(i);
       if (decision.getCommand() != null && decision.getCommand() != Command.DEFAULT) {
@@ -84,32 +70,20 @@ public class AITank extends Tank {
           e.printStackTrace();
         }
       }
-//      } catch (Exception e) {
-//        this.logger.error(e);
-//        this.logger.error("Error while moving.");
-//      }
     }
-//      output.setTurretOutput(this.getComponent(TurretController.class).tick());
   }
 
   public Container getContainer() {
     return new Container(position.getX(), position.getY(), 0, 100, 30, entity.name, EntityType.TANK);
   }
-//  public void move(int bearing) {
-//    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-//    PhysicsResponse physicsData = physics.call();
-////    if (!position.equals(physicsData.getPosition())) {
-////      this.logger.trace(physicsData);
-////      updateCollisionBox(physicsData.position);
-////    }
-//    if (physicsData.entity.type == EntityType.NONE) {
-//      this.logger.trace(physicsData);
-//      updateCollisionBox(physicsData.position);
-//    } else if (physicsData.entity.type.isPowerUp()) {
-//      updateCollisionBox(physicsData.position);
-//    }
-//    outputService.onPlayerHit(physicsData.entity, getContainer());
-//  }
+
+  public String getName() {
+    return entity.name;
+  }
+
+  public Position getPosition() {
+    return position;
+  }
 
   private void updateCollisionBox(Position newPosition) {
     //remove old box

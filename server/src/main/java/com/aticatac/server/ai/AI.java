@@ -1,7 +1,7 @@
-package com.aticatac.server.components.ai;
+package com.aticatac.server.ai;
 
 import com.aticatac.common.model.Command;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;

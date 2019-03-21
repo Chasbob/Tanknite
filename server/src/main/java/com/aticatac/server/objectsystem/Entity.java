@@ -2,7 +2,7 @@ package com.aticatac.server.objectsystem;
 
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import java.security.SecureRandom;
 import java.util.Objects;
@@ -31,8 +31,8 @@ public class Entity {
    * The Type.
    */
   public final EntityType type;
-  private Position position;
-  private CollisionBox collisionBox;
+  protected Position position;
+  protected CollisionBox collisionBox;
 
   /**
    * Instantiates a new Entity.
@@ -164,6 +164,13 @@ public class Entity {
 
   public Position getPosition() {
     return position;
+  }
+
+  protected void setPosition(Position newPosition) {
+    DataServer.INSTANCE.removeBoxFromData(collisionBox);
+    this.position.set(newPosition);
+    this.collisionBox.setPosition(this.position);
+    DataServer.INSTANCE.addBoxToData(collisionBox, getBaseEntity());
   }
   /**
    * The enum Entity type.

@@ -2,11 +2,8 @@ package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.event.BulletCollisionEvent;
 import com.aticatac.server.bus.service.BulletOutputService;
-import com.aticatac.server.components.physics.PhysicsResponse;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
@@ -92,31 +89,31 @@ public class Bullet implements Tickable {
   }
 
   private void move() throws Exception {
-    this.logger.trace("Move.");
-//    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-    PhysicsResponse physicsData = physics.move(bearing, position);
-    this.logger.trace(physicsData.position);
-    switch (physicsData.entity.type) {
-      case TANK:
-        if (physicsData.entity.name.equals(shooter.name)) {
-          updateCollisionBox(physicsData.position);
-          break;
-        } else {
-          EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, physicsData.entity));
-        }
-      case WALL:
-      case OUTOFBOUNDS:
-        outputService.onBulletCollision(physicsData.entity);
-      default:
-        updateCollisionBox(physicsData.position);
-    }
-//    if (physicsData.entity.type == EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
-//      updateCollisionBox(physicsData.position);
-//      return Entity.empty;
-//    } else {
-//      this.logger.info(physicsData);
-//      return physicsData.entity;
+//    this.logger.trace("Move.");
+////    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
+//    PhysicsResponse physicsData = physics.move(bearing, position);
+//    this.logger.trace(physicsData.position);
+//    switch (physicsData.entity.type) {
+//      case TANK:
+//        if (physicsData.entity.name.equals(shooter.name)) {
+//          updateCollisionBox(physicsData.position);
+//          break;
+//        } else {
+//          EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, physicsData.entity));
+//        }
+//      case WALL:
+//      case OUTOFBOUNDS:
+//        outputService.onBulletCollision(physicsData.entity);
+//      default:
+//        updateCollisionBox(physicsData.position);
 //    }
+////    if (physicsData.entity.type == EntityType.NONE || physicsData.entity.name.equals(shooter.name)) {
+////      updateCollisionBox(physicsData.position);
+////      return Entity.empty;
+////    } else {
+////      this.logger.info(physicsData);
+////      return physicsData.entity;
+////    }
   }
 
   private void setPosition(Position p) {

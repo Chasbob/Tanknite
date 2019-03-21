@@ -10,11 +10,11 @@
 //import com.aticatac.server.components.Health;
 //import com.aticatac.server.components.PlayerKilledCount;
 //import com.aticatac.server.components.Time;
-//import com.aticatac.server.components.ai.AI;
+//import com.aticatac.server.ai.AI;
 //import com.aticatac.server.components.controller.TankController;
 //import com.aticatac.server.components.physics.Physics;
-//import com.aticatac.server.components.transform.Position;
-//import com.aticatac.server.components.transform.Transform;
+//import com.aticatac.server.transform.Position;
+//import com.aticatac.server.transform.Transform;
 //import com.aticatac.server.objectsystem.GameObject;
 //
 //public class TankObject extends GameObject {

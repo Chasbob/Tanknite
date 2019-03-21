@@ -1,4 +1,4 @@
-package com.aticatac.server.components.ai;
+package com.aticatac.server.ai;
 
 import com.aticatac.common.model.Command;
 
