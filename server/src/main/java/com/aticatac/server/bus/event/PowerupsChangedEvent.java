@@ -2,20 +2,25 @@ package com.aticatac.server.bus.event;
 
 import com.aticatac.common.objectsystem.Container;
 
-public class PlayersChangedEvent {
-  public final Action action;
+public class PowerupsChangedEvent {
+  private final Action action;
   private final Container container;
-  public PlayersChangedEvent(final Action action, final Container container) {
+
+  @Override
+  public String toString() {
+    return "PowerupsChangedEvent{" +
+        "action=" + action +
+        ", container=" + container +
+        '}';
+  }
+
+  public PowerupsChangedEvent(final Action action, final Container container) {
     this.action = action;
     this.container = container;
   }
 
-  @Override
-  public String toString() {
-    return "PlayersChangedEvent{" +
-        "action=" + action +
-        ", container=" + container +
-        '}';
+  public Action getAction() {
+    return action;
   }
 
   public Container getContainer() {

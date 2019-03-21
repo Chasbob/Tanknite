@@ -1,12 +1,12 @@
 package com.aticatac.server.bus.listener;
 
-import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.server.bus.event.ShootEvent;
 import com.aticatac.server.bus.event.TankCollisionEvent;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.Bullet;
-import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.CopyOnWriteArraySet;
 import org.apache.log4j.Logger;
@@ -24,7 +24,7 @@ public class PlayerOutputListener {
 
   @Subscribe
   public void processPlayerCollision(TankCollisionEvent e) {
-    switch (e.getHit().type){
+    switch (e.getHit().type) {
       case NONE:
         break;
       case TANK:
@@ -36,16 +36,18 @@ public class PlayerOutputListener {
       case OUTOFBOUNDS:
         break;
       case AMMO_POWERUP:
-        break;
       case SPEED_POWERUP:
-        break;
       case HEALTH_POWERUP:
-        break;
       case DAMAGE_POWERUP:
+        this.logger.info(e);
+        DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
+        EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        powerups.remove(e.getHit());
         break;
     }
   }
-//  @Subscribe
+
+  //  @Subscribe
 //  public void processPlayerCollision(TankCollisionEvent tankCollisionEvent) {
 //    if (tankCollisionEvent.getHit().type != EntityType.NONE) {
 //      if (tankCollisionEvent.getHit().type.isPowerUp()) {

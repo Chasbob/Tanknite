@@ -4,6 +4,7 @@ import com.aticatac.common.model.Model;
 import com.aticatac.common.objectsystem.Container;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -17,11 +18,11 @@ public class Update extends Model {
   private final ConcurrentHashMap<String, Container> players;
   private final ArrayList<Container> projectiles;
   private final ArrayList<Container> powerups;
+  private final ConcurrentHashMap<Integer, Container> powerupmap;
   private boolean start;
   //    private boolean objectChanged;
 //  private Container rootContainer;
   private boolean playersChanged;
-
   /**
    * Instantiates a new Model.
    *
@@ -35,6 +36,11 @@ public class Update extends Model {
     this.start = false;
     this.projectiles = new ArrayList<>();
     powerups = new ArrayList<>();
+    powerupmap = new ConcurrentHashMap<>();
+  }
+
+  public ConcurrentHashMap<Integer, Container> getPowerupmap() {
+    return powerupmap;
   }
 
   /**
@@ -95,6 +101,10 @@ public class Update extends Model {
     return players.getOrDefault(id, null);
   }
 
+  public ArrayList<Container> getPowerups() {
+    return powerups;
+  }
+
   /**
    * Gets players.
    *
@@ -115,6 +125,7 @@ public class Update extends Model {
 
   public void addPowerup(Container c) {
     this.powerups.add(c);
+    this.powerupmap.put(c.hashCode(), c);
   }
 
   /**
