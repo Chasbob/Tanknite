@@ -9,9 +9,11 @@ import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.components.ai.PlayerState;
 import com.aticatac.server.components.physics.PhysicsResponse;
 import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.networking.Server;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
+import com.aticatac.server.objectsystem.entities.powerups.AmmoPowerup;
 import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
@@ -21,30 +23,35 @@ import com.aticatac.server.objectsystem.physics.Physics;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import com.aticatac.server.test.GameMode;
 import org.apache.log4j.Logger;
 
 public class Tank<T extends PlayerInput> extends Entity implements DependantTickable<PlayerInput>, Hurtable {
   protected final ConcurrentLinkedQueue<PlayerInput> frames;
-  //  protected final Entity entity;
+  protected final Entity entity;
   protected final Logger logger;
   protected final PlayerOutputService outputService;
   private final Physics physics;
-  //  protected Position position;
+  protected Position position;
   protected PlayerInput input;
   protected CollisionBox box;
   protected int health;
   protected int maxHealth;
   protected int maxAmmo;
   protected int ammo;
+  protected boolean damageIncrease = false;
+  protected boolean speedIncrease = false;
+  protected boolean shuttingDown = false;
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
   public Tank(String name, Position p, int health, int ammo) {
     super(name, EntityType.TANK, p);
-//    entity = new Entity(name, EntityType.TANK);
+    entity = new Entity(name, EntityType.TANK);
     frames = new ConcurrentLinkedQueue<>();
     input = new PlayerInput();
-//    position = p;
+    position = p;
     logger = Logger.getLogger(getClass());
     this.box = new CollisionBox(position, EntityType.TANK);
     this.maxHealth = 100;
@@ -74,7 +81,7 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
         logger.trace("Result: " + result.angle());
         try {
           if (health > 10) {
-            move(result.angle());
+            move(result.angle(), speedIncrease);
           }
         } catch (Exception e) {
           this.logger.error(e);
@@ -104,8 +111,8 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
     tick();
   }
 
-  public void move(int bearing) {
-//    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
+  public void move(int bearing, boolean speedIncrease) {
+  //CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
     PhysicsResponse physicsData = physics.move(bearing, position);
     this.logger.trace(physicsData.entity);
     switch (physicsData.entity.type) {
@@ -122,17 +129,23 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
         int newAmmo = ammo + 10;
         if (newAmmo > maxAmmo) ammo = maxAmmo;
         else ammo = newAmmo;
+        outputService.onPlayerHit(physicsData.entity, getContainer());
+        updateCollisionBox(physicsData.position);
         break;
       case HEALTH_POWERUP:
-        int newHealth = health + 10;
-        if (newHealth > maxHealth) health = maxHealth;
-        else health = newHealth;
+        heal(10);
+        outputService.onPlayerHit(physicsData.entity, getContainer());
+        updateCollisionBox(physicsData.position);
         break;
       case DAMAGE_POWERUP:
-        //
+        // TODO: Implement thread for 20 seconds (in terms of ticks) where damageIncrease = true
+        outputService.onPlayerHit(physicsData.entity, getContainer());
+        updateCollisionBox(physicsData.position);
         break;
       case SPEED_POWERUP:
-        //
+        // TODO: Implement thread for 20 seconds (in terms of ticks) where speedIncrease = true
+        outputService.onPlayerHit(physicsData.entity, getContainer());
+        updateCollisionBox(physicsData.position);
         break;
       default:
         outputService.onPlayerHit(physicsData.entity, getContainer());
@@ -181,7 +194,10 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   @Override
   public int hit(final int damage) {
     this.logger.info(clamp(health - damage));
+    if (health <= 10 && health > 0); // TODO, call remove player after 20 seconds (in terms of ticks)
+    Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
     return health = clamp(health - damage);
+
   }
 
   @Override

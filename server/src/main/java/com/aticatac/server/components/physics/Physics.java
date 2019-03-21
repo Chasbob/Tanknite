@@ -63,7 +63,7 @@ public class Physics extends Component {
    *
    * @return the position
    */
-  public PhysicsResponse move(int rotation) {
+  public PhysicsResponse move(int rotation, boolean speedIncrease) {
     Position position = this.getGameObject().getComponent(Transform.class).getPosition();
     int xCoord = position.getX();
     int yCoord = position.getY();

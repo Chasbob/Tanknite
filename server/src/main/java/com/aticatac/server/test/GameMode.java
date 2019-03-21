@@ -141,8 +141,15 @@ public abstract class GameMode implements Game {
 
   @Override
   public void removePlayer(String player) {
+
     EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     playerMap.remove(player);
+    AmmoPowerup ammoPowerUp = null; // get name of powerUp
+    Position ammoPosition = getClearPosition();
+    ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
+    DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
+    powerups.add(ammoPowerUp);
+    this.logger.trace("Adding: " + ammoPowerUp.toString());
   }
 
   @Override
