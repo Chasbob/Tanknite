@@ -15,7 +15,7 @@ public class Physics {
   /**
    * The gravity acting for all objects
    */
-  private static int gravity = 10;
+  private static int gravity = 1;
   /**
    * The D.
    */
@@ -24,11 +24,11 @@ public class Physics {
   /**
    * The mass of this object
    */
-  private int objectMass = 10;
+  private int objectMass = 1;
   /**
    * The thrust for this tank
    */
-  private int thrust = 10;
+  private int thrust = 1;
   /**
    * The acceleration for this tank
    */
