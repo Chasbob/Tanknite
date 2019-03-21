@@ -61,9 +61,9 @@ public class AI {
   public Decision getDecision(AIInput input) {
     currentInput = input;
     // Update information
-    tankPos = input.me.getPosition();
-    tankHealth = input.me.health;
-    tankAmmo = input.ammo;
+    tankPos = input.getMe().getPosition();
+    tankHealth = input.getMe().health;
+    tankAmmo = input.getAmmo();
     enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
     powerupsInRange = getPowerupsInRange(tankPos);
     // Change aim angle
@@ -492,7 +492,7 @@ public class AI {
   private ArrayList<PlayerState> getEnemiesInRange(Position position, int range) {
     ArrayList<PlayerState> inRange = getPlayersInRange(position, range, currentInput.getPlayers());
     //todo make sure this is working...
-    inRange.remove(currentInput.me);
+    inRange.remove(currentInput.getMe());
     return inRange;
   }
 
