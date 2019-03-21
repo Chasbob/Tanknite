@@ -14,4 +14,5 @@ application {
 task execDesktop(type: JavaExec) {
     main = "com.aticatac.desktop.DesktopLauncher"
     classpath = sourceSets.main.runtimeClasspath
+    jvmArgs '--illegal-access=deny'
 }

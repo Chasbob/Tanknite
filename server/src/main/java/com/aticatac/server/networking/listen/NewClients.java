@@ -12,18 +12,20 @@ import org.apache.log4j.Logger;
 public class NewClients implements Runnable {
   //    private final ServerSocket serverSocket;
   private final Logger logger;
+  private boolean shutdown;
 
   /**
    * Instantiates a new New clients.
    */
   public NewClients() {
+    this.shutdown = false;
 //        this.serverSocket = new ServerSocket(Server.ServerData.INSTANCE.getPort());
     this.logger = Logger.getLogger(getClass());
   }
 
   @Override
   public void run() {
-    while (!Thread.currentThread().isInterrupted()) {
+    while (!Thread.currentThread().isInterrupted() && !shutdown) {
       try {
         logger.info("Client count: " + Server.ServerData.INSTANCE.getClients().size());
         logger.trace("Waiting for client...");
@@ -37,5 +39,9 @@ public class NewClients implements Runnable {
       }
     }
     this.logger.warn("Finished!");
+  }
+
+  public void shutdown() {
+    this.shutdown = true;
   }
 }

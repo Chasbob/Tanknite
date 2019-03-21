@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.game.GDXGame;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
@@ -15,16 +16,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
  * The type Main menu screen.
  */
 public class MainMenuScreen extends AbstractScreen {
-
-  private boolean wantsToPlay;
-  private boolean wantsToPlayMultiplayer;
   VerticalGroup verticalGroup;
-  private Table modeTable;
-  private Table multiplayerTable;
   Table soundTable;
   Table musicTable;
-  private boolean changeSettings;
   int offsetForPosition;
+  private boolean wantsToPlay;
+  private boolean wantsToPlayMultiplayer;
+  private Table modeTable;
+  private Table multiplayerTable;
+  private boolean changeSettings;
 
   /**
    * Instantiates a new Main menu screen.
@@ -85,6 +85,19 @@ public class MainMenuScreen extends AbstractScreen {
     verticalGroup.pack();
   }
 
+  @Override
+  public void refresh() {
+    wantsToPlay = false;
+    wantsToPlayMultiplayer = false;
+    changeSettings = false;
+    verticalGroup.removeActor(modeTable);
+    verticalGroup.removeActor(multiplayerTable);
+    verticalGroup.removeActor(musicTable);
+    verticalGroup.removeActor(soundTable);
+    verticalGroup.pack();
+    offsetForPosition = 0;
+  }
+
   private void createPlay() {
     TextButton playButton = Styles.INSTANCE.createButton("Play");
     verticalGroup.addActor(playButton);
@@ -106,7 +119,6 @@ public class MainMenuScreen extends AbstractScreen {
       }
       return false;
     }));
-
   }
 
   private void createPlayChildren() {
@@ -117,8 +129,9 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton singlePlayerButton = Styles.INSTANCE.createPopButton("Single-Player");
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
-      Server server = new Server(true, "Single-Player");
-      server.start();
+//      Server server = new Server(true, "Single-Player");
+//      server.start();
+      GDXGame.createServer(true, "Single-Player");
       refresh();
       ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
@@ -188,19 +201,4 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     verticalGroup.addActor(settingsButton);
   }
-
-  @Override
-  public void refresh() {
-    wantsToPlay = false;
-    wantsToPlayMultiplayer = false;
-    changeSettings = false;
-    verticalGroup.removeActor(modeTable);
-    verticalGroup.removeActor(multiplayerTable);
-    verticalGroup.removeActor(musicTable);
-    verticalGroup.removeActor(soundTable);
-    verticalGroup.pack();
-    offsetForPosition = 0;
-  }
-
-
 }

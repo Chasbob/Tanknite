@@ -19,6 +19,7 @@ public class Discovery implements Runnable {
   private final String name;
   private final ArrayList<ServerInformation> informations;
   private List<DatagramPacket> packets;
+  private boolean shutdown;
 
   /**
    * Instantiates a new Discovery.
@@ -34,6 +35,7 @@ public class Discovery implements Runnable {
     packets = new ArrayList<>();
     buildPackets(Server.ServerData.INSTANCE.getId());
     this.logger = Logger.getLogger(Discovery.class);
+    shutdown = false;
   }
 
   private void buildPackets(String id) throws IOException {
@@ -52,7 +54,7 @@ public class Discovery implements Runnable {
   @Override
   public void run() {
     this.logger.trace("Running...");
-    while (!Thread.currentThread().isInterrupted()) {
+    while (!Thread.currentThread().isInterrupted() && !shutdown) {
       try {
         double nanoTime = System.nanoTime();
         broadcast();
@@ -69,6 +71,10 @@ public class Discovery implements Runnable {
       }
     }
     this.logger.warn("Finished!");
+  }
+
+  public void shutdown() {
+    this.shutdown = true;
   }
 
   private void broadcast() throws IOException {

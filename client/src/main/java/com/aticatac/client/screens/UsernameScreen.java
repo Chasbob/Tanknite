@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.game.GDXGame;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
@@ -89,8 +90,9 @@ public class UsernameScreen extends AbstractScreen {
           response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
         } else if (Data.INSTANCE.isHosting()) {
           //create custom server
-          Server server = new Server(false, serverTextField.getText());
-          server.start();
+//          Server server = new Server(false, serverTextField.getText());
+//          server.start();
+          GDXGame.createServer(false, serverTextField.getText());
           Data.INSTANCE.setSingleplayer(false);
           //TODO make getter for port and ip
           Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(), InetAddress.getByName("127.0.0.1"), 5000, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
