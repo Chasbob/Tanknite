@@ -3,6 +3,8 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.components.ai.PlayerState;
 import com.aticatac.server.components.physics.PhysicsResponse;
@@ -15,19 +17,18 @@ import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.apache.log4j.Logger;
 
-public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInput>, Hurtable {
+public class Tank<T extends PlayerInput> extends Entity implements DependantTickable<PlayerInput>, Hurtable {
   protected final ConcurrentLinkedQueue<PlayerInput> frames;
-  protected final Entity entity;
+  //  protected final Entity entity;
   protected final Logger logger;
   protected final PlayerOutputService outputService;
   private final Physics physics;
-  protected Position position;
+  //  protected Position position;
   protected PlayerInput input;
   protected CollisionBox box;
   protected int health;
@@ -38,35 +39,23 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
   public Tank(String name, Position p, int health, int ammo) {
-    entity = new Entity(name, EntityType.TANK);
+    super(name, EntityType.TANK, p);
+//    entity = new Entity(name, EntityType.TANK);
     frames = new ConcurrentLinkedQueue<>();
     input = new PlayerInput();
-    position = p;
+//    position = p;
     logger = Logger.getLogger(getClass());
     this.box = new CollisionBox(position, EntityType.TANK);
     this.maxHealth = 100;
     this.health = health;
     this.ammo = ammo;
     this.maxAmmo = 30;
-    this.outputService = new PlayerOutputService(entity);
-    physics = new Physics(this.position, entity.type, entity.name);
-  }
-
-  public Position getPosition() {
-    return position;
-  }
-
-  private void setPosition(Position p) {
-    this.position = p;
-    box.setPosition(p);
+    this.outputService = new PlayerOutputService(getBaseEntity());
+    physics = new Physics(position, type, name);
   }
 
   public Entity getEntity() {
-    return entity;
-  }
-
-  public String getName() {
-    return entity.name;
+    return getBaseEntity();
   }
 
   @Override
