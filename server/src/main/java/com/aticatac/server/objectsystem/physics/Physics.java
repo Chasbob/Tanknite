@@ -1,14 +1,13 @@
 package com.aticatac.server.objectsystem.physics;
 
-import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.model.VectorF;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.components.physics.PhysicsResponse;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.test.GameMode;
+import java.util.HashSet;
 
 @SuppressWarnings("ALL")
 public class Physics {
@@ -69,52 +68,35 @@ public class Physics {
     VectorF oV = new VectorF(position.getX(), position.getY());
     VectorF v = new VectorF((float) newX, (float) newY);
     VectorF scl = v.cpy().sub(oV);
+    HashSet<Entity> collisions = new HashSet<>();
     for (int i = 0; i < 10; i++) {
       oV = v.cpy().add(scl.cpy().scl(i * 0.1f));
-      PhysicsResponse response = collision(new Position((int) oV.x, (int) oV.y), position);
-      if (response.entity.type != EntityType.NONE && !response.entity.name.equals(entity.name)) {
-        return response;
-      }
+      final Position newPosition1 = new Position((int) oV.x, (int) oV.y);
+      collisions.addAll(collision2(newPosition1));
     }
-    return collision(newPosition, this.position);
+    return new PhysicsResponse(collisions, newPosition);
   }
 
-  public PhysicsResponse inputCommand(Command command) {
-    if (command.isMovement()) {
-      return move(command.vector.angle(), position);
-    } else {
-      return new PhysicsResponse(Entity.empty, position);
-    }
-  }
 
-  private PhysicsResponse collision(Position newPosition, Position oldPosition) {
+  private HashSet<Entity> collision2(Position newPosition) {
+    HashSet<Entity> collisions = new HashSet<>();
     CollisionBox box = new CollisionBox(newPosition, entity.type);
     for (int i = 0; i < box.getBox().size(); i++) {
       Position position = box.getBox().get(i);
-      PhysicsResponse returnPosition = findCollisions(position, oldPosition);
-      if (returnPosition.entity.type != EntityType.NONE) {
-        return new PhysicsResponse(returnPosition.entity, newPosition);
+      Entity collision = findCollision(position);
+      if (collision.type != EntityType.NONE) {
+        collisions.add(collision);
       }
     }
-//    return findCollisions(newPosition, oldPosition);
-    return new PhysicsResponse(Entity.empty, newPosition);
+    return collisions;
   }
 
-  private PhysicsResponse findCollisions(Position newPosition, Position oldPosition) {
-    if (GameMode.inMap(new Vector(newPosition.getX(), newPosition.getY()))) {
-      Entity collisionType;
-      if (d.occupied(newPosition)) {
-        collisionType = d.getEntity(newPosition);
-        if (collisionType.equals(entity)) {
-          return new PhysicsResponse(Entity.empty, newPosition);
-        } else {
-          return new PhysicsResponse(collisionType, newPosition);
-        }
-      } else {
-        return new PhysicsResponse(Entity.empty, newPosition);
-      }
+  private Entity findCollision(Position p) {
+    if (GameMode.inMap(new Vector(p.getX(), p.getY()))) {
+      return d.INSTANCE.getEntity(p);
     } else {
-      return new PhysicsResponse(Entity.outOfBounds, oldPosition);
+      return Entity.outOfBounds;
     }
   }
+
 }

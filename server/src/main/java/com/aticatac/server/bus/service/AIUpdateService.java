@@ -1,9 +1,9 @@
 package com.aticatac.server.bus.service;
 
 import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.components.ai.AIInput;
-import com.aticatac.server.components.ai.PlayerState;
-import com.aticatac.server.components.ai.PowerUpState;
+import com.aticatac.server.ai.AIInput;
+import com.aticatac.server.ai.PlayerState;
+import com.aticatac.server.ai.PowerUpState;
 import com.aticatac.server.objectsystem.entities.Tank;
 import com.google.common.eventbus.EventBus;
 import java.util.ArrayList;

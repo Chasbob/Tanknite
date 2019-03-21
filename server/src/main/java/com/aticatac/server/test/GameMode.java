@@ -11,7 +11,7 @@ import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.listener.BulletCollisionListener;
 import com.aticatac.server.bus.listener.PlayerInputListener;
 import com.aticatac.server.bus.listener.PlayerOutputListener;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;

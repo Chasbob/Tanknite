@@ -1,6 +1,6 @@
 package com.aticatac.server.objectsystem.IO.outputs;
 
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.Entity;
 
 public class BulletOutput extends Output {

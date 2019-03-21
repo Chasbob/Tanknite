@@ -1,8 +1,8 @@
 package com.aticatac.server.bus.listener;
 
-import com.aticatac.server.components.ai.AIInput;
-import com.aticatac.server.components.ai.PlayerState;
-import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.ai.AIInput;
+import com.aticatac.server.ai.PlayerState;
+import com.aticatac.server.transform.Position;
 import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
