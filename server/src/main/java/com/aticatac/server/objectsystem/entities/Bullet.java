@@ -11,8 +11,9 @@ import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.objectsystem.physics.Physics;
-import java.util.Objects;
 import org.apache.log4j.Logger;
+
+import java.util.Objects;
 
 /**
  * The type Bullet.
@@ -94,7 +95,7 @@ public class Bullet implements Tickable {
   private void move() throws Exception {
     this.logger.trace("Move.");
 //    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-    PhysicsResponse physicsData = physics.move(bearing, position);
+    PhysicsResponse physicsData = physics.move(bearing, position, false);
     this.logger.trace(physicsData.position);
     switch (physicsData.entity.type) {
       case TANK:

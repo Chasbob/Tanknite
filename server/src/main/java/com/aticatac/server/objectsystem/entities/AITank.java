@@ -14,8 +14,9 @@ import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
@@ -25,8 +26,6 @@ public class AITank extends Tank {
   private final AI ai;
   protected AIInput input;
 
-  //todo add in a parameter boolean which is ai true or false
-  //TODO add in the parameter changes everywhere
   public AITank(String name, Position p, int health, int ammo) {
     super(name, p, health, ammo);
     frames = new ConcurrentLinkedQueue<>();
@@ -69,7 +68,7 @@ public class AITank extends Tank {
       if (decision.getCommand() != null && decision.getCommand() != Command.DEFAULT) {
         this.logger.trace(decision.getCommand());
         try {
-          move(decision.getCommand().vector.angle());
+          move(decision.getCommand().vector.angle(),speedIncrease);
         } catch (Exception e) {
           e.printStackTrace();
         }
