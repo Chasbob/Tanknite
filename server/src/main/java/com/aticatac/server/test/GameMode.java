@@ -131,11 +131,11 @@ public abstract class GameMode implements Game {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
       EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
-//      for (int i = 0; i < 1; i++) {
-//        Tank tank2 = createTank(player + " AI" + i, true);
-//        playerMap.put(player + " AI" + i, tank2);
-//        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
-//      }
+      for (int i = 0; i < 1; i++) {
+        Tank tank2 = createTank(player + " AI" + i, true);
+        playerMap.put(player + " AI" + i, tank2);
+        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
+      }
     }
   }
 

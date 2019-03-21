@@ -3,16 +3,17 @@ package com.aticatac.server.test;
 import com.aticatac.common.exceptions.ComponentExistsException;
 import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.server.bus.service.AIUpdateService;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.google.common.collect.Streams;
 
 public class Survival extends GameMode implements Runnable {
-  //  private final AIUpdateService aiUpdateService;
+    private final AIUpdateService aiUpdateService;
   private volatile boolean run;
   private int counter;
 
   public Survival() throws InvalidClassInstance, ComponentExistsException {
-//    aiUpdateService = new AIUpdateService(playerMap,powerups);
+    aiUpdateService = new AIUpdateService();
   }
 
   @Override
@@ -34,10 +35,10 @@ public class Survival extends GameMode implements Runnable {
     run = true;
     this.logger.trace("Running...");
     while (run) {
-      //checkPowerup();
+      checkPowerup();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
-//      aiUpdateService.update();
+      aiUpdateService.update(playerMap,powerups);
       Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
 //      playerMap.values().parallelStream().forEach(Tank::tick);
 //      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);

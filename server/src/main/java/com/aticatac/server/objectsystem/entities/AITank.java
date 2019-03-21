@@ -20,25 +20,16 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
   protected final ConcurrentLinkedQueue<AIInput> frames;
-  protected final Entity entity;
   protected final Logger logger;
   protected final PlayerOutputService outputService;
   private final AI ai;
-  protected Position position;
   protected AIInput input;
-  protected CollisionBox box;
-  protected int health;
-  protected int maxHealth;
-  protected int maxAmmo;
-  protected int ammo;
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
   public AITank(String name, Position p, int health, int ammo) {
     super(name, p, health, ammo);
-    entity = new Entity(name, EntityType.TANK);
     frames = new ConcurrentLinkedQueue<>();
-//    input = new AIInput();
     position = p;
     logger = Logger.getLogger(getClass());
     this.box = new CollisionBox(position, EntityType.TANK);
@@ -46,7 +37,7 @@ public class AITank extends Tank {
     this.health = health;
     this.ammo = ammo;
     this.maxAmmo = 30;
-    this.outputService = new PlayerOutputService(entity);
+    this.outputService = new PlayerOutputService(getBaseEntity());
     ai = new AI();
     EventBusFactory.getEventBus().register(new AIInputListener(frames, this.position, this.health));
   }
@@ -61,11 +52,11 @@ public class AITank extends Tank {
   }
 
   public Entity getEntity() {
-    return entity;
+    return getBaseEntity();
   }
 
   public String getName() {
-    return entity.name;
+    return name;
   }
 
   @Override
@@ -73,7 +64,6 @@ public class AITank extends Tank {
     logger.trace("tick");
     if (!frames.isEmpty()) {
       input = frames.poll();
-//      try {
       AIInput i = new AIInput(new PlayerState(position, health), 30, input.getPlayers(), input.getPowerups());
       Decision decision = ai.getDecision(i);
       if (decision.getCommand() != null && decision.getCommand() != Command.DEFAULT) {
@@ -84,32 +74,13 @@ public class AITank extends Tank {
           e.printStackTrace();
         }
       }
-//      } catch (Exception e) {
-//        this.logger.error(e);
-//        this.logger.error("Error while moving.");
-//      }
     }
-//      output.setTurretOutput(this.getComponent(TurretController.class).tick());
   }
 
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), 0, 100, 30, entity.name, EntityType.TANK);
+    return new Container(position.getX(), position.getY(), 0, 100, 30, name, EntityType.TANK);
   }
-//  public void move(int bearing) {
-//    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-//    PhysicsResponse physicsData = physics.call();
-////    if (!position.equals(physicsData.getPosition())) {
-////      this.logger.trace(physicsData);
-////      updateCollisionBox(physicsData.position);
-////    }
-//    if (physicsData.entity.type == EntityType.NONE) {
-//      this.logger.trace(physicsData);
-//      updateCollisionBox(physicsData.position);
-//    } else if (physicsData.entity.type.isPowerUp()) {
-//      updateCollisionBox(physicsData.position);
-//    }
-//    outputService.onPlayerHit(physicsData.entity, getContainer());
-//  }
+
 
   private void updateCollisionBox(Position newPosition) {
     //remove old box
@@ -117,6 +88,6 @@ public class AITank extends Tank {
     //set new position and box
     setPosition(newPosition);
     //add new box to map
-    DataServer.INSTANCE.addBoxToData(box, entity);
+    DataServer.INSTANCE.addBoxToData(box, getBaseEntity());
   }
 }

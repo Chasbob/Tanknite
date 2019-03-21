@@ -31,8 +31,8 @@ public class Entity {
    * The Type.
    */
   public final EntityType type;
-  private Position position;
-  private CollisionBox collisionBox;
+  protected Position position;
+  protected CollisionBox collisionBox;
 
   /**
    * Instantiates a new Entity.

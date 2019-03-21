@@ -1,6 +1,7 @@
 package com.aticatac.server.components.ai;
 
 import com.aticatac.common.model.Command;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.Entity;
 
@@ -28,7 +29,7 @@ public class AI {
   private ArrayList<Command> commandHistory = new ArrayList<>();
   private ArrayList<PlayerState> enemiesInRange;
   private ArrayList<PowerUpState> powerupsInRange;
-  private Entity.EntityType idealPowerup;
+  private EntityType idealPowerup;
   private Position tankPos;
   private int tankHealth;
   private int tankAmmo;
@@ -56,9 +57,9 @@ public class AI {
   public Decision getDecision(AIInput input) {
     currentInput = input;
     // Update information
-    tankPos = input.me.getPosition();
-    tankHealth = input.me.health;
-    tankAmmo = input.ammo;
+    tankPos = input.getMe().getPosition();
+    tankHealth = input.getMe().health;
+    tankAmmo = input.getAmmo();
     enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
     powerupsInRange = getPowerUpsInRange(tankPos, input.getPowerups());
     // Change aim angle
@@ -181,15 +182,15 @@ public class AI {
       // can't move -> can't obtain
       return 0;
     }
-    if (tankAmmo <= 5 && powerupsInRange.stream().map(PowerUpState::getType).filter(Entity.EntityType.AMMO_POWERUP::equals).findFirst().isPresent()){
-      idealPowerup = Entity.EntityType.AMMO_POWERUP;
+    if (tankAmmo <= 5 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.AMMO_POWERUP::equals).findFirst().isPresent()){
+      idealPowerup = EntityType.AMMO_POWERUP;
       return (int)Math.round(100 * collectiveness);
     }
-    if (tankHealth <= 30 && powerupsInRange.stream().map(PowerUpState::getType).filter(Entity.EntityType.HEALTH_POWERUP::equals).findFirst().isPresent()){
-      idealPowerup = Entity.EntityType.HEALTH_POWERUP;
+    if (tankHealth <= 30 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.HEALTH_POWERUP::equals).findFirst().isPresent()){
+      idealPowerup = EntityType.HEALTH_POWERUP;
       return (int)Math.round(100 * collectiveness);
     }
-    if (powerupsInRange.stream().map(PowerUpState::getType).filter(Entity.EntityType.BULLET_POWERUP::equals).findFirst().isPresent()) {
+    if (powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.DAMAGE_POWERUP::equals).findFirst().isPresent()) {
       return (int)Math.round(80 * collectiveness);
     }
     if (!powerupsInRange.isEmpty()) {
@@ -466,7 +467,7 @@ public class AI {
         inRange.add(enemy);
       }
     }
-    inRange.remove(currentInput.me);
+    inRange.remove(currentInput.getMe());
     return inRange;
   }
 
