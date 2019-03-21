@@ -38,8 +38,8 @@ public class Survival extends GameMode implements Runnable {
       checkPowerup();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
-      aiUpdateService.update(playerMap,powerups);
       Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
+      aiUpdateService.update(playerMap,powerups);
 //      playerMap.values().parallelStream().forEach(Tank::tick);
 //      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {

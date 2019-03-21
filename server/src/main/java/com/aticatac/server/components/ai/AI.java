@@ -12,9 +12,9 @@ import java.util.*;
  *
  * @author Dylan
  */
-//@SuppressWarnings("ALL")
+@SuppressWarnings("ALL")
 public class AI {
-  private final static int VIEW_RANGE = 320; // some value equivalent to the actual view range that a player would have
+  private final static int VIEW_RANGE = 32*10; // some value equivalent to the actual view range that a player would have
   private final static Set<SearchNode> occupiedNodes = new HashSet<>();
   private final Graph graph;
   private final PathFinder pathFinder;
@@ -40,8 +40,8 @@ public class AI {
     this.state = State.SEARCHING;
     this.searchPath = new LinkedList<>();
     this.recentlyVisitedNodes = new HashSet<>();
-    this.aggression = (double) Math.round((0.5 + Math.random()) * 10) / 10;
-    this.collectiveness = (double) Math.round((0.5 + Math.random()) * 10) / 10;
+    this.aggression = /*(double) Math.round((0.5 + Math.random()) * 10) / 10*/1;
+    this.collectiveness = /*(double) Math.round((0.5 + Math.random()) * 10) / 10*/1;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
     this.graph = new Graph();
@@ -77,8 +77,6 @@ public class AI {
     }
     // Check for a state change
     state = getStateChange();
-    state = State.SEARCHING;
-//    System.out.println("In range: " + enemiesInRange.size());
     // Return a decision
     Command command = performStateAction();
     if (!commandHistory.contains(command)) {
@@ -99,7 +97,8 @@ public class AI {
     int searchingUtility = getSearchingUtility();
     int attackingUtility = getAttackingUtility();
     int fleeingUtility = getFleeingUtility();
-    int obtainingUtility = getObtainingUtility();
+    int obtainingUtility = 0/*getObtainingUtility()*/;
+//    System.out.println("S: " + searchingUtility + " | A: " + attackingUtility + " | F: " + fleeingUtility + " | O: " + obtainingUtility);
     // Return state with highest utility
     int maxUtility = Math.max(Math.max(searchingUtility, attackingUtility), Math.max(fleeingUtility, obtainingUtility));
     if (maxUtility == searchingUtility) {
@@ -252,9 +251,8 @@ public class AI {
     }
     PlayerState target = getTargetedEnemy();
     if (target == null) {
-      return performSearchingAction();
+      return Command.DEFAULT;
     }
-    System.out.println("Target: " + target.getPosition());
     searchPath = getPath(tankPos, target.getPosition());
     while (searchPath.size() > 5)
       ((LinkedList<SearchNode>) searchPath).removeLast();
@@ -352,6 +350,7 @@ public class AI {
    * @return A command that executes the path
    */
   private Command commandToPerform(SearchNode node) {
+    if (node == null) return Command.DEFAULT;
     int threshold = 4;
     if (tankPos.getX() > node.getX() && Math.abs(tankPos.getX() - node.getX()) > threshold) {
       return Command.RIGHT;
@@ -468,14 +467,12 @@ public class AI {
    */
   private ArrayList<PlayerState> getEnemiesInRange(Position position, int range) {
     ArrayList<PlayerState> inRange = new ArrayList<>();
-    System.out.println("My position: "+tankPos);
     for (PlayerState enemy : currentInput.getPlayers()) {
-      System.out.println("  player position: "+enemy.getPosition());
-      if (Math.abs(position.getX() - enemy.getPosition().getX()) <= range &&
-              Math.abs(position.getY() - enemy.getPosition().getY()) <= range && !enemy.getPosition().equals(tankPos))
+      int dX = Math.abs(position.getX() - enemy.getPosition().getX());
+      int dY = Math.abs(position.getY() - enemy.getPosition().getY());
+      if (dX <= range && dY <= range && dX > 10 && dY > 10)
         inRange.add(enemy);
     }
-    System.out.println();
     return inRange;
   }
 
