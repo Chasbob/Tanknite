@@ -71,7 +71,7 @@ public enum Styles {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter10.size = 15;
-        parameter15.size = 20;
+        parameter15.size = 15;
         parameter40.size = 70;
         gameLabelFont = generator.generateFont(parameter10);
         baseFont = generator.generateFont(parameter15);
@@ -152,5 +152,12 @@ public enum Styles {
 
     public TextButton createLessPopButton(String text) {
         return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.CYAN));
+    }
+
+    public VerticalGroup createVerticalGroup() {
+        VerticalGroup verticalGroup = new VerticalGroup();
+        verticalGroup.columnLeft();
+        verticalGroup.space(10);
+        return verticalGroup;
     }
 }
