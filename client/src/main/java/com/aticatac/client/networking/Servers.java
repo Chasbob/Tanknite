@@ -51,4 +51,8 @@ public enum Servers {
   public ConcurrentHashMap<String, ServerInformation> getServers() {
     return servers;
   }
+
+  public void clearServers() {
+    servers.clear();
+  }
 }

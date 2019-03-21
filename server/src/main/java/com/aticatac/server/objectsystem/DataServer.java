@@ -1,5 +1,6 @@
 package com.aticatac.server.objectsystem;
 
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import java.io.FileNotFoundException;
@@ -37,7 +38,7 @@ public enum DataServer {
    *
    */
   DataServer() {
-    wall = new Entity(Entity.EntityType.WALL);
+    wall = new Entity(EntityType.WALL);
     //initialises the map
     try {
       map = convertTMXFileToIntArray();
@@ -154,11 +155,11 @@ public enum DataServer {
     int mapPositionY = (32 * (mapY));
     //adds centre of the element to the occupied
     Position centrePosition = new Position(mapPositionX, mapPositionY);
-    setCoordinates(centrePosition, wall);
-    int lowerY = mapPositionX + 2;
-    int lowerX = mapPositionY + 2;
-    int higherY = mapPositionX + 30;
-    int higherX = mapPositionY + 30;
+//    setCoordinates(centrePosition, wall);
+    int lowerY = mapPositionX;
+    int lowerX = mapPositionY;
+    int higherY = mapPositionX + 32;
+    int higherX = mapPositionY + 32;
     //positions for bottom of box
     for (int x = 0; x < 31; x++) {
       Position position = new Position(lowerX + x, lowerY);

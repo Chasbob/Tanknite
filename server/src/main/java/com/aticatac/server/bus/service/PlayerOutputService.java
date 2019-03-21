@@ -37,6 +37,7 @@ public class PlayerOutputService {
   }
 
   public void onPlayerHit(Entity entity, final Container container) {
+
     bus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, container));
     bus.post(new TankCollisionEvent(me, entity));
   }

@@ -19,4 +19,12 @@ public class BulletCollisionEvent {
   public Entity getHit() {
     return hit;
   }
+
+  @Override
+  public String toString() {
+    return "BulletCollisionEvent{" +
+        "bullet=" + bullet +
+        ", hit=" + hit +
+        '}';
+  }
 }

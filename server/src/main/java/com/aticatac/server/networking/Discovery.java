@@ -54,9 +54,16 @@ public class Discovery implements Runnable {
     this.logger.trace("Running...");
     while (!Thread.currentThread().isInterrupted()) {
       try {
-        Thread.sleep(100);
+        double nanoTime = System.nanoTime();
         broadcast();
-      } catch (InterruptedException | IOException e) {
+        while (System.nanoTime() - nanoTime < 3000000000d) {
+          try {
+            Thread.sleep(0);
+          } catch (InterruptedException e) {
+            this.logger.error(e);
+          }
+        }
+      } catch (IOException e) {
         this.logger.error(e);
         return;
       }

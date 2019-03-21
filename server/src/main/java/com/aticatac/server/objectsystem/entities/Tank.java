@@ -2,7 +2,9 @@ package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.common.objectsystem.ObjectType;
+import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.service.PlayerOutputService;
 import com.aticatac.server.components.ai.PlayerState;
 import com.aticatac.server.components.physics.PhysicsResponse;
@@ -13,19 +15,20 @@ import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
-import com.aticatac.server.objectsystem.physics.CallablePhysics;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import com.aticatac.server.objectsystem.physics.Physics;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
-public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInput>, Hurtable {
+public class Tank<T extends PlayerInput> extends Entity implements DependantTickable<PlayerInput>, Hurtable {
   protected final ConcurrentLinkedQueue<PlayerInput> frames;
-  protected final Entity entity;
+  //  protected final Entity entity;
   protected final Logger logger;
   protected final PlayerOutputService outputService;
-  protected Position position;
+  private final Physics physics;
+  //  protected Position position;
   protected PlayerInput input;
   protected CollisionBox box;
   protected int health;
@@ -36,34 +39,23 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
   public Tank(String name, Position p, int health, int ammo) {
-    entity = new Entity(name, Entity.EntityType.TANK);
+    super(name, EntityType.TANK, p);
+//    entity = new Entity(name, EntityType.TANK);
     frames = new ConcurrentLinkedQueue<>();
     input = new PlayerInput();
-    position = p;
+//    position = p;
     logger = Logger.getLogger(getClass());
-    this.box = new CollisionBox(position, Entity.EntityType.TANK);
+    this.box = new CollisionBox(position, EntityType.TANK);
     this.maxHealth = 100;
     this.health = health;
     this.ammo = ammo;
     this.maxAmmo = 30;
-    this.outputService = new PlayerOutputService(entity);
-  }
-
-  public Position getPosition() {
-    return position;
-  }
-
-  private void setPosition(Position p) {
-    this.position = p;
-    box.setPosition(p);
+    this.outputService = new PlayerOutputService(getBaseEntity());
+    physics = new Physics(position, type, name);
   }
 
   public Entity getEntity() {
-    return entity;
-  }
-
-  public String getName() {
-    return entity.name;
+    return getBaseEntity();
   }
 
   @Override
@@ -80,7 +72,9 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
         }
         logger.trace("Result: " + result.angle());
         try {
-          move(result.angle());
+          if (health > 10) {
+            move(result.angle());
+          }
         } catch (Exception e) {
           this.logger.error(e);
           this.logger.error("Error while moving.");
@@ -88,11 +82,16 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
       }
       if (input.shoot) {
         this.logger.info("shoot");
-        outputService.addBullet(new Bullet(entity, position, input.bearing, 10));
+        if (!(ammo == 0 || health == 0)) {
+          setAmmo(ammo - 1);
+          outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 10));
+          DataServer.INSTANCE.addBoxToData(new CollisionBox(position, EntityType.TANK.radius), getBaseEntity());
 //        this.getComponent(TurretController.class).shoot(input.bearing);
+        }
       }
 //      output.setTurretOutput(this.getComponent(TurretController.class).tick());
     }
+
   }
 
   public void addFrame(final PlayerInput frame) {
@@ -104,20 +103,35 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
     tick();
   }
 
-  public Container getContainer() {
-    return new Container(position.getX(), position.getY(), 0, 100, 30, entity.name, ObjectType.TANK);
-  }
-
-  public void move(int bearing) throws Exception {
-    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
-    PhysicsResponse physicsData = physics.call();
-    if (!position.equals(physicsData.getPosition())) {
-      this.logger.trace(physicsData);
-      updateCollisionBox(physicsData.position);
-    }
-    if (physicsData.entity.type != Entity.EntityType.NONE) {
-      outputService.onPlayerHit(physicsData.entity, getContainer());
-    }
+  public void move(int bearing) {
+//    CallablePhysics physics = new CallablePhysics(position, entity, entity.name, bearing);
+    PhysicsResponse physicsData = physics.move(bearing, position);
+    this.logger.trace(physicsData.entity);
+//    switch (physicsData.entity.type) {
+//      case TANK:
+//        if (physicsData.entity.equals(getBaseEntity())) {
+//          updateCollisionBox(physicsData.position);
+//          break;
+//        }
+//      case OUTOFBOUNDS:
+//      case WALL:
+//        outputService.onPlayerHit(physicsData.entity, getContainer());
+//        break;
+//      default:
+//        outputService.onPlayerHit(physicsData.entity, getContainer());
+//        updateCollisionBox(physicsData.position);
+//    }
+        updateCollisionBox(physicsData.position);
+//    if (!position.equals(physicsData.getPosition())) {
+//      this.logger.trace(physicsData);
+//      updateCollisionBox(physicsData.position);
+//    }
+//    if (physicsData.entity.type != EntityType.NONE) {
+//      if (physicsData.entity.type.isPowerUp()) {
+//        updateCollisionBox(physicsData.position);
+//      }
+//      outputService.onPlayerHit(physicsData.entity, getContainer());
+//    }
   }
 
   private void updateCollisionBox(Position newPosition) {
@@ -126,7 +140,20 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
     //set new position and box
     setPosition(newPosition);
     //add new box to map
-    DataServer.INSTANCE.addBoxToData(box, entity);
+    DataServer.INSTANCE.addBoxToData(box, getBaseEntity());
+  }
+
+  private void setPosition(final Position newPosition) {
+    this.position = newPosition;
+    this.box.setPosition(this.position);
+  }
+
+  public int getAmmo() {
+    return ammo;
+  }
+
+  public void setAmmo(int ammo) {
+    this.ammo = ammo;
   }
 
   @Override
@@ -136,6 +163,7 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
 
   @Override
   public int hit(final int damage) {
+    this.logger.info(clamp(health - damage));
     return health = clamp(health - damage);
   }
 
@@ -159,6 +187,10 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
     return box;
   }
 
+  public Container getContainer() {
+    return new Container(position.getX(), position.getY(), 0, health, ammo, name, EntityType.TANK);
+  }
+
   @Override
   public boolean intersects(final Collidable collidable) {
     ArrayList<Position> other = collidable.getCollisionBox().getBox();
@@ -168,9 +200,10 @@ public class Tank<T extends PlayerInput> implements DependantTickable<PlayerInpu
 
   @Override
   public void addToData() {
-    DataServer.INSTANCE.addBoxToData(getCollisionBox(), entity);
+    DataServer.INSTANCE.addBoxToData(getCollisionBox(), getBaseEntity());
   }
-  public PlayerState getPlayerState(){
-    return new PlayerState(position,health);
+
+  public PlayerState getPlayerState() {
+    return new PlayerState(position, health);
   }
 }

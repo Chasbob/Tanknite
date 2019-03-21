@@ -2,10 +2,7 @@ package com.aticatac.client.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import org.apache.log4j.Logger;
-
-import java.lang.management.MemoryUsage;
 
 /**
  * The enum Audio enum.
@@ -30,8 +27,12 @@ public enum AudioEnum {
   /***/
   private Music theme;
 
+
   /***/
-  private boolean soundOn = true;
+  private boolean sound = true;
+
+  /***/
+  private boolean music = true;
   /***/
   private float soundVolume = 1;
   /***/
@@ -40,30 +41,44 @@ public enum AudioEnum {
   /**
    *
    */
-  AudioEnum(){
+  AudioEnum() {
 
     this.logger = Logger.getLogger(getClass());
     this.logger.trace("boo");
-    loadSound();
+    //loadSound();
 
   }
 
+  public boolean isSound() {
+    return sound;
+  }
+
+  public boolean isMusic() {
+    return music;
+  }
 
   /**
-   *
    * @param sound
    */
-  public void setSoundOn(boolean sound){
+  public void setSound(boolean sound) {
 
-    soundOn = sound;
+    this.sound = sound;
 
   }
 
   /**
-   *
+   * @param music
+   */
+  public void setMusic(boolean music) {
+
+    this.music = music;
+
+  }
+
+  /**
    * @param volume
    */
-  public void setSoundVolume(float volume){
+  public void setSoundVolume(float volume) {
 
     soundVolume = volume;
 
@@ -72,9 +87,9 @@ public enum AudioEnum {
   /**
    *
    */
-  public void loadSound(){
+  public void loadSound() {
 
-    shoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.wav"));
+    shoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.mp3"));
 
     tankMove = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank-SoundBible.com-1359027625.mp3"));
 
@@ -89,12 +104,11 @@ public enum AudioEnum {
   }
 
   /**
-   *
    * @return
    */
-  public Music getTheme(){
+  public Music getTheme() {
 
-    if(soundOn) {
+    if (music) {
       theme.setVolume(musicVolume);
       theme.play();
     }
@@ -103,12 +117,11 @@ public enum AudioEnum {
   }
 
   /**
-   *
    * @return
    */
-  public Music getBackgroundMusic(){
+  public Music getBackgroundMusic() {
 
-    if(soundOn) {
+    if (music) {
       theme.setVolume(musicVolume);
       theme.setLooping(true);
       theme.play();
@@ -118,12 +131,11 @@ public enum AudioEnum {
   }
 
   /**
-   *
    * @return
    */
   public Music getShoot() {
 
-    if(!shoot.isPlaying() && soundOn) {
+    if (!shoot.isPlaying() && sound) {
       shoot.setVolume(soundVolume);
       shoot.play();
     }
@@ -131,12 +143,11 @@ public enum AudioEnum {
   }
 
   /**
-   *
    * @return
    */
   public Music getTankMove() {
 
-    if(!tankMove.isPlaying() && soundOn) {
+    if (!tankMove.isPlaying() && sound) {
       tankMove.setVolume(soundVolume);
       tankMove.play();
     }
@@ -144,12 +155,11 @@ public enum AudioEnum {
   }
 
   /**
-   *
    * @return
    */
   public Music getPowerUp() {
 
-    if(!powerUp.isPlaying() && soundOn) {
+    if (!powerUp.isPlaying() && sound) {
       powerUp.setVolume(soundVolume);
       powerUp.play();
     }
@@ -157,12 +167,11 @@ public enum AudioEnum {
   }
 
   /**
-   *
    * @return
    */
   public Music getTankDeath() {
 
-    if(!tankDeath.isPlaying()&& soundOn) {
+    if (!tankDeath.isPlaying() && sound) {
       tankDeath.setVolume(soundVolume);
       tankDeath.play();
     }
@@ -173,9 +182,10 @@ public enum AudioEnum {
   /**
    *
    */
-  public Music getButtonClick(){
+  public Music getButtonClick() {
 
-    if(!buttonClick.isPlaying() && soundOn) {
+    System.out.println(sound);
+    if (!buttonClick.isPlaying() && sound) {
       buttonClick.setVolume(soundVolume);
       buttonClick.play();
     }
@@ -184,3 +194,4 @@ public enum AudioEnum {
 
 
 }
+

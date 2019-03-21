@@ -8,16 +8,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AIInputListener {
   private final ConcurrentLinkedQueue<AIInput> frames;
-  private final PlayerState me;
+//  private final PlayerState me;
 
-  public AIInputListener(final ConcurrentLinkedQueue<AIInput> frames, final Position p, final int health) {
+  public AIInputListener(final ConcurrentLinkedQueue<AIInput> frames) {
     this.frames = frames;
-    me = new PlayerState(p, health);
+//    me = new PlayerState(p, health);
   }
 
   @Subscribe
   private void aiInput(AIInput input) {
-    AIInput i = new AIInput(me, 30, input.getPlayers(), input.getPowerups());
+    AIInput i = new AIInput(30, input.getPlayers(), input.getPowerups());
     frames.add(i);
   }
 }

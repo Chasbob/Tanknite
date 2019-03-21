@@ -5,6 +5,7 @@ package com.aticatac.server.components.transform;
  * The type Position.
  */
 public class Position {
+  public static final Position zero = new Position(0,0);
   /**
    * The x and y coordinates for the position
    */
