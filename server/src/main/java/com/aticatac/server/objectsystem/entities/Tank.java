@@ -8,6 +8,10 @@ import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.TankCollisionEvent;
 import com.aticatac.server.bus.service.PlayerOutputService;
+import com.aticatac.server.components.ai.PlayerState;
+import com.aticatac.server.components.physics.PhysicsResponse;
+import com.aticatac.server.components.transform.Position;
+import com.aticatac.server.networking.Server;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
@@ -15,11 +19,12 @@ import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.Physics;
+import org.apache.log4j.Logger;
+
 import com.aticatac.server.transform.Position;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Logger;
 
 public class Tank<T extends PlayerInput> extends Entity implements DependantTickable<PlayerInput>, Hurtable {
   protected final ConcurrentLinkedQueue<PlayerInput> frames;
@@ -35,6 +40,9 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   protected int maxAmmo;
   protected int ammo;
   private int framesToShoot;
+  protected boolean damageIncrease = false;
+  protected boolean speedIncrease = false;
+  protected boolean shuttingDown = false;
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
@@ -74,7 +82,7 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
         logger.trace("Result: " + result.angle());
         try {
           if (health > 10) {
-            move(result.angle());
+            move(result.angle(), speedIncrease);
           }
         } catch (Exception e) {
           this.logger.error(e);
@@ -82,13 +90,21 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
         }
       }
       if (input.shoot) {
-        this.logger.trace("shoot");
+        this.logger.info("shoot");
         if (!(ammo == 0 || health == 0) && framesToShoot < 0) {
           setAmmo(ammo - 1);
-          outputService.addBullet(new Bullet(getBaseEntity(), position.copy(), input.bearing, 10));
+          if (damageIncrease){
+            outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 20));
+          }
+          else {
+            outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 10));
+          }
           framesToShoot = 60;
+          DataServer.INSTANCE.addBoxToData(new CollisionBox(position, EntityType.TANK.radius), getBaseEntity());
+//        this.getComponent(TurretController.class).shoot(input.bearing);
         }
       }
+
     }
     if (framesToShoot == 1) {
       this.logger.info("Ready to fire!");
@@ -129,10 +145,30 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
           case OUTOFBOUNDS:
             return;
           case AMMO_POWERUP:
-          case SPEED_POWERUP:
-          case HEALTH_POWERUP:
-          case DAMAGE_POWERUP:
+            int newAmmo = ammo + 10;
+            if (newAmmo > maxAmmo) ammo = maxAmmo;
+            else ammo = newAmmo;
+            outputService.onPlayerHit(physicsData.entity, getContainer());
+            updateCollisionBox(physicsData.position);
             EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
+            break;
+          case SPEED_POWERUP:
+            // TODO: Implement thread for 20 seconds (in terms of ticks) where speedIncrease = true
+            outputService.onPlayerHit(physicsData.entity, getContainer());
+            updateCollisionBox(physicsData.position);
+            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
+            break;
+          case HEALTH_POWERUP:
+            heal(10);
+            outputService.onPlayerHit(physicsData.entity, getContainer());
+            updateCollisionBox(physicsData.position);
+            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
+            break;
+          case DAMAGE_POWERUP:
+            outputService.onPlayerHit(physicsData.entity, getContainer());
+            updateCollisionBox(physicsData.position);
+            EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
+            break;
         }
       }
       setPosition(response.getPosition(), true);
@@ -156,7 +192,14 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   @Override
   public int hit(final int damage) {
     this.logger.info(clamp(health - damage));
+    if (health <= 10 && health > 0){
+      // TODO, Thread to call remove player after 20 seconds (in terms of ticks)
+    }
+    else if (health <= 0){
+      Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
+    }
     return health = clamp(health - damage);
+
   }
 
   @Override

@@ -14,7 +14,7 @@ public class Physics {
   /**
    * The gravity acting for all objects
    */
-  private static int gravity = 10;
+  private static int gravity = 1;
   /**
    * The D.
    */
@@ -23,11 +23,11 @@ public class Physics {
   /**
    * The mass of this object
    */
-  private int objectMass = 10;
+  private int objectMass = 1;
   /**
    * The thrust for this tank
    */
-  private int thrust = 10;
+  private int thrust = 1;
   /**
    * The acceleration for this tank
    */
@@ -35,7 +35,7 @@ public class Physics {
   /**
    * The velocity for this tank
    */
-//  private int velocity = 5;
+  private int velocity;
   private Position position;
   private int rotation;
 
@@ -45,12 +45,17 @@ public class Physics {
     d = DataServer.INSTANCE;
   }
 
-  public PhysicsResponse move(int rotation, final Position position) {
+  public PhysicsResponse move(int rotation, final Position position, boolean speedPowerUp) {
     this.position = position;
     int xCoord = this.position.getX();
     int yCoord = this.position.getY();
+
+
     int dt = 1;
-    int distance = dt * entity.type.velocity;
+    setAcceleration("positive", speedPowerUp);
+    velocity += acceleration*dt;
+
+    int distance = dt * velocity;
     double xr = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -xr;
     double yr = Math.sin(Math.toRadians(rotation));
@@ -62,6 +67,7 @@ public class Physics {
     double dy = (newY - yCoord);
     double ddx = Math.ceil(dx / entity.type.radius);
     double ddy = Math.ceil(dy / entity.type.radius);
+//    System.out.println(ddx + ", " + ddy);
     double x = 0;
     double y = 0;
     VectorF oV = new VectorF(position.getX(), position.getY());

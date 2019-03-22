@@ -36,6 +36,7 @@ public class Camera {
     this.viewport.apply(true);
     logger = Logger.getLogger(getClass());
     this.camera.setToOrtho(false);
+    this.camera.zoom=5f;
   }
 
   public Viewport getViewport() {

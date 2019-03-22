@@ -141,8 +141,15 @@ public abstract class GameMode implements Game {
 
   @Override
   public void removePlayer(String player) {
+
     EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     playerMap.remove(player);
+    AmmoPowerup ammoPowerUp = null; // get name of powerUp
+    Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
+    ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
+    DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
+    powerups.add(ammoPowerUp);
+    this.logger.trace("Adding: " + ammoPowerUp.toString());
   }
 
   @Override
@@ -163,11 +170,11 @@ public abstract class GameMode implements Game {
 
   private Tank createTank(String player, boolean isAI) {
 //I can't be bothered to reason how this would work with booleans so you get this counter
-    Position position = getClearPosition();
+    Position position = getClearPosition(EntityType.TANK.radius);
     return createTank(player, isAI, position.getX(), position.getY());
   }
 
-  private Position getClearPosition() {
+    private Position getClearPosition(int radius) {
     int count = 1;
     Position position = new Position();
     ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
@@ -176,7 +183,7 @@ public abstract class GameMode implements Game {
       position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
           ThreadLocalRandom.current().nextInt(min, max + 1));
       this.logger.trace("Trying position: " + position.toString());
-      CollisionBox box = new CollisionBox(position, EntityType.TANK.radius);
+      CollisionBox box = new CollisionBox(position, radius);
       ArrayList<Position> boxCheck = box.getBox();
       for (int i = 0; i < boxCheck.size(); i++) {
         if (map.containsKey(boxCheck.get(i))) {
@@ -207,7 +214,7 @@ public abstract class GameMode implements Game {
     switch (powerUpId) {
       case HEALTH_POWERUP:
         HealthPowerup healthPowerUp = null; // get name of powerUp
-        Position healthPosition = getClearPosition();
+        Position healthPosition = getClearPosition(EntityType.HEALTH_POWERUP.radius);
         healthPowerUp = new HealthPowerup("healthPowerUp", healthPosition);
         DataServer.INSTANCE.addBoxToData(healthPowerUp.getCollisionBox(), healthPowerUp);
         powerups.add(healthPowerUp);
@@ -216,7 +223,7 @@ public abstract class GameMode implements Game {
         break;
       case AMMO_POWERUP:
         AmmoPowerup ammoPowerUp = null; // get name of powerUp
-        Position ammoPosition = getClearPosition();
+        Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
         ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
         DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
         powerups.add(ammoPowerUp);
@@ -225,7 +232,7 @@ public abstract class GameMode implements Game {
         break;
       case DAMAGE_POWERUP:
         DamagePowerup damagePowerUp = null; // get name of powerUp
-        Position damagePosition = getClearPosition();
+        Position damagePosition = getClearPosition(EntityType.DAMAGE_POWERUP.radius);
         damagePowerUp = new DamagePowerup("damagePowerUp", damagePosition);
         DataServer.INSTANCE.addBoxToData(damagePowerUp.getCollisionBox(), damagePowerUp);
         powerups.add(damagePowerUp);
@@ -234,7 +241,7 @@ public abstract class GameMode implements Game {
         break;
       case SPEED_POWERUP:
         SpeedPowerup speedPowerUp = null; // get name of powerUp
-        Position speedPosition = getClearPosition();
+        Position speedPosition = getClearPosition(EntityType.SPEED_POWERUP.radius);
         speedPowerUp = new SpeedPowerup("speedPowerUp", speedPosition);
         DataServer.INSTANCE.addBoxToData(speedPowerUp.getCollisionBox(), speedPowerUp);
         powerups.add(speedPowerUp);
