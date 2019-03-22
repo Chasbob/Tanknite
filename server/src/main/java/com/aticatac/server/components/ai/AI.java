@@ -32,7 +32,6 @@ public class AI {
   private int tankHealth;
   private int tankAmmo;
   private int aimAngle;
-  private boolean aimed;
   private boolean shooting;
   private AIInput currentInput;
 
@@ -44,7 +43,6 @@ public class AI {
     this.aggression = /*(double) Math.round((0.5 + Math.random()) * 10) / 10*/1;
     this.collectiveness = /*(double) Math.round((0.5 + Math.random()) * 10) / 10*/1;
     this.aimAngle = 0; // or whichever direction the tank faces at start
-    this.aimed = false;
   }
 
   /**
@@ -53,17 +51,32 @@ public class AI {
    * @return A decision
    */
   public Decision getDecision(AIInput input) {
-    if (input.getMe().getHealth() <= 0)
-      return new Decision(Command.DEFAULT, 0, false);
     currentInput = input;
-    // Update information
+    if (currentInput.getMe().getHealth() <= 0)
+      return new Decision(Command.DEFAULT, 0, false);
+    updateInformation();
+    // Check if can shoot at an enemy
+    if (!enemiesInRange.isEmpty())
+      shooting = canShoot();
+    else
+      shooting = false;
+    // Check for a state change
+    state = getStateChange();
+    // Create a movement command
+    Command command = performStateAction();
+    if (!commandHistory.contains(command))
+      commandHistory.clear();
+    commandHistory.add(command);
+    // Return a Decision
+    return new Decision(command, aimAngle, shooting);
+  }
+
+  private void updateInformation() {
     tankPos = currentInput.getMe().getPosition();
     tankHealth = currentInput.getMe().health;
     tankAmmo = currentInput.getAmmo();
     enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
     powerupsInRange = getPowerUpsInRange(tankPos, currentInput.getPowerups());
-    aimed = false;
-    shooting = false;
     // Poll search path if close enough to node
     double threshold = 8;
     if (!searchPath.isEmpty()) {
@@ -74,15 +87,6 @@ public class AI {
         recentlyVisitedNodes.addAll(visited.getSubGraph(5));
       }
     }
-    // Check for a state change
-    state = getStateChange();
-    // Return a decision
-    Command command = performStateAction();
-    if (!commandHistory.contains(command))
-      commandHistory.clear();
-    commandHistory.add(command);
-//    aimAngle = changeAngle(aimAngle, (int)Math.round(10*Math.random() - 5));
-    return new Decision(command, aimAngle, shooting);
   }
 //----------------------------------------------------STATES------------------------------------------------------------
   /**
@@ -97,7 +101,6 @@ public class AI {
     int attackingUtility = getAttackingUtility();
     int fleeingUtility = getFleeingUtility();
     int obtainingUtility = 0/*getObtainingUtility()*/;
-//    System.out.println("S: " + searchingUtility + " | A: " + attackingUtility + " | F: " + fleeingUtility + " | O: " + obtainingUtility);
     // Return state with highest utility
     int maxUtility = Math.max(Math.max(searchingUtility, attackingUtility), Math.max(fleeingUtility, obtainingUtility));
     if (maxUtility == searchingUtility) {
@@ -239,8 +242,7 @@ public class AI {
   /**
    * Gets a command from the ATTACKING state.
    * <p>
-   * If there is a line of sight to the closest enemy then aim towards it then shoots, Else travels a path to the
-   * enemy.
+   * Travels a path to stay in range of an enemy.
    *
    * @return A command from the ATTACKING state
    */
@@ -248,11 +250,6 @@ public class AI {
     PlayerState target = getTargetedEnemy();
     if (target == null)
       return Command.DEFAULT;
-    // Change aim angle
-    aimAngle = getAngle(target.getPosition());
-    if (checkLineOfSightToPosition(tankPos, target.getPosition()) && aimed) {
-      shooting = true;
-    }
     if (prevState == State.ATTACKING && !searchPath.isEmpty() && commandHistory.size() < 60) {
       return commandToPerform(searchPath.peek());
     }
@@ -385,8 +382,8 @@ public class AI {
     }
     return emptyPositions;
   }
-
   /**
+
    * Finds a random position in range of the tank clear of enemies. Used in the default SEARCHING state.
    *
    * @return A random position clear of enemies
@@ -594,10 +591,28 @@ public class AI {
     return closestObject;
   }
 //--------------------------------------------------AIMING--------------------------------------------------------------
+
   /**
-   * Calculates an angle change to apply to the aiming of the turret. Change is proportional to error.
+   * Checks if the tank can shoot at an enemy
    *
-   * @return An angle change
+   * @return If the tank can shoot at an enemy
+   */
+  private boolean canShoot() {
+    if (tankAmmo <= 0)
+      return false;
+    PlayerState target = getTargetedEnemy();
+    if (target != null) {
+      aimAngle = getAngle(target.getPosition());
+      if (checkLineOfSightToPosition(tankPos, target.getPosition())) {
+        return true;
+      }
+    }
+    return false;
+  }
+  /**
+   * Calculates an angle to aim at given a target
+   *
+   * @return An aim angle
    */
   private int getAngle(Position target) {
     // No enemy to aim at
@@ -610,7 +625,7 @@ public class AI {
       angle += (Math.PI * 2);
     }
     int targetAngle = (int) Math.round(Math.toDegrees(angle));
-    aimed = true;
+//    aimAngle = changeAngle(aimAngle, (int)Math.round(10*Math.random() - 5));
     return (targetAngle + 90) % 360;
 //    int change = (Math.abs(targetAngle - aimAngle) / 2) + 1;
 //    if ((changeAngle(aimAngle, change) - targetAngle) < (changeAngle(aimAngle, -change) - targetAngle)) {
