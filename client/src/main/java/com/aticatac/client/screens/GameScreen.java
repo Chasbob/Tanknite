@@ -6,10 +6,10 @@ import com.aticatac.client.util.HudUpdate;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MinimapViewport;
 import com.aticatac.client.util.Styles;
-import com.aticatac.client.isometric.Helper;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.server.transform.Position;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
@@ -54,6 +53,7 @@ public class GameScreen extends AbstractScreen {
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
+  private Texture tankTexture2;
   private Texture projectileTexture;
   private Label direction;
   private Container player;
@@ -78,6 +78,8 @@ public class GameScreen extends AbstractScreen {
       direction = Styles.INSTANCE.createGameLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("maps/box.png");
+      tankTexture2 = new Texture("img/tank.png");
+      projectileTexture = new Texture("img/bullet.png");
       tractionHealth = true;
       tractionPopUp = true;
       renderer = new IsometricTiledMapRenderer(map);
@@ -153,8 +155,10 @@ public class GameScreen extends AbstractScreen {
       player = update.getMe(Data.INSTANCE.getID());
     }
     if (player != null) {
-      this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
-      this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
+//      this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
+      this.camera.setPosititon(tileToScreenX(player.getX(), player.getY()), tileToScreenY(player.getX(), player.getY()));
+//      this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
+      this.tankXY.setText(player.getX() + ", " + player.getY());
       if (player.getR() == 0) {
         this.direction.setText("UP");
       } else if (player.getR() == 90) {
@@ -181,12 +185,15 @@ public class GameScreen extends AbstractScreen {
     minimap();
     tanksMiniMap.begin();
     tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
+    if (update != null && update.getProjectiles() != null) {
+      renderProjectiles(tanksMiniMap);
+    }
     tanksMiniMap.setColor(Color.CYAN);
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
       renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
     }
     if (update != null && update.getPowerups() != null) {
-      renderPowerups(tanksMiniMap);
+      renderPowerups(tanksMiniMap, true);
     }
     if (update != null && update.getNewShots() != null) {
       tanksMiniMap.setColor(Color.RED);
@@ -342,8 +349,8 @@ public class GameScreen extends AbstractScreen {
         renderContainer(updater, tanks);
       }
     }
-    renderProjectiles(tanks);
-    renderPowerups(tanks);
+//    renderProjectiles(tanks);
+//    renderPowerups(tanks, false);
     tanks.end();
   }
 
@@ -355,10 +362,10 @@ public class GameScreen extends AbstractScreen {
     }
   }
 
-  private void renderPowerups(SpriteBatch tanks) {
+  private void renderPowerups(SpriteBatch tanks, boolean ortho) {
     if (update != null) {
       for (Container c :
-          update.getPowerups()) {
+          update.getPowerups().values()) {
         switch (c.getObjectType()) {
           case NONE:
             break;
@@ -383,7 +390,13 @@ public class GameScreen extends AbstractScreen {
             tanks.setColor(Color.YELLOW);
             break;
         }
-        renderContainer(c, tanks);
+        if (ortho) {
+          tanks.setColor(Color.WHITE);
+          renderOrthoContainer(c, tanks);
+        } else {
+          tanks.setColor(Color.BLACK);
+          renderContainer(c, tanks);
+        }
       }
     }
   }
@@ -433,14 +446,41 @@ public class GameScreen extends AbstractScreen {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
 //    var pos = Helper.CartesianToIsometric(maxX - c.getX(), maxY - c.getY());
-//    batch.draw(tankTexture, pos.getX(),pos.getY());
-    batch.draw(tankTexture, maxX - c.getX() - 16, maxY - c.getY() - 16);
+    var pos = new Position(tileToScreenX(c.getX(), c.getY()), tileToScreenY(c.getX(), c.getY()));
+    batch.draw(tankTexture, pos.getX(), pos.getY());
+//    batch.draw(tankTexture, maxX - c.getX() - 16, maxY - c.getY() - 16);
   }
+
+  private void renderOrthoContainer(Container c, SpriteBatch batch) {
+    if (c.getId().equals("")) {
+      this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
+    }
+//    var pos = Helper.CartesianToIsometric(maxX - c.getX(), maxY - c.getY());
+//    var pos = new Position(tileToScreenX(c.getX(), c.getY()), tileToScreenY(c.getX(), c.getY()));
+    batch.draw(tankTexture2, c.getX(), c.getY());
+//    batch.draw(tankTexture, maxX - c.getX() - 16, maxY - c.getY() - 16);
+  }
+
+  public int tileToScreenX(int x, int y) {
+    return ((x / 32) + (y / 32)) * (32 / 2);
+  }
+
+  public int tileToScreenY(int x, int y) {
+    return ((x / 32) - (y / 32)) * (16 / 2);
+  }
+
+  public int screenToMapX(int x, int y) {
+    return ((x / 16) + (y / 16));
+  }
+//  public int screenToMapY(int x,int y){
+//    return
+//  }
 
   private int getBearing() {
     Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
     Vector2 mouseMapPos = new Vector2(mouseMapPos3.x, mouseMapPos3.y);
     Vector2 tankVec = new Vector2(player.getX(), player.getY());
+//    Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
     Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
     return Math.round(mouseRel.angle());
   }
@@ -453,20 +493,20 @@ public class GameScreen extends AbstractScreen {
     }
     if (tractionHealth && tractionPopUp) {
       if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-        Data.INSTANCE.sendCommand(Command.DOWN);
-        Data.INSTANCE.sendCommand(Command.LEFT);
+//        Data.INSTANCE.sendCommand(Command.DOWN);
+        Data.INSTANCE.sendCommand(Command.RIGHT);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-        Data.INSTANCE.sendCommand(Command.UP);
-        Data.INSTANCE.sendCommand(Command.RIGHT);
+//        Data.INSTANCE.sendCommand(Command.UP);
+        Data.INSTANCE.sendCommand(Command.LEFT);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.W)) {
         Data.INSTANCE.sendCommand(Command.UP);
-        Data.INSTANCE.sendCommand(Command.LEFT);
+//        Data.INSTANCE.sendCommand(Command.LEFT);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.S)) {
         Data.INSTANCE.sendCommand(Command.DOWN);
-        Data.INSTANCE.sendCommand(Command.RIGHT);
+//        Data.INSTANCE.sendCommand(Command.RIGHT);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
         this.camera.getCamera().zoom -= 0.1f;
