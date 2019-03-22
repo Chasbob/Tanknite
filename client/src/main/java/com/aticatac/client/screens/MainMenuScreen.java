@@ -138,6 +138,26 @@ public class MainMenuScreen extends AbstractScreen {
     buttonTable.row();
     buttonTable.add(dropDownTable).left().padTop(20);
     dropDownTable.add(playTable.getGroup());
+    //create table to store lower part of screen info
+    createLockedTable();
+  }
+
+  private void createLockedTable() {
+    Table lockedTable = new Table();
+    lockedTable.defaults().left().padTop(20);
+    Table statsTable = new Table();
+    MenuTable statsLabelTable = createMenuTable(false, false);
+    statsLabelTable.add(Styles.INSTANCE.createCustomLabel("STATS", Color.GRAY));
+    statsTable.add(statsLabelTable);
+    lockedTable.add(statsTable);
+    Table rankingTable = new Table();
+    MenuTable rankingLabelTable = createMenuTable(false, false);
+    rankingLabelTable.add(Styles.INSTANCE.createCustomLabel("RANKINGS", Color.GRAY));
+    rankingTable.add(rankingLabelTable);
+    lockedTable.row();
+    lockedTable.add(rankingTable);
+    lockedTable.center().left().padLeft(50);
+    super.addToRoot(lockedTable);
   }
 
   private void createPlay() {

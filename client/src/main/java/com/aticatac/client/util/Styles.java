@@ -145,7 +145,7 @@ public enum Styles {
     }
 
     public TextButton createBackButton(String text) {
-        return new TextButton(text, createButtonStyle(baseFont, Color.GRAY));
+        return new TextButton(text, createButtonStyle(baseFont, Color.WHITE));
     }
 
     public TextButton createButton(String text) {
