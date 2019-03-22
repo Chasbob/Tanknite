@@ -16,7 +16,7 @@ import java.util.*;
 public class AI {
   private final static int VIEW_RANGE = 32*10; // some value equivalent to the actual view range that a player would have
   private final static Set<SearchNode> occupiedNodes = new HashSet<>();
-  private final Graph graph;
+  private final static Graph graph = new Graph();
   private final PathFinder pathFinder;
   private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
   private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
@@ -45,7 +45,6 @@ public class AI {
     this.collectiveness = /*(double) Math.round((0.5 + Math.random()) * 10) / 10*/1;
     this.aimAngle = 0; // or whichever direction the tank faces at start
     this.aimed = false;
-    this.graph = new Graph();
   }
 
   /**
@@ -54,6 +53,8 @@ public class AI {
    * @return A decision
    */
   public Decision getDecision(AIInput input) {
+    if (input.getMe().getHealth() <= 0)
+      return new Decision(Command.DEFAULT, 0, false);
     currentInput = input;
     // Update information
     tankPos = currentInput.getMe().getPosition();
@@ -80,6 +81,7 @@ public class AI {
     if (!commandHistory.contains(command))
       commandHistory.clear();
     commandHistory.add(command);
+//    aimAngle = changeAngle(aimAngle, (int)Math.round(10*Math.random() - 5));
     return new Decision(command, aimAngle, shooting);
   }
 //----------------------------------------------------STATES------------------------------------------------------------
@@ -244,6 +246,8 @@ public class AI {
    */
   private Command performAttackingAction() {
     PlayerState target = getTargetedEnemy();
+    if (target == null)
+      return Command.DEFAULT;
     // Change aim angle
     aimAngle = getAngle(target.getPosition());
     if (checkLineOfSightToPosition(tankPos, target.getPosition()) && aimed) {
@@ -252,8 +256,8 @@ public class AI {
     if (prevState == State.ATTACKING && !searchPath.isEmpty() && commandHistory.size() < 60) {
       return commandToPerform(searchPath.peek());
     }
-    if (target == null) {
-      return Command.DEFAULT;
+    if (Math.sqrt(Math.pow(tankPos.getX(),target.getX()) + Math.pow(tankPos.getY(),target.getY())) < 96) {
+      return performSearchingAction();
     }
     searchPath = getPath(tankPos, target.getPosition());
     while (searchPath.size() > 5)
