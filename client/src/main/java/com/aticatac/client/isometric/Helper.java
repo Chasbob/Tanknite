@@ -37,6 +37,14 @@ public class Helper {
         return ((x) - (y)) / 4;
     }
 
+    public static int ScreenXtoTile(int x, int y){
+        return 2*x-y;
+    }
+
+    public static int ScreenYtoTile(int x, int y){
+        return -(4*y-x);
+    }
+
     public int screenToMapX(int x, int y) {
         return ((x / 16) + (y / 16));
     }

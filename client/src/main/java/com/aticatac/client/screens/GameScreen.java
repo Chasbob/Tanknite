@@ -459,9 +459,18 @@ public class GameScreen extends AbstractScreen {
 
   private int getBearing() {
     Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-    Vector2 mouseMapPos = new Vector2(mouseMapPos3.x, mouseMapPos3.y);
+
+    Vector2 mouseMapPosHolder = new Vector2(mouseMapPos3.x, mouseMapPos3.y);
+
+    //TODO does not work
+    Vector2 mouseMapPos = new Vector2(
+            Helper.ScreenXtoTile((int)mouseMapPosHolder.x,(int)mouseMapPosHolder.y),
+            Helper.ScreenYtoTile((int)mouseMapPosHolder.x,(int)mouseMapPosHolder.y) );
+
     Vector2 tankVec = new Vector2(player.getX(), player.getY());
+
 //    Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
+
     Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
     return Math.round(mouseRel.angle());
   }
@@ -497,7 +506,9 @@ public class GameScreen extends AbstractScreen {
       }
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      var theta = getBearing();
+      this.logger.info("Angle:" + theta);
+      Data.INSTANCE.sendCommand(Command.SHOOT, theta);
     }
   }
 
