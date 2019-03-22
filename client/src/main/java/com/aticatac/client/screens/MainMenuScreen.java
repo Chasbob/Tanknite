@@ -42,7 +42,6 @@ public class MainMenuScreen extends AbstractScreen {
   MainMenuScreen() {
     super();
     Gdx.input.setInputProcessor(this);
-    this.dropDownIndex = -1;
     popUpPresent = false;
   }
 
@@ -67,9 +66,9 @@ public class MainMenuScreen extends AbstractScreen {
         popUpPresent = false;
         toggleButtonDeactivation(false);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-        switchPopUp(false);
+        keySwitcher(popUpGroup, popUpIndex, false);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-        switchPopUp(true);
+        keySwitcher(popUpGroup, popUpIndex, true);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
         enterPressed();
       }
@@ -142,7 +141,7 @@ public class MainMenuScreen extends AbstractScreen {
   private void createPlayChildren() {
     VerticalGroup playChildren = Styles.INSTANCE.createVerticalGroup();
     //create button for single player
-    MenuTable singlePlayerTable = createMenuTable(false, false);
+    MenuTable singlePlayerTable = createMenuTable(true, false);
     TextButton singlePlayerButton = Styles.INSTANCE.createButton("SINGLE-PLAYER");
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(singlePlayerTable);
@@ -197,7 +196,7 @@ public class MainMenuScreen extends AbstractScreen {
       MenuTable menuTable = (MenuTable) table;
       if (menuTable.isShowGroup()) {
         menuTable.setShowGroup(false);
-        dropDownIndex = -1;
+        dropDownIndex = 0;
         break;
       }
     }
@@ -224,6 +223,7 @@ public class MainMenuScreen extends AbstractScreen {
     //add tables vertical group to visible table
     dropDownTable.add(newTable.getGroup());
     newTable.setShowGroup(true);
+    setDropDown(newTable);
   }
 
   private void switchTabMouse(MenuTable newTable) {
@@ -237,6 +237,7 @@ public class MainMenuScreen extends AbstractScreen {
     //add new tables vertical group to visible table
     dropDownTable.add(newTable.getGroup());
     newTable.setShowGroup(true);
+    setDropDown(newTable);
   }
 
   private void switchTabListener(TextButton button, MenuTable parentTable, Group parentGroup) {
@@ -257,31 +258,7 @@ public class MainMenuScreen extends AbstractScreen {
     Group group = currentTab.getGroup();
     if (group.getChildren().size != 0) {
       //get current table from group
-      MenuTable newTable = null;
-      try {
-        MenuTable currentTable = (MenuTable) group.getChildren().get(dropDownIndex);
-        currentTable.setShowGroup(false);
-        if (down) {
-          dropDownIndex++;
-        } else {
-          dropDownIndex--;
-        }
-        try {
-          newTable = (MenuTable) group.getChildren().get(dropDownIndex);
-        } catch (IndexOutOfBoundsException e) {
-          dropDownIndex = -1;
-        }
-      } catch (IndexOutOfBoundsException e) {
-        if (down) {
-          dropDownIndex++;
-        } else {
-          dropDownIndex = group.getChildren().size - 1;
-        }
-        newTable = (MenuTable) group.getChildren().get(dropDownIndex);
-      }
-      if (newTable != null) {
-        newTable.setShowGroup(true);
-      }
+      keySwitcher(group, dropDownIndex, down);
     }
   }
 
@@ -351,32 +328,46 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
-  private void switchPopUp(boolean down) {
-    //get current menuTable
-    MenuTable menuTable = (MenuTable) popUpGroup.getChildren().get(popUpIndex);
+  private void keySwitcher(Group group, int index, boolean down) {
+    MenuTable menuTable = (MenuTable) group.getChildren().get(index);
     menuTable.setShowGroup(false);
     if (down) {
-      if (popUpIndex == popUpGroup.getChildren().size - 1) {
-        popUpIndex = 0;
+      if (index == group.getChildren().size - 1) {
+        index = 0;
       } else {
-        popUpIndex++;
+        index++;
       }
     } else {
-      if (popUpIndex == 0) {
-        popUpIndex = popUpGroup.getChildren().size - 1;
+      if (index == 0) {
+        index = group.getChildren().size - 1;
       } else {
-        popUpIndex--;
+        index--;
       }
     }
+    if (popUpPresent) {
+      popUpIndex = index;
+    } else {
+      dropDownIndex = index;
+    }
     //highlight new menu table
-    MenuTable newMenuTable = (MenuTable) popUpGroup.getChildren().get(popUpIndex);
+    MenuTable newMenuTable = (MenuTable) group.getChildren().get(index);
     newMenuTable.setShowGroup(true);
+  }
+
+  //assigns first drop down element of the new tab highlighted
+  private void setDropDown(MenuTable newTable) {
+    if (newTable.getGroup().getChildren().size != 0) {
+      MenuTable menuTable = (MenuTable) newTable.getGroup().getChildren().get(dropDownIndex);
+      menuTable.setShowGroup(true);
+    }
   }
 
   @Override
   public void refresh() {
-    this.dropDownIndex = -1;
     popUpPresent = false;
+    popUpIndex = 0;
+    dropDownIndex = 0;
+    tabIndex = 0;
   }
 
 
