@@ -16,14 +16,21 @@ public class Update extends Model {
    * The Players.
    */
   private final ConcurrentHashMap<String, Container> players;
-  private final HashMap<String, Container> projectiles;
-  private final ArrayList<Container> powerups;
-  private final ConcurrentHashMap<Integer, Container> powerupmap;
-  private final HashMap<String, Container> newShots;
+  private final ConcurrentHashMap<String, Container> projectiles;
+  private final ConcurrentHashMap<String, Container> powerups;
+  private final ConcurrentHashMap<String, Container> newShots;
   private boolean start;
   //    private boolean objectChanged;
 //  private Container rootContainer;
   private boolean playersChanged;
+
+  public ConcurrentHashMap<String, Container> getPowerups() {
+    return powerups;
+  }
+
+  public ConcurrentHashMap<String, Container> getNewShots() {
+    return newShots;
+  }
 
   /**
    * Instantiates a new Model.
@@ -36,15 +43,11 @@ public class Update extends Model {
     this.players = new ConcurrentHashMap<>();
     this.playersChanged = true;
     this.start = false;
-    this.projectiles = new HashMap<>();
-    powerups = new ArrayList<>();
-    powerupmap = new ConcurrentHashMap<>();
-    newShots = new HashMap<>();
+    this.projectiles = new ConcurrentHashMap<>();
+    powerups = new ConcurrentHashMap<>();
+    newShots = new ConcurrentHashMap<>();
   }
 
-  public ConcurrentHashMap<Integer, Container> getPowerupmap() {
-    return powerupmap;
-  }
 
   /**
    * Clear players.
@@ -104,10 +107,6 @@ public class Update extends Model {
     return players.getOrDefault(id, null);
   }
 
-  public ArrayList<Container> getPowerups() {
-    return powerups;
-  }
-
   /**
    * Gets players.
    *
@@ -131,11 +130,11 @@ public class Update extends Model {
   }
 
   public void removePowerup(Container c) {
-    this.powerups.add(c);
+    this.powerups.remove(c.getId());
   }
 
   public void addPowerup(Container c) {
-    this.powerups.add(c);
+    this.powerups.put(c.getId(), c);
 //    this.powerupmap.put(c.hashCode(), c);
   }
 
@@ -148,16 +147,16 @@ public class Update extends Model {
     this.projectiles.put(c.getId(), c);
   }
 
+  public void removeProjectile(Container c) {
+    this.projectiles.remove(c.getId());
+  }
+
   public void addNewShot(Container c) {
     this.newShots.put(c.getId(), c);
   }
 
   public void removeNewShot(Container c) {
     this.newShots.remove(c.getId());
-  }
-
-  public void removeProjectile(Container c) {
-    this.projectiles.remove(c.getId());
   }
 
   /**
@@ -188,11 +187,7 @@ public class Update extends Model {
     return toString;
   }
 
-  public ArrayList<Container> getProjectiles() {
-    return new ArrayList<>(projectiles.values());
-  }
-
-  public HashMap<String, Container> projectileMap() {
+  public ConcurrentHashMap<String, Container> getProjectiles() {
     return projectiles;
   }
 
@@ -204,7 +199,4 @@ public class Update extends Model {
     return players.keySet();
   }
 
-  public HashMap<String, Container> getNewShots() {
-    return newShots;
-  }
 }

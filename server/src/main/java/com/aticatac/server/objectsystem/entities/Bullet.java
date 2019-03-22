@@ -80,7 +80,7 @@ public class Bullet extends Entity implements Tickable {
   }
 
   private void move() {
-    var response = physics.move(bearing, position);
+    var response = physics.move(bearing, position,false);
     if (!response.getCollisions().contains(Entity.outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {

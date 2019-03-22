@@ -345,16 +345,20 @@ public class GameScreen extends AbstractScreen {
 
   private void renderProjectiles(SpriteBatch tanks) {
     if (update != null) {
-      for (int i = 0; i < update.getProjectiles().size(); i++) {
-        renderProjectiles(update.getProjectiles().get(i), tanks);
+      for (Container c :
+          update.getProjectiles().values()) {
+        renderProjectiles(c, tanks);
       }
+//      for (int i = 0; i < update.getProjectiles().size(); i++) {
+//        renderProjectiles(update.getProjectiles().get(i), tanks);
+//      }
     }
   }
 
   private void renderPowerups(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-          update.getPowerups()) {
+          update.getPowerups().values()) {
         switch (c.getObjectType()) {
           case NONE:
             break;
@@ -385,9 +389,9 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderProjectiles(Container c, SpriteBatch batch) {
-    if (c.getId().equals("")) {
-      this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
-    }
+//    if (c.getId().equals("")) {
+//      this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
+//    }
     batch.draw(projectileTexture, maxX - c.getX(), maxY - c.getY());
   }
 

@@ -8,9 +8,6 @@ import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.TankCollisionEvent;
 import com.aticatac.server.bus.service.PlayerOutputService;
-import com.aticatac.server.components.ai.PlayerState;
-import com.aticatac.server.components.physics.PhysicsResponse;
-import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.networking.Server;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
@@ -19,12 +16,11 @@ import com.aticatac.server.objectsystem.interfaces.Collidable;
 import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.Physics;
-import org.apache.log4j.Logger;
-
 import com.aticatac.server.transform.Position;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.apache.log4j.Logger;
 
 public class Tank<T extends PlayerInput> extends Entity implements DependantTickable<PlayerInput>, Hurtable {
   protected final ConcurrentLinkedQueue<PlayerInput> frames;
@@ -39,10 +35,10 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   protected int maxHealth;
   protected int maxAmmo;
   protected int ammo;
-  private int framesToShoot;
   protected boolean damageIncrease = false;
   protected boolean speedIncrease = false;
   protected boolean shuttingDown = false;
+  private int framesToShoot;
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
@@ -93,18 +89,16 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
         this.logger.info("shoot");
         if (!(ammo == 0 || health == 0) && framesToShoot < 0) {
           setAmmo(ammo - 1);
-          if (damageIncrease){
-            outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 20));
-          }
-          else {
-            outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 10));
+          if (damageIncrease) {
+            outputService.addBullet(new Bullet(getBaseEntity(), position.copy(), input.bearing, 20));
+          } else {
+            outputService.addBullet(new Bullet(getBaseEntity(), position.copy(), input.bearing, 10));
           }
           framesToShoot = 60;
-          DataServer.INSTANCE.addBoxToData(new CollisionBox(position, EntityType.TANK.radius), getBaseEntity());
+//          DataServer.INSTANCE.addBoxToData(new CollisionBox(position, EntityType.TANK.radius), getBaseEntity());
 //        this.getComponent(TurretController.class).shoot(input.bearing);
         }
       }
-
     }
     if (framesToShoot == 1) {
       this.logger.info("Ready to fire!");
@@ -122,8 +116,8 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
     tick();
   }
 
-  void move(int bearing) {
-    var response = physics.move(bearing, position);
+  void move(int bearing, final boolean speedIncrease) {
+    var response = physics.move(bearing, position, speedIncrease);
     if (!response.getCollisions().contains(outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {
@@ -146,27 +140,26 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
             return;
           case AMMO_POWERUP:
             int newAmmo = ammo + 10;
-            if (newAmmo > maxAmmo) ammo = maxAmmo;
-            else ammo = newAmmo;
-            outputService.onPlayerHit(physicsData.entity, getContainer());
-            updateCollisionBox(physicsData.position);
+            if (newAmmo > maxAmmo) {
+              ammo = maxAmmo;
+            } else {
+              ammo = newAmmo;
+            }
+            outputService.onPlayerHit(e, getContainer());
             EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
             break;
           case SPEED_POWERUP:
             // TODO: Implement thread for 20 seconds (in terms of ticks) where speedIncrease = true
-            outputService.onPlayerHit(physicsData.entity, getContainer());
-            updateCollisionBox(physicsData.position);
+            outputService.onPlayerHit(e, getContainer());
             EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
             break;
           case HEALTH_POWERUP:
             heal(10);
-            outputService.onPlayerHit(physicsData.entity, getContainer());
-            updateCollisionBox(physicsData.position);
+            outputService.onPlayerHit(e, getContainer());
             EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
             break;
           case DAMAGE_POWERUP:
-            outputService.onPlayerHit(physicsData.entity, getContainer());
-            updateCollisionBox(physicsData.position);
+            outputService.onPlayerHit(e, getContainer());
             EventBusFactory.getEventBus().post(new TankCollisionEvent(getEntity(), e));
             break;
         }
@@ -192,14 +185,12 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
   @Override
   public int hit(final int damage) {
     this.logger.info(clamp(health - damage));
-    if (health <= 10 && health > 0){
+    if (health <= 10 && health > 0) {
       // TODO, Thread to call remove player after 20 seconds (in terms of ticks)
-    }
-    else if (health <= 0){
+    } else if (health <= 0) {
       Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
     }
     return health = clamp(health - damage);
-
   }
 
   @Override
@@ -233,11 +224,10 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
     DataServer.INSTANCE.addBoxToData(getCollisionBox(), getBaseEntity());
   }
 
-  public void move(int x, int y) {
-    setPosition(new Position(x, y), true);
-    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
-
-  }
+//  public void move(int x, int y) {
+//    setPosition(new Position(x, y), true);
+//    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
+//  }
 
   public PlayerState getPlayerState() {
     return new PlayerState(position, health);

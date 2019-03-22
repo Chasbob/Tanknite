@@ -1,12 +1,18 @@
-package com.aticatac.server.components.ai;
+package com.aticatac.server.ai;
 
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.components.transform.Position;
-
-import java.util.*;
+import com.aticatac.server.transform.Position;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
 // Things left TODO:
 //  - hmmm
+
 /**
  * The AI component. Where would life be without the AI component?
  *
@@ -69,7 +75,7 @@ public class AI {
     double threshold = 8;
     if (!searchPath.isEmpty()) {
       if (Math.abs(tankPos.getX() - searchPath.peek().getX()) < threshold &&
-              Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
+          Math.abs(tankPos.getY() - searchPath.peek().getY()) < threshold) {
         SearchNode visited = searchPath.poll();
         occupiedNodes.remove(visited);
         recentlyVisitedNodes.addAll(visited.getSubGraph(5));
@@ -88,6 +94,7 @@ public class AI {
     return new Decision(command, angleChange);
   }
 //----------------------------------------------------STATES------------------------------------------------------------
+
   /**
    * Returns the state with the highest utility score.
    *
@@ -184,23 +191,24 @@ public class AI {
       // can't move -> can't obtain
       return 0;
     }
-    if (tankAmmo <= 5 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.AMMO_POWERUP::equals).findFirst().isPresent()){
+    if (tankAmmo <= 5 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.AMMO_POWERUP::equals).findFirst().isPresent()) {
       idealPowerup = EntityType.AMMO_POWERUP;
-      return (int)Math.round(100 * collectiveness);
+      return (int) Math.round(100 * collectiveness);
     }
-    if (tankHealth <= 30 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.HEALTH_POWERUP::equals).findFirst().isPresent()){
+    if (tankHealth <= 30 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.HEALTH_POWERUP::equals).findFirst().isPresent()) {
       idealPowerup = EntityType.HEALTH_POWERUP;
-      return (int)Math.round(100 * collectiveness);
+      return (int) Math.round(100 * collectiveness);
     }
     if (powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.DAMAGE_POWERUP::equals).findFirst().isPresent()) {
-      return (int)Math.round(80 * collectiveness);
+      return (int) Math.round(80 * collectiveness);
     }
     if (!powerupsInRange.isEmpty()) {
-      return (int)Math.round(50 * collectiveness);
+      return (int) Math.round(50 * collectiveness);
     }
     return 0;
   }
 //----------------------------------------------------ACTIONS-----------------------------------------------------------
+
   /**
    * Gets a command from the current state.
    *
@@ -256,8 +264,9 @@ public class AI {
     }
     System.out.println("Target: " + target.getPosition());
     searchPath = getPath(tankPos, target.getPosition());
-    while (searchPath.size() > 5)
+    while (searchPath.size() > 5) {
       ((LinkedList<SearchNode>) searchPath).removeLast();
+    }
     return commandToPerform(searchPath.peek());
 //     target closest enemy
 //    Position targetedEnemy = getTargetedEnemy().getPosition();
@@ -298,8 +307,9 @@ public class AI {
     // Pick a position in range of the agent that is clear of enemies and travel there
     Position goal = getClearPosition();
     searchPath = getPath(tankPos, goal);
-    while (searchPath.size() > 5)
+    while (searchPath.size() > 5) {
       ((LinkedList<SearchNode>) searchPath).removeLast();
+    }
     return commandToPerform(searchPath.peek());
   }
 
@@ -365,6 +375,7 @@ public class AI {
     return Command.DEFAULT;
   }
 //-------------------------------------------------POSITIONS------------------------------------------------------------
+
   /**
    * Finds all positions in range of the tank clear of enemies.
    *
@@ -396,8 +407,7 @@ public class AI {
     }
     if (!newClearPositions.isEmpty()) {
       clearPositions = newClearPositions;
-    }
-    else {
+    } else {
       recentlyVisitedNodes.clear();
     }
     Random rand = new Random();
@@ -412,18 +422,20 @@ public class AI {
   private Position getClearPosition() {
     Random rand = new Random();
     ArrayList<Position> clearPositions = new ArrayList<>();
-    for (Position position : getEmptyPositions(VIEW_RANGE/2)) {
+    for (Position position : getEmptyPositions(VIEW_RANGE / 2)) {
       boolean clear = true;
       for (PlayerState enemy : enemiesInRange) {
         if (Math.sqrt(Math.pow(position.getY() - enemy.getY(), 2) + Math.pow(position.getX() - enemy.getX(), 2)) < 128) {
           clear = false;
         }
       }
-      if (clear)
+      if (clear) {
         clearPositions.add(position);
+      }
     }
-    if (clearPositions.isEmpty())
+    if (clearPositions.isEmpty()) {
       return getRandomPosition();
+    }
     return clearPositions.get(rand.nextInt(clearPositions.size()));
   }
 
@@ -458,6 +470,7 @@ public class AI {
     return true;
   }
 //---------------------------------------------------ENEMIES------------------------------------------------------------
+
   /**
    * Gets a list of enemies that are in a given range from a given position.
    *
@@ -468,12 +481,13 @@ public class AI {
    */
   private ArrayList<PlayerState> getEnemiesInRange(Position position, int range) {
     ArrayList<PlayerState> inRange = new ArrayList<>();
-    System.out.println("My position: "+tankPos);
+    System.out.println("My position: " + tankPos);
     for (PlayerState enemy : currentInput.getPlayers()) {
-      System.out.println("  player position: "+enemy.getPosition());
+      System.out.println("  player position: " + enemy.getPosition());
       if (Math.abs(position.getX() - enemy.getPosition().getX()) <= range &&
-              Math.abs(position.getY() - enemy.getPosition().getY()) <= range && !enemy.getPosition().equals(tankPos))
+          Math.abs(position.getY() - enemy.getPosition().getY()) <= range && !enemy.getPosition().equals(tankPos)) {
         inRange.add(enemy);
+      }
     }
     System.out.println();
     return inRange;
@@ -517,6 +531,7 @@ public class AI {
    * Gets the closest specified enemy to the tank.
    *
    * @param enemies Enemies to consider
+   *
    * @return The closest enemy
    */
   private PlayerState getClosestEnemy(ArrayList<PlayerState> enemies) {
@@ -525,7 +540,7 @@ public class AI {
     for (PlayerState object : enemies) {
       // no need for sqrt
       double distanceToTank = Math.pow(object.getY() - tankPos.getY(), 2)
-              + Math.pow(object.getX() - tankPos.getX(), 2);
+          + Math.pow(object.getX() - tankPos.getX(), 2);
       if (distanceToTank < distanceToClosestObject) {
         closestObject = object;
         distanceToClosestObject = distanceToTank;
@@ -534,6 +549,7 @@ public class AI {
     return closestObject;
   }
 //--------------------------------------------------POWER-UPS-----------------------------------------------------------
+
   /**
    * Gets the closest ideal power-up to the tank.
    *
@@ -552,7 +568,7 @@ public class AI {
   /**
    * Gets all of the power-ups in range of the tank.
    *
-   * @param position   Center position to check from
+   * @param position Center position to check from
    * @param powerUps Power-ups to consider
    *
    * @return All specified GameObjects in range
@@ -561,7 +577,7 @@ public class AI {
     ArrayList<PowerUpState> inRange = new ArrayList<>();
     for (PowerUpState enemy : powerUps) {
       if (Math.abs(enemy.getX() - position.getX()) <= VIEW_RANGE &&
-              Math.abs(enemy.getY() - position.getY()) <= VIEW_RANGE) {
+          Math.abs(enemy.getY() - position.getY()) <= VIEW_RANGE) {
         inRange.add(enemy);
       }
     }
@@ -572,6 +588,7 @@ public class AI {
    * Gets the closest power-up to the tank.
    *
    * @param powerUps Power-ups to consider
+   *
    * @return The closest power-up
    */
   private PowerUpState getClosestPowerUp(ArrayList<PowerUpState> powerUps) {
@@ -580,7 +597,7 @@ public class AI {
     for (PowerUpState object : powerUps) {
       // no need for sqrt
       double distanceToTank = Math.pow(object.getY() - tankPos.getY(), 2)
-              + Math.pow(object.getX() - tankPos.getX(), 2);
+          + Math.pow(object.getX() - tankPos.getX(), 2);
       if (distanceToTank < distanceToClosestObject) {
         closestObject = object;
         distanceToClosestObject = distanceToTank;
@@ -589,6 +606,7 @@ public class AI {
     return closestObject;
   }
 //--------------------------------------------------AIMING--------------------------------------------------------------
+
   /**
    * Calculates an angle change to apply to the aiming of the turret. Change is proportional to error.
    *

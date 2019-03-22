@@ -3,20 +3,18 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.ai.AI;
+import com.aticatac.server.ai.AIInput;
+import com.aticatac.server.ai.Decision;
+import com.aticatac.server.ai.PlayerState;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.listener.AIInputListener;
 import com.aticatac.server.bus.service.PlayerOutputService;
-import com.aticatac.server.components.ai.AI;
-import com.aticatac.server.components.ai.AIInput;
-import com.aticatac.server.components.ai.Decision;
-import com.aticatac.server.components.ai.PlayerState;
-import com.aticatac.server.components.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
-import com.aticatac.server.objectsystem.physics.CollisionBox;
-import org.apache.log4j.Logger;
-
+import com.aticatac.server.transform.Position;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.apache.log4j.Logger;
 
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
@@ -31,7 +29,6 @@ public class AITank extends Tank {
     frames = new ConcurrentLinkedQueue<>();
     position = p;
     logger = Logger.getLogger(getClass());
-    this.box = new CollisionBox(position, EntityType.TANK);
     this.maxHealth = 100;
     this.health = health;
     this.ammo = ammo;
@@ -41,21 +38,8 @@ public class AITank extends Tank {
     EventBusFactory.getEventBus().register(new AIInputListener(frames));
   }
 
-  public Position getPosition() {
-    return position;
-  }
-
-  private void setPosition(Position p) {
-    this.position = p;
-    box.setPosition(p);
-  }
-
   public Entity getEntity() {
     return getBaseEntity();
-  }
-
-  public String getName() {
-    return name;
   }
 
   @Override
@@ -68,7 +52,7 @@ public class AITank extends Tank {
       if (decision.getCommand() != null && decision.getCommand() != Command.DEFAULT) {
         this.logger.trace(decision.getCommand());
         try {
-          move(decision.getCommand().vector.angle(),speedIncrease);
+          move(decision.getCommand().vector.angle(), speedIncrease);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -80,13 +64,20 @@ public class AITank extends Tank {
     return new Container(position.getX(), position.getY(), 0, 100, 30, name, EntityType.TANK);
   }
 
-
-  private void updateCollisionBox(Position newPosition) {
-    //remove old box
-    DataServer.INSTANCE.removeBoxFromData(box);
-    //set new position and box
-    setPosition(newPosition);
-    //add new box to map
-    DataServer.INSTANCE.addBoxToData(box, getBaseEntity());
+  public String getName() {
+    return name;
   }
+
+  public Position getPosition() {
+    return position;
+  }
+//
+//  private void updateCollisionBox(Position newPosition) {
+//    //remove old box
+//    DataServer.INSTANCE.removeBoxFromData(box);
+//    //set new position and box
+//    setPosition(newPosition);
+//    //add new box to map
+//    DataServer.INSTANCE.addBoxToData(box, getBaseEntity());
+//  }
 }

@@ -16,60 +16,60 @@ public class UpdateChangesListener {
     this.logger = Logger.getLogger(getClass());
   }
 
-  @Subscribe
-  private void playersChanged(PlayersChangedEvent e) {
-    switch (e.action) {
-      case ADD:
-        update.addPlayer(e.getContainer());
-        break;
-      case REMOVE:
-        update.removePlayer(e.getContainer());
-        break;
-      case UPDATE:
-        update.addPlayer(e.getContainer());
-        break;
-    }
-  }
-
-  @Subscribe
-  private void powerupsChanged(PowerupsChangedEvent e) {
-    switch (e.getAction()) {
-      case ADD:
-        update.addPowerup(e.getContainer());
-        break;
-      case REMOVE:
-        update.removePowerup((e.getContainer()));
-        break;
-      case UPDATE:
-        update.addPowerup(e.getContainer());
-        break;
-    }
-  }
-
-  @Subscribe
-  private void bulletsChanged(BulletsChangedEvent e) {
-    switch (e.getAction()) {
-      case ADD:
-        update.addProjectile(e.getBullet());
-        new Thread(() -> {
-          update.addNewShot(e.getBullet());
-          double nanoTime = System.nanoTime();
-          while (System.nanoTime() - nanoTime < 5000000000d) {
-            try {
-              Thread.sleep(0);
-            } catch (InterruptedException er) {
-              er.printStackTrace();
-            }
-          }
-          update.removeNewShot(e.getBullet());
-        }).start();
-        break;
-      case REMOVE:
-        update.removeProjectile(e.getBullet());
-        break;
-      case UPDATE:
-        update.addProjectile(e.getBullet());
-        break;
-    }
-  }
+//  @Subscribe
+//  private void playersChanged(PlayersChangedEvent e) {
+//    switch (e.action) {
+//      case ADD:
+//        update.addPlayer(e.getContainer());
+//        break;
+//      case REMOVE:
+//        update.removePlayer(e.getContainer());
+//        break;
+//      case UPDATE:
+//        update.addPlayer(e.getContainer());
+//        break;
+//    }
+//  }
+//
+//  @Subscribe
+//  private void powerupsChanged(PowerupsChangedEvent e) {
+//    switch (e.getAction()) {
+//      case ADD:
+//        update.addPowerup(e.getContainer());
+//        break;
+//      case REMOVE:
+//        update.removePowerup((e.getContainer()));
+//        break;
+//      case UPDATE:
+//        update.addPowerup(e.getContainer());
+//        break;
+//    }
+//  }
+//
+//  @Subscribe
+//  private void bulletsChanged(BulletsChangedEvent e) {
+//    switch (e.getAction()) {
+//      case ADD:
+//        update.addProjectile(e.getBullet());
+//        new Thread(() -> {
+//          update.addNewShot(e.getBullet());
+//          double nanoTime = System.nanoTime();
+//          while (System.nanoTime() - nanoTime < 5000000000d) {
+//            try {
+//              Thread.sleep(0);
+//            } catch (InterruptedException er) {
+//              er.printStackTrace();
+//            }
+//          }
+//          update.removeNewShot(e.getBullet());
+//        }).start();
+//        break;
+//      case REMOVE:
+//        update.removeProjectile(e.getBullet());
+//        break;
+//      case UPDATE:
+//        update.addProjectile(e.getBullet());
+//        break;
+//    }
+//  }
 }

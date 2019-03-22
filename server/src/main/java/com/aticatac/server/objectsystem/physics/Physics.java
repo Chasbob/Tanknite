@@ -103,5 +103,22 @@ public class Physics {
       return Entity.outOfBounds;
     }
   }
+  private void setAcceleration(String sign, boolean speedPowerUp) {
+    if(sign.equals("positive")) {
+      if(speedPowerUp){
+        acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+      }else {
+        if (velocity != entity.type.velocity) {
+          acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+        } else if (velocity >= entity.type.velocity) {
+          velocity = entity.type.velocity;
+          acceleration = 0;
+        }
+      }
+    }else{
+      acceleration = -(gravity *((0 + objectMass) + thrust))/objectMass;
+    }
+  }
+
 
 }

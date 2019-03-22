@@ -2,13 +2,18 @@ package com.aticatac.server.networking;
 
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.Container;
 import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.listener.UpdateChangesListener;
+import com.aticatac.server.bus.event.BulletsChangedEvent;
+import com.aticatac.server.bus.event.PlayersChangedEvent;
+import com.aticatac.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
+import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 /**
@@ -21,6 +26,10 @@ public class Updater implements Runnable {
   private final Logger logger;
   private final ModelReader modelReader;
   private final Update update;
+  private final ConcurrentHashMap<String, Container> players;
+  private final ConcurrentHashMap<String, Container> projectiles;
+  private final ConcurrentHashMap<String, Container> powerups;
+  private final ConcurrentHashMap<String, Container> newShots;
   private boolean changes;
   private boolean shutdown;
 
@@ -33,7 +42,11 @@ public class Updater implements Runnable {
     this.changes = true;
     this.shutdown = false;
     this.modelReader = new ModelReader();
-    EventBusFactory.getEventBus().register(new UpdateChangesListener(update));
+    this.players = update.getPlayers();
+    this.projectiles = update.getProjectiles();
+    this.powerups = update.getPowerups();
+    this.newShots = update.getNewShots();
+    EventBusFactory.getEventBus().register(this);
     updatePlayers();
   }
 
@@ -105,5 +118,71 @@ public class Updater implements Runnable {
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length, s.getServer(), s.getPort());
     this.logger.trace("Packet: " + packet.getAddress().toString() + ":" + packet.getPort());
     s.multicastPacket(packet);
+  }
+
+  @Subscribe
+  private void playersChanged(PlayersChangedEvent e) {
+    switch (e.action) {
+      case ADD:
+        players.put(e.getContainer().getId(),e.getContainer());
+//        update.addPlayer(e.getContainer());
+        break;
+      case REMOVE:
+        players.remove(e.getContainer().getId());
+//        update.removePlayer(e.getContainer());
+        break;
+      case UPDATE:
+        players.put(e.getContainer().getId(),e.getContainer());
+//        update.addPlayer(e.getContainer());
+        break;
+    }
+  }
+
+  @Subscribe
+  private void powerupsChanged(PowerupsChangedEvent e) {
+    switch (e.getAction()) {
+      case ADD:
+        powerups.put(e.getContainer().getId(), e.getContainer());
+//        update.addPowerup(e.getContainer());
+        break;
+      case REMOVE:
+        powerups.remove(e.getContainer().getId());
+//        update.removePowerup((e.getContainer()));
+        break;
+      case UPDATE:
+        powerups.put(e.getContainer().getId(), e.getContainer());
+//        update.addPowerup(e.getContainer());
+        break;
+    }
+  }
+
+  @Subscribe
+  private void bulletsChanged(BulletsChangedEvent e) {
+    switch (e.getAction()) {
+      case ADD:
+        projectiles.put(e.getBullet().getId(), e.getBullet());
+//        update.addProjectile(e.getBullet());
+        new Thread(() -> {
+          update.addNewShot(e.getBullet());
+          double nanoTime = System.nanoTime();
+          while (System.nanoTime() - nanoTime < 5000000000d) {
+            try {
+              Thread.sleep(0);
+            } catch (InterruptedException er) {
+              er.printStackTrace();
+            }
+          }
+          update.removeNewShot(e.getBullet());
+        }).start();
+        break;
+      case REMOVE:
+        projectiles.remove(e.getBullet().getId());
+//        update.removeProjectile(e.getBullet());
+        break;
+      case UPDATE:
+        projectiles.put(e.getBullet().getId(), e.getBullet());
+//        update.addProjectile(e.getBullet());
+        break;
+    }
   }
 }

@@ -26,6 +26,7 @@ import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.transform.Position;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -141,11 +142,11 @@ public abstract class GameMode implements Game {
 
   @Override
   public void removePlayer(String player) {
-
     EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     playerMap.remove(player);
     AmmoPowerup ammoPowerUp = null; // get name of powerUp
-    Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
+//    Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
+    Position ammoPosition = getClearPosition();
     ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
     DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
     powerups.add(ammoPowerUp);
@@ -170,11 +171,13 @@ public abstract class GameMode implements Game {
 
   private Tank createTank(String player, boolean isAI) {
 //I can't be bothered to reason how this would work with booleans so you get this counter
-    Position position = getClearPosition(EntityType.TANK.radius);
+//    Position position = getClearPosition(EntityType.TANK.radius);
+    Position position = getClearPosition();
     return createTank(player, isAI, position.getX(), position.getY());
   }
 
-    private Position getClearPosition(int radius) {
+  //todo test this for given radius
+  private Position getClearPosition(int radius) {
     int count = 1;
     Position position = new Position();
     ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
@@ -184,6 +187,26 @@ public abstract class GameMode implements Game {
           ThreadLocalRandom.current().nextInt(min, max + 1));
       this.logger.trace("Trying position: " + position.toString());
       CollisionBox box = new CollisionBox(position, radius);
+      ArrayList<Position> boxCheck = box.getBox();
+      for (int i = 0; i < boxCheck.size(); i++) {
+        if (map.containsKey(boxCheck.get(i))) {
+          count++;
+        }
+      }
+    }
+    return position;
+  }
+
+  private Position getClearPosition() {
+    int count = 1;
+    Position position = new Position();
+    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
+    while (count > 0) {
+      count = 0;
+      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
+          ThreadLocalRandom.current().nextInt(min, max + 1));
+      this.logger.trace("Trying position: " + position.toString());
+      CollisionBox box = new CollisionBox(position, EntityType.TANK.radius);
       ArrayList<Position> boxCheck = box.getBox();
       for (int i = 0; i < boxCheck.size(); i++) {
         if (map.containsKey(boxCheck.get(i))) {
@@ -214,8 +237,9 @@ public abstract class GameMode implements Game {
     switch (powerUpId) {
       case HEALTH_POWERUP:
         HealthPowerup healthPowerUp = null; // get name of powerUp
-        Position healthPosition = getClearPosition(EntityType.HEALTH_POWERUP.radius);
-        healthPowerUp = new HealthPowerup("healthPowerUp", healthPosition);
+//        Position healthPosition = getClearPosition(EntityType.HEALTH_POWERUP.radius);
+        Position healthPosition = getClearPosition();
+        healthPowerUp = new HealthPowerup(Integer.toString(Objects.hash(healthPosition, EntityType.HEALTH_POWERUP.radius)), healthPosition);
         DataServer.INSTANCE.addBoxToData(healthPowerUp.getCollisionBox(), healthPowerUp);
         powerups.add(healthPowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, healthPowerUp.getContainer()));
@@ -223,8 +247,9 @@ public abstract class GameMode implements Game {
         break;
       case AMMO_POWERUP:
         AmmoPowerup ammoPowerUp = null; // get name of powerUp
-        Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
-        ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
+//        Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
+        Position ammoPosition = getClearPosition();
+        ammoPowerUp = new AmmoPowerup(Integer.toString(Objects.hash(ammoPosition, EntityType.AMMO_POWERUP.radius)), ammoPosition);
         DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
         powerups.add(ammoPowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, ammoPowerUp.getContainer()));
@@ -232,8 +257,9 @@ public abstract class GameMode implements Game {
         break;
       case DAMAGE_POWERUP:
         DamagePowerup damagePowerUp = null; // get name of powerUp
-        Position damagePosition = getClearPosition(EntityType.DAMAGE_POWERUP.radius);
-        damagePowerUp = new DamagePowerup("damagePowerUp", damagePosition);
+//        Position damagePosition = getClearPosition(EntityType.DAMAGE_POWERUP.radius);
+        Position damagePosition = getClearPosition();
+        damagePowerUp = new DamagePowerup(Integer.toString(Objects.hash(damagePosition, EntityType.DAMAGE_POWERUP.radius)), damagePosition);
         DataServer.INSTANCE.addBoxToData(damagePowerUp.getCollisionBox(), damagePowerUp);
         powerups.add(damagePowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, damagePowerUp.getContainer()));
@@ -241,8 +267,9 @@ public abstract class GameMode implements Game {
         break;
       case SPEED_POWERUP:
         SpeedPowerup speedPowerUp = null; // get name of powerUp
-        Position speedPosition = getClearPosition(EntityType.SPEED_POWERUP.radius);
-        speedPowerUp = new SpeedPowerup("speedPowerUp", speedPosition);
+//        Position speedPosition = getClearPosition(EntityType.SPEED_POWERUP.radius);
+        Position speedPosition = getClearPosition();
+        speedPowerUp = new SpeedPowerup(Integer.toString(Objects.hash(speedPosition, EntityType.SPEED_POWERUP.radius)), speedPosition);
         DataServer.INSTANCE.addBoxToData(speedPowerUp.getCollisionBox(), speedPowerUp);
         powerups.add(speedPowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, speedPowerUp.getContainer()));
