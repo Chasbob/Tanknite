@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
@@ -24,12 +25,14 @@ public class MainMenuScreen extends AbstractScreen {
   Table musicTable;
   private int tabIndex;
   private int dropDownIndex;
-  private Table visibleTable;
+  private Table dropDownTable;
   private MenuTable playTable;
   private MenuTable achievementTable;
   private MenuTable customizeTable;
   MenuTable settingsTable;
+  Table popUpTable;
   private MenuTable exitTable;
+  boolean popUpPresent;
 
   /**
    * Instantiates a new Main menu screen.
@@ -38,21 +41,30 @@ public class MainMenuScreen extends AbstractScreen {
     super();
     Gdx.input.setInputProcessor(this);
     this.dropDownIndex = -1;
+    popUpPresent = false;
   }
 
   @Override
   public void render(float delta) {
     super.render(delta);
-    if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-      switchTab(true);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-      switchTab(false);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-      enterPressed();
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-      switchDropDown(true);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-      switchDropDown(false);
+    if (!popUpPresent) {
+      if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+        switchTab(true);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+        switchTab(false);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        enterPressed();
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+        switchDropDown(true);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+        switchDropDown(false);
+      }
+    } else {
+      if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        rootTable.removeActor(popUpTable);
+        popUpPresent = false;
+        toggleButtonDeactivation(false);
+      }
     }
   }
 
@@ -80,13 +92,13 @@ public class MainMenuScreen extends AbstractScreen {
     buttonTable.add(horizontalGroup
     );
     //table that stores info related to current button
-    visibleTable = new Table();
-    visibleTable.defaults().left();
+    dropDownTable = new Table();
+    dropDownTable.defaults().left();
     //play button with child buttons
     createPlay();
     //achievements
     achievementTable = createMenuTable(false, true);
-    TextButton achievementButton = Styles.INSTANCE.createButton("ACHIEVEMENTS");
+    TextButton achievementButton = Styles.INSTANCE.createButton("CHALLENGES");
     switchTabListener(achievementButton, achievementTable, horizontalGroup);
     //customize
     customizeTable = createMenuTable(false, true);
@@ -108,8 +120,8 @@ public class MainMenuScreen extends AbstractScreen {
       .pack();
     tabIndex = 0;
     buttonTable.row();
-    buttonTable.add(visibleTable).left().padTop(20);
-    visibleTable.add(playTable.getGroup());
+    buttonTable.add(dropDownTable).left().padTop(20);
+    dropDownTable.add(playTable.getGroup());
   }
 
   private void createPlay() {
@@ -139,43 +151,16 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton multiPlayerButton = Styles.INSTANCE.createButton("MULTI-PLAYER");
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(multiPlayerTable);
+      PopUp.createPopUp();
+      toggleButtonDeactivation(true);
+      popUpPresent = true;
       return false;
     }));
-    multiPlayerTable.add(multiPlayerButton);
+    multiPlayerTable.setButton(multiPlayerButton);
     playChildren.addActor(singlePlayerTable);
     playChildren.addActor(multiPlayerTable);
     playChildren.pack();
     playTable.setGroup(playChildren);
-    createMultiplayerChildren(multiPlayerTable);
-  }
-
-  private void createMultiplayerChildren(MenuTable multiplayerTable) {
-    HorizontalGroup multplayerChildren = new HorizontalGroup();
-    multplayerChildren.space(5);
-    MenuTable hostTable = createMenuTable(false, false);
-    //create button for hosting game
-    TextButton hostButton = Styles.INSTANCE.createButton("HOST");
-    hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Data.INSTANCE.setHosting(true);
-      //reload username screen and show
-      refresh();
-      ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
-      return false;
-    }));
-    hostTable.setButton(hostButton);
-    //create button for joining
-    MenuTable joinTable = createMenuTable(false, false);
-    TextButton joinButton = Styles.INSTANCE.createButton("JOIN");
-    joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      refresh();
-      Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
-      Screens.INSTANCE.showScreen(ServerScreen.class);
-      return false;
-    }));
-    joinTable.setButton(joinButton);
-    horizontalGroup.pack();
-    //add it to multiplayer table
-    multiplayerTable.setGroup(horizontalGroup);
   }
 
   private void createSettings() {
@@ -208,8 +193,8 @@ public class MainMenuScreen extends AbstractScreen {
         break;
       }
     }
-    //remove tables vertical group from visible table
-    visibleTable.clear();
+    //remove tables group/groups from visible tables
+    dropDownTable.clear();
     previousTable.setShowGroup(false);
     //select new table
     MenuTable newTable;
@@ -229,7 +214,7 @@ public class MainMenuScreen extends AbstractScreen {
       newTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
     }
     //add tables vertical group to visible table
-    visibleTable.add(newTable.getGroup());
+    dropDownTable.add(newTable.getGroup());
     newTable.setShowGroup(true);
   }
 
@@ -237,12 +222,12 @@ public class MainMenuScreen extends AbstractScreen {
     //deselect previous table
     MenuTable previousTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
     //remove tables vertical group from visible table
-    visibleTable.clear();
+    dropDownTable.clear();
     previousTable.setShowGroup(false);
     //select new table
     tabIndex = horizontalGroup.getChildren().indexOf(newTable, true);
     //add new tables vertical group to visible table
-    visibleTable.add(newTable.getGroup());
+    dropDownTable.add(newTable.getGroup());
     newTable.setShowGroup(true);
   }
 
@@ -309,8 +294,8 @@ public class MainMenuScreen extends AbstractScreen {
 
   private void enterPressed() {
     //get current highlighted menu table
-    for (Actor a : horizontalGroup.getChildren()) {
-      MenuTable menuTable = (MenuTable) a;
+    for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
+      MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
       if (menuTable.isShowGroup() && !menuTable.getButton().getText().toString().equals("QUIT")) {
         //get the vertical group belonging to the drop down
         Group group = menuTable.getGroup();
@@ -321,6 +306,7 @@ public class MainMenuScreen extends AbstractScreen {
             InputEvent inputEvent = new InputEvent();
             inputEvent.setType(InputEvent.Type.touchDown);
             menuTable1.getButton().fire(inputEvent);
+            break;
           }
         }
       } else if (menuTable.isShowGroup() && menuTable.getButton().getText().toString().equals("QUIT")) {
@@ -331,9 +317,33 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
+  void toggleButtonDeactivation(boolean toggle) {
+    for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
+      MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
+      if (toggle) {
+        menuTable.getButton().setTouchable(Touchable.disabled);
+      } else {
+        menuTable.getButton().setTouchable(Touchable.enabled);
+      }
+      //if there are buttons in drop down also toggle
+      for (int i = 0; i < menuTable.getGroup().getChildren().size; i++) {
+        MenuTable dropDownTable = (MenuTable) menuTable.getGroup().getChildren().get(i);
+        if (dropDownTable.getButton() != null) {
+          if (toggle) {
+            dropDownTable.getButton().setTouchable(Touchable.disabled);
+          } else {
+            dropDownTable.getButton().setTouchable(Touchable.enabled);
+          }
+        }
+      }
+    }
+  }
+
   @Override
   public void refresh() {
     this.dropDownIndex = -1;
+    popUpPresent = false;
   }
+
 
 }

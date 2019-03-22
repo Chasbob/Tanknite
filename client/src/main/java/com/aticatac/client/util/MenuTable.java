@@ -16,6 +16,7 @@ public class MenuTable extends Table {
   public MenuTable(boolean tab) {
     super();
     this.group = new VerticalGroup();
+    this.button = null;
     this.showGroup = false;
     this.tab = tab;
   }
@@ -40,7 +41,7 @@ public class MenuTable extends Table {
         Styles.INSTANCE.addTableColour(this, new Color(0.973f, 0.514f, 0.475f, 0.25f));
       }
     } else {
-      Styles.INSTANCE.addTableColour(this, new Color(0f, 0f, 0f, 0.25f));
+      Styles.INSTANCE.addTableColour(this, Styles.INSTANCE.getTransparentColour());
     }
     this.showGroup = showGroup;
   }

@@ -20,6 +20,7 @@ public enum Styles {
     public Color hiddenColour;
     public Color selectedColour;
     private Color accentColour;
+    private Color transparentColour;
 
     Styles() {
         System.out.println("Loading styles...");
@@ -40,6 +41,7 @@ public enum Styles {
         hiddenColour = Color.valueOf("363636");
         selectedColour = Color.CYAN;
         accentColour = Color.CORAL;
+        transparentColour = new Color(new Color(0f, 0f, 0f, 0.25f));
         //load in blank texture for healthbar
         blank = new Texture(Gdx.files.internal("img/white.png"));
     }
@@ -146,18 +148,14 @@ public enum Styles {
         return new TextButton(text, createButtonStyle(INSTANCE.baseFont, accentColour));
     }
 
-    public TextButton createPopButton(String text) {
-        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.TEAL));
-    }
-
-    public TextButton createLessPopButton(String text) {
-        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.CYAN));
-    }
-
     public VerticalGroup createVerticalGroup() {
         VerticalGroup verticalGroup = new VerticalGroup();
         verticalGroup.columnLeft();
         verticalGroup.space(10);
         return verticalGroup;
+    }
+
+    public Color getTransparentColour() {
+        return transparentColour;
     }
 }
