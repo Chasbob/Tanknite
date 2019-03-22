@@ -18,13 +18,13 @@ public class AI {
   private final static Set<SearchNode> occupiedNodes = new HashSet<>();
   private final static Graph graph = new Graph();
   private final PathFinder pathFinder;
-  private final double aggression; // (0.5 to 1.5) higher = more likely to attack less likely to flee
-  private final double collectiveness; // (0.5 to 1.5) higher = more likely to collect powerup
+  private final double aggression; // (0.8 to 1.2), higher = more likely to chase less likely to flee
+  private final double collectiveness; // (0.8 to 1.2), higher = more likely to collect a powerup
   private State state;
   private State prevState;
-  private Queue<SearchNode> searchPath; // current path being executed
+  private Queue<SearchNode> searchPath;
   private Set<Position> recentlyVisitedNodes;
-  private ArrayList<Command> commandHistory = new ArrayList<>();
+  private ArrayList<Command> commandHistory;
   private ArrayList<PlayerState> enemiesInRange;
   private ArrayList<PowerUpState> powerupsInRange;
   private EntityType idealPowerup;
@@ -40,9 +40,11 @@ public class AI {
     this.state = State.SEARCHING;
     this.searchPath = new LinkedList<>();
     this.recentlyVisitedNodes = new HashSet<>();
-    this.aggression = /*(double) Math.round((0.5 + Math.random()) * 10) / 10*/1;
-    this.collectiveness = /*(double) Math.round((0.5 + Math.random()) * 10) / 10*/1;
-    this.aimAngle = 0; // or whichever direction the tank faces at start
+    this.commandHistory = new ArrayList<>();
+    Random rand = new Random();
+    this.aggression = (rand.nextInt(4) + 8) / 10;
+    this.collectiveness = (rand.nextInt(4) + 8) / 10;
+    this.aimAngle = 0;
   }
 
   /**
@@ -71,6 +73,9 @@ public class AI {
     return new Decision(command, aimAngle, shooting);
   }
 
+  /**
+   * Updates all of the tanks's information.
+   */
   private void updateInformation() {
     tankPos = currentInput.getMe().getPosition();
     tankHealth = currentInput.getMe().health;
@@ -591,7 +596,6 @@ public class AI {
     return closestObject;
   }
 //--------------------------------------------------AIMING--------------------------------------------------------------
-
   /**
    * Checks if the tank can shoot at an enemy
    *
@@ -609,6 +613,7 @@ public class AI {
     }
     return false;
   }
+
   /**
    * Calculates an angle to aim at given a target
    *
@@ -639,6 +644,12 @@ public class AI {
 //    return aimAngle;
   }
 
+  /**
+   * Applies a given change to a given angle.
+   * @param angle  Angle to change
+   * @param change Amount to change by
+   * @return Resultant angle
+   */
   private int changeAngle(int angle, int change) {
     if (angle + change >= 0)
       return (angle + change) % 360;
