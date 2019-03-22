@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.isometric.Helper;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.HudUpdate;
@@ -156,7 +157,7 @@ public class GameScreen extends AbstractScreen {
     }
     if (player != null) {
 //      this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
-      this.camera.setPosititon(tileToScreenX(player.getX(), player.getY()), tileToScreenY(player.getX(), player.getY()));
+      this.camera.setPosititon(Helper.tileToScreenX(player.getX(), player.getY()), Helper.tileToScreenY(player.getX(), player.getY()));
 //      this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
       this.tankXY.setText(player.getX() + ", " + player.getY());
       if (player.getR() == 0) {
@@ -445,36 +446,16 @@ public class GameScreen extends AbstractScreen {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-//    var pos = Helper.CartesianToIsometric(maxX - c.getX(), maxY - c.getY());
-    var pos = new Position(tileToScreenX(c.getX(), c.getY()), tileToScreenY(c.getX(), c.getY()));
+    var pos = new Position(Helper.tileToScreenX(c.getX(), c.getY()), Helper.tileToScreenY(c.getX(), c.getY()));
     batch.draw(tankTexture, pos.getX(), pos.getY());
-//    batch.draw(tankTexture, maxX - c.getX() - 16, maxY - c.getY() - 16);
   }
 
   private void renderOrthoContainer(Container c, SpriteBatch batch) {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-//    var pos = Helper.CartesianToIsometric(maxX - c.getX(), maxY - c.getY());
-//    var pos = new Position(tileToScreenX(c.getX(), c.getY()), tileToScreenY(c.getX(), c.getY()));
     batch.draw(tankTexture2, c.getX(), c.getY());
-//    batch.draw(tankTexture, maxX - c.getX() - 16, maxY - c.getY() - 16);
   }
-
-  public int tileToScreenX(int x, int y) {
-    return ((x / 32) + (y / 32)) * (32 / 2);
-  }
-
-  public int tileToScreenY(int x, int y) {
-    return ((x / 32) - (y / 32)) * (16 / 2);
-  }
-
-  public int screenToMapX(int x, int y) {
-    return ((x / 16) + (y / 16));
-  }
-//  public int screenToMapY(int x,int y){
-//    return
-//  }
 
   private int getBearing() {
     Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -501,12 +482,12 @@ public class GameScreen extends AbstractScreen {
         Data.INSTANCE.sendCommand(Command.LEFT);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-        Data.INSTANCE.sendCommand(Command.UP);
 //        Data.INSTANCE.sendCommand(Command.LEFT);
+        Data.INSTANCE.sendCommand(Command.UP);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-        Data.INSTANCE.sendCommand(Command.DOWN);
 //        Data.INSTANCE.sendCommand(Command.RIGHT);
+        Data.INSTANCE.sendCommand(Command.DOWN);
       }
       if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
         this.camera.getCamera().zoom -= 0.1f;
