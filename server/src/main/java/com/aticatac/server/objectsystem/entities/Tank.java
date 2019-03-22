@@ -87,7 +87,12 @@ public class Tank<T extends PlayerInput> extends Entity implements DependantTick
         this.logger.info("shoot");
         if (!(ammo == 0 || health == 0)) {
           setAmmo(ammo - 1);
-          outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 10));
+          if (damageIncrease){
+            outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 20));
+          }
+          else {
+            outputService.addBullet(new Bullet(getBaseEntity(), position, input.bearing, 10));
+          }
           DataServer.INSTANCE.addBoxToData(new CollisionBox(position, EntityType.TANK.radius), getBaseEntity());
 //        this.getComponent(TurretController.class).shoot(input.bearing);
         }
