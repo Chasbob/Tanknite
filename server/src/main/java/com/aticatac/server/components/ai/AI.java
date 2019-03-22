@@ -75,13 +75,12 @@ public class AI {
     }
     // Check for a state change
     state = getStateChange();
-    state = State.SEARCHING;
     // Return a decision
     Command command = performStateAction();
     if (!commandHistory.contains(command))
       commandHistory.clear();
     commandHistory.add(command);
-    return new Decision(command, aimAngle, false);
+    return new Decision(command, aimAngle, shooting);
   }
 //----------------------------------------------------STATES------------------------------------------------------------
   /**
