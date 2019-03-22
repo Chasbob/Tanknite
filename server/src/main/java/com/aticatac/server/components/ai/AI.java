@@ -33,6 +33,7 @@ public class AI {
   private int tankAmmo;
   private int aimAngle;
   private boolean aimed;
+  private boolean shooting;
   private AIInput currentInput;
 
   public AI() {
@@ -59,12 +60,9 @@ public class AI {
     tankHealth = currentInput.getMe().health;
     tankAmmo = currentInput.getAmmo();
     enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
-//    System.out.println(enemiesInRange.size());
     powerupsInRange = getPowerUpsInRange(tankPos, currentInput.getPowerups());
-    // Change aim angle
     aimed = false;
-    int angleChange = getAngleChange();
-    aimAngle += angleChange;
+    shooting = false;
     // Poll search path if close enough to node
     double threshold = 8;
     if (!searchPath.isEmpty()) {
@@ -79,11 +77,10 @@ public class AI {
     state = getStateChange();
     // Return a decision
     Command command = performStateAction();
-    if (!commandHistory.contains(command)) {
+    if (!commandHistory.contains(command))
       commandHistory.clear();
-    }
     commandHistory.add(command);
-    return new Decision(command, angleChange);
+    return new Decision(command, aimAngle, shooting);
   }
 //----------------------------------------------------STATES------------------------------------------------------------
   /**
@@ -246,10 +243,15 @@ public class AI {
    * @return A command from the ATTACKING state
    */
   private Command performAttackingAction() {
+    PlayerState target = getTargetedEnemy();
+    // Change aim angle
+    aimAngle = getAngle(target.getPosition());
+    if (checkLineOfSightToPosition(tankPos, target.getPosition()) && aimed) {
+      shooting = true;
+    }
     if (prevState == State.ATTACKING && !searchPath.isEmpty() && commandHistory.size() < 60) {
       return commandToPerform(searchPath.peek());
     }
-    PlayerState target = getTargetedEnemy();
     if (target == null) {
       return Command.DEFAULT;
     }
@@ -450,7 +452,7 @@ public class AI {
       linePoints.add(new Position(Math.round(start.getX() + point * (end.getX() - start.getX())), Math.round(start.getY() + point * (end.getY() - start.getY()))));
     }
     for (Position point : linePoints) {
-      if (!map[point.getX()][point.getY()].equals("0")) {
+      if (map[point.getX()][point.getY()].equals("2")) {
         return false;
       }
     }
@@ -470,7 +472,7 @@ public class AI {
     for (PlayerState enemy : currentInput.getPlayers()) {
       int dX = Math.abs(position.getX() - enemy.getPosition().getX());
       int dY = Math.abs(position.getY() - enemy.getPosition().getY());
-      if (dX <= range && dY <= range && dX > 10 && dY > 10)
+      if (dX <= range && dY <= range && dX > 10 && dY > 10 && enemy.getHealth() > 0)
         inRange.add(enemy);
     }
     return inRange;
@@ -591,27 +593,35 @@ public class AI {
    *
    * @return An angle change
    */
-  private int getAngleChange() {
+  private int getAngle(Position target) {
     // No enemy to aim at
     if (enemiesInRange.isEmpty()) {
-      return 0;
+      return aimAngle;
     }
-    Position target = getTargetedEnemy().getPosition();
-    double angle = Math.atan2(target.getX() - tankPos.getX(), tankPos.getY() - target.getY());
+    Position targetCenter = new Position(target.getX() + 16, target.getY() + 16);
+    double angle = Math.atan2(targetCenter.getX() - tankPos.getX(), tankPos.getY() - targetCenter.getY());
     if (angle < 0) {
       angle += (Math.PI * 2);
     }
     int targetAngle = (int) Math.round(Math.toDegrees(angle));
-    int change = (Math.abs(targetAngle - aimAngle) / 2) + 1;
-    if (Math.abs(((aimAngle + change) % 360) - targetAngle) < Math.abs(((aimAngle - change) % 360) - targetAngle)) {
-      return change;
-    }
-    if (Math.abs(((aimAngle + change) % 360) - targetAngle) > Math.abs(((aimAngle - change) % 360) - targetAngle)) {
-      return -change;
-    }
-    // No change needed -> on target
     aimed = true;
-    return 0;
+    return (targetAngle + 90) % 360;
+//    int change = (Math.abs(targetAngle - aimAngle) / 2) + 1;
+//    if ((changeAngle(aimAngle, change) - targetAngle) < (changeAngle(aimAngle, -change) - targetAngle)) {
+//      return changeAngle(aimAngle, change);
+//    }
+//    if ((changeAngle(aimAngle, change) - targetAngle) > (changeAngle(aimAngle, -change) - targetAngle)) {
+//      return changeAngle(aimAngle, -change);
+//    }
+//    // No change needed -> on target
+//    aimed = true;
+//    return aimAngle;
+  }
+
+  private int changeAngle(int angle, int change) {
+    if (angle + change >= 0)
+      return (angle + change) % 360;
+    return (angle + change + 360);
   }
 
   /**

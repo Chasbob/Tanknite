@@ -69,6 +69,8 @@ class Graph {
    * @return The nearest node to the given position
    */
   SearchNode getNearestNode(Position position) {
+    if (nodes.containsKey(32*Math.round((float)position.getX()/32)+"-"+32*Math.round((float)position.getY()/32)))
+      return nodes.get(32*Math.round((float)position.getX()/32)+"-"+32*Math.round((float)position.getY()/32));
     SearchNode closestNode = null;
     double distanceToClosestNode = Double.MAX_VALUE;
     for (SearchNode node : nodes.values()) {

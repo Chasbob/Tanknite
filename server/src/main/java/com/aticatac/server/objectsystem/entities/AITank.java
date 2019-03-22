@@ -74,6 +74,14 @@ public class AITank extends Tank {
           e.printStackTrace();
         }
       }
+      if (decision.getShoot()) {
+        this.logger.info("shoot");
+        if (!(ammo == 0 || health == 0)) {
+//          setAmmo(ammo - 1);
+          outputService.addBullet(new Bullet(getBaseEntity(), position, decision.getAngle(), 10));
+          DataServer.INSTANCE.addBoxToData(new CollisionBox(position, EntityType.TANK.radius), getBaseEntity());
+        }
+      }
     }
   }
 
