@@ -25,14 +25,16 @@ public class MainMenuScreen extends AbstractScreen {
   Table musicTable;
   private int tabIndex;
   private int dropDownIndex;
+  private int popUpIndex;
   private Table dropDownTable;
   private MenuTable playTable;
   private MenuTable achievementTable;
   private MenuTable customizeTable;
   MenuTable settingsTable;
-  Table popUpTable;
+  VerticalGroup popUpGroup;
+  Table popUpRootTable;
   private MenuTable exitTable;
-  boolean popUpPresent;
+  public boolean popUpPresent;
 
   /**
    * Instantiates a new Main menu screen.
@@ -61,9 +63,15 @@ public class MainMenuScreen extends AbstractScreen {
       }
     } else {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-        rootTable.removeActor(popUpTable);
+        rootTable.removeActor(popUpRootTable);
         popUpPresent = false;
         toggleButtonDeactivation(false);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+        switchPopUp(false);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+        switchPopUp(true);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        enterPressed();
       }
     }
   }
@@ -151,9 +159,9 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton multiPlayerButton = Styles.INSTANCE.createButton("MULTI-PLAYER");
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(multiPlayerTable);
+      popUpPresent = true;
       PopUp.createPopUp();
       toggleButtonDeactivation(true);
-      popUpPresent = true;
       return false;
     }));
     multiPlayerTable.setButton(multiPlayerButton);
@@ -293,26 +301,30 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void enterPressed() {
-    //get current highlighted menu table
-    for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
-      MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
-      if (menuTable.isShowGroup() && !menuTable.getButton().getText().toString().equals("QUIT")) {
-        //get the vertical group belonging to the drop down
-        Group group = menuTable.getGroup();
-        //get current highlighted menu table from drop down
-        for (int i = 0; i < group.getChildren().size; i++) {
-          MenuTable menuTable1 = (MenuTable) group.getChildren().get(i);
-          if (menuTable1.isShowGroup()) {
-            InputEvent inputEvent = new InputEvent();
-            inputEvent.setType(InputEvent.Type.touchDown);
-            menuTable1.getButton().fire(inputEvent);
-            break;
+    InputEvent inputEvent = new InputEvent();
+    inputEvent.setType(InputEvent.Type.touchDown);
+    if (popUpPresent) {
+      //get current menu table and fire button
+      MenuTable menuTable = (MenuTable) popUpGroup.getChildren().get(popUpIndex);
+      menuTable.getButton().fire(inputEvent);
+    } else {
+      //get current highlighted menu table
+      for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
+        MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
+        if (menuTable.isShowGroup() && !menuTable.getButton().getText().toString().equals("QUIT")) {
+          //get the vertical group belonging to the drop down
+          Group group = menuTable.getGroup();
+          //get current highlighted menu table from drop down
+          for (int i = 0; i < group.getChildren().size; i++) {
+            MenuTable menuTable1 = (MenuTable) group.getChildren().get(i);
+            if (menuTable1.isShowGroup()) {
+              menuTable1.getButton().fire(inputEvent);
+              break;
+            }
           }
+        } else if (menuTable.isShowGroup() && menuTable.getButton().getText().toString().equals("QUIT")) {
+          menuTable.getButton().fire(inputEvent);
         }
-      } else if (menuTable.isShowGroup() && menuTable.getButton().getText().toString().equals("QUIT")) {
-        InputEvent inputEvent = new InputEvent();
-        inputEvent.setType(InputEvent.Type.touchDown);
-        menuTable.getButton().fire(inputEvent);
       }
     }
   }
@@ -337,6 +349,28 @@ public class MainMenuScreen extends AbstractScreen {
         }
       }
     }
+  }
+
+  private void switchPopUp(boolean down) {
+    //get current menuTable
+    MenuTable menuTable = (MenuTable) popUpGroup.getChildren().get(popUpIndex);
+    menuTable.setShowGroup(false);
+    if (down) {
+      if (popUpIndex == popUpGroup.getChildren().size - 1) {
+        popUpIndex = 0;
+      } else {
+        popUpIndex++;
+      }
+    } else {
+      if (popUpIndex == 0) {
+        popUpIndex = popUpGroup.getChildren().size - 1;
+      } else {
+        popUpIndex--;
+      }
+    }
+    //highlight new menu table
+    MenuTable newMenuTable = (MenuTable) popUpGroup.getChildren().get(popUpIndex);
+    newMenuTable.setShowGroup(true);
   }
 
   @Override

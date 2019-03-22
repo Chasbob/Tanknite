@@ -16,12 +16,11 @@ class PopUp {
     Table popUpRootTable = new Table();
     Styles.INSTANCE.addTableColour(popUpRootTable, Styles.INSTANCE.getTransparentColour());
     Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.addActor(popUpRootTable);
-    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpTable = popUpRootTable;
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable = popUpRootTable;
     popUpRootTable.setFillParent(true);
     Table popUpTable = new Table();
     Styles.INSTANCE.addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
     popUpTable.add(createMultiplayerChildren());
-    popUpTable.center();
     popUpTable.padTop(20).padBottom(20).padLeft(60).padRight(60);
     popUpRootTable.add(popUpTable);
   }
@@ -29,7 +28,7 @@ class PopUp {
   static Group createMultiplayerChildren() {
     VerticalGroup multplayerChildren = new VerticalGroup();
     multplayerChildren.space(5);
-    MenuTable hostTable = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(false, false);
+    MenuTable hostTable = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(true, false);
     //create button for hosting game
     TextButton hostButton = Styles.INSTANCE.createButton("HOST");
     hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
@@ -53,6 +52,7 @@ class PopUp {
     //create button for going back
     multplayerChildren.addActor(createBackButton());
     multplayerChildren.pack();
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = multplayerChildren;
     return multplayerChildren;
   }
 
@@ -60,7 +60,7 @@ class PopUp {
     MenuTable backTable = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(false, false);
     TextButton backButton = Styles.INSTANCE.createButton("BACK");
     backButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpTable);
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
       Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpPresent = false;
       Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
       return false;

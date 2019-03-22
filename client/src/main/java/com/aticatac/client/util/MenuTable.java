@@ -1,5 +1,7 @@
 package com.aticatac.client.util;
 
+import com.aticatac.client.screens.MainMenuScreen;
+import com.aticatac.client.screens.Screens;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -38,7 +40,12 @@ public class MenuTable extends Table {
       if (tab) {
         Styles.INSTANCE.addTableColour(this, Color.BLACK);
       } else {
-        Styles.INSTANCE.addTableColour(this, new Color(0.973f, 0.514f, 0.475f, 0.25f));
+        if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpPresent) {
+          //from pop up menu
+          Styles.INSTANCE.addTableColour(this, new Color(1, 1, 0, 0.25f));
+        } else {
+          Styles.INSTANCE.addTableColour(this, new Color(0.973f, 0.514f, 0.475f, 0.25f));
+        }
       }
     } else {
       Styles.INSTANCE.addTableColour(this, Styles.INSTANCE.getTransparentColour());
