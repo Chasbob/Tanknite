@@ -82,6 +82,15 @@ public class MainMenuScreen extends AbstractScreen {
     rootTable.setFillParent(true);
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
+    //create points and username table
+    Table assetsTable = new Table();
+    assetsTable.defaults().left();
+    assetsTable.add(Styles.INSTANCE.createLabel("ID: "));
+    assetsTable.add(Styles.INSTANCE.createCustomLabel("acidArchie007", Color.CORAL)).padRight(10);
+    assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
+    assetsTable.add(Styles.INSTANCE.createCustomLabel("1500", Color.CORAL));
+    super.addToRoot(assetsTable);
+    assetsTable.top().right().pad(10);
     //create title table
     Table titleTable = new Table().top().left().padTop(30).padLeft(50);
     super.addToRoot(titleTable);

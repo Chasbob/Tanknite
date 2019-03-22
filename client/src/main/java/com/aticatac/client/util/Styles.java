@@ -124,6 +124,10 @@ public enum Styles {
         return new Label(text, createLabelStyle(baseFont, Color.WHITE));
     }
 
+    public Label createCustomLabel(String text, Color color) {
+        return new Label(text, createLabelStyle(baseFont, color));
+    }
+
     public Label createGameLabel(String text) {
         return new Label(text, createLabelStyle(gameLabelFont, Color.WHITE));
     }
