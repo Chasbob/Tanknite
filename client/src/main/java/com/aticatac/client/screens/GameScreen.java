@@ -62,12 +62,12 @@ public class GameScreen extends AbstractScreen {
     maxY = 1920;
     try {
       player = new Container();
-      ammoValue = Styles.INSTANCE.createGameLabel("");
-      killCount = Styles.INSTANCE.createGameLabel(" 0 ");
-      playerCount = Styles.INSTANCE.createGameLabel(" 1 ");
-      fpsValue = Styles.INSTANCE.createGameLabel("");
-      tankXY = Styles.INSTANCE.createGameLabel("");
-      direction = Styles.INSTANCE.createGameLabel("");
+      ammoValue = Styles.INSTANCE.createLabel("");
+      killCount = Styles.INSTANCE.createLabel(" 0 ");
+      playerCount = Styles.INSTANCE.createLabel(" 1 ");
+      fpsValue = Styles.INSTANCE.createLabel("");
+      tankXY = Styles.INSTANCE.createLabel("");
+      direction = Styles.INSTANCE.createLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("img/tank.png");
       tractionHealth = true;
@@ -138,7 +138,7 @@ public class GameScreen extends AbstractScreen {
     Table aliveLabelTable = new Table();
     Styles.INSTANCE
       .addTableColour(aliveLabelTable, Color.GRAY);
-    Label aliveLabel = Styles.INSTANCE.createGameLabel("Alive");
+    Label aliveLabel = Styles.INSTANCE.createLabel("Alive");
     aliveLabelTable.add(aliveLabel);
     Table playerCountTable = new Table();
     playerCountTable.add(playerCount).center();
@@ -150,7 +150,7 @@ public class GameScreen extends AbstractScreen {
     Table killLableTable = new Table();
     Styles.INSTANCE
       .addTableColour(killLableTable, Color.GRAY);
-    Label killLabel = Styles.INSTANCE.createGameLabel("Killed");
+    Label killLabel = Styles.INSTANCE.createLabel("Killed");
     killLableTable.add(killLabel);
     Table killCountTable = new Table();
     Styles.INSTANCE
@@ -167,7 +167,7 @@ public class GameScreen extends AbstractScreen {
     killLogTable = new Table();
     killLogTable.bottom().left();
     killLogTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
-    Label tempKill = Styles.INSTANCE.createGameLabel("");
+    Label tempKill = Styles.INSTANCE.createLabel("");
     killLogTable.add(tempKill);
     return killLogTable;
   }
@@ -181,7 +181,7 @@ public class GameScreen extends AbstractScreen {
     Styles.INSTANCE
       .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
     ammoValueTable.add(ammoValue);
-    Label ammoLabel = Styles.INSTANCE.createGameLabel("Ammo");
+    Label ammoLabel = Styles.INSTANCE.createLabel("Ammo");
     Table ammoLabelTable = new Table();
     Styles.INSTANCE
       .addTableColour(ammoLabelTable, Color.GRAY);
@@ -244,7 +244,7 @@ public class GameScreen extends AbstractScreen {
     alertTable = new Table();
     alertTable.bottom();
     alertTable.defaults().padBottom(60);
-    Label alertLabel = Styles.INSTANCE.createGameLabel("TRACTION DISABLED");
+    Label alertLabel = Styles.INSTANCE.createLabel("TRACTION DISABLED");
     alertTable.add(alertLabel);
     alertTable.setVisible(false);
     return alertTable;
@@ -396,11 +396,11 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
-    ammoValue = Styles.INSTANCE.createGameLabel("");
-    killCount = Styles.INSTANCE.createGameLabel("");
-    playerCount = Styles.INSTANCE.createGameLabel("");
-    tankXY = Styles.INSTANCE.createGameLabel("");
-    direction = Styles.INSTANCE.createGameLabel("");
+    ammoValue = Styles.INSTANCE.createLabel("");
+    killCount = Styles.INSTANCE.createLabel("");
+    playerCount = Styles.INSTANCE.createLabel("");
+    tankXY = Styles.INSTANCE.createLabel("");
+    direction = Styles.INSTANCE.createLabel("");
     popUpTable.setVisible(false);
     alertTable.setVisible(false);
     tractionHealth = true;

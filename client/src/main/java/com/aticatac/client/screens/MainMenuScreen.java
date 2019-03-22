@@ -142,7 +142,7 @@ public class MainMenuScreen extends AbstractScreen {
     VerticalGroup playChildren = Styles.INSTANCE.createVerticalGroup();
     //create button for single player
     MenuTable singlePlayerTable = createMenuTable(true, false);
-    TextButton singlePlayerButton = Styles.INSTANCE.createButton("SINGLE-PLAYER");
+    TextButton singlePlayerButton = Styles.INSTANCE.createItalicButton("SINGLE-PLAYER");
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(singlePlayerTable);
       Data.INSTANCE.setSingleplayer(true);
@@ -155,7 +155,7 @@ public class MainMenuScreen extends AbstractScreen {
     singlePlayerTable.setButton(singlePlayerButton);
     //create button for multi player
     MenuTable multiPlayerTable = createMenuTable(false, false);
-    TextButton multiPlayerButton = Styles.INSTANCE.createButton("MULTI-PLAYER");
+    TextButton multiPlayerButton = Styles.INSTANCE.createItalicButton("MULTI-PLAYER");
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(multiPlayerTable);
       popUpPresent = true;

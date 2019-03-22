@@ -17,6 +17,7 @@ public enum Styles {
     public BitmapFont baseFont;
     public BitmapFont titleFont;
     public BitmapFont gameLabelFont;
+    public BitmapFont italicFont;
     public Color hiddenColour;
     public Color selectedColour;
     private Color accentColour;
@@ -68,18 +69,21 @@ public enum Styles {
     private void loadFonts() {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
         FreeTypeFontGenerator generator_title = new FreeTypeFontGenerator(Gdx.files.internal("styles/title_font.ttf"));
+        FreeTypeFontGenerator generator_italic_bold = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font_italic_bold.ttf"));
         System.out.println("Loaded ttf");
         FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter10.size = 15;
+        parameter10.size = 10;
         parameter15.size = 15;
         parameter40.size = 70;
         gameLabelFont = generator.generateFont(parameter10);
         baseFont = generator.generateFont(parameter15);
         titleFont = generator_title.generateFont(parameter40);
+        italicFont = generator_italic_bold.generateFont(parameter10);
         generator.dispose();
         generator_title.dispose();
+        generator_italic_bold.dispose();
     }
 
     public TextButton.TextButtonStyle createButtonStyle(BitmapFont font, Color color) {
@@ -113,39 +117,43 @@ public enum Styles {
     }
 
     public Label createTitleLabel() {
-        return new Label("TANKNITE", createLabelStyle(INSTANCE.titleFont, accentColour));
+        return new Label("TANKNITE", createLabelStyle(titleFont, accentColour));
     }
 
     public Label createLabel(String text) {
-        return new Label(text, createLabelStyle(INSTANCE.baseFont, Color.WHITE));
+        return new Label(text, createLabelStyle(baseFont, Color.WHITE));
     }
 
     public Label createGameLabel(String text) {
-        return new Label(text, createLabelStyle(INSTANCE.gameLabelFont, Color.WHITE));
+        return new Label(text, createLabelStyle(gameLabelFont, Color.WHITE));
     }
 
     public Label createColouredLabel() {
-        return new Label("WAITING FOR HOST", createLabelStyle(INSTANCE.baseFont, accentColour));
+        return new Label("WAITING FOR HOST", createLabelStyle(baseFont, accentColour));
     }
 
     public Label createSubtleLabel(String text) {
-        return new Label(text, createLabelStyle(INSTANCE.baseFont, Color.CYAN));
+        return new Label(text, createLabelStyle(baseFont, Color.CYAN));
     }
 
     public Label createErrorLabel() {
-        return new Label("NAME TAKEN", createLabelStyle(INSTANCE.baseFont, INSTANCE.hiddenColour));
+        return new Label("NAME TAKEN", createLabelStyle(baseFont, INSTANCE.hiddenColour));
     }
 
     public TextButton createBackButton(String text) {
-        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.GRAY));
+        return new TextButton(text, createButtonStyle(baseFont, Color.GRAY));
     }
 
     public TextButton createButton(String text) {
-        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, Color.WHITE));
+        return new TextButton(text, createButtonStyle(baseFont, Color.WHITE));
     }
 
     public TextButton createStartButton(String text) {
-        return new TextButton(text, createButtonStyle(INSTANCE.baseFont, accentColour));
+        return new TextButton(text, createButtonStyle(baseFont, accentColour));
+    }
+
+    public TextButton createItalicButton(String text) {
+        return new TextButton(text, createButtonStyle(italicFont, Color.WHITE));
     }
 
     public VerticalGroup createVerticalGroup() {
