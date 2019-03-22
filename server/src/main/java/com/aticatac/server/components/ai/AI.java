@@ -75,12 +75,13 @@ public class AI {
     }
     // Check for a state change
     state = getStateChange();
+    state = State.SEARCHING;
     // Return a decision
     Command command = performStateAction();
     if (!commandHistory.contains(command))
       commandHistory.clear();
     commandHistory.add(command);
-    return new Decision(command, aimAngle, shooting);
+    return new Decision(command, aimAngle, false);
   }
 //----------------------------------------------------STATES------------------------------------------------------------
   /**
@@ -452,8 +453,10 @@ public class AI {
       linePoints.add(new Position(Math.round(start.getX() + point * (end.getX() - start.getX())), Math.round(start.getY() + point * (end.getY() - start.getY()))));
     }
     for (Position point : linePoints) {
-      if (map[point.getX()][point.getY()].equals("2")) {
-        return false;
+      if (point.getX() >= 0 && point.getX() < map.length && point.getY() >= 0 && point.getY() < map.length) {
+        if (map[point.getX()][point.getY()].equals("2")) {
+          return false;
+        }
       }
     }
     return true;
