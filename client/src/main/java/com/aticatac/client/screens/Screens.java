@@ -22,7 +22,6 @@ public enum Screens {
 
     Screens() {
         screens = new HashMap<>();
-        screens.put(LeaderBoardScreen.class, new LeaderBoardScreen());
         screens.put(GameScreen.class, new GameScreen());
         screens.put(LobbyScreen.class, new LobbyScreen());
         screens.put(MainMenuScreen.class, new MainMenuScreen());

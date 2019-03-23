@@ -30,7 +30,7 @@ public class MainMenuScreen extends AbstractScreen {
   private int popUpIndex;
   private Table dropDownTable;
   private MenuTable playTable;
-  private MenuTable challengesTable;
+  private MenuTable challengesButtonTable;
   private MenuTable customizeTable;
   MenuTable settingsTable;
   VerticalGroup popUpGroup;
@@ -161,11 +161,8 @@ public class MainMenuScreen extends AbstractScreen {
     dropDownTable.defaults().left();
     //play button with child buttons
     createPlay();
-    //achievements
-    challengesTable = createMenuTable(false, true);
-    TextButton challengesButton = Styles.INSTANCE.createButton("CHALLENGES");
-    switchTabListener(challengesButton, challengesTable, horizontalGroup);
-    addHoverListener(challengesButton, challengesTable);
+    //challenges
+    createChallenges();
     //customize
     customizeTable = createMenuTable(false, true);
     TextButton customizeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
@@ -192,6 +189,41 @@ public class MainMenuScreen extends AbstractScreen {
     dropDownTable.add(playTable.getGroup());
   }
 
+  private void createChallenges() {
+    challengesButtonTable = createMenuTable(false, true);
+    TextButton challengesButton = Styles.INSTANCE.createButton("CHALLENGES");
+    switchTabListener(challengesButton, challengesButtonTable, horizontalGroup);
+    addHoverListener(challengesButton, challengesButtonTable);
+    //create challenge table
+    Table challengesDataTable = createTableWithPadding();
+    //add table to store header
+    Table headerTable = new Table();
+    //TODO label not appearing properly.
+    headerTable.add(Styles.INSTANCE.createCustomLabel("DAILY CHALLENGES", Color.DARK_GRAY));
+    //headerTable.add(Styles.INSTANCE.createItalicLabel("DAILY"));
+    //create table to store challenges
+    Table challengesTable = new Table();
+    challengesTable.defaults().left().pad(10);
+    challengesTable.add(Styles.INSTANCE.createItalicLabel("Kill 3 enemies"));
+    challengesTable.row();
+    challengesTable.add(Styles.INSTANCE.createItalicLabel("Obtain a power up and kill someone whilst its activated"));
+    challengesTable.row();
+    challengesTable.add(Styles.INSTANCE.createItalicLabel("Win a game."));
+    //add tables together
+    challengesDataTable.add(headerTable);
+    challengesDataTable.row();
+    challengesDataTable.add(challengesTable);
+    //add table to the menu table
+    challengesButtonTable.setTable(challengesDataTable);
+  }
+
+  private Table createTableWithPadding() {
+    Table table = new Table();
+    Styles.INSTANCE.addTableColour(table, Color.DARK_GRAY);
+    table.defaults().left().padLeft(10).padRight(10).top();
+    return table;
+  }
+
   private void createAssets() {
     Table assetsTable = new Table();
     assetsTable.top().right().pad(10);
@@ -204,9 +236,7 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createLockedTable() {
-    Table lockedTable = new Table();
-    Styles.INSTANCE.addTableColour(lockedTable, Color.DARK_GRAY);
-    lockedTable.defaults().left().padLeft(10).padRight(10).top();
+    Table lockedTable = createTableWithPadding();
     //stats container table
     Table statsContainerTable = new Table();
     statsContainerTable.defaults().left();
@@ -341,12 +371,14 @@ public class MainMenuScreen extends AbstractScreen {
     //deselect previous table
     MenuTable previousTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
     //get current vertical group and make current button unselected
-    for (Actor table : previousTable.getGroup().getChildren()) {
-      MenuTable menuTable = (MenuTable) table;
-      if (menuTable.isShowGroup()) {
-        menuTable.setShowGroup(false);
-        dropDownIndex = 0;
-        break;
+    if (previousTable.getGroup() != null) {
+      for (Actor table : previousTable.getGroup().getChildren()) {
+        MenuTable menuTable = (MenuTable) table;
+        if (menuTable.isShowGroup()) {
+          menuTable.setShowGroup(false);
+          dropDownIndex = 0;
+          break;
+        }
       }
     }
     //remove tables group/groups from visible tables
@@ -370,7 +402,11 @@ public class MainMenuScreen extends AbstractScreen {
       newTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
     }
     //add tables vertical group to visible table
-    dropDownTable.add(newTable.getGroup());
+    if (newTable.getGroup() == null) {
+      dropDownTable.add(newTable.getTable());
+    } else {
+      dropDownTable.add(newTable.getGroup());
+    }
     newTable.setShowGroup(true);
     setDropDown(newTable);
   }
@@ -384,7 +420,12 @@ public class MainMenuScreen extends AbstractScreen {
     //select new table
     tabIndex = horizontalGroup.getChildren().indexOf(newTable, true);
     //add new tables vertical group to visible table
-    dropDownTable.add(newTable.getGroup());
+    if (newTable.getGroup() == null) {
+      //we know to add a table instead
+      dropDownTable.add(newTable.getTable());
+    } else {
+      dropDownTable.add(newTable.getGroup());
+    }
     newTable.setShowGroup(true);
     setDropDown(newTable);
   }
@@ -404,10 +445,12 @@ public class MainMenuScreen extends AbstractScreen {
   private void switchDropDown(boolean down) {
     //get current drop down from tab
     MenuTable currentTab = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
-    Group group = currentTab.getGroup();
-    if (group.getChildren().size != 0) {
-      //get current table from group
-      keySwitcher(group, dropDownIndex, down);
+    if (currentTab.getGroup() != null) {
+      Group group = currentTab.getGroup();
+      if (group.getChildren().size != 0) {
+        //get current table from group
+        keySwitcher(group, dropDownIndex, down);
+      }
     }
   }
 
@@ -505,9 +548,11 @@ public class MainMenuScreen extends AbstractScreen {
 
   //assigns first drop down element of the new tab highlighted
   private void setDropDown(MenuTable newTable) {
-    if (newTable.getGroup().getChildren().size != 0) {
-      MenuTable menuTable = (MenuTable) newTable.getGroup().getChildren().get(dropDownIndex);
-      menuTable.setShowGroup(true);
+    if (newTable.getGroup() != null) {
+      if (newTable.getGroup().getChildren().size != 0) {
+        MenuTable menuTable = (MenuTable) newTable.getGroup().getChildren().get(dropDownIndex);
+        menuTable.setShowGroup(true);
+      }
     }
   }
 

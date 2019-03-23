@@ -6,19 +6,20 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 public class MenuTable extends Table {
 
   private Group group;
+  private Table table;
   private TextButton button;
   private boolean showGroup;
   private boolean tab;
 
   public MenuTable(boolean tab) {
     super();
-    this.group = new VerticalGroup();
+    this.group = null;
     this.button = null;
+    this.table = null;
     this.showGroup = false;
     this.tab = tab;
   }
@@ -60,5 +61,13 @@ public class MenuTable extends Table {
   public void setButton(TextButton button) {
     this.button = button;
     this.add(button);
+  }
+
+  public Table getTable() {
+    return table;
+  }
+
+  public void setTable(Table table) {
+    this.table = table;
   }
 }
