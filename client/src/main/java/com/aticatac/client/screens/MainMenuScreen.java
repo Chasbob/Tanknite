@@ -8,6 +8,8 @@ import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -36,9 +38,10 @@ public class MainMenuScreen extends AbstractScreen {
   private MenuTable exitTable;
   public boolean popUpPresent;
   private Table containerTable;
-  Label screenTitle;
-  float green;
-  boolean colorDirection;
+  private Label screenTitle;
+  private float green;
+  private boolean colorDirection;
+  private SpriteBatch aidBarBatch;
 
   /**
    * Instantiates a new Main menu screen.
@@ -48,11 +51,14 @@ public class MainMenuScreen extends AbstractScreen {
     Gdx.input.setInputProcessor(this);
     popUpPresent = false;
     green = 0.5f;
+    aidBarBatch = new SpriteBatch();
   }
 
   @Override
   public void render(float delta) {
-    super.render(delta);
+    //TODO batch is not being drawn under aid label
+    Gdx.gl.glClearColor(0, 0, 0, 1);
+    Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     if (!popUpPresent) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
         switchTab(true);
@@ -78,6 +84,7 @@ public class MainMenuScreen extends AbstractScreen {
         enterPressed();
       }
     }
+    //setting colour dynamic for title label
     if (green < 1 && colorDirection) {
       //if there is room to go up and we are going up then go up
       green = green + 0.01f;
@@ -97,6 +104,14 @@ public class MainMenuScreen extends AbstractScreen {
       colorDirection = false;
     }
     screenTitle.setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.titleFont, new Color(0.973f, green, 0.475f, 1)));
+    //draw aid bar
+    aidBarBatch.begin();
+    aidBarBatch.setColor(Color.DARK_GRAY);
+    aidBarBatch.draw(Styles.INSTANCE.getBlank(), 0, 0, Gdx.graphics.getWidth(), 30);
+    aidBarBatch.setColor(Color.WHITE);
+    aidBarBatch.end();
+    act(delta);
+    draw();
   }
 
   @Override
@@ -113,6 +128,17 @@ public class MainMenuScreen extends AbstractScreen {
     //create table to store lower part of screen info
     containerTable.row();
     createLockedTable();
+    //create label for aid at bottom of screen
+    createAidTable();
+  }
+
+  private void createAidTable() {
+    Table aidTable = new Table();
+    aidTable.debug();
+    super.addToRoot(aidTable);
+    Label aidLabel = Styles.INSTANCE.createGameLabel("[ARROW KEYS TO NAVIGATE - ENTER TO CLICK BUTTON - MOUSE OTHERWISE]");
+    aidTable.add(aidLabel).padBottom(5);
+    aidTable.bottom();
   }
 
   private void createNavigationMenus() {
@@ -480,5 +506,9 @@ public class MainMenuScreen extends AbstractScreen {
     tabIndex = 0;
   }
 
-
+  @Override
+  public void dispose() {
+    super.dispose();
+    aidBarBatch.dispose();
+  }
 }
