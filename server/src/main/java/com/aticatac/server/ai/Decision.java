@@ -7,17 +7,20 @@ import com.aticatac.common.model.Command;
  */
 public class Decision {
   private final Command command;
-  private final int angleChange;
+  private final int angle;
+  private final boolean shoot;
 
   /**
    * Creates a new decision: A command and angle change pair.
    *
-   * @param command     Command to execute
-   * @param angleChange Angle change to apply
+   * @param command The command to execute
+   * @param angle   The aim angle
+   * @param shoot   Shooting?
    */
-  public Decision(Command command, int angleChange) {
+  public Decision(Command command, int angle, boolean shoot) {
     this.command = command;
-    this.angleChange = angleChange;
+    this.angle = angle;
+    this.shoot = shoot;
   }
 
   /**
@@ -30,11 +33,15 @@ public class Decision {
   }
 
   /**
-   * Gets the angle change to apply.
+   * Gets the aim angle.
    *
-   * @return Angle change to apply
+   * @return The aim angle
    */
-  public int getAngleChange() {
-    return angleChange;
+  public int getAngle() {
+    return angle;
+  }
+
+  public boolean getShoot() {
+    return shoot;
   }
 }
