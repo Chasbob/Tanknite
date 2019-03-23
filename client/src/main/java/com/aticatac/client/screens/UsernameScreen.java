@@ -46,10 +46,10 @@ public class UsernameScreen extends AbstractScreen {
       if (Data.INSTANCE.isManualConfigForServer()) {
         text = "IP";
       } else {
-        text = "Name";
+        text = "NAME";
       }
       //create server label
-      Label serverLabel = Styles.INSTANCE.createLabel("Server " + text);
+      Label serverLabel = Styles.INSTANCE.createLabel("SERVER " + text);
       dataTable.add(serverLabel);
       dataTable.row();
       //create server textfield
@@ -58,14 +58,14 @@ public class UsernameScreen extends AbstractScreen {
       dataTable.row();
     }
     //create username label
-    Label usernameLabel = Styles.INSTANCE.createLabel("Username");
+    Label usernameLabel = Styles.INSTANCE.createLabel("USERNAME");
     dataTable.add(usernameLabel);
     dataTable.row();
     //create text field for username
     usernameTextField = Styles.INSTANCE.createTextField("");
     dataTable.add(usernameTextField);
     //create button for submit
-    TextButton submitButton = Styles.INSTANCE.createButton("Submit");
+    TextButton submitButton = Styles.INSTANCE.createButton("SUBMIT");
     dataTable.add(submitButton);
     //create custom listener for submit button to get text field text
     submitButton.addListener(ListenerFactory.newListenerEvent(() -> {
@@ -78,7 +78,7 @@ public class UsernameScreen extends AbstractScreen {
             Screens.INSTANCE.showScreen(GameScreen.class);
             break;
           case INVALID_NAME:
-            errorLabel.setText("Invalid Username");
+            errorLabel.setText("INVALID USERNAME");
             errorLabel.setStyle(getErrorStyle());
             break;
         }
@@ -107,19 +107,19 @@ public class UsernameScreen extends AbstractScreen {
             refresh();
             break;
           case TAKEN:
-            errorLabel.setText("Name Taken");
+            errorLabel.setText("NAME TAKEN");
             errorLabel.setStyle(getErrorStyle());
             break;
           case NO_SERVER:
-            errorLabel.setText("Server does not exist");
+            errorLabel.setText("SERVER DOES NOT EXIST");
             errorLabel.setStyle(getErrorStyle());
             break;
           case INVALID_NAME:
-            errorLabel.setText("Invalid Username");
+            errorLabel.setText("INVALID USERNAME");
             errorLabel.setStyle(getErrorStyle());
             break;
           case FULL:
-            errorLabel.setText("Game Full");
+            errorLabel.setText("GAME FULL");
             errorLabel.setStyle(getErrorStyle());
             break;
         }

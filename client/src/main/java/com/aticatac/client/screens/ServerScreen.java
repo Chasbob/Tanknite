@@ -34,14 +34,14 @@ public class ServerScreen extends AbstractScreen {
     Table dataTable = new Table();
     //create table for top labels
     Table serverDetailsTable = super.createTopLabelTable(dataTable);
-    Label waitingLabel = Styles.INSTANCE.createLabel("servers");
+    Label waitingLabel = Styles.INSTANCE.createLabel("SERVERS");
     serverDetailsTable.add(waitingLabel);
     //add table with join button to get into lobby after entering username
     Table buttonTable = new Table();
     buttonTable.setFillParent(true);
     dataTable.addActor(buttonTable);
     buttonTable.top().padTop(100);
-    TextButton joinButton = Styles.INSTANCE.createStartButton("Join");
+    TextButton joinButton = Styles.INSTANCE.createStartButton("JOIN");
     buttonTable.defaults().padLeft(25).padRight(25);
     buttonTable.add(joinButton);
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
@@ -51,7 +51,7 @@ public class ServerScreen extends AbstractScreen {
         return false;
       }
     ));
-    TextButton manualButton = Styles.INSTANCE.createStartButton("Manual");
+    TextButton manualButton = Styles.INSTANCE.createStartButton("MANUAL");
     manualButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setManualConfigForServer(true);
       ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);

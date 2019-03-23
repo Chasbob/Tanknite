@@ -1,6 +1,5 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.game.GDXGame;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
@@ -16,15 +15,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
  * The type Main menu screen.
  */
 public class MainMenuScreen extends AbstractScreen {
-  VerticalGroup verticalGroup;
-  Table soundTable;
-  Table musicTable;
-  int offsetForPosition;
+
   private boolean wantsToPlay;
   private boolean wantsToPlayMultiplayer;
+  VerticalGroup verticalGroup;
   private Table modeTable;
   private Table multiplayerTable;
+  Table soundTable;
+  Table musicTable;
   private boolean changeSettings;
+  int offsetForPosition;
 
   /**
    * Instantiates a new Main menu screen.
@@ -44,7 +44,7 @@ public class MainMenuScreen extends AbstractScreen {
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
     //create title table
-    Table titleTable = new Table().top().left().padTop(50).padLeft(50);
+    Table titleTable = new Table().top().left().padTop(30).padLeft(50);
     super.addToRoot(titleTable);
     Label screenTitle = Styles.INSTANCE.createTitleLabel();
     titleTable.setFillParent(true);
@@ -59,48 +59,45 @@ public class MainMenuScreen extends AbstractScreen {
     buttonTable.add(verticalGroup);
     //play button with child buttons
     createPlay();
-    //button for achievements
-    TextButton achievementButton = Styles.INSTANCE.createButton("Achievements");
-    verticalGroup.addActor(achievementButton);
-    //button for store
-    TextButton storeButton = Styles.INSTANCE.createButton("Store");
-    verticalGroup.addActor(storeButton);
-    //button for leaderboard
-    TextButton leaderboardButton = Styles.INSTANCE.createButton("Leaderboard");
+    //achievements
+    Table achievementTable = createMenuTable();
+    TextButton achievementButton = Styles.INSTANCE.createButton("ACHIEVEMENTS");
+    achievementTable.add(achievementButton);
+    verticalGroup.addActor(achievementTable);
+    //customize
+    Table customizeTable = createMenuTable();
+    TextButton storeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
+    customizeTable.add(storeButton);
+    verticalGroup.addActor(customizeTable);
+    //leaderboard
+    Table leaderboardTable = createMenuTable();
+    TextButton leaderboardButton = Styles.INSTANCE.createButton("LEADERBOARD");
+    leaderboardTable.add(leaderboardButton);
+    verticalGroup.addActor(leaderboardTable);
     leaderboardButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.showScreen(LeaderBoardScreen.class);
       return false;
     }));
-    verticalGroup.addActor(leaderboardButton);
     //settings with child buttons
     createSettings();
     //create button to close game
-    TextButton exitButton = Styles.INSTANCE.createBackButton("Quit");
+    Table exitTable = createMenuTable();
+    TextButton exitButton = Styles.INSTANCE.createBackButton("QUIT");
+    exitTable.add(exitButton);
+    verticalGroup.addActor(exitTable);
     exitButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Gdx.app.exit();
       return false;
     }));
-    verticalGroup.addActor(exitButton);
     verticalGroup.pack();
-  }
-
-  @Override
-  public void refresh() {
-    wantsToPlay = false;
-    wantsToPlayMultiplayer = false;
-    changeSettings = false;
-    verticalGroup.removeActor(modeTable);
-    verticalGroup.removeActor(multiplayerTable);
-    verticalGroup.removeActor(musicTable);
-    verticalGroup.removeActor(soundTable);
-    verticalGroup.pack();
-    offsetForPosition = 0;
   }
 
   private void createPlay() {
-    TextButton playButton = Styles.INSTANCE.createButton("Play");
-    verticalGroup.addActor(playButton);
+    Table playTable = createMenuTable();
+    TextButton playButton = Styles.INSTANCE.createButton("PLAY");
+    playTable.add(playButton);
+    verticalGroup.addActor(playTable);
     playButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlay) {
         wantsToPlay = false;
@@ -119,6 +116,7 @@ public class MainMenuScreen extends AbstractScreen {
       }
       return false;
     }));
+
   }
 
   private void createPlayChildren() {
@@ -126,19 +124,19 @@ public class MainMenuScreen extends AbstractScreen {
     modeTable.padLeft(20);
     modeTable.defaults().padRight(20);
     //create button for single player
-    TextButton singlePlayerButton = Styles.INSTANCE.createPopButton("Single-Player");
+    TextButton singlePlayerButton = Styles.INSTANCE.createPopButton("SINGLE-PLAYER");
+    modeTable.add(singlePlayerButton);
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setSingleplayer(true);
-//      Server server = new Server(true, "Single-Player");
-//      server.start();
-      GDXGame.createServer(true, "Single-Player");
+      Server server = new Server(true, "Single-Player");
+      server.start();
       refresh();
       ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       return false;
     }));
-    modeTable.add(singlePlayerButton);
     //create button for multi player
-    TextButton multiPlayerButton = Styles.INSTANCE.createPopButton("Multi-Player");
+    TextButton multiPlayerButton = Styles.INSTANCE.createPopButton("MULTI-PLAYER");
+    modeTable.add(multiPlayerButton);
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (wantsToPlayMultiplayer) {
         wantsToPlayMultiplayer = false;
@@ -152,7 +150,6 @@ public class MainMenuScreen extends AbstractScreen {
       }
       return false;
     }));
-    modeTable.add(multiPlayerButton);
     verticalGroup.addActorAt(1, modeTable);
     verticalGroup.pack();
   }
@@ -161,7 +158,7 @@ public class MainMenuScreen extends AbstractScreen {
     multiplayerTable = new Table();
     multiplayerTable.defaults().padRight(20);
     //create button for hosting game
-    TextButton hostButton = Styles.INSTANCE.createLessPopButton("Host");
+    TextButton hostButton = Styles.INSTANCE.createLessPopButton("HOST");
     hostButton.padLeft(270);
     hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setHosting(true);
@@ -172,7 +169,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     multiplayerTable.add(hostButton);
     //create button for joining
-    TextButton joinButton = Styles.INSTANCE.createLessPopButton("Join");
+    TextButton joinButton = Styles.INSTANCE.createLessPopButton("JOIN");
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
       Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
@@ -185,7 +182,10 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createSettings() {
-    TextButton settingsButton = Styles.INSTANCE.createButton("Settings");
+    Table settingsTable = createMenuTable();
+    TextButton settingsButton = Styles.INSTANCE.createButton("SETTINGS");
+    settingsTable.add(settingsButton);
+    verticalGroup.addActor(settingsTable);
     settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (changeSettings) {
         changeSettings = false;
@@ -199,6 +199,27 @@ public class MainMenuScreen extends AbstractScreen {
       }
       return false;
     }));
-    verticalGroup.addActor(settingsButton);
   }
+
+  @Override
+  public void refresh() {
+    wantsToPlay = false;
+    wantsToPlayMultiplayer = false;
+    changeSettings = false;
+    verticalGroup.removeActor(modeTable);
+    verticalGroup.removeActor(multiplayerTable);
+    verticalGroup.removeActor(musicTable);
+    verticalGroup.removeActor(soundTable);
+    verticalGroup.pack();
+    offsetForPosition = 0;
+  }
+
+  private Table createMenuTable() {
+    Table table = new Table();
+    Styles.INSTANCE.addTableColour(table, new Color(0f, 0f, 0f, 0.25f));
+    table.defaults().padTop(5).padBottom(5).padLeft(10).padRight(10);
+    return table;
+  }
+
+
 }
