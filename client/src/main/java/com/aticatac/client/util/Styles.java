@@ -16,7 +16,7 @@ public enum Styles {
     private Texture blank;
     public BitmapFont baseFont;
     public BitmapFont titleFont;
-    public BitmapFont gameLabelFont;
+    public BitmapFont smallFont;
     public BitmapFont italicFont;
     public Color hiddenColour;
     public Color selectedColour;
@@ -77,7 +77,7 @@ public enum Styles {
         parameter10.size = 10;
         parameter15.size = 15;
         parameter40.size = 70;
-        gameLabelFont = generator.generateFont(parameter10);
+        smallFont = generator.generateFont(parameter10);
         baseFont = generator.generateFont(parameter15);
         titleFont = generator_title.generateFont(parameter40);
         italicFont = generator_italic_bold.generateFont(parameter10);
@@ -128,8 +128,12 @@ public enum Styles {
         return new Label(text, createLabelStyle(baseFont, color));
     }
 
-    public Label createGameLabel(String text) {
-        return new Label(text, createLabelStyle(gameLabelFont, Color.WHITE));
+    public Label createCustomLabelWithFont(BitmapFont font, String text, Color color) {
+        return new Label(text, createLabelStyle(font, color));
+    }
+
+    public Label createSmallLabel(String text) {
+        return new Label(text, createLabelStyle(smallFont, Color.WHITE));
     }
 
     public Label createColouredLabel() {

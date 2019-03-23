@@ -39,9 +39,9 @@ class Settings {
     TextButton button = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createItalicButton(labelString) : Styles.INSTANCE.createButton(labelString);
     Label label;
     if ((labelString.equals("TOGGLE SOUND: ") && AudioEnum.INSTANCE.isSound()) || (labelString.equals("TOGGLE MUSIC: ") && AudioEnum.INSTANCE.isMusic())) {
-      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createGameLabel("ON") : Styles.INSTANCE.createLabel("ON");
+      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSmallLabel("ON") : Styles.INSTANCE.createLabel("ON");
     } else {
-      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createGameLabel("OFF") : Styles.INSTANCE.createLabel("OFF");
+      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSmallLabel("OFF") : Styles.INSTANCE.createLabel("OFF");
     }
     button.addListener(buttonToChangeBool(button, label, table));
     table.setButton(button);

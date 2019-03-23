@@ -134,9 +134,8 @@ public class MainMenuScreen extends AbstractScreen {
 
   private void createAidTable() {
     Table aidTable = new Table();
-    aidTable.debug();
     super.addToRoot(aidTable);
-    Label aidLabel = Styles.INSTANCE.createGameLabel("[ARROW KEYS TO NAVIGATE - ENTER TO CLICK BUTTON - MOUSE OTHERWISE]");
+    Label aidLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.smallFont, "[ARROW KEYS TO NAVIGATE - ENTER TO CLICK BUTTON - MOUSE OTHERWISE]", Color.GRAY);
     aidTable.add(aidLabel).padBottom(5);
     aidTable.bottom();
   }
@@ -202,10 +201,12 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createLockedTable() {
+    Table lockedTable = new Table();
+    Styles.INSTANCE.addTableColour(lockedTable, Color.DARK_GRAY);
+    lockedTable.defaults().left().padLeft(10).padRight(10).top();
     //stats container table
     Table statsContainerTable = new Table();
-    Styles.INSTANCE.addTableColour(statsContainerTable, Color.DARK_GRAY);
-    statsContainerTable.defaults().left().padLeft(10).padRight(10);
+    statsContainerTable.defaults().left();
     //create section header for stats
     statsContainerTable.add(Styles.INSTANCE.createCustomLabel("STATS", Color.GRAY)).padTop(10).padBottom(10);
     //populate stats
@@ -213,16 +214,15 @@ public class MainMenuScreen extends AbstractScreen {
     populateStats(statsContainerTable);
     //create section header for top players
     Table leaderboardContainerTable = new Table();
-    leaderboardContainerTable.defaults().left().padLeft(10).padRight(10);
-    Styles.INSTANCE.addTableColour(leaderboardContainerTable, Color.DARK_GRAY);
+    leaderboardContainerTable.defaults().left();
     leaderboardContainerTable.add(Styles.INSTANCE.createCustomLabel("TOP PLAYERS", Color.GRAY)).padTop(10).padBottom(10);
     //populate leaderboard
     leaderboardContainerTable.row();
     populateTopPlayers(leaderboardContainerTable);
     //add tables to locked table
-    containerTable.add(statsContainerTable).left().padTop(50);
-    containerTable.row();
-    containerTable.add(leaderboardContainerTable).left().padTop(10);
+    lockedTable.add(statsContainerTable);
+    lockedTable.add(leaderboardContainerTable);
+    containerTable.add(lockedTable).left().padTop(50);
   }
 
   private void populateTopPlayers(Table leaderboardContainerTable) {
@@ -230,40 +230,48 @@ public class MainMenuScreen extends AbstractScreen {
     Table rankingTable = new Table();
     rankingTable.defaults().left();
     rankingTable.add(Styles.INSTANCE.createCustomLabel("1. ", Color.CORAL));
-    rankingTable.add(Styles.INSTANCE.createItalicLabel("dylanAI"));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("dylanAI - 6000"));
     rankingTable.row();
     rankingTable.add(Styles.INSTANCE.createCustomLabel("2. ", Color.CORAL));
-    rankingTable.add(Styles.INSTANCE.createItalicLabel("charlie27"));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("charlie27 - 5687"));
     rankingTable.row();
     rankingTable.add(Styles.INSTANCE.createCustomLabel("3. ", Color.CORAL));
-    rankingTable.add(Styles.INSTANCE.createItalicLabel("claireISSICK"));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("claireISSICK - 5000"));
     rankingTable.row();
     rankingTable.add(Styles.INSTANCE.createCustomLabel("4. ", Color.CORAL));
-    rankingTable.add(Styles.INSTANCE.createItalicLabel("bob"));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("bob - 1235"));
     rankingTable.row();
     rankingTable.add(Styles.INSTANCE.createCustomLabel("5. ", Color.CORAL));
-    rankingTable.add(Styles.INSTANCE.createItalicLabel("3wanisshit"));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("3wanisshit - 0"));
     leaderboardContainerTable.add(rankingTable).padBottom(10);
   }
 
   private void populateStats(Table statsContainerTable) {
     Table statsTable = new Table();
-    statsTable.defaults().left();
-    statsTable.add(Styles.INSTANCE.createItalicLabel("TOP KILLSTREAK: "));
-    statsTable.row();
-    statsTable.add(Styles.INSTANCE.createItalicLabel("KILLS: "));
-    statsTable.row();
-    statsTable.add(Styles.INSTANCE.createItalicLabel("DEATHS: "));
-    statsTable.row();
-    statsTable.add(Styles.INSTANCE.createItalicLabel("K/D: "));
-    statsTable.row();
-    statsTable.add(Styles.INSTANCE.createItalicLabel("WINS: "));
-    statsTable.row();
-    statsTable.add(Styles.INSTANCE.createItalicLabel("LOSSES: "));
-    statsTable.row();
-    statsTable.add((Styles.INSTANCE.createItalicLabel("W/L: ")));
-    statsTable.row();
-    statsTable.add((Styles.INSTANCE.createItalicLabel("RANKING: ")));
+    statsTable.defaults().left().padRight(20).top();
+    //we want to seperate the stats as too many to just list so have left table
+    Table statsLeftTable = new Table();
+    statsLeftTable.defaults().left();
+    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("TOP KILLSTREAK: "));
+    statsLeftTable.row();
+    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("KILLS: "));
+    statsLeftTable.row();
+    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("DEATHS: "));
+    statsLeftTable.row();
+    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("K/D: "));
+    statsLeftTable.row();
+    //create right table
+    Table statsRightTable = new Table();
+    statsRightTable.defaults().left();
+    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("WINS: "));
+    //statsRightTable.row();
+    statsRightTable.add(Styles.INSTANCE.createItalicLabel("LOSSES: "));
+    statsRightTable.row();
+    statsRightTable.add((Styles.INSTANCE.createItalicLabel("W/L: ")));
+    statsRightTable.row();
+    statsRightTable.add((Styles.INSTANCE.createItalicLabel("RANKING: ")));
+    statsTable.add(statsLeftTable);
+    statsTable.add(statsRightTable);
     statsContainerTable.add(statsTable).padBottom(10);
   }
 
