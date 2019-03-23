@@ -1,7 +1,7 @@
 package com.aticatac.server.ai;
 
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.transform.Position;
+import com.aticatac.server.Position;
 
 public class PowerUpState {
   public final EntityType type;

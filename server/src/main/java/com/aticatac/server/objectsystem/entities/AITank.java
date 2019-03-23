@@ -1,13 +1,13 @@
 package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.model.Command;
+import com.aticatac.server.Position;
 import com.aticatac.server.ai.AI;
 import com.aticatac.server.ai.AIInput;
 import com.aticatac.server.ai.Decision;
 import com.aticatac.server.ai.PlayerState;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.listener.AIInputListener;
-import com.aticatac.server.transform.Position;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 

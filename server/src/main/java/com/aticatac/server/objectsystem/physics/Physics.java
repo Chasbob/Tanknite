@@ -3,10 +3,10 @@ package com.aticatac.server.objectsystem.physics;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.model.VectorF;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.Position;
+import com.aticatac.server.game.GameMode;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
-import com.aticatac.server.test.GameMode;
-import com.aticatac.server.transform.Position;
 import java.util.HashSet;
 
 @SuppressWarnings("ALL")

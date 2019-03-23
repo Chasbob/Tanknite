@@ -1,15 +1,12 @@
 package com.aticatac.server.networking;
 
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.common.model.Shutdown;
 import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.game.Survival;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
-import com.aticatac.server.test.Survival;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -208,12 +205,7 @@ public class Server extends Thread {
       this.port = port;
       this.maxPlayers = 10;
       this.id = name;
-      try {
-        this.game = new Survival();
-      } catch (InvalidClassInstance | ComponentExistsException e) {
-        this.logger.info(e);
-        throw new ExceptionInInitializerError(e);
-      }
+      this.game = new Survival();
       try {
         this.server = InetAddress.getLocalHost();
         this.multicastSocket = new MulticastSocket();
@@ -343,10 +335,6 @@ public class Server extends Thread {
         client.shutdown();
       }
       try {
-        byte[] b = modelReader.toBytes(new Shutdown());
-        final ServerData s = ServerData.INSTANCE;
-        DatagramPacket shutdown = new DatagramPacket(b, b.length, s.getServer(), s.getPort());
-        this.broadcastSocket.send(shutdown);
         this.serverSocket.close();
         this.multicastSocket.close();
         this.broadcastSocket.close();

@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public enum Data {
   /**
-   * Instance test.
+   * Instance game.
    */
   INSTANCE;
   private final Logger logger;

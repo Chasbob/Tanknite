@@ -2,8 +2,8 @@ package com.aticatac.server.objectsystem;
 
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import com.aticatac.server.transform.Position;
 import java.security.SecureRandom;
 import java.util.Objects;
 import org.apache.log4j.Logger;

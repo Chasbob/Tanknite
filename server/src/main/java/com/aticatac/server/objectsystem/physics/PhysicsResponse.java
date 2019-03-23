@@ -1,6 +1,6 @@
 package com.aticatac.server.objectsystem.physics;
 
-import com.aticatac.server.transform.Position;
+import com.aticatac.server.Position;
 import com.aticatac.server.objectsystem.Entity;
 import java.util.HashSet;
 

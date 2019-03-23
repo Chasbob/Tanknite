@@ -1,7 +1,5 @@
-package com.aticatac.server.test;
+package com.aticatac.server.game;
 
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.server.bus.service.AIUpdateService;
@@ -13,7 +11,7 @@ public class Survival extends GameMode implements Runnable {
   private volatile boolean run;
   private int counter;
 
-  public Survival() throws InvalidClassInstance, ComponentExistsException {
+  public Survival() {
     aiUpdateService = new AIUpdateService();
   }
 

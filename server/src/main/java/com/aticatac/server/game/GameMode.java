@@ -1,11 +1,10 @@
-package com.aticatac.server.test;
+package com.aticatac.server.game;
 
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.Position;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.PowerupsChangedEvent;
@@ -21,7 +20,6 @@ import com.aticatac.server.objectsystem.entities.powerups.DamagePowerup;
 import com.aticatac.server.objectsystem.entities.powerups.HealthPowerup;
 import com.aticatac.server.objectsystem.entities.powerups.SpeedPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import com.aticatac.server.transform.Position;
 import com.google.common.eventbus.Subscribe;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -70,7 +68,7 @@ public abstract class GameMode implements Game {
    * @throws InvalidClassInstance     the invalid class instance
    * @throws ComponentExistsException the component exists exception
    */
-  GameMode() throws InvalidClassInstance, ComponentExistsException {
+  GameMode() {
 //    this.root = new GameObject("root", ObjectType.ROOT);
 //    new GameObject("Player Container", root, ObjectType.PLAYER_CONTAINER);
     this.playerMap = new ConcurrentHashMap<>();
@@ -182,7 +180,7 @@ public abstract class GameMode implements Game {
     return createTank(player, isAI, position.getX(), position.getY());
   }
 
-  //todo test this for given radius
+  //todo game this for given radius
   private Position getClearPosition(int radius) {
     int count = 1;
     Position position = new Position();

@@ -1,6 +1,6 @@
 package com.aticatac.server.ai;
 
-import com.aticatac.server.transform.Position;
+import com.aticatac.server.Position;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;

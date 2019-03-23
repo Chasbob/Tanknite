@@ -1,8 +1,8 @@
 package com.aticatac.server.objectsystem;
 
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import com.aticatac.server.transform.Position;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;

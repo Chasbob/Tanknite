@@ -2,7 +2,7 @@ package com.aticatac.server.ai;
 
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.transform.Position;
+import com.aticatac.server.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
