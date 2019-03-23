@@ -1,13 +1,12 @@
 package com.aticatac.server.objectsystem;
 
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import java.io.FileNotFoundException;
+import com.aticatac.server.transform.Position;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -40,16 +39,12 @@ public enum DataServer {
   DataServer() {
     wall = new Entity(EntityType.WALL);
     //initialises the map
-    try {
-      map = convertTMXFileToIntArray();
-    } catch (FileNotFoundException e) {
-      System.out.println("Yo where'd the file go");
-    }
+    map = convertTMXFileToIntArray();
     //adds the map to occupied coordinates
     for (int i = 0; i < 60; i++) {
       for (int j = 0; j < 60; j++) {
         if ((map[i][j]).equals("2")) {
-          createCollisionBox(i, j);
+          createCollisionBox(j, i);
         }
       }
     }
@@ -59,25 +54,17 @@ public enum DataServer {
     return occupiedCoordinates.size();
   }
 
-  /**
-   * @return
-   *
-   * @throws FileNotFoundException
-   */
-  private String[][] convertTMXFileToIntArray() throws FileNotFoundException {
-    //reads in the file
-    Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
-    //reads the file line by line
-    // map starts at line 71
-    for (int i = 0; i < 70; i++) {
-      s.nextLine();
-    }
-    //converts the file into the array
-    for (int i = 0; i < 60; i++) {
-      ArrayList<String> line = new ArrayList<>(Arrays.asList(s.nextLine().split(",")));
-      Collections.reverse(line);
-      String[] lineArray = new String[60];
-      map[i] = line.toArray(lineArray);
+  private String[][] convertTMXFileToIntArray() {
+    TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
+    for (int x = 0; x < layer.getWidth(); x++) {
+      for (int y = 0; y < layer.getHeight(); y++) {
+        try {
+          map[layer.getWidth() - x - 1][layer.getHeight() - y - 1] = Integer.toString(layer.getCell(x, y).getTile().getId());
+        } catch (NullPointerException e) {
+          map[layer.getWidth() - x - 1][layer.getHeight() - y - 1] = "0";
+        }
+      }
     }
     return map;
   }
@@ -114,7 +101,7 @@ public enum DataServer {
    * @param newPosition the new position
    * @param type        the type
    */
-//only called when the objects are first put into the map.
+  //only called when the objects are first put into the map.
   public void setCoordinates(Position newPosition, Entity type) {
     occupiedCoordinates.put(newPosition, type);
   }
@@ -146,10 +133,6 @@ public enum DataServer {
     playerCount = count;
   }
 
-  /**
-   * @param mapX
-   * @param mapY
-   */
   private void createCollisionBox(int mapX, int mapY) {
     int mapPositionX = (32 * (mapX));
     int mapPositionY = (32 * (mapY));

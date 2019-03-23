@@ -6,7 +6,8 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
-import com.aticatac.server.bus.service.PlayerInputService;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayerInputEvent;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.test.Survival;
@@ -19,7 +20,6 @@ import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,13 +31,11 @@ public class Server extends Thread {
   private final Logger logger;
   private final String id;
   private final boolean singleplayer;
-  private final PlayerInputService playerInputService;
   private volatile boolean shutdown;
   private String host;
   private Updater updater;
   private Discovery discovery;
   private NewClients newClients;
-//  private
 
   /**
    * Instantiates a new Server.
@@ -53,8 +51,6 @@ public class Server extends Thread {
     this.shutdown = false;
     this.id = id;
     ServerData.INSTANCE.initialise("225.4.5.6", 5500, 5000, id);
-//    this.ai = new Thread(new RunAI());
-    playerInputService = new PlayerInputService();
   }
 
   public Server(boolean singleplayer, String id, String host) {
@@ -134,12 +130,17 @@ public class Server extends Thread {
         if (current.getCommand() == Command.QUIT) {
           disconnectClient(current);
         } else {
-          playerInputService.onClientInput(current);
+          onClientInput(current);
 //          ServerData.INSTANCE.getGame().playerInput(current);
         }
       }
     }
     this.logger.info("Server ended.");
+  }
+
+  public void onClientInput(CommandModel model) {
+    PlayerInputEvent event = new PlayerInputEvent(model);
+    EventBusFactory.getEventBus().post(event);
   }
 
   private void disconnectClient(CommandModel model) {

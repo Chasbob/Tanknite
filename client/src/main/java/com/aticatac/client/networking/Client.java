@@ -8,6 +8,7 @@ import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.model.Vector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +16,7 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
@@ -26,11 +28,13 @@ public class Client {
   private final ConcurrentLinkedQueue<Update> queue;
   private final ModelReader modelReader;
   private final ArrayList<String> players;
+  private final HashSet<Command> currentCommands;
   private String id;
   private PrintStream printer;
   private BufferedReader reader;
   private boolean connected;
   private UpdateListener updateListener;
+  private CommandModel commandModel;
 
   /**
    * Instantiates a new Client.
@@ -40,6 +44,8 @@ public class Client {
     this.queue = new ConcurrentLinkedQueue<>();
     this.modelReader = new ModelReader();
     this.players = new ArrayList<>();
+    this.currentCommands = new HashSet<>();
+    this.commandModel = new CommandModel("");
   }
 
   public Update nextUpdate() {
@@ -93,7 +99,7 @@ public class Client {
       Login login = new Login(id);
       this.logger.trace("ID: " + id);
       this.logger.trace("login: " + modelReader.toJson(login));
-      this.logger.info("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
+      this.logger.trace("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
       Socket socket = new Socket(server.getAddress(), server.getPort());
       this.logger.trace("Connected to server at " + socket.getInetAddress());
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -110,8 +116,9 @@ public class Client {
         return output.isAuthenticated();
       }
       this.id = output.getId();
-      this.logger.info("Exiting 'connect' cleanly.");
+      this.logger.trace("Exiting 'connect' cleanly.");
       this.connected = true;
+      this.commandModel.setId(this.id);
       return Response.ACCEPTED;
     } catch (IOException e) {
       this.logger.warn("No Server.");
@@ -122,11 +129,9 @@ public class Client {
     }
   }
 
-  private void initUpdateSocket(InetAddress address, int port) throws IOException {
+  private void initUpdateSocket(InetAddress address, int port) {
     this.logger.trace("Initialising update socket...");
     this.logger.trace("Joining multicast: " + address + ":" + port);
-//    MulticastSocket multicastSocket = new MulticastSocket(port);
-//    multicastSocket.joinGroup(address);
     updateListener = new UpdateListener(queue, this.reader);
     updateListener.start();
     this.logger.trace("Started update listener!");
@@ -137,30 +142,34 @@ public class Client {
    */
   public void quit() {
     this.logger.warn("Quitting...");
-    sendCommand(Command.QUIT);
+    addCommand(Command.QUIT);
     updateListener.quit();
     printer.close();
   }
 
-  /**
-   * Send command.
-   *
-   * @param command the command
-   */
-  public void sendCommand(Command command, int bearing) {
+  public void addCommand(Command command, int bearing) {
+    currentCommands.add(command);
+    commandModel.setBearing(bearing);
+  }
+
+  public void addCommand(Command command) {
+    currentCommands.add(command);
+  }
+
+  public void submit() {
     if (!this.connected) {
       return;
     }
-    this.logger.trace("Sending command: " + command);
-    CommandModel commandModel = new CommandModel(this.id, command);
-    commandModel.setBearing(bearing);
-    this.logger.trace("Writing command to output stream.");
+    Vector v = Vector.Zero.cpy();
+    for (Command c :
+        currentCommands) {
+      v.add(c.vector);
+    }
+    commandModel.setVector(v);
     String json = modelReader.toJson(commandModel);
     this.printer.println(json);
-    this.logger.trace("Sent command: " + command);
-  }
-
-  public void sendCommand(Command command) {
-    sendCommand(command, command.getAngle());
+    this.logger.trace("Sent command: " + commandModel);
+    currentCommands.clear();
+    commandModel.reset();
   }
 }

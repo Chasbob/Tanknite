@@ -35,14 +35,16 @@ public class Survival extends GameMode implements Runnable {
     run = true;
     this.logger.trace("Running...");
     while (run) {
-//      checkPowerup();
-      createPowerUps();
+      checkPowerup();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
       aiUpdateService.update(playerMap,powerups);
       Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
 //      playerMap.values().parallelStream().forEach(Tank::tick);
 //      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
+//      if(playerMap.containsKey("asd")){
+//        playerMap.get("asd").move(1000,1920);
+//      }
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
@@ -55,7 +57,7 @@ public class Survival extends GameMode implements Runnable {
 
   private void checkPowerup() {
     counter++;
-    if (counter == 60) {
+    if (counter == 600) {
       createPowerUps();
       counter = 0;
     }

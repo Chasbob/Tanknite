@@ -28,9 +28,8 @@ public class Updater implements Runnable {
   private final Update update;
   private final ConcurrentHashMap<String, Container> players;
   private final ConcurrentHashMap<String, Container> projectiles;
-  private final ConcurrentHashMap<String, Container> powerups;
+  private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
-  private boolean changes;
   private boolean shutdown;
 
   /**
@@ -38,19 +37,18 @@ public class Updater implements Runnable {
    */
   Updater() {
     this.logger = Logger.getLogger(getClass());
-    this.update = new Update(true);
-    this.changes = true;
+    this.update = new Update();
     this.shutdown = false;
     this.modelReader = new ModelReader();
-    this.players = update.getPlayers();
-    this.projectiles = update.getProjectiles();
-    this.powerups = update.getPowerups();
-    this.newShots = update.getNewShots();
+    players = update.getPlayers();
+    projectiles = update.projectileMap();
+    powerups = update.getPowerups();
+    newShots = update.getNewShots();
     EventBusFactory.getEventBus().register(this);
     updatePlayers();
   }
 
-  public void shutdown() {
+  void shutdown() {
     this.shutdown = true;
   }
 
@@ -81,7 +79,6 @@ public class Updater implements Runnable {
     while (!Thread.currentThread().isInterrupted() && !shutdown) {
       double nanoTime = System.nanoTime();
       this.update.setStart(d.isStart());
-//      updatePlayers();
       tcpBroadcast();
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
@@ -113,7 +110,6 @@ public class Updater implements Runnable {
   private void broadcast() throws IOException {
     this.logger.trace("Broadcasting...");
     byte[] bytes = modelReader.toBytes(this.update);
-//    this.logger.info(bytes.length);
     final Server.ServerData s = Server.ServerData.INSTANCE;
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length, s.getServer(), s.getPort());
     this.logger.trace("Packet: " + packet.getAddress().toString() + ":" + packet.getPort());
@@ -124,16 +120,13 @@ public class Updater implements Runnable {
   private void playersChanged(PlayersChangedEvent e) {
     switch (e.action) {
       case ADD:
-        players.put(e.getContainer().getId(),e.getContainer());
-//        update.addPlayer(e.getContainer());
+        this.players.put(e.getContainer().getId(), e.getContainer());
         break;
       case REMOVE:
-        players.remove(e.getContainer().getId());
-//        update.removePlayer(e.getContainer());
+        this.players.remove(e.getContainer().getId());
         break;
       case UPDATE:
-        players.put(e.getContainer().getId(),e.getContainer());
-//        update.addPlayer(e.getContainer());
+        this.players.put(e.getContainer().getId(), e.getContainer());
         break;
     }
   }
@@ -142,16 +135,13 @@ public class Updater implements Runnable {
   private void powerupsChanged(PowerupsChangedEvent e) {
     switch (e.getAction()) {
       case ADD:
-        powerups.put(e.getContainer().getId(), e.getContainer());
-//        update.addPowerup(e.getContainer());
+        this.powerups.put(e.getContainer().hashCode(), e.getContainer());
         break;
       case REMOVE:
-        powerups.remove(e.getContainer().getId());
-//        update.removePowerup((e.getContainer()));
+        this.powerups.remove(e.getContainer().hashCode());
         break;
       case UPDATE:
-        powerups.put(e.getContainer().getId(), e.getContainer());
-//        update.addPowerup(e.getContainer());
+        this.powerups.put(e.getContainer().hashCode(), e.getContainer());
         break;
     }
   }
@@ -160,8 +150,7 @@ public class Updater implements Runnable {
   private void bulletsChanged(BulletsChangedEvent e) {
     switch (e.getAction()) {
       case ADD:
-        projectiles.put(e.getBullet().getId(), e.getBullet());
-//        update.addProjectile(e.getBullet());
+        this.projectiles.put(e.getBullet().getId(), e.getBullet());
         new Thread(() -> {
           update.addNewShot(e.getBullet());
           double nanoTime = System.nanoTime();
@@ -172,16 +161,14 @@ public class Updater implements Runnable {
               er.printStackTrace();
             }
           }
-          update.removeNewShot(e.getBullet());
+          this.newShots.remove(e.getBullet().getId());
         }).start();
         break;
       case REMOVE:
-        projectiles.remove(e.getBullet().getId());
-//        update.removeProjectile(e.getBullet());
+        this.projectiles.remove(e.getBullet().getId());
         break;
       case UPDATE:
-        projectiles.put(e.getBullet().getId(), e.getBullet());
-//        update.addProjectile(e.getBullet());
+        this.projectiles.put(e.getBullet().getId(), e.getBullet());
         break;
     }
   }

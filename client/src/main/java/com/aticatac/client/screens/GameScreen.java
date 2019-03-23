@@ -469,6 +469,7 @@ public class GameScreen extends AbstractScreen {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
     }
+    Data.INSTANCE.submit();
   }
 
   @Override

@@ -7,10 +7,10 @@ import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.bus.event.PlayerInputEvent;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.server.bus.listener.BulletCollisionListener;
-import com.aticatac.server.bus.listener.PlayerInputListener;
 import com.aticatac.server.bus.listener.PlayerOutputListener;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
@@ -24,6 +24,7 @@ import com.aticatac.server.objectsystem.entities.powerups.HealthPowerup;
 import com.aticatac.server.objectsystem.entities.powerups.SpeedPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.transform.Position;
+import com.google.common.eventbus.Subscribe;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -76,10 +77,11 @@ public abstract class GameMode implements Game {
 //    new GameObject("Player Container", root, ObjectType.PLAYER_CONTAINER);
     this.playerMap = new ConcurrentHashMap<>();
     this.logger = Logger.getLogger(getClass());
-    frame = new Update(true);
+    frame = new Update();
     bullets = new CopyOnWriteArraySet<>();
     powerups = new CopyOnWriteArraySet<>();
-    EventBusFactory.getEventBus().register(new PlayerInputListener(this.playerMap));
+    EventBusFactory.getEventBus().register(this);
+//    EventBusFactory.getEventBus().register(new PlayerInputListener(this.playerMap));
     EventBusFactory.getEventBus().register(new PlayerOutputListener(this.bullets, this.powerups));
     EventBusFactory.getEventBus().register(new BulletCollisionListener(this.playerMap, this.bullets));
   }
@@ -103,6 +105,13 @@ public abstract class GameMode implements Game {
       entityType = (EntityType.class).getEnumConstants()[x];
     }
     return entityType;
+  }
+
+  @Subscribe
+  public void processPlayerInput(PlayerInputEvent event) {
+    if (playerMap.containsKey(event.commandModel.id)) {
+      playerMap.get(event.commandModel.id).addFrame(event.commandModel);
+    }
   }
 
   public CopyOnWriteArraySet<Entity> getPowerups() {
@@ -166,7 +175,7 @@ public abstract class GameMode implements Game {
 //Gets the tank that the command came from
     PlayerInput input = new PlayerInput(model);
     var tank = playerMap.get(model.getId());
-    tank.addFrame(input);
+    tank.addFrame(model);
   }
 
   private Tank createTank(String player, boolean isAI) {

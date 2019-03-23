@@ -52,7 +52,7 @@ public class AITank extends Tank {
       if (decision.getCommand() != null && decision.getCommand() != Command.DEFAULT) {
         this.logger.trace(decision.getCommand());
         try {
-          move(decision.getCommand().vector.angle(), speedIncrease);
+          move(decision.getCommand().vector, speedIncrease);
         } catch (Exception e) {
           e.printStackTrace();
         }
