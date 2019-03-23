@@ -54,11 +54,11 @@ public class Bullet extends Entity implements Tickable {
     this.logger = Logger.getLogger(getClass());
     this.logger.info(shooter.toString() + position.toString() + "\t" + bearing);
     this.shooter = shooter;
-    this.position = position;
-    this.prevPosistion = this.position;
+    this.setPosition(position);
+    this.prevPosistion = this.getPosition();
     this.bearing = bearing;
     outputService = new BulletOutputService(this);
-    physics = new Physics(this.position, type, name);
+    physics = new Physics(this.getPosition(), getType(), getName());
   }
 
   /**
@@ -72,22 +72,22 @@ public class Bullet extends Entity implements Tickable {
 
   @Override
   public void tick() {
-    if (!prevPosistion.equals(position)) {
-      this.logger.trace(position);
-      prevPosistion = position;
+    if (!prevPosistion.equals(getPosition())) {
+      this.logger.trace(getPosition());
+      prevPosistion = getPosition();
     }
     move();
   }
 
   private void move() {
-    var response = physics.move(bearing, position,false);
+    var response = physics.move(bearing, getPosition(), false);
     if (!response.getCollisions().contains(Entity.outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {
-        if (e.type != EntityType.NONE) {
+        if (e.getType() != EntityType.NONE) {
           this.logger.info("Hit: " + e);
         }
-        switch (e.type) {
+        switch (e.getType()) {
           case NONE:
             break;
           case WALL:
@@ -95,7 +95,7 @@ public class Bullet extends Entity implements Tickable {
             EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
             return;
           case TANK:
-            if (!e.name.equals(shooter.name)) {
+            if (!e.getName().equals(shooter.getName())) {
               EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
             }
             break;
@@ -113,12 +113,12 @@ public class Bullet extends Entity implements Tickable {
       }
       setPosition(response.getPosition(), false);
       EventBusFactory.getEventBus().post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
-      this.logger.trace(position);
+      this.logger.trace(getPosition());
     }
   }
 
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), bearing, 0, 0, name, EntityType.BULLET);
+    return new Container(getPosition().getX(), getPosition().getY(), bearing, 0, 0, getName(), EntityType.BULLET);
   }
 
   @Override

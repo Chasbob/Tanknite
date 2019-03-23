@@ -250,10 +250,9 @@ public enum Data {
   public void sendCommand(Command command) {
     this.client.addCommand(command);
   }
-
-  public void sendCommand(Command command, int bearing) {
-    this.client.addCommand(command, bearing);
-  }
+//  public void sendCommand(Command command, int bearing) {
+//    this.client.addCommand(command, bearing);
+//  }
 
   /**
    * Is manual config for server boolean.
@@ -291,6 +290,6 @@ public enum Data {
     isHosting = hosting;
   }
 
-  public void submit() {
-    this.client.submit();
+  public void submit(final int bearing) {
+    this.client.submit(bearing);
   }}

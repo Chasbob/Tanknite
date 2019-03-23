@@ -25,8 +25,8 @@ public class BulletCollisionListener {
   @Subscribe
   public void bulletCollision(BulletCollisionEvent event) {
     this.logger.info(event);
-    if (event.getHit().type == EntityType.TANK) {
-      playerMap.get(event.getHit().name).hit(event.getBullet().getDamage());
+    if (event.getHit().getType() == EntityType.TANK) {
+      playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage());
       this.logger.info(event);
     }
     bullets.remove(event.getBullet());

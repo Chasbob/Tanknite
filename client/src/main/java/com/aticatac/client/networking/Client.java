@@ -48,10 +48,20 @@ public class Client {
     this.commandModel = new CommandModel("");
   }
 
+  /**
+   * Next update update.
+   *
+   * @return the update
+   */
   public Update nextUpdate() {
     return this.queue.poll();
   }
 
+  /**
+   * Is started boolean.
+   *
+   * @return the boolean
+   */
   public boolean isStarted() {
     if (this.queue.peek() != null) {
       return this.queue.peek().isStart();
@@ -60,6 +70,11 @@ public class Client {
     }
   }
 
+  /**
+   * Gets players.
+   *
+   * @return the players
+   */
   public ArrayList<String> getPlayers() {
     if (this.queue.peek() != null) {
       this.players.clear();
@@ -69,6 +84,11 @@ public class Client {
     return this.players;
   }
 
+  /**
+   * Peek update update.
+   *
+   * @return the update
+   */
   public Update peekUpdate() {
     return queue.peek();
   }
@@ -146,26 +166,44 @@ public class Client {
     updateListener.quit();
     printer.close();
   }
+//  public void addCommand(Command command, int bearing) {
+//    currentCommands.add(command);
+//    commandModel.setBearing(bearing);
+//  }
 
-  public void addCommand(Command command, int bearing) {
-    currentCommands.add(command);
-    commandModel.setBearing(bearing);
-  }
-
+  /**
+   * Add command.
+   *
+   * @param command the command
+   */
   public void addCommand(Command command) {
-    currentCommands.add(command);
+    if (command.isMovement()) {
+      currentCommands.add(command);
+      commandModel.setCommand(Command.MOVE);
+    } else if (command == Command.SHOOT) {
+      commandModel.setCommand(Command.SHOOT);
+    }
   }
 
-  public void submit() {
+  /**
+   * Submit.
+   *
+   * @param bearing the bearing
+   */
+  public void submit(final int bearing) {
     if (!this.connected) {
       return;
     }
     Vector v = Vector.Zero.cpy();
+    commandModel.setBearing(bearing);
     for (Command c :
         currentCommands) {
       v.add(c.vector);
     }
     commandModel.setVector(v);
+    if (commandModel.getCommand() == Command.DEFAULT && currentCommands.size() > 0) {
+      commandModel.setCommand(Command.MOVE);
+    }
     String json = modelReader.toJson(commandModel);
     this.printer.println(json);
     this.logger.trace("Sent command: " + commandModel);

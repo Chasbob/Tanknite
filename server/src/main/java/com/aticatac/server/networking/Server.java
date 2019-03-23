@@ -7,7 +7,6 @@ import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Shutdown;
 import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.event.PlayerInputEvent;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.test.Survival;
@@ -126,7 +125,7 @@ public class Server extends Thread {
     while (!this.shutdown) {
       CommandModel current = ServerData.INSTANCE.popCommand();
       if (current != null) {
-        this.logger.trace(current.toString());
+        this.logger.trace(current);
         if (current.getCommand() == Command.QUIT) {
           disconnectClient(current);
         } else {
@@ -139,8 +138,7 @@ public class Server extends Thread {
   }
 
   public void onClientInput(CommandModel model) {
-    PlayerInputEvent event = new PlayerInputEvent(model);
-    EventBusFactory.getEventBus().post(event);
+    EventBusFactory.getEventBus().post(model);
   }
 
   private void disconnectClient(CommandModel model) {

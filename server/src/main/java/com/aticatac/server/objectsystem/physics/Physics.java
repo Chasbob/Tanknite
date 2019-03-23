@@ -3,10 +3,10 @@ package com.aticatac.server.objectsystem.physics;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.model.VectorF;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.test.GameMode;
+import com.aticatac.server.transform.Position;
 import java.util.HashSet;
 
 @SuppressWarnings("ALL")
@@ -65,8 +65,8 @@ public class Physics {
     Position newPosition = new Position((int) newX, (int) newY);
     double dx = (newX - xCoord);
     double dy = (newY - yCoord);
-    double ddx = Math.ceil(dx / entity.type.radius);
-    double ddy = Math.ceil(dy / entity.type.radius);
+    double ddx = Math.ceil(dx / entity.getType().radius);
+    double ddy = Math.ceil(dy / entity.getType().radius);
 //    System.out.println(ddx + ", " + ddy);
     double x = 0;
     double y = 0;
@@ -85,11 +85,11 @@ public class Physics {
 
   private HashSet<Entity> collision2(Position newPosition) {
     HashSet<Entity> collisions = new HashSet<>();
-    CollisionBox box = new CollisionBox(newPosition, entity.type);
+    CollisionBox box = new CollisionBox(newPosition, entity.getType());
     for (int i = 0; i < box.getBox().size(); i++) {
       Position position = box.getBox().get(i);
       Entity collision = findCollision(position);
-      if (collision.type != EntityType.NONE) {
+      if (collision.getType() != EntityType.NONE) {
         collisions.add(collision);
       }
     }
@@ -108,10 +108,10 @@ public class Physics {
       if(speedPowerUp){
         acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
       }else {
-        if (velocity != entity.type.velocity) {
+        if (velocity != entity.getType().velocity) {
           acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
-        } else if (velocity >= entity.type.velocity) {
-          velocity = entity.type.velocity;
+        } else if (velocity >= entity.getType().velocity) {
+          velocity = entity.getType().velocity;
           acceleration = 0;
         }
       }

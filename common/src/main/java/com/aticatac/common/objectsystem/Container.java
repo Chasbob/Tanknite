@@ -3,7 +3,6 @@ package com.aticatac.common.objectsystem;
 import java.util.Objects;
 
 public class Container {
-  private final String texture;
   private final int x;
   private final int y;
   private final int r;
@@ -13,7 +12,6 @@ public class Container {
   private final EntityType objectType;
 
   public Container(int x, int y, int r, int health, int ammo, String id, EntityType objectType) {
-    this.texture = "";
     this.x = x;
     this.y = y;
     this.r = r;
@@ -24,7 +22,6 @@ public class Container {
   }
 
   public Container() {
-    this.texture = "";
     this.x = 1000;
     this.y = 1000;
     this.r = 0;
@@ -42,8 +39,9 @@ public class Container {
     return ammo;
   }
 
-  public String getTexture() {
-    return texture;
+  @Override
+  public int hashCode() {
+    return Objects.hash(getX(), getY(), getR(), getHealth(), getAmmo(), getId(), getObjectType());
   }
 
   @Override
@@ -55,25 +53,18 @@ public class Container {
       return false;
     }
     final Container container = (Container) o;
-    return getX() == container.getX() &&
-        getY() == container.getY() &&
-        getR() == container.getR() &&
-        getHealth() == container.getHealth() &&
-        getAmmo() == container.getAmmo() &&
-        getTexture().equals(container.getTexture()) &&
-        getId().equals(container.getId()) &&
-        getObjectType() == container.getObjectType();
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getTexture(), getX(), getY(), getR(), getHealth(), getAmmo(), getId(), getObjectType());
+    return getX() == container.getX()
+        && getY() == container.getY()
+        && getR() == container.getR()
+        && getHealth() == container.getHealth()
+        && getAmmo() == container.getAmmo()
+        && getId().equals(container.getId())
+        && getObjectType() == container.getObjectType();
   }
 
   @Override
   public String toString() {
     return "Container{" +
-        "texture='" + texture + '\'' +
         ", x=" + x +
         ", y=" + y +
         ", r=" + r +

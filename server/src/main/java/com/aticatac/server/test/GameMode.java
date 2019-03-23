@@ -7,14 +7,12 @@ import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.event.PlayerInputEvent;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.server.bus.listener.BulletCollisionListener;
 import com.aticatac.server.bus.listener.PlayerOutputListener;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
-import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.entities.AITank;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
@@ -108,9 +106,9 @@ public abstract class GameMode implements Game {
   }
 
   @Subscribe
-  public void processPlayerInput(PlayerInputEvent event) {
-    if (playerMap.containsKey(event.commandModel.id)) {
-      playerMap.get(event.commandModel.id).addFrame(event.commandModel);
+  public void processPlayerInput(CommandModel event) {
+    if (playerMap.containsKey(event.getId())) {
+      playerMap.get(event.getId()).addFrame(event);
     }
   }
 
@@ -169,14 +167,13 @@ public abstract class GameMode implements Game {
   @Override
   public void gameOver() {
   }
-
-  @Override
-  public void playerInput(CommandModel model) {
-//Gets the tank that the command came from
-    PlayerInput input = new PlayerInput(model);
-    var tank = playerMap.get(model.getId());
-    tank.addFrame(model);
-  }
+//  @Override
+//  public void playerInput(CommandModel model) {
+////Gets the tank that the command came from
+////    PlayerInput input = new PlayerInput(model);
+//    var tank = playerMap.get(model.getId());
+//    tank.addFrame(model);
+//  }
 
   private Tank createTank(String player, boolean isAI) {
 //I can't be bothered to reason how this would work with booleans so you get this counter
@@ -230,11 +227,11 @@ public abstract class GameMode implements Game {
     Position position = new Position(x, y);
     if (isAI) {
       AITank tank = new AITank(player, position, 100, 30);
-      DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
+      DataServer.INSTANCE.setCoordinates(position, tank);
       return tank;
     } else {
       Tank tank = new Tank(player, position, 100, 30);
-      DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
+      DataServer.INSTANCE.setCoordinates(position, tank);
       return tank;
     }
   }

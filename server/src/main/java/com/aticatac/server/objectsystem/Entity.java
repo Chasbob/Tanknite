@@ -2,12 +2,11 @@ package com.aticatac.server.objectsystem;
 
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.aticatac.server.transform.Position;
 import java.security.SecureRandom;
 import java.util.Objects;
+import org.apache.log4j.Logger;
 
 /**
  * The type Entity.
@@ -25,16 +24,12 @@ public class Entity {
    * The constant outOfBounds.
    */
   public static final Entity outOfBounds = new Entity(EntityType.OUTOFBOUNDS);
-  /**
-   * The Name.
-   */
-  public final String name;
-  /**
-   * The Type.
-   */
-  public final EntityType type;
-  protected Position position;
-  protected CollisionBox collisionBox;
+  protected final Logger logger;
+  private final String name;
+  private final EntityType type;
+  private Position position;
+  private CollisionBox collisionBox;
+  private int rotation;
 
   /**
    * Instantiates a new Entity.
@@ -44,12 +39,19 @@ public class Entity {
    * @param position the position
    */
   public Entity(final String name, final EntityType type, final Position position) {
+    logger = Logger.getLogger(getClass());
     this.name = name;
     this.type = type;
-    this.position = position;
-    this.collisionBox = new CollisionBox(this.position, type.radius);
+    this.setPosition(position);
+    this.setCollisionBox(new CollisionBox(this.getPosition(), type.radius));
   }
 
+  /**
+   * Instantiates a new Entity.
+   *
+   * @param name the name
+   * @param type the type
+   */
   public Entity(final String name, final EntityType type) {
     this(name, type, Position.zero);
   }
@@ -63,6 +65,12 @@ public class Entity {
     this("", type);
   }
 
+  /**
+   * Instantiates a new Entity.
+   *
+   * @param type the type
+   * @param p    the p
+   */
   public Entity(final EntityType type, final Position p) {
     this("", type, p);
   }
@@ -89,16 +97,44 @@ public class Entity {
     return entityType;
   }
 
+  /**
+   * Gets rotation.
+   *
+   * @return the rotation
+   */
+  public int getRotation() {
+    return rotation;
+  }
+
+  /**
+   * Sets rotation.
+   *
+   * @param rotation the rotation
+   */
+  public void setRotation(final int rotation) {
+    this.rotation = rotation;
+  }
+
+  /**
+   * Gets collision box.
+   *
+   * @return the collision box
+   */
   public CollisionBox getCollisionBox() {
     return collisionBox;
   }
 
-  public Entity getBaseEntity() {
-    return new Entity(name, type, position);
+  private void setCollisionBox(CollisionBox collisionBox) {
+    this.collisionBox = collisionBox;
   }
 
+  /**
+   * Gets container.
+   *
+   * @return the container
+   */
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), 0, 0, 0, name, type);
+    return new Container(getPosition().getX(), getPosition().getY(), 0, 0, 0, getName(), getType());
   }
 
   /**
@@ -107,7 +143,7 @@ public class Entity {
    * @return the x
    */
   public int getX() {
-    return position.getX();
+    return getPosition().getX();
   }
 
   /**
@@ -116,7 +152,7 @@ public class Entity {
    * @return the y
    */
   public int getY() {
-    return position.getY();
+    return getPosition().getY();
   }
 
   @Override
@@ -138,14 +174,19 @@ public class Entity {
         getPosition().equals(entity.getPosition());
   }
 
+  /**
+   * The Name.
+   */
   @Override
   public String toString() {
     return "Entity{" +
-        "name='" + name + '\'' +
-        ", type=" + type +
+        "name='" + getName() + '\'' +
+        ", type=" + getType() +
         '}';
   }
-
+  /**
+   * The Type.
+   */
   /**
    * Gets name.
    *
@@ -164,19 +205,39 @@ public class Entity {
     return type;
   }
 
+  /**
+   * Gets position.
+   *
+   * @return the position
+   */
   public Position getPosition() {
     return position;
   }
 
+  /**
+   * Sets position.
+   *
+   * @param position the position
+   */
+  public void setPosition(Position position) {
+    this.position = position;
+  }
+
+  /**
+   * Sets position.
+   *
+   * @param newPosition the new position
+   * @param collidable  the collidable
+   */
   protected void setPosition(Position newPosition, boolean collidable) {
     if (collidable) {
-      DataServer.INSTANCE.removeBoxFromData(collisionBox);
-      this.position.set(newPosition);
-      this.collisionBox.setPosition(this.position);
-      DataServer.INSTANCE.addBoxToData(collisionBox, getBaseEntity());
+      DataServer.INSTANCE.removeBoxFromData(getCollisionBox());
+      this.getPosition().set(newPosition);
+      this.getCollisionBox().setPosition(this.getPosition());
+      DataServer.INSTANCE.addBoxToData(getCollisionBox(), this);
     } else {
-      this.position.set(newPosition);
-      this.collisionBox.setPosition(this.position);
+      this.getPosition().set(newPosition);
+      this.getCollisionBox().setPosition(this.getPosition());
     }
   }
   /**

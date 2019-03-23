@@ -1,9 +1,8 @@
 package com.aticatac.server.ai;
 
-import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import java.util.ArrayList;
 
-public class AIInput extends PlayerInput {
+public class AIInput {
   private final ArrayList<PlayerState> players;
   private final ArrayList<PowerUpState> powerups;
   private int ammo;

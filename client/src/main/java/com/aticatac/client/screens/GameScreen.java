@@ -52,12 +52,14 @@ public class GameScreen extends AbstractScreen {
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
+  private Texture stick;
   private Texture projectileTexture;
   private Label direction;
   private Container player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
   private boolean tractionPopUp;
+  private int rot;
 
   /**
    * Instantiates a new Game screen.
@@ -77,6 +79,7 @@ public class GameScreen extends AbstractScreen {
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("img/tank.png");
       projectileTexture = new Texture("img/bullet.png");
+      stick = new Texture("img/top.png");
       tractionHealth = true;
       tractionPopUp = true;
       renderer = new OrthogonalTiledMapRenderer(map);
@@ -338,6 +341,22 @@ public class GameScreen extends AbstractScreen {
         renderContainer(updater, tanks);
       }
     }
+    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
+      Container c = update.getMe(Data.INSTANCE.getID());
+//      VectorF v = new VectorF(
+//          (float) Math.cos(Math.toRadians(c.getR())),
+//          (float) Math.sin(Math.toRadians(c.getR())));
+//      v.scl(10);
+//      v.sub(new VectorF(c.getX(), c.getY()));
+//      if (Math.abs(c.getR() - rot) > 10) {
+//        this.logger.info(c.getR() + "->" + rot);
+//      }
+//      if (rot == 360) {
+//        rot = 0;
+//      }
+//      rot = c.getR();
+      tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
+    }
     renderProjectiles(tanks);
     renderPowerups(tanks);
     tanks.end();
@@ -432,15 +451,19 @@ public class GameScreen extends AbstractScreen {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-    batch.draw(tankTexture, maxX - c.getX() - 16, maxY - c.getY() - 16);
+    batch.draw(tankTexture, maxX - c.getX() - tankTexture.getWidth() / 2f, maxY - c.getY() - tankTexture.getHeight() / 2f);
   }
 
   private int getBearing() {
-    Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-    Vector2 mouseMapPos = new Vector2(mouseMapPos3.x, mouseMapPos3.y);
-    Vector2 tankVec = new Vector2(player.getX(), player.getY());
-    Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
-    return Math.round(mouseRel.angle());
+    if (player != null) {
+      Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+      Vector2 mouseMapPos = new Vector2(mouseMapPos3.x, mouseMapPos3.y);
+      Vector2 tankVec = new Vector2(player.getX() - maxX, player.getY() - maxY);
+//    Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
+      return (int) mouseMapPos.add(tankVec).angle();
+    } else {
+      return 0;
+    }
   }
 
   private void backgroundInput() {
@@ -458,18 +481,19 @@ public class GameScreen extends AbstractScreen {
         Data.INSTANCE.sendCommand(Command.UP);
       } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
         Data.INSTANCE.sendCommand(Command.DOWN);
-      }
-      if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+      } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
         this.camera.getCamera().zoom -= 0.1f;
-      }
-      if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+      } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
         this.camera.getCamera().zoom += 0.1f;
       }
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-      Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      Data.INSTANCE.sendCommand(Command.SHOOT);
     }
-    Data.INSTANCE.submit();
+    Data.INSTANCE.submit(rot++);
+    if (rot > 360) {
+      rot = 0;
+    }
   }
 
   @Override

@@ -65,7 +65,7 @@ public class CommandModel extends Model {
   public void reset() {
     this.command = Command.DEFAULT;
     bearing = 0;
-    vector = Vector.Zero.cpy();
+//    vector = Vector.Zero.cpy();
   }
 
   @Override

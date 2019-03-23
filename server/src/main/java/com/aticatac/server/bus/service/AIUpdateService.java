@@ -27,7 +27,7 @@ public class AIUpdateService {
     }
     for (Entity e :
         powerups) {
-      powerUpStates.add(new PowerUpState(e.type, e.getPosition()));
+      powerUpStates.add(new PowerUpState(e.getType(), e.getPosition()));
     }
     bus.post(new AIInput(30, playerStates, powerUpStates));
   }

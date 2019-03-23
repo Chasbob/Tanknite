@@ -4,9 +4,7 @@ import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.server.bus.EventBusFactory;
-import com.aticatac.server.bus.event.BulletsChangedEvent;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
-import com.aticatac.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
@@ -130,46 +128,45 @@ public class Updater implements Runnable {
         break;
     }
   }
-
-  @Subscribe
-  private void powerupsChanged(PowerupsChangedEvent e) {
-    switch (e.getAction()) {
-      case ADD:
-        this.powerups.put(e.getContainer().hashCode(), e.getContainer());
-        break;
-      case REMOVE:
-        this.powerups.remove(e.getContainer().hashCode());
-        break;
-      case UPDATE:
-        this.powerups.put(e.getContainer().hashCode(), e.getContainer());
-        break;
-    }
-  }
-
-  @Subscribe
-  private void bulletsChanged(BulletsChangedEvent e) {
-    switch (e.getAction()) {
-      case ADD:
-        this.projectiles.put(e.getBullet().getId(), e.getBullet());
-        new Thread(() -> {
-          update.addNewShot(e.getBullet());
-          double nanoTime = System.nanoTime();
-          while (System.nanoTime() - nanoTime < 5000000000d) {
-            try {
-              Thread.sleep(0);
-            } catch (InterruptedException er) {
-              er.printStackTrace();
-            }
-          }
-          this.newShots.remove(e.getBullet().getId());
-        }).start();
-        break;
-      case REMOVE:
-        this.projectiles.remove(e.getBullet().getId());
-        break;
-      case UPDATE:
-        this.projectiles.put(e.getBullet().getId(), e.getBullet());
-        break;
-    }
-  }
+//  @Subscribe
+//  private void powerupsChanged(PowerupsChangedEvent e) {
+//    switch (e.getAction()) {
+//      case ADD:
+//        this.powerups.put(e.getContainer().hashCode(), e.getContainer());
+//        break;
+//      case REMOVE:
+//        this.powerups.remove(e.getContainer().hashCode());
+//        break;
+//      case UPDATE:
+//        this.powerups.put(e.getContainer().hashCode(), e.getContainer());
+//        break;
+//    }
+//  }
+//
+//  @Subscribe
+//  private void bulletsChanged(BulletsChangedEvent e) {
+//    switch (e.getAction()) {
+//      case ADD:
+//        this.projectiles.put(e.getBullet().getId(), e.getBullet());
+//        new Thread(() -> {
+//          update.addNewShot(e.getBullet());
+//          double nanoTime = System.nanoTime();
+//          while (System.nanoTime() - nanoTime < 5000000000d) {
+//            try {
+//              Thread.sleep(0);
+//            } catch (InterruptedException er) {
+//              er.printStackTrace();
+//            }
+//          }
+//          this.newShots.remove(e.getBullet().getId());
+//        }).start();
+//        break;
+//      case REMOVE:
+//        this.projectiles.remove(e.getBullet().getId());
+//        break;
+//      case UPDATE:
+//        this.projectiles.put(e.getBullet().getId(), e.getBullet());
+//        break;
+//    }
+//  }
 }
