@@ -30,7 +30,7 @@ public class MainMenuScreen extends AbstractScreen {
   private int popUpIndex;
   private Table dropDownTable;
   private MenuTable playTable;
-  private MenuTable achievementTable;
+  private MenuTable challengesTable;
   private MenuTable customizeTable;
   MenuTable settingsTable;
   VerticalGroup popUpGroup;
@@ -162,13 +162,15 @@ public class MainMenuScreen extends AbstractScreen {
     //play button with child buttons
     createPlay();
     //achievements
-    achievementTable = createMenuTable(false, true);
-    TextButton achievementButton = Styles.INSTANCE.createButton("CHALLENGES");
-    switchTabListener(achievementButton, achievementTable, horizontalGroup);
+    challengesTable = createMenuTable(false, true);
+    TextButton challengesButton = Styles.INSTANCE.createButton("CHALLENGES");
+    switchTabListener(challengesButton, challengesTable, horizontalGroup);
+    addHoverListener(challengesButton, challengesTable);
     //customize
     customizeTable = createMenuTable(false, true);
     TextButton customizeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
     switchTabListener(customizeButton, customizeTable, horizontalGroup);
+    addHoverListener(customizeButton, customizeTable);
     //settings with child buttons
     createSettings();
     //create button to close game
@@ -183,6 +185,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     horizontalGroup
       .pack();
+    addHoverListener(exitButton, exitTable);
     tabIndex = 0;
     containerTable.row();
     containerTable.add(dropDownTable).left().padTop(20);
@@ -279,6 +282,7 @@ public class MainMenuScreen extends AbstractScreen {
     playTable = createMenuTable(true, true);
     TextButton playButton = Styles.INSTANCE.createButton("PLAY");
     switchTabListener(playButton, playTable, horizontalGroup);
+    addHoverListener(playButton, playTable);
     createPlayChildren();
   }
 
@@ -318,6 +322,7 @@ public class MainMenuScreen extends AbstractScreen {
     settingsTable = createMenuTable(false, true);
     TextButton settingsButton = Styles.INSTANCE.createButton("SETTINGS");
     switchTabListener(settingsButton, settingsTable, horizontalGroup);
+    addHoverListener(settingsButton, settingsTable);
     Settings.createSettings();
   }
 
@@ -504,6 +509,17 @@ public class MainMenuScreen extends AbstractScreen {
       MenuTable menuTable = (MenuTable) newTable.getGroup().getChildren().get(dropDownIndex);
       menuTable.setShowGroup(true);
     }
+  }
+
+  private void addHoverListener(TextButton button, MenuTable parentTable) {
+    button.addListener(ListenerFactory.newListenerEventEnter(() -> {
+      Styles.INSTANCE.addTableColour(parentTable, Color.CORAL);
+      return false;
+    }));
+    button.addListener(ListenerFactory.newListenerEventExit(() -> {
+      parentTable.setShowGroup(parentTable.isShowGroup());
+      return false;
+    }));
   }
 
   @Override
