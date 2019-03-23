@@ -15,11 +15,11 @@ public class NewHost implements Runnable {
   @Override
   public void run() {
     try {
-    Socket client = Server.ServerData.INSTANCE.getServerSocket().accept();
+      Socket client = Server.ServerData.INSTANCE.getServerSocket().accept();
       logger.trace("Client opened connection!");
       new Authenticator(client).run();
     } catch (IOException e) {
-      e.printStackTrace();
+      this.logger.error(e);
     }
   }
 }

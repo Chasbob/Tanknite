@@ -3,8 +3,6 @@ package com.aticatac.client.util;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.apache.log4j.Logger;
 
@@ -19,10 +17,6 @@ public class Camera {
   private final Logger logger;
   private OrthographicCamera camera;
   private Viewport viewport;
-
-  public Viewport getViewport() {
-    return viewport;
-  }
 
   /**
    * Instantiates a new Camera.
@@ -42,6 +36,10 @@ public class Camera {
     this.viewport.apply(true);
     logger = Logger.getLogger(getClass());
     this.camera.setToOrtho(false);
+  }
+
+  public Viewport getViewport() {
+    return viewport;
   }
 
   /**
@@ -87,5 +85,6 @@ public class Camera {
   public void setPosititon(float x, float y) {
     camera.position.x = MathUtils.clamp(x, camera.viewportWidth / 2f, 1920f - camera.viewportWidth / 2f);
     camera.position.y = MathUtils.clamp(y, camera.viewportHeight / 2f, 1920f - camera.viewportHeight / 2f);
+    camera.update();
   }
 }

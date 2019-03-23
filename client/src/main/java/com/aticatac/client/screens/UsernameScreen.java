@@ -1,22 +1,23 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.networking.Response;
+import com.aticatac.client.game.GDXGame;
 import com.aticatac.client.util.Data;
+import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Updates.Response;
 import com.aticatac.server.networking.Server;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-
 import java.net.InetAddress;
 
 /**
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-
   private TextField usernameTextField;
   private TextField serverTextField;
   private Label errorLabel;
@@ -37,7 +38,7 @@ public class UsernameScreen extends AbstractScreen {
     dataTable.center();
     dataTable.defaults().pad(10).width(200).height(30).center();
     //create error label
-    errorLabel = UIFactory.createErrorLabel("Name Taken");
+    errorLabel = Styles.INSTANCE.createErrorLabel();
     dataTable.add(errorLabel);
     dataTable.row();
     if (Data.INSTANCE.isManualConfigForServer() || Data.INSTANCE.isHosting()) {
@@ -48,27 +49,27 @@ public class UsernameScreen extends AbstractScreen {
         text = "Name";
       }
       //create server label
-      Label serverLabel = UIFactory.createLabel("Server " + text);
+      Label serverLabel = Styles.INSTANCE.createLabel("Server " + text);
       dataTable.add(serverLabel);
       dataTable.row();
       //create server textfield
-      serverTextField = UIFactory.createTextField("");
+      serverTextField = Styles.INSTANCE.createTextField("");
       dataTable.add(serverTextField);
       dataTable.row();
     }
     //create username label
-    Label usernameLabel = UIFactory.createLabel("Username");
+    Label usernameLabel = Styles.INSTANCE.createLabel("Username");
     dataTable.add(usernameLabel);
     dataTable.row();
     //create text field for username
-    usernameTextField = UIFactory.createTextField("");
+    usernameTextField = Styles.INSTANCE.createTextField("");
     dataTable.add(usernameTextField);
     //create button for submit
-    TextButton submitButton = UIFactory.createButton("Submit");
+    TextButton submitButton = Styles.INSTANCE.createButton("Submit");
     dataTable.add(submitButton);
     //create custom listener for submit button to get text field text
-    submitButton.addListener(UIFactory.newListenerEvent(() -> {
-      if (Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
+    submitButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      if (!Data.INSTANCE.isHosting() && Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
         //join single player server
         Response response = Data.INSTANCE.connect(usernameTextField.getText(), true);
         switch (response) {
@@ -76,46 +77,50 @@ public class UsernameScreen extends AbstractScreen {
             refresh();
             Screens.INSTANCE.showScreen(GameScreen.class);
             break;
-          case INVALID:
-            errorLabel.setText("Invalid Response");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+          case INVALID_NAME:
+            errorLabel.setText("Invalid Username");
+            errorLabel.setStyle(getErrorStyle());
             break;
         }
         return false;
-      } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Screens.INSTANCE.getPreviousScreen() == MultiplayerScreen.class) {
+      } else if (Screens.INSTANCE.getPreviousScreen() == ServerScreen.class || Data.INSTANCE.isHosting()) {
         Response response;
-        if(Data.INSTANCE.isManualConfigForServer()) {
+        if (Data.INSTANCE.isManualConfigForServer()) {
           //join server with ip
           response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
-        }else if(Data.INSTANCE.isHosting()){
+        } else if (Data.INSTANCE.isHosting()) {
           //create custom server
-          Server server = new Server(false, serverTextField.getText());
-          server.start();
+//          Server server = new Server(false, serverTextField.getText());
+//          server.start();
+          GDXGame.createServer(false, serverTextField.getText());
           Data.INSTANCE.setSingleplayer(false);
           //TODO make getter for port and ip
-          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(),InetAddress.getByName("127.0.0.1"), 5500));
+          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(), InetAddress.getByName("127.0.0.1"), 5000, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
-        }else{
+        } else {
           //join server previously collected
           response = Data.INSTANCE.connect(usernameTextField.getText(), false);
         }
         switch (response) {
           case ACCEPTED:
+            ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
             refresh();
-            Screens.INSTANCE.reloadScreen(LobbyScreen.class);
-            Screens.INSTANCE.showScreen(LobbyScreen.class);
             break;
           case TAKEN:
             errorLabel.setText("Name Taken");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            errorLabel.setStyle(getErrorStyle());
             break;
           case NO_SERVER:
             errorLabel.setText("Server does not exist");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+            errorLabel.setStyle(getErrorStyle());
             break;
-          case INVALID:
-            errorLabel.setText("Invalid Response");
-            errorLabel.setStyle(Styles.INSTANCE.getErrorStyle());
+          case INVALID_NAME:
+            errorLabel.setText("Invalid Username");
+            errorLabel.setStyle(getErrorStyle());
+            break;
+          case FULL:
+            errorLabel.setText("Game Full");
+            errorLabel.setStyle(getErrorStyle());
             break;
         }
         return false;
@@ -125,9 +130,15 @@ public class UsernameScreen extends AbstractScreen {
     }));
   }
 
+  private Label.LabelStyle getErrorStyle() {
+    return Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.baseFont, Color.RED);
+  }
+
   @Override
   public void refresh() {
-    errorLabel.setStyle(Styles.INSTANCE.getHideLabelStyle());
+    Data.INSTANCE.setHosting(false);
+    Data.INSTANCE.setManualConfigForServer(false);
+    errorLabel.setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.baseFont, Styles.INSTANCE.hiddenColour));
     usernameTextField.setText("");
   }
 }

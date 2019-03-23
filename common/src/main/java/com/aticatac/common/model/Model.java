@@ -4,8 +4,8 @@ package com.aticatac.common.model;
  * The type Model.
  */
 public abstract class Model {
-  private final String id;
   private final String className;
+  public String id;
 
   /**
    * Instantiates a new Model.
@@ -24,6 +24,10 @@ public abstract class Model {
    */
   public String getId() {
     return id;
+  }
+
+  public void setId(final String id) {
+    this.id = id;
   }
 
   public boolean isModelType(String model) {

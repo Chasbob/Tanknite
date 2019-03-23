@@ -53,8 +53,8 @@ public class ServerButton extends TextButton {
     super(text, style);
   }
 
-  public ServerButton() {
-    super("", Styles.INSTANCE.getSelectedButtonStyle());
+  ServerButton() {
+    super("", Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Styles.INSTANCE.selectedColour));
   }
 
   /**
@@ -62,11 +62,11 @@ public class ServerButton extends TextButton {
    *
    * @return the server information
    */
-  public ServerInformation getServerInformation() {
+  ServerInformation getServerInformation() {
     return serverInformation;
   }
 
-  public void setServerInformation(ServerInformation serverInformation) {
+  void setServerInformation(ServerInformation serverInformation) {
     this.serverInformation = serverInformation;
   }
 }

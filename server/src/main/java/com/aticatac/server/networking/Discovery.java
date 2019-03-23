@@ -14,46 +14,58 @@ import org.apache.log4j.Logger;
  * The type Discovery.
  */
 public class Discovery implements Runnable {
-  private final List<DatagramPacket> packets;
   private final Logger logger;
   private final ModelReader modelReader;
   private final String name;
+  private final ArrayList<ServerInformation> informations;
+  private List<DatagramPacket> packets;
+  private boolean shutdown;
 
   /**
    * Instantiates a new Discovery.
    *
    * @param name the name
+   *
    * @throws IOException the io exception
    */
   Discovery(String name) throws IOException {
     this.name = name;
     this.modelReader = new ModelReader();
-    this.packets = buildPackets(Server.ServerData.INSTANCE.getId());
+    this.informations = new ArrayList<>();
+    packets = new ArrayList<>();
+    buildPackets(Server.ServerData.INSTANCE.getId());
     this.logger = Logger.getLogger(Discovery.class);
+    shutdown = false;
   }
 
-  private List<DatagramPacket> buildPackets(String id) throws IOException {
-    List<DatagramPacket> output = new ArrayList<>();
+  private void buildPackets(String id) throws IOException {
     for (InterfaceAddress current : Data.INSTANCE.getInterfaces()) {
       if (current.getBroadcast() == null) {
         continue;
       }
-      ServerInformation information = new ServerInformation(id, current.getAddress(), Server.ServerData.INSTANCE.getPort());
+      ServerInformation information = new ServerInformation(id, current.getAddress(), Server.ServerData.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
+      informations.add(information);
       byte[] bytes = modelReader.toBytes(information);
       DatagramPacket packet = new DatagramPacket(bytes, bytes.length, current.getBroadcast(), CommonData.INSTANCE.getDiscoveryPort());
-      output.add(packet);
+      packets.add(packet);
     }
-    return output;
   }
 
   @Override
   public void run() {
     this.logger.trace("Running...");
-    while (!Thread.currentThread().isInterrupted()) {
+    while (!Thread.currentThread().isInterrupted() && !shutdown) {
       try {
-        Thread.sleep(100);
+        double nanoTime = System.nanoTime();
         broadcast();
-      } catch (InterruptedException | IOException e) {
+        while (System.nanoTime() - nanoTime < 3000000000d) {
+          try {
+            Thread.sleep(0);
+          } catch (InterruptedException e) {
+            this.logger.error(e);
+          }
+        }
+      } catch (IOException e) {
         this.logger.error(e);
         return;
       }
@@ -61,7 +73,14 @@ public class Discovery implements Runnable {
     this.logger.warn("Finished!");
   }
 
+  public void shutdown() {
+    this.shutdown = true;
+  }
+
   private void broadcast() throws IOException {
+    if (Server.ServerData.INSTANCE.refreshBroadcast()) {
+      buildPackets(name);
+    }
     for (DatagramPacket packet : this.packets) {
       Server.ServerData.INSTANCE.broadcastPacket(packet);
       logger.trace("Sent packet to: " + packet.getAddress());

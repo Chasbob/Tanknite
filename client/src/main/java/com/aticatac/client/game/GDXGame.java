@@ -2,6 +2,7 @@ package com.aticatac.client.game;
 
 import com.aticatac.client.screens.Screens;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Game;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -10,7 +11,22 @@ import java.util.concurrent.BlockingQueue;
  * The type Gdx game.
  */
 public class GDXGame extends Game {
+  private static Server server;
   private BlockingQueue<Update> updates;
+
+  public static void createServer(boolean singleplayer, String id) {
+    if (server != null) {
+      server.shutdown();
+    }
+    server = new Server(singleplayer, id);
+    server.start();
+  }
+
+  public static void stopServer() {
+    if (server != null) {
+      server.shutdown();
+    }
+  }
 
   @Override
   public void create() {

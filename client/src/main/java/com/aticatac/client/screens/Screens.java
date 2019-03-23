@@ -1,9 +1,8 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.Data;
 import com.badlogic.gdx.Game;
-
 import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -27,11 +26,12 @@ public enum Screens {
         screens.put(LobbyScreen.class, new LobbyScreen());
         screens.put(MainMenuScreen.class, new MainMenuScreen());
         screens.put(ServerScreen.class, new ServerScreen());
-        screens.put(SettingsScreen.class, new SettingsScreen());
-        screens.put(MultiplayerScreen.class, new MultiplayerScreen());
-        screens.put(SplashScreen.class, new SplashScreen());
         screens.put(UsernameScreen.class, new UsernameScreen());
         logger = Logger.getLogger(getClass());
+    }
+
+    public Class getCurrentScreen() {
+        return currentScreen;
     }
 
     /**
@@ -50,6 +50,7 @@ public enum Screens {
      */
     public void initialize(Game game) {
         this.logger.warn("Initializing...");
+      Data.INSTANCE.initialise();
         this.game = game;
         this.game.setScreen(getScreen(MainMenuScreen.class));
         this.currentScreen = MainMenuScreen.class;

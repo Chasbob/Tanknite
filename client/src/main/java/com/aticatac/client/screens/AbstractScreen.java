@@ -1,12 +1,15 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.ListenerFactory;
+import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,7 +26,7 @@ public class AbstractScreen extends Stage implements Screen {
    * Instantiates a new Abstract screen.
    */
   AbstractScreen() {
-    super(new StretchViewport(640, 640));
+    super(new ExtendViewport(640, 640));
     logger = Logger.getLogger(getClass());
   }
 
@@ -34,6 +37,7 @@ public class AbstractScreen extends Stage implements Screen {
     //create root table
     rootTable = new Table();
     rootTable.setFillParent(true);
+    Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
     //create table to store back button
     Table backTable = new Table();
@@ -41,9 +45,13 @@ public class AbstractScreen extends Stage implements Screen {
     rootTable.addActor(backTable);
     backTable.bottom();
     //create back button
-    TextButton backButton = UIFactory.createBackButton("back");
+    TextButton backButton = Styles.INSTANCE.createBackButton("back");
     backTable.add(backButton).bottom().padBottom(10);
-    backButton.addListener(UIFactory.newChangeScreenEvent(MainMenuScreen.class));
+    backButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      refresh();
+      Screens.INSTANCE.showScreen(MainMenuScreen.class);
+      return false;
+    }));
   }
 
   void addToRoot(Table table){
@@ -73,7 +81,6 @@ public class AbstractScreen extends Stage implements Screen {
   public void render(float delta) {
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    // Calling to Stage methods
     super.act(delta);
     super.draw();
   }

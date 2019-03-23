@@ -1,7 +1,8 @@
 package com.aticatac.client.screens;
-
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListServers;
+import com.aticatac.client.util.ListenerFactory;
+import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -33,28 +34,38 @@ public class ServerScreen extends AbstractScreen {
     Table dataTable = new Table();
     //create table for top labels
     Table serverDetailsTable = super.createTopLabelTable(dataTable);
-    Label waitingLabel = UIFactory.createLabel("servers");
+    Label waitingLabel = Styles.INSTANCE.createLabel("servers");
     serverDetailsTable.add(waitingLabel);
     //add table with join button to get into lobby after entering username
     Table buttonTable = new Table();
     buttonTable.setFillParent(true);
-    buttonTable.top().padTop(100);
-    TextButton joinButton = UIFactory.createStartButton("Join");
-    buttonTable.add(joinButton).padRight(50);
-    joinButton.addListener(UIFactory.newListenerEvent(() -> {
-      if (serverSelected) {
-        Screens.INSTANCE.showScreen(UsernameScreen.class);
-      }
-      return false;
-    }
-    ));
     dataTable.addActor(buttonTable);
+    buttonTable.top().padTop(100);
+    TextButton joinButton = Styles.INSTANCE.createStartButton("Join");
+    buttonTable.defaults().padLeft(25).padRight(25);
+    buttonTable.add(joinButton);
+    joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
+        if (serverSelected) {
+          ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+        }
+        return false;
+      }
+    ));
+    TextButton manualButton = Styles.INSTANCE.createStartButton("Manual");
+    manualButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Data.INSTANCE.setManualConfigForServer(true);
+      ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      return false;
+    }));
+    buttonTable.add(manualButton);
     //add table to store all current open servers
     Table serversTable = new Table();
-    serversTable.setFillParent(true);
-    serversTable.defaults().pad(10).width(450);
-    serversTable.top().padTop(150);
-    listServers = new ListServers(serversTable);
+    serversTable.defaults().pad(5).width(400).padLeft(100);
+    serversTable.top().padTop(50);
+    Table playersTable = new Table();
+    playersTable.defaults().pad(5);
+    playersTable.top().padTop(50);
+    listServers = new ListServers(serversTable, playersTable);
     listServers.update();
     new Thread(() -> {
       while (!Thread.currentThread().isInterrupted()) {
@@ -70,15 +81,8 @@ public class ServerScreen extends AbstractScreen {
         }
       }
     }).start();
-    dataTable.addActor(serversTable);
-    //add labels to serverDetailsTable
-    TextButton manualButton = UIFactory.createStartButton("Manual");
-    manualButton.addListener(UIFactory.newListenerEvent(() -> {
-      Data.INSTANCE.setManualConfigForServer(true);
-      UIFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
-      return false;
-    }));
-    buttonTable.add(manualButton);
+    dataTable.add(serversTable);
+    dataTable.add(playersTable);
   }
 
   @Override

@@ -1,12 +1,13 @@
 package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
-import com.aticatac.client.networking.Response;
 import com.aticatac.client.networking.Servers;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.server.networking.Server;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -36,20 +37,32 @@ public enum Data {
   private boolean isHosting;
 
   Data() {
+    this.logger = Logger.getLogger(getClass());
     client = new Client();
     serverSelected = false;
     manualConfigForServer = false;
     isHosting = false;
-    try {
-      //TODO don't hard code the port.
-      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), 5500);
-    } catch (UnknownHostException e) {
-      e.printStackTrace();
-    }
     players = new HashMap<>();
-    this.update = new Update(true);
+    this.update = new Update();
     this.clients = new ArrayList<>();
-    logger = Logger.getLogger(getClass());
+  }
+
+  public void initialise() {
+    try {
+      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), 5000);
+    } catch (UnknownHostException e) {
+      this.logger.error(e);
+      throw new ExceptionInInitializerError(e);
+    }
+  }
+
+  /**
+   * Is started boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isStarted() {
+    return client.isStarted();
   }
 
   /**
@@ -80,6 +93,15 @@ public enum Data {
   }
 
   /**
+   * Peek update update.
+   *
+   * @return the update
+   */
+  public Update peekUpdate() {
+    return client.peekUpdate();
+  }
+
+  /**
    * Gets id.
    *
    * @return the id
@@ -94,7 +116,7 @@ public enum Data {
    * @return the clients
    */
   public ArrayList<String> getClients() {
-    return clients;
+    return this.client.getPlayers();
   }
 
   /**
@@ -102,8 +124,8 @@ public enum Data {
    *
    * @return the players
    */
-  public ArrayList<Container> getPlayers() {
-    return new ArrayList<>(players.values());
+  public ArrayList<String> getPlayers() {
+    return this.client.getPlayers();
   }
 
   /**
@@ -119,6 +141,7 @@ public enum Data {
    * Gets player.
    *
    * @param i the
+   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -132,23 +155,6 @@ public enum Data {
    */
   public Container getPlayerPos() {
     return playerPos;
-  }
-
-  /**
-   * Sets update.
-   *
-   * @param update the update
-   */
-  public void setUpdate(Update update) {
-    this.update = update;
-    this.players = this.update.getPlayers();
-    if (playerPos != null) {
-      if (Math.abs(this.playerPos.getX() - this.players.get(client.getId()).getX()) > 1) {
-        this.logger.info("moved");
-      }
-    }
-    this.playerPos = this.players.get(client.getId());
-    this.playerList = getPlayers();
   }
 
   /**
@@ -193,6 +199,7 @@ public enum Data {
    *
    * @param id           the id
    * @param singlePlayer the single player
+   *
    * @return the response
    */
   public Response connect(String id, boolean singlePlayer) {
@@ -208,8 +215,19 @@ public enum Data {
     }
   }
 
+  /**
+   * Connect response.
+   *
+   * @param id           the id
+   * @param singleplayer the singleplayer
+   * @param host         the host
+   *
+   * @return the response
+   *
+   * @throws UnknownHostException the unknown host exception
+   */
   public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
-    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort());
+    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
     return connect(id, singleplayer);
   }
 
@@ -230,21 +248,48 @@ public enum Data {
    * @param command the command
    */
   public void sendCommand(Command command) {
-    this.client.sendCommand(command);
+    this.client.addCommand(command);
   }
+//  public void sendCommand(Command command, int bearing) {
+//    this.client.addCommand(command, bearing);
+//  }
 
+  /**
+   * Is manual config for server boolean.
+   *
+   * @return the boolean
+   */
   public boolean isManualConfigForServer() {
     return manualConfigForServer;
   }
 
+  /**
+   * Sets manual config for server.
+   *
+   * @param manualConfigForServer the manual config for server
+   */
   public void setManualConfigForServer(boolean manualConfigForServer) {
     this.manualConfigForServer = manualConfigForServer;
   }
 
+  /**
+   * Is hosting boolean.
+   *
+   * @return the boolean
+   */
   public boolean isHosting() {
     return isHosting;
   }
 
+  /**
+   * Sets hosting.
+   *
+   * @param hosting the hosting
+   */
   public void setHosting(boolean hosting) {
     isHosting = hosting;
+  }
+
+  public void submit(final int bearing) {
+    this.client.submit(bearing);
   }}
