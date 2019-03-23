@@ -11,7 +11,6 @@ import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.aticatac.server.objectsystem.physics.Physics;
 import com.aticatac.server.transform.Position;
 import java.util.Objects;
-import org.apache.log4j.Logger;
 
 /**
  * The type Bullet.
@@ -27,7 +26,6 @@ public class Bullet extends Entity implements Tickable {
   /**
    * The Output.
    */
-  private final Logger logger;
   private final int damage;
   private final BulletOutputService outputService;
   private final Physics physics;
@@ -51,14 +49,13 @@ public class Bullet extends Entity implements Tickable {
   public Bullet(final Entity shooter, final Position position, final int bearing, final int damage) {
     super(Integer.toString(Objects.hash(shooter, position, bearing, damage)), EntityType.BULLET, position);
     this.damage = damage;
-    this.logger = Logger.getLogger(getClass());
     this.logger.info(shooter.toString() + position.toString() + "\t" + bearing);
     this.shooter = shooter;
     this.setPosition(position);
     this.prevPosistion = this.getPosition();
     this.bearing = bearing;
     outputService = new BulletOutputService(this);
-    physics = new Physics(this.getPosition(), getType(), getName());
+    physics = new Physics(this.getPosition().copy(), getType(), getName());
   }
 
   /**
@@ -80,7 +77,7 @@ public class Bullet extends Entity implements Tickable {
   }
 
   private void move() {
-    var response = physics.move(bearing, getPosition(), false);
+    var response = physics.move(bearing, getPosition().copy(), false);
     if (!response.getCollisions().contains(Entity.outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {

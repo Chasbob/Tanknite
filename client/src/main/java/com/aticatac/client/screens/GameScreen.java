@@ -336,27 +336,30 @@ public class GameScreen extends AbstractScreen {
 
   private void renderTanks(SpriteBatch tanks) {
     if (update != null) {
-      for (int i = 0; i < update.getPlayers().values().size(); i++) {
-        Container updater = update.getI(i);
-        renderContainer(updater, tanks);
+      for (Container c : update.getPlayers().values()) {
+        renderContainer(c, tanks);
+        tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
       }
-    }
-    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
-      Container c = update.getMe(Data.INSTANCE.getID());
-//      VectorF v = new VectorF(
-//          (float) Math.cos(Math.toRadians(c.getR())),
-//          (float) Math.sin(Math.toRadians(c.getR())));
-//      v.scl(10);
-//      v.sub(new VectorF(c.getX(), c.getY()));
-//      if (Math.abs(c.getR() - rot) > 10) {
-//        this.logger.info(c.getR() + "->" + rot);
+//      for (int i = 0; i < update.getPlayers().values().size(); i++) {
+//        Container updater = update.getI(i);
+//        renderContainer(updater, tanks);
 //      }
-//      if (rot == 360) {
-//        rot = 0;
-//      }
-//      rot = c.getR();
-      tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
     }
+//    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
+//      Container c = update.getMe(Data.INSTANCE.getID());
+////      VectorF v = new VectorF(
+////          (float) Math.cos(Math.toRadians(c.getR())),
+////          (float) Math.sin(Math.toRadians(c.getR())));
+////      v.scl(10);
+////      v.sub(new VectorF(c.getX(), c.getY()));
+////      if (Math.abs(c.getR() - rot) > 10) {
+////        this.logger.info(c.getR() + "->" + rot);
+////      }
+////      if (rot == 360) {
+////        rot = 0;
+////      }
+////      rot = c.getR();
+//    }
     renderProjectiles(tanks);
     renderPowerups(tanks);
     tanks.end();
@@ -490,7 +493,7 @@ public class GameScreen extends AbstractScreen {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       Data.INSTANCE.sendCommand(Command.SHOOT);
     }
-    Data.INSTANCE.submit(rot++);
+    Data.INSTANCE.submit(getBearing());
     if (rot > 360) {
       rot = 0;
     }
