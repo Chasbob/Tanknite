@@ -43,11 +43,7 @@ public class ListenerFactory {
     return new ClickListener() {
       @Override
       public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-        try {
-          func.call();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+        listenerBody(func);
       }
     };
   }
@@ -56,15 +52,18 @@ public class ListenerFactory {
     return new ClickListener() {
       @Override
       public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-        try {
-          func.call();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+        listenerBody(func);
       }
     };
   }
 
+  private static void listenerBody(Callable<Boolean> func) {
+    try {
+      func.call();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
   public static void newChangeScreenAndReloadEvent(Class dstScreen) {
     Screens.INSTANCE.reloadScreen(dstScreen);

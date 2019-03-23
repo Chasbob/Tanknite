@@ -135,7 +135,7 @@ public class MainMenuScreen extends AbstractScreen {
   private void createAidTable() {
     Table aidTable = new Table();
     super.addToRoot(aidTable);
-    Label aidLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.smallFont, "[ARROW KEYS TO NAVIGATE - ENTER TO CLICK BUTTON - MOUSE OTHERWISE]", Color.GRAY);
+    Label aidLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.smallFont, "[ARROW KEYS TO NAVIGATE - ENTER TO CLICK BUTTON - MOUSE AS ALTERNATIVE]", Color.GRAY);
     aidTable.add(aidLabel).padBottom(5);
     aidTable.bottom();
   }
