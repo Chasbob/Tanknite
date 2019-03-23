@@ -10,6 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import org.apache.log4j.Logger;
 
 /**
@@ -26,7 +29,7 @@ public class AbstractScreen extends Stage implements Screen {
    * Instantiates a new Abstract screen.
    */
   AbstractScreen() {
-    super(new ExtendViewport(640, 640));
+    super(new StretchViewport(640, 640));
     logger = Logger.getLogger(getClass());
   }
 

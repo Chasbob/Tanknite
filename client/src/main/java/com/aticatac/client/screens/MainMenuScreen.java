@@ -35,6 +35,7 @@ public class MainMenuScreen extends AbstractScreen {
   Table popUpRootTable;
   private MenuTable exitTable;
   public boolean popUpPresent;
+  private Table containerTable;
 
   /**
    * Instantiates a new Main menu screen.
@@ -83,29 +84,29 @@ public class MainMenuScreen extends AbstractScreen {
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
     //create points and username table
-    Table assetsTable = new Table();
-    assetsTable.defaults().left();
-    assetsTable.add(Styles.INSTANCE.createLabel("ID: "));
-    assetsTable.add(Styles.INSTANCE.createCustomLabel("acidArchie007", Color.CORAL)).padRight(10);
-    assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
-    assetsTable.add(Styles.INSTANCE.createCustomLabel("1500", Color.CORAL));
-    super.addToRoot(assetsTable);
-    assetsTable.top().right().pad(10);
+    createAssets();
+    //create top half of screen
+    createNavigationMenus();
+    //create table to store lower part of screen info
+    containerTable.row();
+    createLockedTable();
+  }
+
+  private void createNavigationMenus() {
     //create title table
     Table titleTable = new Table().top().left().padTop(30).padLeft(50);
-    super.addToRoot(titleTable);
     Label screenTitle = Styles.INSTANCE.createTitleLabel();
-    titleTable.setFillParent(true);
     titleTable.add(screenTitle);
+    super.addToRoot(titleTable);
     //create table to store all buttons
-    Table buttonTable = new Table().top().left().padLeft(50).padTop(150).padRight(50);
-    super.addToRoot(buttonTable);
+    containerTable = new Table().top().left().padLeft(50).padTop(150).padRight(50);
+    super.addToRoot(containerTable);
     //create horizontal group to store top row buttons
     horizontalGroup
       = new HorizontalGroup();
     horizontalGroup
       .space(5);
-    buttonTable.add(horizontalGroup
+    containerTable.add(horizontalGroup
     );
     //table that stores info related to current button
     dropDownTable = new Table();
@@ -135,29 +136,86 @@ public class MainMenuScreen extends AbstractScreen {
     horizontalGroup
       .pack();
     tabIndex = 0;
-    buttonTable.row();
-    buttonTable.add(dropDownTable).left().padTop(20);
+    containerTable.row();
+    containerTable.add(dropDownTable).left().padTop(20);
     dropDownTable.add(playTable.getGroup());
-    //create table to store lower part of screen info
-    createLockedTable();
+  }
+
+  private void createAssets() {
+    Table assetsTable = new Table();
+    assetsTable.top().right().pad(10);
+    assetsTable.defaults().left();
+    assetsTable.add(Styles.INSTANCE.createLabel("ID: "));
+    assetsTable.add(Styles.INSTANCE.createCustomLabel("acidArchie", Color.CORAL)).padRight(10);
+    assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
+    assetsTable.add(Styles.INSTANCE.createCustomLabel("1500", Color.CORAL));
+    super.addToRoot(assetsTable);
   }
 
   private void createLockedTable() {
-    Table lockedTable = new Table();
-    lockedTable.defaults().left().padTop(20);
-    Table statsTable = new Table();
-    MenuTable statsLabelTable = createMenuTable(false, false);
-    statsLabelTable.add(Styles.INSTANCE.createCustomLabel("STATS", Color.GRAY));
-    statsTable.add(statsLabelTable);
-    lockedTable.add(statsTable);
+    //stats container table
+    Table statsContainerTable = new Table();
+    Styles.INSTANCE.addTableColour(statsContainerTable, Color.DARK_GRAY);
+    statsContainerTable.defaults().left().padLeft(10).padRight(10);
+    //create section header for stats
+    statsContainerTable.add(Styles.INSTANCE.createCustomLabel("STATS", Color.GRAY)).padTop(10).padBottom(10);
+    //populate stats
+    statsContainerTable.row();
+    populateStats(statsContainerTable);
+    //create section header for top players
+    Table leaderboardContainerTable = new Table();
+    leaderboardContainerTable.defaults().left().padLeft(10).padRight(10);
+    Styles.INSTANCE.addTableColour(leaderboardContainerTable, Color.DARK_GRAY);
+    leaderboardContainerTable.add(Styles.INSTANCE.createCustomLabel("TOP PLAYERS", Color.GRAY)).padTop(10).padBottom(10);
+    //populate leaderboard
+    leaderboardContainerTable.row();
+    populateTopPlayers(leaderboardContainerTable);
+    //add tables to locked table
+    containerTable.add(statsContainerTable).left().padTop(50);
+    containerTable.row();
+    containerTable.add(leaderboardContainerTable).left().padTop(10);
+  }
+
+  private void populateTopPlayers(Table leaderboardContainerTable) {
+    //TODO use database values
     Table rankingTable = new Table();
-    MenuTable rankingLabelTable = createMenuTable(false, false);
-    rankingLabelTable.add(Styles.INSTANCE.createCustomLabel("RANKINGS", Color.GRAY));
-    rankingTable.add(rankingLabelTable);
-    lockedTable.row();
-    lockedTable.add(rankingTable);
-    lockedTable.center().left().padLeft(50);
-    super.addToRoot(lockedTable);
+    rankingTable.defaults().left();
+    rankingTable.add(Styles.INSTANCE.createCustomLabel("1. ", Color.CORAL));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("dylanAI"));
+    rankingTable.row();
+    rankingTable.add(Styles.INSTANCE.createCustomLabel("2. ", Color.CORAL));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("charlie27"));
+    rankingTable.row();
+    rankingTable.add(Styles.INSTANCE.createCustomLabel("3. ", Color.CORAL));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("claireISSICK"));
+    rankingTable.row();
+    rankingTable.add(Styles.INSTANCE.createCustomLabel("4. ", Color.CORAL));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("bob"));
+    rankingTable.row();
+    rankingTable.add(Styles.INSTANCE.createCustomLabel("5. ", Color.CORAL));
+    rankingTable.add(Styles.INSTANCE.createItalicLabel("3wanisshit"));
+    leaderboardContainerTable.add(rankingTable).padBottom(10);
+  }
+
+  private void populateStats(Table statsContainerTable) {
+    Table statsTable = new Table();
+    statsTable.defaults().left();
+    statsTable.add(Styles.INSTANCE.createItalicLabel("TOP KILLSTREAK: "));
+    statsTable.row();
+    statsTable.add(Styles.INSTANCE.createItalicLabel("KILLS: "));
+    statsTable.row();
+    statsTable.add(Styles.INSTANCE.createItalicLabel("DEATHS: "));
+    statsTable.row();
+    statsTable.add(Styles.INSTANCE.createItalicLabel("K/D: "));
+    statsTable.row();
+    statsTable.add(Styles.INSTANCE.createItalicLabel("WINS: "));
+    statsTable.row();
+    statsTable.add(Styles.INSTANCE.createItalicLabel("LOSSES: "));
+    statsTable.row();
+    statsTable.add((Styles.INSTANCE.createItalicLabel("W/L: ")));
+    statsTable.row();
+    statsTable.add((Styles.INSTANCE.createItalicLabel("RANKING: ")));
+    statsContainerTable.add(statsTable).padBottom(10);
   }
 
   private void createPlay() {

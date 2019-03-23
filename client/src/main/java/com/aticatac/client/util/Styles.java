@@ -140,6 +140,10 @@ public enum Styles {
         return new Label(text, createLabelStyle(baseFont, Color.CYAN));
     }
 
+  public Label createItalicLabel(String text) {
+    return new Label(text, createLabelStyle(italicFont, Color.WHITE));
+  }
+
     public Label createErrorLabel() {
         return new Label("NAME TAKEN", createLabelStyle(baseFont, INSTANCE.hiddenColour));
     }
