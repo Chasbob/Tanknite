@@ -36,6 +36,9 @@ public class MainMenuScreen extends AbstractScreen {
   private MenuTable exitTable;
   public boolean popUpPresent;
   private Table containerTable;
+  Label screenTitle;
+  float green;
+  boolean colorDirection;
 
   /**
    * Instantiates a new Main menu screen.
@@ -44,6 +47,7 @@ public class MainMenuScreen extends AbstractScreen {
     super();
     Gdx.input.setInputProcessor(this);
     popUpPresent = false;
+    green = 0.5f;
   }
 
   @Override
@@ -74,6 +78,25 @@ public class MainMenuScreen extends AbstractScreen {
         enterPressed();
       }
     }
+    if (green < 1 && colorDirection) {
+      //if there is room to go up and we are going up then go up
+      green = green + 0.01f;
+    } else if (green < 1 && !colorDirection) {
+      if (green > 0.5f) {
+        //we can decrease
+        green = green - 0.01f;
+      } else {
+        //we cant decrease and need to go up again
+        colorDirection = true;
+      }
+    } else if (green > 1 && !colorDirection) {
+      //go down
+      green = green - 0.1f;
+    } else {
+      //need to go back down
+      colorDirection = false;
+    }
+    screenTitle.setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.titleFont, new Color(0.973f, green, 0.475f, 1)));
   }
 
   @Override
@@ -95,7 +118,7 @@ public class MainMenuScreen extends AbstractScreen {
   private void createNavigationMenus() {
     //create title table
     Table titleTable = new Table().top().left().padTop(30).padLeft(50);
-    Label screenTitle = Styles.INSTANCE.createTitleLabel();
+    screenTitle = Styles.INSTANCE.createTitleLabel();
     titleTable.add(screenTitle);
     super.addToRoot(titleTable);
     //create table to store all buttons
