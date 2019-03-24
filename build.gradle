@@ -158,11 +158,6 @@ project(':common') {
 
 
 project(':client') {
-    apply plugin: 'application'
-
-    application {
-        mainClassName = "com.aticatac.client.networking.Main"
-    }
 
     dependencies {
         implementation 'org.reflections:reflections:0.9.11'
@@ -170,10 +165,20 @@ project(':client') {
         compile project(':common')
         compile project(':server')
     }
-
-    task execClient(type: JavaExec) {
-        main = "com.aticatac.client.networking.Main"
+}
+project(':database') {
+    apply plugin: 'application'
+    application {
+        mainClassName = "com.aticatac.database.Main"
+    }
+    dependencies {
+        compile 'org.mybatis:mybatis:3.4.6'
+        implementation 'org.postgresql:postgresql:42.2.5.jre7'
+    }
+    task database(type: JavaExec) {
+        main = "com.aticatac.database.Main"
         classpath = sourceSets.main.runtimeClasspath
+        jvmArgs '--illegal-access=deny'
     }
 }
 
