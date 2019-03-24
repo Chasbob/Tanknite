@@ -19,7 +19,7 @@ class PopUp {
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable = popUpRootTable;
     popUpRootTable.setFillParent(true);
     Table popUpTable = new Table();
-    Styles.INSTANCE.addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
+    Styles.INSTANCE.addTableColour(popUpTable, Color.BLACK);
     popUpTable.add(createMultiplayerChildren());
     popUpTable.padTop(20).padBottom(20).padLeft(60).padRight(60);
     popUpRootTable.add(popUpTable);

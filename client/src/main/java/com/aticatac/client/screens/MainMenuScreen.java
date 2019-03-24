@@ -507,13 +507,15 @@ public class MainMenuScreen extends AbstractScreen {
         menuTable.getButton().setTouchable(Touchable.enabled);
       }
       //if there are buttons in drop down also toggle
-      for (int i = 0; i < menuTable.getGroup().getChildren().size; i++) {
-        MenuTable dropDownTable = (MenuTable) menuTable.getGroup().getChildren().get(i);
-        if (dropDownTable.getButton() != null) {
-          if (toggle) {
-            dropDownTable.getButton().setTouchable(Touchable.disabled);
-          } else {
-            dropDownTable.getButton().setTouchable(Touchable.enabled);
+      if (menuTable.getGroup() != null) {
+        for (int i = 0; i < menuTable.getGroup().getChildren().size; i++) {
+          MenuTable dropDownTable = (MenuTable) menuTable.getGroup().getChildren().get(i);
+          if (dropDownTable.getButton() != null) {
+            if (toggle) {
+              dropDownTable.getButton().setTouchable(Touchable.disabled);
+            } else {
+              dropDownTable.getButton().setTouchable(Touchable.enabled);
+            }
           }
         }
       }
