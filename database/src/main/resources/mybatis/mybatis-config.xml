@@ -6,6 +6,9 @@
     <settings>
         <setting name="logImpl" value="LOG4J"/>
     </settings>
+    <typeAliases>
+        <typeAlias alias="Player" type="com.aticatac.database.Player"/>
+    </typeAliases>
     <environments default="sample_id">
         <environment id="sample_id">
             <transactionManager type="JDBC"/>
@@ -18,6 +21,7 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="sample_mapper.xml"/>
+        <mapper resource="mybatis/mappers/player.xml"/>
     </mappers>
 </configuration>
+
