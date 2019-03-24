@@ -116,19 +116,6 @@ public class GameScreen extends AbstractScreen {
     popUpTable.center();
     popUpTable.setVisible(false);
     rootTable.add(createHudPopUp());
-    new Thread(() -> {
-      while (!Thread.currentThread().isInterrupted()) {
-        double nanoTime = System.nanoTime();
-        backgroundInput();
-        while (System.nanoTime() - nanoTime < 1000000000 / 60) {
-          try {
-            Thread.sleep(0);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }).start();
     hudUpdate = new HudUpdate(killLogTable, ammoValue, playerCount, killCount);
   }
 
@@ -146,6 +133,7 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void render(float delta) {
+    backgroundInput();
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
