@@ -62,10 +62,7 @@ public class AI {
       return new Decision(Command.DEFAULT, 0, false);
     updateInformation();
     // Check if can shoot at an enemy
-    if (!enemiesInRange.isEmpty())
-      shooting = canShoot();
-    else
-      shooting = false;
+    shooting = canShoot();
     // Check for a state change
     state = getStateChange();
     // Create a movement command
@@ -618,12 +615,13 @@ public class AI {
    * @return If the tank can shoot at an enemy
    */
   private boolean canShoot() {
-    if (tankAmmo <= 0)
+    if (tankAmmo <= 0 || enemiesInRange.isEmpty()) {
       return false;
-    PlayerState target = getTargetedEnemy();
+    }
+    Position target = getTargetedEnemy().getPosition();
     if (target != null) {
-      aimAngle = getAngle(target.getPosition());
-      if (checkLineOfSightToPosition(tankPos, target.getPosition())) {
+      aimAngle = getNewAimAngle(target);
+      if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 2) {
         return true;
       }
     }
@@ -635,29 +633,36 @@ public class AI {
    *
    * @return An aim angle
    */
-  private int getAngle(Position target) {
+  private int getNewAimAngle(Position target) {
     // No enemy to aim at
     if (enemiesInRange.isEmpty()) {
       return aimAngle;
     }
+    int targetAngle = getAngleToPosition(target);
+    int change = (Math.abs(targetAngle - aimAngle) / 16) + 1;
+    if (Math.abs(changeAngle(aimAngle, change) - targetAngle) < Math.abs(changeAngle(aimAngle, -change) - targetAngle)) {
+      return changeAngle(aimAngle, change);
+    }
+    if (Math.abs(changeAngle(aimAngle, change) - targetAngle) > Math.abs(changeAngle(aimAngle, -change) - targetAngle)) {
+      return changeAngle(aimAngle, -change);
+    }
+    // No change needed -> on target
+    return aimAngle;
+  }
+
+  /**
+   * Calculates the angle between the tank and a given position.
+   *
+   * @param target The position
+   * @return An angle between the tank and a position
+   */
+  private int getAngleToPosition(Position target) {
     Position targetCenter = new Position(target.getX() + 16, target.getY() + 16);
     double angle = Math.atan2(targetCenter.getX() - tankPos.getX(), tankPos.getY() - targetCenter.getY());
     if (angle < 0) {
       angle += (Math.PI * 2);
     }
-    int targetAngle = (int) Math.round(Math.toDegrees(angle));
-//    aimAngle = changeAngle(aimAngle, (int)Math.round(10*Math.random() - 5));
-    return (targetAngle + 90) % 360;
-//    int change = (Math.abs(targetAngle - aimAngle) / 2) + 1;
-//    if ((changeAngle(aimAngle, change) - targetAngle) < (changeAngle(aimAngle, -change) - targetAngle)) {
-//      return changeAngle(aimAngle, change);
-//    }
-//    if ((changeAngle(aimAngle, change) - targetAngle) > (changeAngle(aimAngle, -change) - targetAngle)) {
-//      return changeAngle(aimAngle, -change);
-//    }
-//    // No change needed -> on target
-//    aimed = true;
-//    return aimAngle;
+    return ((int) Math.round(Math.toDegrees(angle)) + 90) % 360;
   }
 
   /**
@@ -669,7 +674,7 @@ public class AI {
   private int changeAngle(int angle, int change) {
     if (angle + change >= 0)
       return (angle + change) % 360;
-    return (angle + change + 360);
+    return (angle + change + 360) % 360;
   }
 
   /**
