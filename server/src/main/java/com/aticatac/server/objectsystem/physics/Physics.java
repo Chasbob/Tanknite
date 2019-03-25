@@ -86,13 +86,20 @@ public class Physics {
   private HashSet<Entity> collision2(Position newPosition) {
     HashSet<Entity> collisions = new HashSet<>();
     CollisionBox box = new CollisionBox(newPosition, entity.getType());
-    for (int i = 0; i < box.getBox().size(); i++) {
-      Position position = box.getBox().get(i);
-      Entity collision = findCollision(position);
+    for (Position p :
+        box.getBox()) {
+      Entity collision = findCollision(p);
       if (collision.getType() != EntityType.NONE) {
         collisions.add(collision);
       }
     }
+//    for (int i = 0; i < box.getBox().size(); i++) {
+//      Position position = box.getBox().get(i);
+//      Entity collision = findCollision(position);
+//      if (collision.getType() != EntityType.NONE) {
+//        collisions.add(collision);
+//      }
+//    }
     return collisions;
   }
 

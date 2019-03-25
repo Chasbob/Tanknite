@@ -42,7 +42,7 @@ public class Entity {
     logger = Logger.getLogger(getClass());
     this.name = name;
     this.type = type;
-    this.setPosition(position);
+    this.position = position;
     this.setCollisionBox(new CollisionBox(this.getPosition(), type.radius));
   }
 
@@ -220,7 +220,17 @@ public class Entity {
    * @param position the position
    */
   public void setPosition(Position position) {
-    this.position = position;
+    this.position.set(position);
+  }
+
+  public void setPosition(final int x, final int y) {
+    if (this.position != null) {
+      this.position.set(x, y);
+      this.collisionBox.setPosition(this.position);
+    } else {
+      this.position = new Position(x, y);
+      this.collisionBox.setPosition(this.position);
+    }
   }
 
   /**

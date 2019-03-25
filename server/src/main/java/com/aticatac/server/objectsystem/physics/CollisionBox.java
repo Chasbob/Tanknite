@@ -2,16 +2,25 @@ package com.aticatac.server.objectsystem.physics;
 
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 import org.apache.log4j.Logger;
 
+/**
+ * The type Collision box.
+ */
 public class CollisionBox {
   private final int radius;
   private final Logger logger;
   private Position position;
-  private ArrayList<Position> box;
+  private HashSet<Position> box;
 
+  /**
+   * Instantiates a new Collision box.
+   *
+   * @param position the position
+   * @param radius   the radius
+   */
   public CollisionBox(final Position position, final int radius) {
     this.position = position;
     this.radius = radius;
@@ -19,45 +28,54 @@ public class CollisionBox {
     this.logger = Logger.getLogger(getClass());
   }
 
+  /**
+   * Instantiates a new Collision box.
+   *
+   * @param position the position
+   * @param type     the type
+   */
   public CollisionBox(final Position position, final EntityType type) {
     this(position, type.radius);
   }
 
-  public void setPosition(Position p) {
-    this.position = p;
-    box = calcCollisionBox(position);
-  }
-
-  private ArrayList<Position> calcCollisionBox(final Position p) {
-    ArrayList<Position> out = new ArrayList<>();
+  private HashSet<Position> calcCollisionBox(final Position p) {
+    HashSet<Position> out = new HashSet<>();
     int lowerY = p.getY() - radius;
     int lowerX = p.getX() - radius;
+    //positions for bottom of out
+    final int limit = radius * 2 + 1;
+    calcXoffset(out, lowerY, lowerX, limit);
+    //positions for left of out
+    calcYoffset(out, lowerY, lowerX, limit);
     int higherY = p.getY() + radius;
     int higherX = p.getX() + radius;
-    //positions for bottom of out
-    for (int x = 0; x < radius * 2; x++) {
-      Position position = new Position(lowerX + x, lowerY);
-      out.add(position);
-    }
-    //positions for left of out
-    for (int y = 0; y < radius * 2; y++) {
-      Position position = new Position(lowerX, lowerY + y);
-      out.add(position);
-    }
     //positions for top of out
-    for (int x = 0; x < radius * 2; x++) {
-      Position position = new Position(lowerX + x, higherY);
-      out.add(position);
-    }
+    calcXoffset(out, higherY, lowerX, limit);
     //positions for right of out
-    for (int y = 0; y < radius * 2; y++) {
-      Position position = new Position(higherX, lowerY + y);
-      out.add(position);
-    }
+    calcYoffset(out, lowerY, higherX, limit);
     return out;
   }
 
-  public ArrayList<Position> getBox() {
+  private void calcYoffset(final HashSet<Position> out, final int lowerY, final int lowerX, final int limit) {
+    for (int y = 0; y < limit; y++) {
+      Position position = new Position(lowerX, lowerY + y);
+      out.add(position);
+    }
+  }
+
+  private void calcXoffset(final HashSet<Position> out, final int lowerY, final int lowerX, final int limit) {
+    for (int x = 0; x < limit; x++) {
+      Position position = new Position(lowerX + x, lowerY);
+      out.add(position);
+    }
+  }
+
+  /**
+   * Gets box.
+   *
+   * @return the box
+   */
+  public HashSet<Position> getBox() {
     return box;
   }
 
@@ -80,7 +98,22 @@ public class CollisionBox {
         getBox().equals(that.getBox());
   }
 
+  /**
+   * Gets position.
+   *
+   * @return the position
+   */
   public Position getPosition() {
     return position;
+  }
+
+  /**
+   * Sets position.
+   *
+   * @param p the p
+   */
+  public void setPosition(Position p) {
+    this.position = p;
+    box = calcCollisionBox(position);
   }
 }

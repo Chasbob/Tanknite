@@ -21,7 +21,6 @@ import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.Physics;
 import com.aticatac.server.objectsystem.physics.PhysicsResponse;
 import com.google.common.eventbus.EventBus;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -234,7 +233,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
 
   @Override
   public boolean intersects(final Collidable collidable) {
-    ArrayList<Position> other = collidable.getCollisionBox().getBox();
+    HashSet<Position> other = collidable.getCollisionBox().getBox();
     other.addAll(getCollisionBox().getBox());
     return other.size() != (new HashSet<>(other).size());
   }

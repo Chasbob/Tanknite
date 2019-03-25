@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
  * @author Charles de Freitas
  */
 public class Updater implements Runnable {
-  final Server.ServerData d = Server.ServerData.INSTANCE;
+  final Server.ServerData data = Server.ServerData.INSTANCE;
   private final Logger logger;
   private final ModelReader modelReader;
   private final Update update;
@@ -54,20 +54,20 @@ public class Updater implements Runnable {
 
   private void updatePlayers() {
     this.logger.trace("updating players");
-    this.update.setStart(d.isStart());
-    this.logger.trace("Game started: " + d.isStart());
+    this.update.setStart(data.isStart());
+    this.logger.trace("Game started: " + data.isStart());
     this.update.clearPlayers();
     this.update.clearProjectiles();
-    for (Bullet b : d.getGame().getBullets()) {
+    for (Bullet b : data.getGame().getBullets()) {
       this.update.addProjectile(b.getContainer());
       this.logger.trace(b.getContainer());
     }
     for (Entity e :
-        d.getGame().getPowerups()) {
+        data.getGame().getPowerups()) {
       this.update.addPowerup(e.getContainer());
       this.logger.trace(e.getContainer());
     }
-    for (Tank c : d.getGame().getPlayerMap().values()) {
+    for (Tank c : data.getGame().getPlayerMap().values()) {
       this.logger.trace("Adding tank: " + c.getName());
       this.update.addPlayer(c.getContainer());
     }
@@ -78,7 +78,7 @@ public class Updater implements Runnable {
     this.logger.trace("Running...");
     while (!Thread.currentThread().isInterrupted() && !shutdown) {
       double nanoTime = System.nanoTime();
-      this.update.setStart(d.isStart());
+      this.update.setStart(data.isStart());
       tcpBroadcast();
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
@@ -128,6 +128,8 @@ public class Updater implements Runnable {
       case UPDATE:
         this.players.put(e.getContainer().getId(), e.getContainer());
         break;
+      default:
+        break;
     }
   }
 
@@ -142,6 +144,8 @@ public class Updater implements Runnable {
         break;
       case UPDATE:
         this.powerups.put(e.getContainer().hashCode(), e.getContainer());
+        break;
+      default:
         break;
     }
   }
@@ -169,6 +173,8 @@ public class Updater implements Runnable {
         break;
       case UPDATE:
         this.projectiles.put(e.getBullet().getId(), e.getBullet());
+        break;
+      default:
         break;
     }
   }

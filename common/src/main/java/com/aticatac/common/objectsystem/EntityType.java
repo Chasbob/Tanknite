@@ -8,7 +8,7 @@ public enum EntityType {
   /**
    * Tank entity type.
    */
-  TANK(14, 6),
+  TANK(13, 6),
   /**
    * Bullet entity type.
    */
@@ -16,7 +16,7 @@ public enum EntityType {
   /**
    * Wall entity type.
    */
-  WALL(15),
+  WALL(13),
   /**
    * Outofbounds entity type.
    */

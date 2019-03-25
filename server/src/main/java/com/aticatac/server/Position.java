@@ -34,6 +34,11 @@ public class Position {
     y = p.y;
   }
 
+  public void set(final int x, final int y) {
+    this.x = x;
+    this.y = y;
+  }
+
   /**
    * Gets the x value for the position
    *

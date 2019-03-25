@@ -6,7 +6,7 @@ import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,10 +41,12 @@ public enum DataServer {
     //initialises the map
     map = convertTMXFileToArray();
     //adds the map to occupied coordinates
-    for (int i = 0; i < 60; i++) {
-      for (int j = 0; j < 60; j++) {
-        if ((map[i][j]).equals("2")) {
-          createCollisionBox(j, i);
+    for (int x = 0; x < 60; x++) {
+      for (int y = 0; y < 60; y++) {
+        if ((map[x][y]).equals("2")) {
+          wall.setPosition(x * 32 + 16, y * 32 + 16);
+          addEntity(wall);
+//          createCollisionBox(y, x);
         }
       }
     }
@@ -175,10 +177,14 @@ public enum DataServer {
    *
    * @param box the box
    */
-  public void removeBoxFromData(ArrayList<Position> box) {
-    for (int i = 0; i < box.size(); i++) {
-      Position position = box.get(i);
-      deleteCoordinates(position);
+  public void removeBoxFromData(HashSet<Position> box) {
+//    for (int i = 0; i < box.size(); i++) {
+//      Position position = box.(i);
+//      deleteCoordinates(position);
+//    }
+    for (Position p :
+        box) {
+      deleteCoordinates(p);
     }
   }
 
@@ -219,9 +225,10 @@ public enum DataServer {
    * @param box    the box
    * @param entity the object entity
    */
-  public void addBoxToData(ArrayList<Position> box, Entity entity) {
+  public void addBoxToData(HashSet<Position> box, Entity entity) {
     for (Position position : box) {
-      DataServer.INSTANCE.setCoordinates(position, entity);
+      occupiedCoordinates.put(position, entity);
+//      DataServer.INSTANCE.setCoordinates(position, entity);
     }
   }
 
@@ -233,6 +240,10 @@ public enum DataServer {
    */
   public void addBoxToData(CollisionBox box, Entity entity) {
     addBoxToData(box.getBox(), entity);
+  }
+
+  public void addEntity(Entity entity) {
+    addBoxToData(entity.getCollisionBox().getBox(), entity);
   }
 
   public boolean containsBox(CollisionBox box) {
