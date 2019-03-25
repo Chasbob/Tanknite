@@ -1,9 +1,11 @@
 package com.aticatac.client.util;
 
 import com.aticatac.client.screens.Screens;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.concurrent.Callable;
@@ -39,7 +41,7 @@ public class ListenerFactory {
     };
   }
 
-  public static ClickListener newListenerEventEnter(Callable<Boolean> func) {
+  private static ClickListener newListenerEventEnter(Callable<Boolean> func) {
     return new ClickListener() {
       @Override
       public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -48,13 +50,24 @@ public class ListenerFactory {
     };
   }
 
-  public static ClickListener newListenerEventExit(Callable<Boolean> func) {
+  private static ClickListener newListenerEventExit(Callable<Boolean> func) {
     return new ClickListener() {
       @Override
       public void exit(InputEvent event, float x, float y, int pointer, Actor fromActor) {
         listenerBody(func);
       }
     };
+  }
+
+  public static void addHoverListener(TextButton button, MenuTable parentTable) {
+    button.addListener(newListenerEventEnter(() -> {
+      Styles.INSTANCE.addTableColour(parentTable, Color.CORAL);
+      return false;
+    }));
+    button.addListener(newListenerEventExit(() -> {
+      parentTable.setShowGroup(parentTable.isShowGroup());
+      return false;
+    }));
   }
 
   private static void listenerBody(Callable<Boolean> func) {

@@ -32,9 +32,9 @@ class Settings {
   private static MenuTable createToggle(String labelString) {
     MenuTable table;
     if (labelString.equals("TOGGLE SOUND: ")) {
-      table = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(true, false);
+      table = Styles.INSTANCE.createMenuTable(true, false);
     } else {
-      table = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(false, false);
+      table = Styles.INSTANCE.createMenuTable(false, false);
     }
     TextButton button = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createItalicButton(labelString) : Styles.INSTANCE.createButton(labelString);
     Label label;

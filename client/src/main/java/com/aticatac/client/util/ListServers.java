@@ -6,9 +6,7 @@ import com.aticatac.client.screens.ServerScreen;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
@@ -24,39 +22,47 @@ public class ListServers {
   /**
    * Instantiates a new List servers.
    *
-   * @param serverTable the server table
+   * @param verticalGroup the group that stores horizontal group for each server
    */
-  public ListServers(Table serverTable, Table playerTable) {
+  public ListServers(VerticalGroup verticalGroup) {
     this.logger = Logger.getLogger(getClass());
     int tableSize = 10;
     this.buttons = new ArrayList<>();
     this.labels = new ArrayList<>();
     for (int i = 0; i < tableSize; i++) {
+      //create menu table to store horizontal group
+      MenuTable menuTable;
+      if (i == 0) {
+        //if the first server we want to select it
+        menuTable = Styles.INSTANCE.createMenuTable(true, false);
+      } else {
+        menuTable = Styles.INSTANCE.createMenuTable(false, false);
+      }
+      //create a new horizontal group to store server and player count
+      HorizontalGroup horizontalGroup = new HorizontalGroup();
+      horizontalGroup.space(200);
       ServerButton serverButton = new ServerButton();
       serverButton.getLabel().setAlignment(Align.left);
       serverButton.setStyle(buttonStyle());
+      menuTable.setButton(serverButton);
       serverButton.addListener(ListenerFactory.newListenerEvent(() -> {
         this.logger.info("Server Button clicked");
-        deselect();
-        Screens.INSTANCE.getScreen(ServerScreen.class).setServerSelected(true);
-        Data.INSTANCE.setCurrentInformation(serverButton.getServerInformation());
-        serverButton.setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Styles.INSTANCE.selectedColour));
+        //if(!serverButton.getLabel().textEquals("<EMPTY>")){
+        menuTable.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.LIME));
+        serverButton.setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE));
+        menuTable.setShowGroup(true);
+        //}
         return false;
       }));
-      serverTable.add(serverButton);
-      serverTable.row();
+      horizontalGroup.addActor(serverButton);
       buttons.add(serverButton);
-      Label playersLabel = Styles.INSTANCE.createSubtleLabel("");
+      Label playersLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.italicFont, "0/0", Color.GRAY);
       playersLabel.setAlignment(Align.left);
       labels.add(playersLabel);
-      playerTable.add(playersLabel);
-      playerTable.row();
-    }
-  }
-
-  private void deselect() {
-    for (ServerButton b : buttons) {
-      b.setStyle(buttonStyle());
+      horizontalGroup.addActor(playersLabel);
+      menuTable.add(horizontalGroup);
+      menuTable.setLabel(playersLabel);
+      verticalGroup.addActor(menuTable);
     }
   }
 
@@ -76,16 +82,17 @@ public class ListServers {
         }else{
           labels.get(i).setText("FULL");
         }
+        labels.get(i).setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.LIME));
         buttons.get(i).setTouchable(Touchable.enabled);
       } else {
         buttons.get(i).getLabel().setText("<EMPTY>");
-        buttons.get(i).setTouchable(Touchable.disabled);
+        //buttons.get(i).setTouchable(Touchable.disabled);
       }
       buttons.get(i).getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.baseFont, Color.WHITE));
     }
   }
 
   private Button.ButtonStyle buttonStyle() {
-    return Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE);
+    return Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY);
   }
 }

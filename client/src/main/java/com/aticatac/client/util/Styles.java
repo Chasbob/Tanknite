@@ -108,6 +108,17 @@ public enum Styles {
         return labelStyle;
     }
 
+  public MenuTable createMenuTable(boolean selected, boolean tab) {
+    MenuTable table = new MenuTable(tab);
+    if (selected) {
+      table.setShowGroup(true);
+    } else {
+      table.setShowGroup(false);
+    }
+    table.defaults().padTop(5).padBottom(5).padLeft(10).padRight(10);
+    return table;
+  }
+
     public TextField createTextField(String text) {
         return new TextField(text, textFieldStyle);
     }
@@ -141,7 +152,7 @@ public enum Styles {
     }
 
     public Label createSubtleLabel(String text) {
-        return new Label(text, createLabelStyle(baseFont, Color.CYAN));
+      return new Label(text, createLabelStyle(baseFont, Color.YELLOW));
     }
 
   public Label createItalicLabel(String text) {

@@ -4,14 +4,16 @@ import com.aticatac.client.screens.MainMenuScreen;
 import com.aticatac.client.screens.Screens;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class MenuTable extends Table {
 
   private Group group;
   private Table table;
-  private TextButton button;
+  private Label label;
+  private Button button;
   private boolean showGroup;
   private boolean tab;
 
@@ -19,6 +21,7 @@ public class MenuTable extends Table {
     super();
     this.group = null;
     this.button = null;
+    this.label = null;
     this.table = null;
     this.showGroup = false;
     this.tab = tab;
@@ -43,7 +46,7 @@ public class MenuTable extends Table {
       } else {
         if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpPresent) {
           //from pop up menu
-          Styles.INSTANCE.addTableColour(this, new Color(1, 1, 0, 0.25f));
+          Styles.INSTANCE.addTableColour(this, new Color(1, 1, 1, 0.25f));
         } else {
           Styles.INSTANCE.addTableColour(this, new Color(0.973f, 0.514f, 0.475f, 0.25f));
         }
@@ -54,11 +57,11 @@ public class MenuTable extends Table {
     this.showGroup = showGroup;
   }
 
-  public TextButton getButton() {
+  public Button getButton() {
     return button;
   }
 
-  public void setButton(TextButton button) {
+  public void setButton(Button button) {
     this.button = button;
     this.add(button);
   }
@@ -69,5 +72,13 @@ public class MenuTable extends Table {
 
   public void setTable(Table table) {
     this.table = table;
+  }
+
+  public Label getLabel() {
+    return label;
+  }
+
+  public void setLabel(Label label) {
+    this.label = label;
   }
 }

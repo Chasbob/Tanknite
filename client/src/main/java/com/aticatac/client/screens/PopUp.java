@@ -28,7 +28,7 @@ class PopUp {
   static Group createMultiplayerChildren() {
     VerticalGroup multplayerChildren = new VerticalGroup();
     multplayerChildren.space(5);
-    MenuTable hostTable = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(true, false);
+    MenuTable hostTable = Styles.INSTANCE.createMenuTable(true, false);
     //create button for hosting game
     TextButton hostButton = Styles.INSTANCE.createButton("HOST");
     hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
@@ -40,9 +40,10 @@ class PopUp {
     hostTable.setButton(hostButton);
     multplayerChildren.addActor(hostTable);
     //create button for joining
-    MenuTable joinTable = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(false, false);
+    MenuTable joinTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton joinButton = Styles.INSTANCE.createButton("JOIN");
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
       Screens.INSTANCE.getScreen(ServerScreen.class).refresh();
       Screens.INSTANCE.showScreen(ServerScreen.class);
       return false;
@@ -57,7 +58,7 @@ class PopUp {
   }
 
   static MenuTable createBackButton() {
-    MenuTable backTable = Screens.INSTANCE.getScreen(MainMenuScreen.class).createMenuTable(false, false);
+    MenuTable backTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton backButton = Styles.INSTANCE.createButton("BACK");
     backButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);

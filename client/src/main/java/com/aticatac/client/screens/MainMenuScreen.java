@@ -164,14 +164,14 @@ public class MainMenuScreen extends AbstractScreen {
     //challenges
     createChallenges();
     //customize
-    customizeTable = createMenuTable(false, true);
+    customizeTable = Styles.INSTANCE.createMenuTable(false, true);
     TextButton customizeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
     switchTabListener(customizeButton, customizeTable, horizontalGroup);
-    addHoverListener(customizeButton, customizeTable);
+    ListenerFactory.addHoverListener(customizeButton, customizeTable);
     //settings with child buttons
     createSettings();
     //create button to close game
-    exitTable = createMenuTable(false, true);
+    exitTable = Styles.INSTANCE.createMenuTable(false, true);
     TextButton exitButton = Styles.INSTANCE.createBackButton("QUIT");
     exitTable.setButton(exitButton);
     horizontalGroup
@@ -182,7 +182,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     horizontalGroup
       .pack();
-    addHoverListener(exitButton, exitTable);
+    ListenerFactory.addHoverListener(exitButton, exitTable);
     tabIndex = 0;
     containerTable.row();
     containerTable.add(dropDownTable).left().padTop(20);
@@ -190,10 +190,10 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createChallenges() {
-    challengesButtonTable = createMenuTable(false, true);
+    challengesButtonTable = Styles.INSTANCE.createMenuTable(false, true);
     TextButton challengesButton = Styles.INSTANCE.createButton("CHALLENGES");
     switchTabListener(challengesButton, challengesButtonTable, horizontalGroup);
-    addHoverListener(challengesButton, challengesButtonTable);
+    ListenerFactory.addHoverListener(challengesButton, challengesButtonTable);
     //create challenge table
     Table challengesDataTable = createTableWithPadding();
     //add table to store header
@@ -308,17 +308,17 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createPlay() {
-    playTable = createMenuTable(true, true);
+    playTable = Styles.INSTANCE.createMenuTable(true, true);
     TextButton playButton = Styles.INSTANCE.createButton("PLAY");
     switchTabListener(playButton, playTable, horizontalGroup);
-    addHoverListener(playButton, playTable);
+    ListenerFactory.addHoverListener(playButton, playTable);
     createPlayChildren();
   }
 
   private void createPlayChildren() {
     VerticalGroup playChildren = Styles.INSTANCE.createVerticalGroup();
     //create button for single player
-    MenuTable singlePlayerTable = createMenuTable(true, false);
+    MenuTable singlePlayerTable = Styles.INSTANCE.createMenuTable(true, false);
     TextButton singlePlayerButton = Styles.INSTANCE.createItalicButton("SINGLE-PLAYER");
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(singlePlayerTable);
@@ -331,7 +331,7 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     singlePlayerTable.setButton(singlePlayerButton);
     //create button for multi player
-    MenuTable multiPlayerTable = createMenuTable(false, false);
+    MenuTable multiPlayerTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton multiPlayerButton = Styles.INSTANCE.createItalicButton("MULTI-PLAYER");
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(multiPlayerTable);
@@ -348,23 +348,13 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createSettings() {
-    settingsTable = createMenuTable(false, true);
+    settingsTable = Styles.INSTANCE.createMenuTable(false, true);
     TextButton settingsButton = Styles.INSTANCE.createButton("SETTINGS");
     switchTabListener(settingsButton, settingsTable, horizontalGroup);
-    addHoverListener(settingsButton, settingsTable);
+    ListenerFactory.addHoverListener(settingsButton, settingsTable);
     Settings.createSettings();
   }
 
-  MenuTable createMenuTable(boolean selected, boolean tab) {
-    MenuTable table = new MenuTable(tab);
-    if (selected) {
-      table.setShowGroup(true);
-    } else {
-      table.setShowGroup(false);
-    }
-    table.defaults().padTop(5).padBottom(5).padLeft(10).padRight(10);
-    return table;
-  }
 
   private void switchTab(boolean right) {
     //deselect previous table
@@ -479,7 +469,8 @@ public class MainMenuScreen extends AbstractScreen {
       //get current highlighted menu table
       for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
         MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
-        if (menuTable.isShowGroup() && !menuTable.getButton().getText().toString().equals("QUIT")) {
+        TextButton currentButton = (TextButton) menuTable.getButton();
+        if (menuTable.isShowGroup() && !currentButton.getText().toString().equals("QUIT")) {
           //get the vertical group belonging to the drop down
           Group group = menuTable.getGroup();
           //get current highlighted menu table from drop down
@@ -490,7 +481,7 @@ public class MainMenuScreen extends AbstractScreen {
               break;
             }
           }
-        } else if (menuTable.isShowGroup() && menuTable.getButton().getText().toString().equals("QUIT")) {
+        } else if (menuTable.isShowGroup() && currentButton.getText().toString().equals("QUIT")) {
           menuTable.getButton().fire(inputEvent);
         }
       }
@@ -555,17 +546,6 @@ public class MainMenuScreen extends AbstractScreen {
         menuTable.setShowGroup(true);
       }
     }
-  }
-
-  private void addHoverListener(TextButton button, MenuTable parentTable) {
-    button.addListener(ListenerFactory.newListenerEventEnter(() -> {
-      Styles.INSTANCE.addTableColour(parentTable, Color.CORAL);
-      return false;
-    }));
-    button.addListener(ListenerFactory.newListenerEventExit(() -> {
-      parentTable.setShowGroup(parentTable.isShowGroup());
-      return false;
-    }));
   }
 
   @Override
