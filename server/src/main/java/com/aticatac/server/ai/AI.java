@@ -28,7 +28,7 @@ public class AI {
   private final double collectiveness; // (0.8 to 1.2), higher = more likely to collect a powerup
   private State state;
   private State prevState;
-  private Queue<SearchNode> searchPath;
+  private LinkedList<SearchNode> searchPath;
   private Set<Position> recentlyVisitedNodes;
   private ArrayList<Command> commandHistory;
   private ArrayList<PlayerState> enemiesInRange;
@@ -65,6 +65,10 @@ public class AI {
     updateInformation();
     // Check if can shoot at an enemy
     shooting = canShoot();
+    // Do "random" aiming if can't
+    if (!shooting && !searchPath.isEmpty()) {
+      aimAngle = getNewAimAngle(searchPath.peekLast());
+    }
     // Check for a state change
     state = getStateChange();
     // Create a movement command
@@ -109,7 +113,7 @@ public class AI {
     int searchingUtility = getSearchingUtility();
     int attackingUtility = getAttackingUtility();
     int fleeingUtility = getFleeingUtility();
-    int obtainingUtility = 0/*getObtainingUtility()*/;
+    int obtainingUtility = getObtainingUtility();
     // Return state with highest utility
     int maxUtility = Math.max(Math.max(searchingUtility, attackingUtility), Math.max(fleeingUtility, obtainingUtility));
     if (maxUtility == searchingUtility) {
@@ -218,6 +222,14 @@ public class AI {
    * @return A command from the current state
    */
   private Command performStateAction() {
+    // Keep going along same path if state has not changed
+    if (prevState == state && !searchPath.isEmpty() && commandHistory.size() < 60) {
+      return commandToPerform(searchPath.peek());
+    }
+    // Do searching action if stuck
+    if (commandHistory.size() > 60) {
+      return performSearchingAction();
+    }
     switch (state) {
       case SEARCHING:
         return performSearchingAction();
@@ -239,12 +251,7 @@ public class AI {
    * @return A command from the SEARCHING state
    */
   private Command performSearchingAction() {
-    // Keep going along the same path if still searching
-    if (prevState == State.SEARCHING && !searchPath.isEmpty() && commandHistory.size() < 60) {
-      return commandToPerform(searchPath.peek());
-    }
-    // Make new path if transitioned to searching state or previous path was completed
-    Position goal = getRandomPosition(); // there should always be a clear position given we searching
+    Position goal = getRandomPosition();
     searchPath = getPath(tankPos, goal);
     return commandToPerform(searchPath.peek());
   }
@@ -258,10 +265,8 @@ public class AI {
    */
   private Command performAttackingAction() {
     PlayerState target = getTargetedEnemy();
-    if (target == null)
+    if (target == null) {
       return Command.DEFAULT;
-    if (prevState == State.ATTACKING && !searchPath.isEmpty() && commandHistory.size() < 60) {
-      return commandToPerform(searchPath.peek());
     }
     if (Math.sqrt(Math.pow(tankPos.getX(),target.getX()) + Math.pow(tankPos.getY(),target.getY())) < 96) {
       return performSearchingAction();
@@ -281,10 +286,6 @@ public class AI {
    * @return A command from the FLEEING state
    */
   private Command performFleeingAction() {
-    if (prevState == State.FLEEING && !searchPath.isEmpty() && commandHistory.size() < 60) {
-      return commandToPerform(searchPath.peek());
-    }
-    // Pick a position in range of the agent that is clear of enemies and travel there
     Position goal = getClearPosition();
     searchPath = getPath(tankPos, goal);
     while (searchPath.size() > 5) {
@@ -301,10 +302,6 @@ public class AI {
    * @return A command from the OBTAINING state
    */
   private Command performObtainingAction() {
-    // Keep going along the same path if still obtaining
-    if (prevState == State.OBTAINING && !searchPath.isEmpty()) {
-      return commandToPerform(searchPath.peek());
-    }
     Position powerupLocation = getClosestPowerUp(currentInput.getPowerups()).getPosition();
     // Get ideal power-up if can, else carry on with closest
     PowerUpState idealPowerup = getIdealPowerup();
@@ -600,7 +597,7 @@ public class AI {
     Position target = getTargetedEnemy().getPosition();
     if (target != null) {
       aimAngle = getNewAimAngle(target);
-      if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 2) {
+      if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 3) {
         return true;
       }
     }
@@ -613,12 +610,8 @@ public class AI {
    * @return An aim angle
    */
   private int getNewAimAngle(Position target) {
-    // No enemy to aim at
-    if (enemiesInRange.isEmpty()) {
-      return aimAngle;
-    }
     int targetAngle = getAngleToPosition(target);
-    int change = (Math.abs(targetAngle - aimAngle) / 16) + 1;
+    int change = Math.abs(targetAngle - aimAngle) / 8;
     if (Math.abs(changeAngle(aimAngle, change) - targetAngle) < Math.abs(changeAngle(aimAngle, -change) - targetAngle)) {
       return changeAngle(aimAngle, change);
     }
