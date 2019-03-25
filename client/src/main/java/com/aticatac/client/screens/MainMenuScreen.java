@@ -550,10 +550,20 @@ public class MainMenuScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
+    //unhighlight the drop down if we come back from server screen
+    VerticalGroup currentDropDown = (VerticalGroup) dropDownTable.getChildren().get(0);
+    MenuTable menuTable = (MenuTable) currentDropDown.getChildren().get(dropDownIndex);
+    menuTable.setShowGroup(false);
+    //set variables back to normal
     popUpPresent = false;
+    toggleButtonDeactivation(false);
     popUpIndex = 0;
     dropDownIndex = 0;
     tabIndex = 0;
+    rootTable.removeActor(popUpRootTable);
+    //highlight singleplayer as first on drop down
+    MenuTable newDropDown = (MenuTable) currentDropDown.getChildren().get(dropDownIndex);
+    newDropDown.setShowGroup(true);
   }
 
   @Override

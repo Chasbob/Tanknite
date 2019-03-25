@@ -19,14 +19,17 @@ public class ServerScreen extends AbstractScreen {
   private int tabIndex;
   public int dropDownIndex;
   private HorizontalGroup tabGroup;
-  private VerticalGroup dropDownGroup;
+  public VerticalGroup dropDownGroup;
 
   /**
    * Instantiates a new Server screen.
    */
   ServerScreen() {
     super();
-    refresh();
+    serverSelected = false;
+    Data.INSTANCE.setManualConfigForServer(false);
+    tabIndex = 0;
+    dropDownIndex = 0;
     Gdx.input.setInputProcessor(this);
   }
 
@@ -101,7 +104,12 @@ public class ServerScreen extends AbstractScreen {
   public void refresh() {
     serverSelected = false;
     Data.INSTANCE.setManualConfigForServer(false);
+    unHighlight();
     tabIndex = 0;
+    dropDownIndex = 0;
+    //rehighlight first server
+    MenuTable menuTable = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
+    menuTable.setShowGroup(true);
   }
 
   @Override
@@ -109,22 +117,26 @@ public class ServerScreen extends AbstractScreen {
     super.render(delta);
     //need to poll for input
     if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-      tabIndex = switchTab(true, tabGroup, tabIndex, false);
+      tabIndex = switcher(true, tabGroup, tabIndex, false);
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-      tabIndex = switchTab(false, tabGroup, tabIndex, false);
+      tabIndex = switcher(false, tabGroup, tabIndex, false);
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-      dropDownIndex = switchTab(true, dropDownGroup, dropDownIndex, true);
+      dropDownIndex = switcher(true, dropDownGroup, dropDownIndex, true);
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-      dropDownIndex = switchTab(false, dropDownGroup, dropDownIndex, true);
+      dropDownIndex = switcher(false, dropDownGroup, dropDownIndex, true);
     } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
       enterPressed();
     }
   }
 
-  private int switchTab(boolean rightOrDown, Group group, int index, boolean dropDown) {
-    //deselect current tab
+  private int switcher(boolean rightOrDown, Group group, int index, boolean dropDown) {
+    //deselect current table
     MenuTable currentTable = (MenuTable) group.getChildren().get(index);
-    currentTable.setShowGroup(false);
+    if (dropDown) {
+      unHighlight();
+    } else {
+      currentTable.setShowGroup(false);
+    }
     if (rightOrDown) {
       if (index == group.getChildren().size - 1) {
         index = 0;
@@ -145,8 +157,7 @@ public class ServerScreen extends AbstractScreen {
       ServerButton currentButton = (ServerButton) currentTable.getButton();
       if (!currentButton.getLabel().getText().toString().equals("<EMPTY>")) {
         //make old button and label text grey
-        currentButton.setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY));
-        currentButton.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.GRAY));
+        unHighlight();
       }
       ServerButton newButton = (ServerButton) newTable.getButton();
       if (!newButton.getLabel().getText().toString().equals("<EMPTY>")) {
@@ -175,4 +186,11 @@ public class ServerScreen extends AbstractScreen {
     currentTab.getButton().fire(inputEvent);
   }
 
+  public void unHighlight() {
+    //get current menu table from drop down
+    MenuTable currentTable = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
+    currentTable.setShowGroup(false);
+    currentTable.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.GRAY));
+    currentTable.getButton().setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY));
+  }
 }

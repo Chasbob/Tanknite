@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
+
 import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -46,12 +48,16 @@ public class ListServers {
       serverButton.setStyle(buttonStyle());
       menuTable.setButton(serverButton);
       serverButton.addListener(ListenerFactory.newListenerEvent(() -> {
-        this.logger.info("Server Button clicked");
-        //if(!serverButton.getLabel().textEquals("<EMPTY>")){
-        menuTable.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.LIME));
-        serverButton.setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE));
+        //get current table and unhighlight them
+        Screens.INSTANCE.getScreen(ServerScreen.class).unHighlight();
+        if (!serverButton.getLabel().textEquals("<EMPTY>")) {
+          //highlight new table as button is for a server running
+          menuTable.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.LIME));
+          serverButton.setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE));
+        }
         menuTable.setShowGroup(true);
-        //}
+        //update drop down index
+        Screens.INSTANCE.getScreen(ServerScreen.class).dropDownIndex = Screens.INSTANCE.getScreen(ServerScreen.class).dropDownGroup.getChildren().indexOf(menuTable, true);
         return false;
       }));
       horizontalGroup.addActor(serverButton);
@@ -77,9 +83,9 @@ public class ListServers {
         buttons.get(i).setServerInformation(servers.get(i));
         int playerCount = buttons.get(i).getServerInformation().getPlayerCount();
         int maxPlayers = buttons.get(i).getServerInformation().getMaxPlayers();
-        if (playerCount<maxPlayers){
-          labels.get(i).setText(playerCount+"/"+maxPlayers);
-        }else{
+        if (playerCount < maxPlayers) {
+          labels.get(i).setText(playerCount + "/" + maxPlayers);
+        } else {
           labels.get(i).setText("FULL");
         }
         labels.get(i).setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.LIME));
@@ -95,4 +101,5 @@ public class ListServers {
   private Button.ButtonStyle buttonStyle() {
     return Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY);
   }
+
 }
