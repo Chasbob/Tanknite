@@ -1,11 +1,6 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.Camera;
-import com.aticatac.client.util.Data;
-import com.aticatac.client.util.HudUpdate;
-import com.aticatac.client.util.ListenerFactory;
-import com.aticatac.client.util.MinimapViewport;
-import com.aticatac.client.util.Styles;
+import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -163,7 +158,6 @@ public class GameScreen extends AbstractScreen {
     healthBar();
     //tanks
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
-    tanks.setColor(Color.CORAL);
     tanks.begin();
     renderTanks(tanks);
     //mini viewport
@@ -183,8 +177,45 @@ public class GameScreen extends AbstractScreen {
       for (Container c :
           update.getNewShots().values()) {
         renderContainer(c, tanksMiniMap);
+
+        //Audio: plays sound when tank shoots in range
+        if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
+
+          //TODO this can potentially be the player not camera?
+          float dx = c.getX() - camera.getX();
+          float dy = c.getY() - camera.getY();
+
+          int max = 640;
+
+          double distance = Math.sqrt(dx*dx + dy*dy);
+
+          double volumeScalar = (max-distance)/max;
+
+          this.logger.warn("Sound when in range");
+          AudioEnum.INSTANCE.getOtherTankShoot((float)volumeScalar);
+
+        }
       }
     }
+
+    //Audio: plays sound when tank shoots in range
+    if (camera.getCamera().frustum.pointInFrustum(0, 0, 0)) {
+
+      float dx =0 - player.getX();
+      float dy =0 - player.getY();
+      int max = 640;
+
+      double distance = Math.sqrt(dx*dx + dy*dy);
+
+      double volumeScalar = (max-distance)/max;
+
+      this.logger.warn("Sound when in range");
+      this.logger.info("Volume:" + volumeScalar);
+     // AudioEnum.INSTANCE.getOtherTankShoot((float)volumeScalar);
+
+    }
+
+    tanks.setColor(Color.CORAL);
     tanksMiniMap.end();
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
       hudUpdate.update(update);

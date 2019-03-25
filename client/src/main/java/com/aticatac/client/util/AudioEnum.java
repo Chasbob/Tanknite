@@ -45,7 +45,7 @@ public enum AudioEnum {
 
     this.logger = Logger.getLogger(getClass());
     this.logger.trace("boo");
-    //loadSound();
+    loadSound();
 
   }
 
@@ -137,6 +137,19 @@ public enum AudioEnum {
 
     if (!shoot.isPlaying() && sound) {
       shoot.setVolume(soundVolume);
+      shoot.play();
+    }
+    return shoot;
+  }
+
+  /**
+   * @return
+   */
+  //can play this even if it is being played elsewhere
+  public Music getOtherTankShoot(float volume) {
+
+    if (sound) {
+      shoot.setVolume(volume);
       shoot.play();
     }
     return shoot;
