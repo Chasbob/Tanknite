@@ -8,9 +8,9 @@ import com.aticatac.server.ai.Decision;
 import com.aticatac.server.ai.PlayerState;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.listener.AIInputListener;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.apache.log4j.Logger;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
