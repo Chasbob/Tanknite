@@ -3,6 +3,8 @@ package com.aticatac.server.ai;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
+import com.aticatac.server.objectsystem.DataServer;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -427,7 +429,7 @@ public class AI {
    * @return True if there is a line of sight between
    */
   private boolean checkLineOfSightToPosition(Position from, Position to) {
-    String[][] map = graph.getMap();
+    String[][] map = DataServer.INSTANCE.getMap();
     ArrayList<Position> linePoints = new ArrayList<>();
     Position start = new Position(Math.round((float) from.getX() / 32), Math.round((float) from.getY() / 32));
     Position end = new Position(Math.round((float) to.getX() / 32), Math.round((float) to.getY() / 32));

@@ -54,7 +54,11 @@ public enum DataServer {
     return occupiedCoordinates.size();
   }
 
-  public String[][] convertTMXFileToArray() {
+  public String[][] getMap() {
+    return map;
+  }
+
+  private String[][] convertTMXFileToArray() {
     String[][] map = new String[60][60];
     TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(1);

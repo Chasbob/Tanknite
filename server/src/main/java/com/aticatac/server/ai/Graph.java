@@ -1,9 +1,10 @@
 package com.aticatac.server.ai;
 
 import com.aticatac.server.Position;
+import com.aticatac.server.objectsystem.DataServer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 /**
  * A graph is a collection of connected SearchNodes. Each node in the graph represents a point on the game map that a
@@ -20,17 +21,14 @@ class Graph {
    * The nodes that make up the graph
    */
   private final HashMap<String, SearchNode> nodes;
-  /**
-   * String character representation of the game's map
-   */
-  private final String[][] map;
 
   /**
    * Creates a new graph by placing and connecting valid nodes.
    */
   Graph() {
     nodes = new HashMap<>();
-    map = convertTMXFileToArray();
+    String[][] map = DataServer.INSTANCE.getMap();
+    removePositionsNextToWalls(map);
     // Add nodes
     int x, y;
     x = 0;
@@ -102,56 +100,6 @@ class Graph {
       }
     }
     return inRange;
-  }
-
-  /**
-   * Gets a String character representation of the game's map
-   *
-   * @return A String character representation of the game's map
-   */
-  String[][] getMap() {
-    return map;
-  }
-
-  /**
-   * Reads the map.tmx file containing a representation of the game's map into a String array.
-   *
-   * @return A representation of the map as an array
-   */
-  private String[][] convertTMXFileToArray() {
-    Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
-    for (int i = 0; i < 70; i++) // map starts at line 71
-      s.nextLine();
-    String[][] map = new String[60][60];
-    for (int i = 0; i < 60; i++) {
-      map[i] = s.nextLine().split(",");
-    }
-    // Rotate map
-    getTranspose(map);
-    rotateAlongMidRow(map);
-    // Add "1"s on positions adjacent to walls
-    removePositionsNextToWalls(map);
-    return map;
-  }
-
-  private void getTranspose(String[][] map) {
-    for (int i = 0; i < map.length; i++) {
-      for (int j = i + 1; j < map.length; j++) {
-        String temp = map[i][j];
-        map[i][j] = map[j][i];
-        map[j][i] = temp;
-      }
-    }
-  }
-
-  private void rotateAlongMidRow(String[][] map) {
-    for (int i = 0; i < map.length / 2; i++) {
-      for (int j = 0; j < map.length; j++) {
-        String temp = map[i][j];
-        map[i][j] = map[map.length - 1 - i][j];
-        map[map.length - 1 - i][j] = temp;
-      }
-    }
   }
 
   private void removePositionsNextToWalls(String[][] map) {
