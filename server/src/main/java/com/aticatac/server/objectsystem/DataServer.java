@@ -3,6 +3,10 @@ package com.aticatac.server.objectsystem;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.transform.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,15 +44,13 @@ public enum DataServer {
   DataServer() {
     wall = new Entity(EntityType.WALL);
     //initialises the map
-    try {
+
       map = convertTMXFileToIntArray();
-    } catch (FileNotFoundException e) {
-      System.out.println("Yo where'd the file go");
-    }
+
     //adds the map to occupied coordinates
     for (int i = 0; i < 60; i++) {
       for (int j = 0; j < 60; j++) {
-        if ((map[i][j]).equals("2")) {
+        if ((map[i][j]).equals("1")) {
           createCollisionBox(i, j);
         }
       }
@@ -59,25 +61,18 @@ public enum DataServer {
     return occupiedCoordinates.size();
   }
 
-  /**
-   * @return
-   *
-   * @throws FileNotFoundException
-   */
-  private String[][] convertTMXFileToIntArray() throws FileNotFoundException {
-    //reads in the file
-    Scanner s = new Scanner(getClass().getResourceAsStream("/maps/map.tmx"));
-    //reads the file line by line
-    // map starts at line 71
-    for (int i = 0; i < 70; i++) {
-      s.nextLine();
-    }
-    //converts the file into the array
-    for (int i = 0; i < 60; i++) {
-      ArrayList<String> line = new ArrayList<>(Arrays.asList(s.nextLine().split(",")));
-      Collections.reverse(line);
-      String[] lineArray = new String[60];
-      map[i] = line.toArray(lineArray);
+
+  private String[][] convertTMXFileToIntArray() {
+    TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
+    TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
+    for (int x = 0; x < layer.getWidth(); x++) {
+      for (int y = 0; y < layer.getHeight(); y++) {
+        try {
+          map[layer.getWidth() - x - 1][layer.getHeight() - y - 1] = Integer.toString(layer.getCell(x, y).getTile().getId());
+        } catch (NullPointerException e) {
+          map[layer.getWidth() - x - 1][layer.getHeight() - y - 1] = "0";
+        }
+      }
     }
     return map;
   }
