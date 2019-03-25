@@ -14,7 +14,7 @@ class PopUp {
 
   static void createPopUp() {
     Table popUpRootTable = new Table();
-    Styles.INSTANCE.addTableColour(popUpRootTable, Styles.INSTANCE.getTransparentColour());
+    Styles.INSTANCE.addTableColour(popUpRootTable, new Color(new Color(0f, 0f, 0f, 0.5f)));
     Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.addActor(popUpRootTable);
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable = popUpRootTable;
     popUpRootTable.setFillParent(true);
