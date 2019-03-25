@@ -166,16 +166,13 @@ public abstract class GameMode implements Game {
     int count = 1;
     Position position = new Position();
     while (count > 0) {
-      ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
       count = 0;
+      ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
       position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1), ThreadLocalRandom.current().nextInt(min, max + 1));
-      this.logger.info("Trying position: " + position.toString());
       CollisionBox box = new CollisionBox(position, radius);
       HashSet<Position> boxCheck = box.getBox();
       for (Position p : boxCheck) {
-        this.logger.info("here 1");
         if (map.containsKey(p)) {
-          this.logger.info("here 2");
           count++;
         }
       }
