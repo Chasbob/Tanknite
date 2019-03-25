@@ -269,29 +269,6 @@ public class AI {
       ((LinkedList<SearchNode>) searchPath).removeLast();
     }
     return commandToPerform(searchPath.peek());
-//     target closest enemy
-//    Position targetedEnemy = getTargetedEnemy().getPosition();
-//     if aimed at enemy and line of sight clear: shoot
-//     else travel a path to the enemy
-//    if (checkLineOfSightToPosition(tankPos, targetedEnemy) && aimed) {
-//      return Command.SHOOT;
-//    } else {
-//      Queue<SearchNode> pathToEnemy = getPath(tankPos, targetedEnemy);
-//     Is a path from tank -> power-up -> enemy viable?
-//      if (!powerupsInRange.isEmpty()) {
-//        Position nearPowerup = getClosestPowerUp(currentInput.getPowerups()).getPosition();
-//        Queue<SearchNode> tankToPowerup = getPath(tankPos, nearPowerup);
-//        Queue<SearchNode> powerupToEnemy = getPath(nearPowerup, targetedEnemy);
-//        Queue<SearchNode> tankToPowerupToEnemy = new LinkedList<>();
-//        tankToPowerupToEnemy.addAll(tankToPowerup);
-//        tankToPowerupToEnemy.addAll(powerupToEnemy);
-//         Viable if path is 1.5x normal path
-//        if ((tankToPowerupToEnemy.size() / pathToEnemy.size()) < 1.5) {
-//          pathToEnemy = tankToPowerupToEnemy;
-//        }
-//      }
-//      return commandToPerform(pathToEnemy.peek());
-//    }
   }
 
   /**

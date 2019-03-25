@@ -27,7 +27,7 @@ public enum DataServer {
   /**
    * Map of the game
    */
-  private String[][] map = new String[60][60];
+  private String[][] map;
   /**
    * Count of players in the game
    */
@@ -39,7 +39,7 @@ public enum DataServer {
   DataServer() {
     wall = new Entity(EntityType.WALL);
     //initialises the map
-    map = convertTMXFileToIntArray();
+    map = convertTMXFileToArray();
     //adds the map to occupied coordinates
     for (int i = 0; i < 60; i++) {
       for (int j = 0; j < 60; j++) {
@@ -54,7 +54,7 @@ public enum DataServer {
     return occupiedCoordinates.size();
   }
 
-  private String[][] convertTMXFileToIntArray() {
+  public String[][] convertTMXFileToArray() {
     TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
     for (int x = 0; x < layer.getWidth(); x++) {
