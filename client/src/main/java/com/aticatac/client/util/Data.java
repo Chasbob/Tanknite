@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public enum Data {
   /**
-   * Instance test.
+   * Instance game.
    */
   INSTANCE;
   private final Logger logger;
@@ -43,7 +43,7 @@ public enum Data {
     manualConfigForServer = false;
     isHosting = false;
     players = new HashMap<>();
-    this.update = new Update(false);
+    this.update = new Update();
     this.clients = new ArrayList<>();
   }
 
@@ -248,12 +248,11 @@ public enum Data {
    * @param command the command
    */
   public void sendCommand(Command command) {
-    sendCommand(command, command.getAngle());
+    this.client.addCommand(command);
   }
-
-  public void sendCommand(Command command, int bearing) {
-    this.client.sendCommand(command, bearing);
-  }
+//  public void sendCommand(Command command, int bearing) {
+//    this.client.addCommand(command, bearing);
+//  }
 
   /**
    * Is manual config for server boolean.
@@ -289,4 +288,8 @@ public enum Data {
    */
   public void setHosting(boolean hosting) {
     isHosting = hosting;
+  }
+
+  public void submit(final int bearing) {
+    this.client.submit(bearing);
   }}

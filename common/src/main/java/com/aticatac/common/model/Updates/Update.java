@@ -2,48 +2,31 @@ package com.aticatac.common.model.Updates;
 
 import com.aticatac.common.model.Model;
 import com.aticatac.common.objectsystem.Container;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type Update.
  */
 public class Update extends Model {
-  private final boolean changed;
   /**
    * The Players.
    */
   private final ConcurrentHashMap<String, Container> players;
-  private final HashMap<String, Container> projectiles;
-  private final ArrayList<Container> powerups;
-  private final ConcurrentHashMap<Integer, Container> powerupmap;
-  private final HashMap<String, Container> newShots;
+  private final ConcurrentHashMap<String, Container> projectiles;
+  private final ConcurrentHashMap<Integer, Container> powerups;
+  private final ConcurrentHashMap<String, Container> newShots;
   private boolean start;
-  //    private boolean objectChanged;
-//  private Container rootContainer;
   private boolean playersChanged;
 
-  /**
-   * Instantiates a new Model.
-   *
-   * @param changed the changed
-   */
-  public Update(boolean changed) {
+  public Update() {
     super("update");
-    this.changed = changed;
     this.players = new ConcurrentHashMap<>();
     this.playersChanged = true;
     this.start = false;
-    this.projectiles = new HashMap<>();
-    powerups = new ArrayList<>();
-    powerupmap = new ConcurrentHashMap<>();
-    newShots = new HashMap<>();
-  }
-
-  public ConcurrentHashMap<Integer, Container> getPowerupmap() {
-    return powerupmap;
+    this.projectiles = new ConcurrentHashMap<>();
+    powerups = new ConcurrentHashMap<>();
+    newShots = new ConcurrentHashMap<>();
   }
 
   /**
@@ -104,7 +87,7 @@ public class Update extends Model {
     return players.getOrDefault(id, null);
   }
 
-  public ArrayList<Container> getPowerups() {
+  public ConcurrentHashMap<Integer, Container> getPowerups() {
     return powerups;
   }
 
@@ -131,11 +114,11 @@ public class Update extends Model {
   }
 
   public void removePowerup(Container c) {
-    this.powerups.add(c);
+    this.powerups.remove(c.hashCode());
   }
 
   public void addPowerup(Container c) {
-    this.powerups.add(c);
+    this.powerups.put(c.hashCode(), c);
 //    this.powerupmap.put(c.hashCode(), c);
   }
 
@@ -169,30 +152,20 @@ public class Update extends Model {
     return playersChanged;
   }
 
-  /**
-   * Is changed boolean.
-   *
-   * @return the boolean
-   */
-  public boolean isChanged() {
-    return changed;
-  }
-
   @Override
   public String toString() {
     String toString = "Update{" +
-        "changed=" + changed +
         ", players=" + players.toString() +
         ", playersChanged=" + playersChanged +
         '}';
     return toString;
   }
 
-  public ArrayList<Container> getProjectiles() {
-    return new ArrayList<>(projectiles.values());
+  public ConcurrentHashMap<String, Container> getProjectiles() {
+    return projectiles;
   }
 
-  public HashMap<String, Container> projectileMap() {
+  public ConcurrentHashMap<String, Container> projectileMap() {
     return projectiles;
   }
 
@@ -204,7 +177,7 @@ public class Update extends Model {
     return players.keySet();
   }
 
-  public HashMap<String, Container> getNewShots() {
+  public ConcurrentHashMap<String, Container> getNewShots() {
     return newShots;
   }
 }

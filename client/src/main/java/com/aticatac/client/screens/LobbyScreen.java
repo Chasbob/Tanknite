@@ -41,9 +41,9 @@ public class LobbyScreen extends AbstractScreen {
     startTable.setFillParent(true);
     startTable.top().padTop(100);
     if (Data.INSTANCE.isHosting()) {
-      TextButton startButton = Styles.INSTANCE.createStartButton("Start");
+      TextButton startButton = Styles.INSTANCE.createStartButton("START");
       startTable.add(startButton);
-      TextButton aiButton = Styles.INSTANCE.createStartButton("Fill AI");
+      TextButton aiButton = Styles.INSTANCE.createStartButton("FILL AI");
       aiButton.addListener(ListenerFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.FILL_AI);
         return true;

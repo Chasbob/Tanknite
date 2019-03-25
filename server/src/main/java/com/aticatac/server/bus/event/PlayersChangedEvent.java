@@ -5,6 +5,7 @@ import com.aticatac.common.objectsystem.Container;
 public class PlayersChangedEvent {
   public final Action action;
   private final Container container;
+
   public PlayersChangedEvent(final Action action, final Container container) {
     this.action = action;
     this.container = container;
@@ -12,10 +13,12 @@ public class PlayersChangedEvent {
 
   @Override
   public String toString() {
-    return "PlayersChangedEvent{" +
-        "action=" + action +
-        ", container=" + container +
-        '}';
+    return "PlayersChangedEvent{"
+        + "action="
+        + action
+        + ", container="
+        + container
+        + '}';
   }
 
   public Container getContainer() {
@@ -23,6 +26,6 @@ public class PlayersChangedEvent {
   }
 
   public enum Action {
-    ADD, REMOVE, UPDATE;
+    ADD, REMOVE, UPDATE
   }
 }

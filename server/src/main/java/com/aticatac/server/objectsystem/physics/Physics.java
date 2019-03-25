@@ -3,10 +3,10 @@ package com.aticatac.server.objectsystem.physics;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.model.VectorF;
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.transform.Position;
+import com.aticatac.server.Position;
+import com.aticatac.server.game.GameMode;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
-import com.aticatac.server.test.GameMode;
 import java.util.HashSet;
 
 @SuppressWarnings("ALL")
@@ -14,7 +14,7 @@ public class Physics {
   /**
    * The gravity acting for all objects
    */
-  private static int gravity = 10;
+  private static int gravity = 1;
   /**
    * The D.
    */
@@ -23,11 +23,11 @@ public class Physics {
   /**
    * The mass of this object
    */
-  private int objectMass = 10;
+  private int objectMass = 1;
   /**
    * The thrust for this tank
    */
-  private int thrust = 10;
+  private int thrust = 1;
   /**
    * The acceleration for this tank
    */
@@ -35,7 +35,7 @@ public class Physics {
   /**
    * The velocity for this tank
    */
-//  private int velocity = 5;
+  private int velocity;
   private Position position;
   private int rotation;
 
@@ -45,12 +45,17 @@ public class Physics {
     d = DataServer.INSTANCE;
   }
 
-  public PhysicsResponse move(int rotation, final Position position) {
+  public PhysicsResponse move(int rotation, final Position position, boolean speedPowerUp) {
     this.position = position;
     int xCoord = this.position.getX();
     int yCoord = this.position.getY();
+
+
     int dt = 1;
-    int distance = dt * entity.type.velocity;
+    setAcceleration("positive", speedPowerUp);
+    velocity += acceleration*dt;
+
+    int distance = dt * velocity;
     double xr = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -xr;
     double yr = Math.sin(Math.toRadians(rotation));
@@ -60,8 +65,9 @@ public class Physics {
     Position newPosition = new Position((int) newX, (int) newY);
     double dx = (newX - xCoord);
     double dy = (newY - yCoord);
-    double ddx = Math.ceil(dx / entity.type.radius);
-    double ddy = Math.ceil(dy / entity.type.radius);
+    double ddx = Math.ceil(dx / entity.getType().radius);
+    double ddy = Math.ceil(dy / entity.getType().radius);
+//    System.out.println(ddx + ", " + ddy);
     double x = 0;
     double y = 0;
     VectorF oV = new VectorF(position.getX(), position.getY());
@@ -79,11 +85,11 @@ public class Physics {
 
   private HashSet<Entity> collision2(Position newPosition) {
     HashSet<Entity> collisions = new HashSet<>();
-    CollisionBox box = new CollisionBox(newPosition, entity.type);
+    CollisionBox box = new CollisionBox(newPosition, entity.getType());
     for (int i = 0; i < box.getBox().size(); i++) {
       Position position = box.getBox().get(i);
       Entity collision = findCollision(position);
-      if (collision.type != EntityType.NONE) {
+      if (collision.getType() != EntityType.NONE) {
         collisions.add(collision);
       }
     }
@@ -97,5 +103,22 @@ public class Physics {
       return Entity.outOfBounds;
     }
   }
+  private void setAcceleration(String sign, boolean speedPowerUp) {
+    if(sign.equals("positive")) {
+      if(speedPowerUp){
+        acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+      }else {
+        if (velocity != entity.getType().velocity) {
+          acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+        } else if (velocity >= entity.getType().velocity) {
+          velocity = entity.getType().velocity;
+          acceleration = 0;
+        }
+      }
+    }else{
+      acceleration = -(gravity *((0 + objectMass) + thrust))/objectMass;
+    }
+  }
+
 
 }

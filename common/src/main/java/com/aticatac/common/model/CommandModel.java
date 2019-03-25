@@ -4,8 +4,9 @@ package com.aticatac.common.model;
  * The type Command model.
  */
 public class CommandModel extends Model {
-  private final Command command;
+  private Command command;
   private int bearing;
+  private Vector vector;
 
   /**
    * Instantiates a new Model.
@@ -16,6 +17,22 @@ public class CommandModel extends Model {
   public CommandModel(String id, Command command) {
     super(id);
     this.command = command;
+  }
+
+  public void setCommand(final Command command) {
+    this.command = command;
+  }
+
+  public CommandModel(final String id) {
+    super(id);
+  }
+
+  public Vector getVector() {
+    return vector;
+  }
+
+  public void setVector(final Vector vector) {
+    this.vector = vector;
   }
 
   /**
@@ -43,6 +60,12 @@ public class CommandModel extends Model {
    */
   public Command getCommand() {
     return command;
+  }
+
+  public void reset() {
+    this.command = Command.DEFAULT;
+    bearing = 0;
+//    vector = Vector.Zero.cpy();
   }
 
   @Override

@@ -71,7 +71,7 @@ public enum Styles {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter10.size = 15;
-        parameter15.size = 25;
+        parameter15.size = 20;
         parameter40.size = 70;
         gameLabelFont = generator.generateFont(parameter10);
         baseFont = generator.generateFont(parameter15);
@@ -123,7 +123,7 @@ public enum Styles {
     }
 
     public Label createColouredLabel() {
-        return new Label("Waiting for Host", createLabelStyle(INSTANCE.baseFont, accentColour));
+        return new Label("WAITING FOR HOST", createLabelStyle(INSTANCE.baseFont, accentColour));
     }
 
     public Label createSubtleLabel(String text) {
@@ -131,7 +131,7 @@ public enum Styles {
     }
 
     public Label createErrorLabel() {
-        return new Label("Name Taken", createLabelStyle(INSTANCE.baseFont, INSTANCE.hiddenColour));
+        return new Label("NAME TAKEN", createLabelStyle(INSTANCE.baseFont, INSTANCE.hiddenColour));
     }
 
     public TextButton createBackButton(String text) {

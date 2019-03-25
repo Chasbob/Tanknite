@@ -2,42 +2,26 @@ package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.Position;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.BulletCollisionEvent;
 import com.aticatac.server.bus.event.BulletsChangedEvent;
-import com.aticatac.server.bus.service.BulletOutputService;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.aticatac.server.objectsystem.physics.Physics;
-import com.aticatac.server.transform.Position;
 import java.util.Objects;
-import org.apache.log4j.Logger;
 
 /**
  * The type Bullet.
  */
 public class Bullet extends Entity implements Tickable {
-  /**
-   * The Shooter.
-   */
-  public final Entity shooter;
+  private final Entity shooter;
   /**
    * The Entity.
    */
-  /**
-   * The Output.
-   */
-  private final Logger logger;
   private final int damage;
-  private final BulletOutputService outputService;
   private final Physics physics;
-  /**
-   * The Bearing.
-   */
-  public int bearing;
-  /**
-   * The Position.
-   */
+  private int bearing;
   private Position prevPosistion;
 
   /**
@@ -51,16 +35,16 @@ public class Bullet extends Entity implements Tickable {
   public Bullet(final Entity shooter, final Position position, final int bearing, final int damage) {
     super(Integer.toString(Objects.hash(shooter, position, bearing, damage)), EntityType.BULLET, position);
     this.damage = damage;
-    this.logger = Logger.getLogger(getClass());
     this.logger.info(shooter.toString() + position.toString() + "\t" + bearing);
     this.shooter = shooter;
-    this.position = position;
-    this.prevPosistion = this.position;
-    this.bearing = bearing;
-    outputService = new BulletOutputService(this);
-    physics = new Physics(this.position, type, name);
+    this.setPosition(position);
+    this.setPrevPosistion(this.getPosition());
+    this.setBearing(bearing);
+    physics = new Physics(this.getPosition().copy(), getType(), getName());
   }
-
+  /**
+   * The Output.
+   */
   /**
    * Gets damage.
    *
@@ -72,22 +56,22 @@ public class Bullet extends Entity implements Tickable {
 
   @Override
   public void tick() {
-    if (!prevPosistion.equals(position)) {
-      this.logger.trace(position);
-      prevPosistion = position;
+    if (!getPrevPosistion().equals(getPosition())) {
+      this.logger.trace(getPosition());
+      setPrevPosistion(getPosition());
     }
     move();
   }
 
   private void move() {
-    var response = physics.move(bearing, position);
+    var response = getPhysics().move(getBearing(), getPosition().copy(), false);
     if (!response.getCollisions().contains(Entity.outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {
-        if (e.type != EntityType.NONE) {
+        if (e.getType() != EntityType.NONE) {
           this.logger.info("Hit: " + e);
         }
-        switch (e.type) {
+        switch (e.getType()) {
           case NONE:
             break;
           case WALL:
@@ -95,7 +79,7 @@ public class Bullet extends Entity implements Tickable {
             EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
             return;
           case TANK:
-            if (!e.name.equals(shooter.name)) {
+            if (!e.getName().equals(getShooter().getName())) {
               EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
             }
             break;
@@ -113,19 +97,82 @@ public class Bullet extends Entity implements Tickable {
       }
       setPosition(response.getPosition(), false);
       EventBusFactory.getEventBus().post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
-      this.logger.trace(position);
+      this.logger.trace(getPosition());
     }
   }
 
+  /**
+   * On bullet collision.
+   *
+   * @param e the e
+   */
+  public void onBulletCollision(Entity e) {
+    EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
+  }
+
   public Container getContainer() {
-    return new Container(position.getX(), position.getY(), bearing, 0, 0, name, EntityType.BULLET);
+    return new Container(getPosition().getX(), getPosition().getY(), getBearing(), 0, 0, getName(), EntityType.BULLET);
   }
 
   @Override
   public String toString() {
     return "Bullet{" +
-        "shooter=" + shooter +
-        ", damage=" + damage +
+        "shooter=" + getShooter() +
+        ", damage=" + getDamage() +
         '}';
+  }
+
+  /**
+   * The Shooter.
+   *
+   * @return the shooter
+   */
+  public Entity getShooter() {
+    return shooter;
+  }
+
+  /**
+   * Gets physics.
+   *
+   * @return the physics
+   */
+  public Physics getPhysics() {
+    return physics;
+  }
+
+  /**
+   * The Bearing.
+   *
+   * @return the bearing
+   */
+  public int getBearing() {
+    return bearing;
+  }
+
+  /**
+   * Sets bearing.
+   *
+   * @param bearing the bearing
+   */
+  public void setBearing(int bearing) {
+    this.bearing = bearing;
+  }
+
+  /**
+   * The Position.
+   *
+   * @return the prev posistion
+   */
+  public Position getPrevPosistion() {
+    return prevPosistion;
+  }
+
+  /**
+   * Sets prev posistion.
+   *
+   * @param prevPosistion the prev posistion
+   */
+  public void setPrevPosistion(Position prevPosistion) {
+    this.prevPosistion = prevPosistion;
   }
 }

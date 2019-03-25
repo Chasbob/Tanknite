@@ -1,17 +1,12 @@
 package com.aticatac.server.objectsystem;
 
 import com.aticatac.common.objectsystem.EntityType;
-import com.aticatac.server.transform.Position;
+import com.aticatac.server.Position;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -44,14 +39,12 @@ public enum DataServer {
   DataServer() {
     wall = new Entity(EntityType.WALL);
     //initialises the map
-
-      map = convertTMXFileToIntArray();
-
+    map = convertTMXFileToIntArray();
     //adds the map to occupied coordinates
     for (int i = 0; i < 60; i++) {
       for (int j = 0; j < 60; j++) {
-        if ((map[i][j]).equals("1")) {
-          createCollisionBox(i, j);
+        if ((map[i][j]).equals("2")) {
+          createCollisionBox(j, i);
         }
       }
     }
@@ -60,7 +53,6 @@ public enum DataServer {
   public int size() {
     return occupiedCoordinates.size();
   }
-
 
   private String[][] convertTMXFileToIntArray() {
     TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
@@ -109,7 +101,7 @@ public enum DataServer {
    * @param newPosition the new position
    * @param type        the type
    */
-//only called when the objects are first put into the map.
+  //only called when the objects are first put into the map.
   public void setCoordinates(Position newPosition, Entity type) {
     occupiedCoordinates.put(newPosition, type);
   }
@@ -141,10 +133,6 @@ public enum DataServer {
     playerCount = count;
   }
 
-  /**
-   * @param mapX
-   * @param mapY
-   */
   private void createCollisionBox(int mapX, int mapY) {
     int mapPositionX = (32 * (mapX));
     int mapPositionY = (32 * (mapY));

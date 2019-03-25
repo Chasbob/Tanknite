@@ -8,7 +8,7 @@ public enum EntityType {
   /**
    * Tank entity type.
    */
-  TANK(14, 5),
+  TANK(14, 6),
   /**
    * Bullet entity type.
    */

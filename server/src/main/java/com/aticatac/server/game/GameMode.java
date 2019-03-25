@@ -1,20 +1,17 @@
-package com.aticatac.server.test;
+package com.aticatac.server.game;
 
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.server.Position;
 import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.server.bus.listener.BulletCollisionListener;
-import com.aticatac.server.bus.listener.PlayerInputListener;
 import com.aticatac.server.bus.listener.PlayerOutputListener;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
-import com.aticatac.server.objectsystem.IO.inputs.PlayerInput;
 import com.aticatac.server.objectsystem.entities.AITank;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
@@ -23,9 +20,10 @@ import com.aticatac.server.objectsystem.entities.powerups.DamagePowerup;
 import com.aticatac.server.objectsystem.entities.powerups.HealthPowerup;
 import com.aticatac.server.objectsystem.entities.powerups.SpeedPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
-import com.aticatac.server.transform.Position;
+import com.google.common.eventbus.Subscribe;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -70,15 +68,16 @@ public abstract class GameMode implements Game {
    * @throws InvalidClassInstance     the invalid class instance
    * @throws ComponentExistsException the component exists exception
    */
-  GameMode() throws InvalidClassInstance, ComponentExistsException {
+  GameMode() {
 //    this.root = new GameObject("root", ObjectType.ROOT);
 //    new GameObject("Player Container", root, ObjectType.PLAYER_CONTAINER);
     this.playerMap = new ConcurrentHashMap<>();
     this.logger = Logger.getLogger(getClass());
-    frame = new Update(true);
+    frame = new Update();
     bullets = new CopyOnWriteArraySet<>();
     powerups = new CopyOnWriteArraySet<>();
-    EventBusFactory.getEventBus().register(new PlayerInputListener(this.playerMap));
+    EventBusFactory.getEventBus().register(this);
+//    EventBusFactory.getEventBus().register(new PlayerInputListener(this.playerMap));
     EventBusFactory.getEventBus().register(new PlayerOutputListener(this.bullets, this.powerups));
     EventBusFactory.getEventBus().register(new BulletCollisionListener(this.playerMap, this.bullets));
   }
@@ -102,6 +101,13 @@ public abstract class GameMode implements Game {
       entityType = (EntityType.class).getEnumConstants()[x];
     }
     return entityType;
+  }
+
+  @Subscribe
+  public void processPlayerInput(CommandModel event) {
+    if (playerMap.containsKey(event.getId())) {
+      playerMap.get(event.getId()).addFrame(event);
+    }
   }
 
   public CopyOnWriteArraySet<Entity> getPowerups() {
@@ -143,6 +149,13 @@ public abstract class GameMode implements Game {
   public void removePlayer(String player) {
     EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     playerMap.remove(player);
+    AmmoPowerup ammoPowerUp = null; // get name of powerUp
+//    Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
+    Position ammoPosition = getClearPosition();
+    ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
+    DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
+    powerups.add(ammoPowerUp);
+    this.logger.trace("Adding: " + ammoPowerUp.toString());
   }
 
   @Override
@@ -152,19 +165,40 @@ public abstract class GameMode implements Game {
   @Override
   public void gameOver() {
   }
-
-  @Override
-  public void playerInput(CommandModel model) {
-//Gets the tank that the command came from
-    PlayerInput input = new PlayerInput(model);
-    var tank = playerMap.get(model.getId());
-    tank.addFrame(input);
-  }
+//  @Override
+//  public void playerInput(CommandModel model) {
+////Gets the tank that the command came from
+////    PlayerInput input = new PlayerInput(model);
+//    var tank = playerMap.get(model.getId());
+//    tank.addFrame(model);
+//  }
 
   private Tank createTank(String player, boolean isAI) {
 //I can't be bothered to reason how this would work with booleans so you get this counter
+//    Position position = getClearPosition(EntityType.TANK.radius);
     Position position = getClearPosition();
     return createTank(player, isAI, position.getX(), position.getY());
+  }
+
+  //todo game this for given radius
+  private Position getClearPosition(int radius) {
+    int count = 1;
+    Position position = new Position();
+    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
+    while (count > 0) {
+      count = 0;
+      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
+          ThreadLocalRandom.current().nextInt(min, max + 1));
+      this.logger.trace("Trying position: " + position.toString());
+      CollisionBox box = new CollisionBox(position, radius);
+      ArrayList<Position> boxCheck = box.getBox();
+      for (int i = 0; i < boxCheck.size(); i++) {
+        if (map.containsKey(boxCheck.get(i))) {
+          count++;
+        }
+      }
+    }
+    return position;
   }
 
   private Position getClearPosition() {
@@ -191,11 +225,11 @@ public abstract class GameMode implements Game {
     Position position = new Position(x, y);
     if (isAI) {
       AITank tank = new AITank(player, position, 100, 30);
-      DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
+      DataServer.INSTANCE.setCoordinates(position, tank);
       return tank;
     } else {
       Tank tank = new Tank(player, position, 100, 30);
-      DataServer.INSTANCE.setCoordinates(position, tank.getEntity());
+      DataServer.INSTANCE.setCoordinates(position, tank);
       return tank;
     }
   }
@@ -207,8 +241,9 @@ public abstract class GameMode implements Game {
     switch (powerUpId) {
       case HEALTH_POWERUP:
         HealthPowerup healthPowerUp = null; // get name of powerUp
+//        Position healthPosition = getClearPosition(EntityType.HEALTH_POWERUP.radius);
         Position healthPosition = getClearPosition();
-        healthPowerUp = new HealthPowerup("healthPowerUp", healthPosition);
+        healthPowerUp = new HealthPowerup(Integer.toString(Objects.hash(healthPosition, EntityType.HEALTH_POWERUP.radius)), healthPosition);
         DataServer.INSTANCE.addBoxToData(healthPowerUp.getCollisionBox(), healthPowerUp);
         powerups.add(healthPowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, healthPowerUp.getContainer()));
@@ -216,8 +251,9 @@ public abstract class GameMode implements Game {
         break;
       case AMMO_POWERUP:
         AmmoPowerup ammoPowerUp = null; // get name of powerUp
+//        Position ammoPosition = getClearPosition(EntityType.AMMO_POWERUP.radius);
         Position ammoPosition = getClearPosition();
-        ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
+        ammoPowerUp = new AmmoPowerup(Integer.toString(Objects.hash(ammoPosition, EntityType.AMMO_POWERUP.radius)), ammoPosition);
         DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
         powerups.add(ammoPowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, ammoPowerUp.getContainer()));
@@ -225,8 +261,9 @@ public abstract class GameMode implements Game {
         break;
       case DAMAGE_POWERUP:
         DamagePowerup damagePowerUp = null; // get name of powerUp
+//        Position damagePosition = getClearPosition(EntityType.DAMAGE_POWERUP.radius);
         Position damagePosition = getClearPosition();
-        damagePowerUp = new DamagePowerup("damagePowerUp", damagePosition);
+        damagePowerUp = new DamagePowerup(Integer.toString(Objects.hash(damagePosition, EntityType.DAMAGE_POWERUP.radius)), damagePosition);
         DataServer.INSTANCE.addBoxToData(damagePowerUp.getCollisionBox(), damagePowerUp);
         powerups.add(damagePowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, damagePowerUp.getContainer()));
@@ -234,8 +271,9 @@ public abstract class GameMode implements Game {
         break;
       case SPEED_POWERUP:
         SpeedPowerup speedPowerUp = null; // get name of powerUp
+//        Position speedPosition = getClearPosition(EntityType.SPEED_POWERUP.radius);
         Position speedPosition = getClearPosition();
-        speedPowerUp = new SpeedPowerup("speedPowerUp", speedPosition);
+        speedPowerUp = new SpeedPowerup(Integer.toString(Objects.hash(speedPosition, EntityType.SPEED_POWERUP.radius)), speedPosition);
         DataServer.INSTANCE.addBoxToData(speedPowerUp.getCollisionBox(), speedPowerUp);
         powerups.add(speedPowerUp);
         EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, speedPowerUp.getContainer()));

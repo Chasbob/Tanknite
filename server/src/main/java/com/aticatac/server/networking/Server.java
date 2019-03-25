@@ -1,15 +1,12 @@
 package com.aticatac.server.networking;
 
-import com.aticatac.common.exceptions.ComponentExistsException;
-import com.aticatac.common.exceptions.InvalidClassInstance;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.common.model.Shutdown;
-import com.aticatac.server.bus.service.PlayerInputService;
+import com.aticatac.server.bus.EventBusFactory;
+import com.aticatac.server.game.Survival;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
-import com.aticatac.server.test.Survival;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,7 +16,6 @@ import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,13 +27,11 @@ public class Server extends Thread {
   private final Logger logger;
   private final String id;
   private final boolean singleplayer;
-  private final PlayerInputService playerInputService;
   private volatile boolean shutdown;
   private String host;
   private Updater updater;
   private Discovery discovery;
   private NewClients newClients;
-//  private
 
   /**
    * Instantiates a new Server.
@@ -53,8 +47,6 @@ public class Server extends Thread {
     this.shutdown = false;
     this.id = id;
     ServerData.INSTANCE.initialise("225.4.5.6", 5500, 5000, id);
-//    this.ai = new Thread(new RunAI());
-    playerInputService = new PlayerInputService();
   }
 
   public Server(boolean singleplayer, String id, String host) {
@@ -130,16 +122,20 @@ public class Server extends Thread {
     while (!this.shutdown) {
       CommandModel current = ServerData.INSTANCE.popCommand();
       if (current != null) {
-        this.logger.trace(current.toString());
+        this.logger.trace(current);
         if (current.getCommand() == Command.QUIT) {
           disconnectClient(current);
         } else {
-          playerInputService.onClientInput(current);
+          onClientInput(current);
 //          ServerData.INSTANCE.getGame().playerInput(current);
         }
       }
     }
     this.logger.info("Server ended.");
+  }
+
+  public void onClientInput(CommandModel model) {
+    EventBusFactory.getEventBus().post(model);
   }
 
   private void disconnectClient(CommandModel model) {
@@ -209,12 +205,7 @@ public class Server extends Thread {
       this.port = port;
       this.maxPlayers = 10;
       this.id = name;
-      try {
-        this.game = new Survival();
-      } catch (InvalidClassInstance | ComponentExistsException e) {
-        this.logger.info(e);
-        throw new ExceptionInInitializerError(e);
-      }
+      this.game = new Survival();
       try {
         this.server = InetAddress.getLocalHost();
         this.multicastSocket = new MulticastSocket();
@@ -344,10 +335,6 @@ public class Server extends Thread {
         client.shutdown();
       }
       try {
-        byte[] b = modelReader.toBytes(new Shutdown());
-        final ServerData s = ServerData.INSTANCE;
-        DatagramPacket shutdown = new DatagramPacket(b, b.length, s.getServer(), s.getPort());
-        this.broadcastSocket.send(shutdown);
         this.serverSocket.close();
         this.multicastSocket.close();
         this.broadcastSocket.close();

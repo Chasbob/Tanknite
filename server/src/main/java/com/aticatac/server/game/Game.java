@@ -1,4 +1,4 @@
-package com.aticatac.server.test;
+package com.aticatac.server.game;
 
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;

@@ -1,25 +1,11 @@
 allprojects {
-//    version "1.0-SNAPSHOT"
     group 'aticatac'
-}
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "com.avast.gradle:gradle-docker-compose-plugin:0.8.14"
-    }
-}
-
-apply plugin: 'docker-compose'
-
-subprojects {
-
     apply plugin: 'java'
     sourceCompatibility = 1.11
     targetCompatibility = 1.11
     repositories {
         mavenCentral()
+        jcenter()
     }
     ext {
         appName = "my-gdx-com.mygdx.game"
@@ -30,7 +16,11 @@ subprojects {
         aiVersion = '1.8.0'
     }
     dependencies {
-        testCompile group: 'junit', name: 'junit', version: '4.12'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+        // https://mvnrepository.com/artifact/org.mockito/mockito-all
+        testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
+
         implementation group: 'log4j', name: 'log4j', version: '1.2.17'
         implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -39,7 +29,152 @@ subprojects {
         compile 'org.apache.commons:commons-collections4:4.1'
         compile 'org.jetbrains:annotations:16.0.1'
     }
+    test {
+        useJUnitPlatform()
+    }
+}
 
+//project(':server') {
+//    apply plugin: 'application'
+//
+//    application {
+//        mainClassName = "com.aticatac.server.networking.Main"
+//    }
+//    dependencies {
+//        compile project(':common')
+//        implementation 'com.google.guava:guava:27.1-jre'
+//    }
+//}
+//
+//
+//project(':desktop') {
+//    dependencies {
+//        compile project(':client')
+//        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+//        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+//        compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+//        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+//    }
+//    apply plugin: 'application'
+//
+//    application {
+//        mainClassName = "com.aticatac.desktop.DesktopLauncher"
+//    }
+//
+//    task execDesktop(type: JavaExec) {
+//        main = "com.aticatac.desktop.DesktopLauncher"
+//        classpath = sourceSets.main.runtimeClasspath
+//        jvmArgs '--illegal-access=deny'
+//    }
+//}
+//
+//
+//project(':common') {
+//    dependencies {
+//        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+//        implementation 'org.reflections:reflections:0.9.11'
+//        implementation 'com.google.code.gson:gson:2.8.5'
+//    }
+//    sourceSets {
+//        test {
+//            java.srcDir file('src/game/java/')
+//            resources.srcDir 'src/game/resources'
+//        }
+//
+//    }
+//}
+//
+//
+//project(':client') {
+//    apply plugin: 'application'
+//
+//    application {
+//        mainClassName = "com.aticatac.client.networking.Main"
+//    }
+//
+//    dependencies {
+//        implementation 'org.reflections:reflections:0.9.11'
+//        implementation 'com.google.code.gson:gson:2.8.5'
+//        compile project(':common')
+//        compile project(':server')
+//    }
+//
+//    task execClient(type: JavaExec) {
+//        main = "com.aticatac.client.networking.Main"
+//        classpath = sourceSets.main.runtimeClasspath
+//    }
+//}
+
+
+project(':server') {
+    apply plugin: 'application'
+
+    application {
+        mainClassName = "com.aticatac.server.networking.Main"
+    }
+    dependencies {
+        compile project(':common')
+        implementation 'com.google.guava:guava:27.1-jre'
+    }
+}
+
+
+project(':desktop') {
+    dependencies {
+        compile project(":client")
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    }
+    apply plugin: 'application'
+
+    application {
+        mainClassName = "com.aticatac.desktop.DesktopLauncher"
+    }
+
+    task execDesktop(type: JavaExec) {
+        main = "com.aticatac.desktop.DesktopLauncher"
+        classpath = sourceSets.main.runtimeClasspath
+        jvmArgs '--illegal-access=deny'
+    }
+}
+
+
+project(':common') {
+    dependencies {
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+        implementation 'org.reflections:reflections:0.9.11'
+        implementation 'com.google.code.gson:gson:2.8.5'
+    }
+    sourceSets {
+        test {
+            java.srcDir file('src/game/java/')
+            resources.srcDir 'src/game/resources'
+        }
+
+    }
+}
+
+
+project(':client') {
+    apply plugin: 'application'
+
+    application {
+        mainClassName = "com.aticatac.client.networking.Main"
+    }
+
+    dependencies {
+        implementation 'org.reflections:reflections:0.9.11'
+        implementation 'com.google.code.gson:gson:2.8.5'
+        compile project(':common')
+        compile project(':server')
+    }
+
+    task execClient(type: JavaExec) {
+        main = "com.aticatac.client.networking.Main"
+        classpath = sourceSets.main.runtimeClasspath
+    }
 }
 
 
