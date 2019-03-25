@@ -55,6 +55,7 @@ public enum DataServer {
   }
 
   public String[][] convertTMXFileToArray() {
+    String[][] map = new String[60][60];
     TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
     for (int x = 0; x < layer.getWidth(); x++) {
