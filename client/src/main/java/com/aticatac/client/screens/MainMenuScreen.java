@@ -199,11 +199,10 @@ public class MainMenuScreen extends AbstractScreen {
     //add table to store header
     Table headerTable = new Table();
     //TODO label not appearing properly.
-    headerTable.add(Styles.INSTANCE.createCustomLabel("DAILY CHALLENGES", Color.DARK_GRAY));
-    //headerTable.add(Styles.INSTANCE.createItalicLabel("DAILY"));
+    headerTable.add(Styles.INSTANCE.createCustomLabel("DAILY CHALLENGES", Color.GRAY));
     //create table to store challenges
     Table challengesTable = new Table();
-    challengesTable.defaults().left().pad(10);
+    challengesTable.defaults().left().padTop(10);
     challengesTable.add(Styles.INSTANCE.createItalicLabel("Kill 3 enemies"));
     challengesTable.row();
     challengesTable.add(Styles.INSTANCE.createItalicLabel("Obtain a power up and kill someone whilst its activated"));
@@ -212,7 +211,7 @@ public class MainMenuScreen extends AbstractScreen {
     //add tables together
     challengesDataTable.add(headerTable);
     challengesDataTable.row();
-    challengesDataTable.add(challengesTable);
+    challengesDataTable.add(challengesTable).padBottom(10);
     //add table to the menu table
     challengesButtonTable.setTable(challengesDataTable);
   }
@@ -220,7 +219,7 @@ public class MainMenuScreen extends AbstractScreen {
   private Table createTableWithPadding() {
     Table table = new Table();
     Styles.INSTANCE.addTableColour(table, Color.DARK_GRAY);
-    table.defaults().left().padLeft(10).padRight(10).top();
+    table.defaults().left().padLeft(10).padRight(10).top().padTop(10);
     return table;
   }
 
