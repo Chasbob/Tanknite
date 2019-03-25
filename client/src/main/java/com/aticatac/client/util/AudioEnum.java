@@ -89,7 +89,7 @@ public enum AudioEnum {
    */
   public void loadSound() {
 
-    shoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.mp3"));
+    shoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.wav"));
 
     tankMove = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank-SoundBible.com-1359027625.mp3"));
 
@@ -148,11 +148,12 @@ public enum AudioEnum {
   //can play this even if it is being played elsewhere
   public Music getOtherTankShoot(float volume) {
 
+    Music otherShoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.wav"));
     if (sound) {
-      shoot.setVolume(volume);
-      shoot.play();
+      otherShoot.setVolume(volume);
+      otherShoot.play();
     }
-    return shoot;
+    return otherShoot;
   }
 
   /**

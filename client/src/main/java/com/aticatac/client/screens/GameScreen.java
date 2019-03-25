@@ -181,38 +181,20 @@ public class GameScreen extends AbstractScreen {
         //Audio: plays sound when tank shoots in range
         if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
 
-          //TODO this can potentially be the player not camera?
-          float dx = c.getX() - camera.getX();
-          float dy = c.getY() - camera.getY();
+          float dx = c.getX() - (1920-player.getX());
+          float dy = c.getY() - (1920-player.getY());
 
           int max = 640;
 
           double distance = Math.sqrt(dx*dx + dy*dy);
 
-          double volumeScalar = (max-distance)/max;
+          float volumeScalar = (max-(float)distance)/max;
 
           this.logger.warn("Sound when in range");
-          AudioEnum.INSTANCE.getOtherTankShoot((float)volumeScalar);
+          AudioEnum.INSTANCE.getOtherTankShoot(volumeScalar);
 
         }
       }
-    }
-
-    //Audio: plays sound when tank shoots in range
-    if (camera.getCamera().frustum.pointInFrustum(0, 0, 0)) {
-
-      float dx =0 - player.getX();
-      float dy =0 - player.getY();
-      int max = 640;
-
-      double distance = Math.sqrt(dx*dx + dy*dy);
-
-      double volumeScalar = (max-distance)/max;
-
-      this.logger.warn("Sound when in range");
-      this.logger.info("Volume:" + volumeScalar);
-     // AudioEnum.INSTANCE.getOtherTankShoot((float)volumeScalar);
-
     }
 
     tanks.setColor(Color.CORAL);
@@ -424,6 +406,7 @@ public class GameScreen extends AbstractScreen {
             tanks.setColor(Color.YELLOW);
             break;
         }
+        tanks.setColor(Color.WHITE);
         renderContainer(c, tanks);
       }
     }

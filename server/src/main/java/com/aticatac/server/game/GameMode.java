@@ -5,12 +5,7 @@ import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
-import com.aticatac.server.bus.event.BulletCollisionEvent;
-import com.aticatac.server.bus.event.BulletsChangedEvent;
-import com.aticatac.server.bus.event.PlayersChangedEvent;
-import com.aticatac.server.bus.event.PowerupsChangedEvent;
-import com.aticatac.server.bus.event.ShootEvent;
-import com.aticatac.server.bus.event.TankCollisionEvent;
+import com.aticatac.server.bus.event.*;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.AITank;
@@ -19,13 +14,14 @@ import com.aticatac.server.objectsystem.entities.Tank;
 import com.aticatac.server.objectsystem.entities.powerups.AmmoPowerup;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
 import com.google.common.eventbus.Subscribe;
+import org.apache.log4j.Logger;
+
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.log4j.Logger;
 
 import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
@@ -143,7 +139,7 @@ public abstract class GameMode implements Game {
     eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     playerMap.remove(player);
     AmmoPowerup ammoPowerUp = null; // get name of powerUp
-    Position ammoPosition = getClearPosition();
+    Position ammoPosition = getClearPosition(EntityType.BULLET.radius);
     ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
     DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
     powerups.add(ammoPowerUp);
@@ -161,7 +157,7 @@ public abstract class GameMode implements Game {
   private Tank createTank(String player, boolean isAI) {
 //I can't be bothered to reason how this would work with booleans so you get this counter
 //    Position position = getClearPosition(EntityType.TANK.radius);
-    Position position = getClearPosition();
+    Position position = getClearPosition(EntityType.TANK.radius);
     return createTank(player, isAI, position.getX(), position.getY());
   }
 
@@ -169,36 +165,17 @@ public abstract class GameMode implements Game {
   private Position getClearPosition(int radius) {
     int count = 1;
     Position position = new Position();
-    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
     while (count > 0) {
+      ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
       count = 0;
-      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-          ThreadLocalRandom.current().nextInt(min, max + 1));
-      this.logger.trace("Trying position: " + position.toString());
+      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1), ThreadLocalRandom.current().nextInt(min, max + 1));
+      this.logger.info("Trying position: " + position.toString());
       CollisionBox box = new CollisionBox(position, radius);
       HashSet<Position> boxCheck = box.getBox();
-      for (int i = 0; i < boxCheck.size(); i++) {
-        if (map.containsKey(boxCheck.contains(i))) {
-          count++;
-        }
-      }
-    }
-    return position;
-  }
-
-  private Position getClearPosition() {
-    int count = 1;
-    Position position = new Position();
-    ConcurrentHashMap<Position, Entity> map = DataServer.INSTANCE.getOccupiedCoordinates();
-    while (count > 0) {
-      count = 0;
-      position = new Position(ThreadLocalRandom.current().nextInt(min, max + 1),
-          ThreadLocalRandom.current().nextInt(min, max + 1));
-      this.logger.trace("Trying position: " + position.toString());
-      CollisionBox box = new CollisionBox(position, EntityType.TANK.radius);
-      HashSet<Position> boxCheck = box.getBox();
-      for (int i = 0; i < boxCheck.size(); i++) {
-        if (map.containsKey(boxCheck.contains(i))) {
+      for (Position p : boxCheck) {
+        this.logger.info("here 1");
+        if (map.containsKey(p)) {
+          this.logger.info("here 2");
           count++;
         }
       }

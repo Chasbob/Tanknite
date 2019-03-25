@@ -39,7 +39,7 @@ public class Survival extends GameMode implements Runnable {
     this.logger.trace("Running...");
     while (run) {
 //      checkPowerup();
-//      createPowerUps();
+      createPowerUps();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
       aiUpdateService.update(playerMap, powerups);
@@ -49,7 +49,7 @@ public class Survival extends GameMode implements Runnable {
 //      if(playerMap.containsKey("asd")){
 //        playerMap.get("asd").move(1000,1920);
 //      }
-      while (System.nanoTime() - nanoTime < 1000000000 / 60) {
+      while (System.nanoTime() - nanoTime < 1000000000 / 1000) {
         try {
           Thread.sleep(0);
         } catch (InterruptedException e) {
