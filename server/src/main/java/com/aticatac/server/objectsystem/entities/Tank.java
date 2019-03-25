@@ -88,7 +88,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
         } else {
           addBullet(new Bullet(this, getPosition().copy(), getInput().getBearing(), 10));
         }
-        setFramesToShoot(60);
+        setFramesToShoot(30);
       }
     }
     if (getFramesToShoot() == 1) {

@@ -56,7 +56,7 @@ public class AITank extends Tank {
           } else {
             addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 10));
           }
-          setFramesToShoot(60);
+          setFramesToShoot(30);
         }
       }
     }
