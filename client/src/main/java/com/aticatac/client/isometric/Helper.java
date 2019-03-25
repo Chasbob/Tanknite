@@ -3,10 +3,14 @@ package com.aticatac.client.isometric;
 
 public class Helper {
     public static int tileToScreenX(int x, int y) {
+        x = 1920 - x;
+        y = 1920 - y;
         return ((x + y)) / 2;
     }
 
     public static int tileToScreenY(int x, int y) {
+        x = 1920 - x;
+        y = 1920 - y;
         return (x - y) / 4;
     }
 

@@ -18,15 +18,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+
+import java.util.ArrayList;
 
 /**
  * The type Game screen.
@@ -48,6 +47,9 @@ public class GameScreen extends AbstractScreen {
   private Label playerCount;
   private float health;
   private TiledMap map;
+  private MapLayers mapLayers;
+  private TiledMapTileSet tileSet;
+  private TiledMapTileLayer wallLayer;
   private IsometricTiledMapRenderer renderer;
   private Camera camera;
   private MinimapViewport minimapViewport;
@@ -62,6 +64,7 @@ public class GameScreen extends AbstractScreen {
   private boolean tractionHealth;
   private boolean tractionPopUp;
 
+  private ArrayList<Position> tileObjects;
   /**
    * Instantiates a new Game screen.
    */
@@ -70,6 +73,7 @@ public class GameScreen extends AbstractScreen {
     maxX = 1920;
     maxY = 1920;
     try {
+      tileObjects = new ArrayList<>();
       player = new Container();
       ammoValue = Styles.INSTANCE.createGameLabel("");
       killCount = Styles.INSTANCE.createGameLabel(" 0 ");
@@ -78,12 +82,15 @@ public class GameScreen extends AbstractScreen {
       tankXY = Styles.INSTANCE.createGameLabel("");
       direction = Styles.INSTANCE.createGameLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
+      renderer = new IsometricTiledMapRenderer(map);
+      tileSet = map.getTileSets().getTileSet(0);
+      mapLayers = map.getLayers();
+      wallLayer = (TiledMapTileLayer) mapLayers.get(1);
       tankTexture = new Texture("maps/box.png");
       tankTexture2 = new Texture("img/tank.png");
       projectileTexture = new Texture("img/bullet.png");
       tractionHealth = true;
       tractionPopUp = true;
-      renderer = new IsometricTiledMapRenderer(map);
       minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
       minimapViewport.setWorldSize(maxX, maxY);
       this.camera = new Camera(maxX, maxY, 640, 640);
@@ -149,6 +156,7 @@ public class GameScreen extends AbstractScreen {
   public void render(float delta) {
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
@@ -173,14 +181,29 @@ public class GameScreen extends AbstractScreen {
     //main viewport
     camera.getViewport().apply();
     renderer.setView(this.camera.getCamera());
-    renderer.render();
+
+    renderer.getBatch().begin();
+
+    renderer.renderTileLayer((TiledMapTileLayer) mapLayers.get(0));
+
+    renderer.renderTileLayer(wallLayer);
+
+    renderer.getBatch().end();
+
     //health bar
     healthBar();
     //tanks
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
     tanks.setColor(Color.CORAL);
     tanks.begin();
+
     renderTanks(tanks);
+
+    for (var obj : tileObjects)
+    {
+      wallLayer.getCell(obj.getX(),obj.getY()).setTile(null);
+    }
+
     //mini viewport
     minimapViewport.apply();
     minimap();
@@ -446,8 +469,17 @@ public class GameScreen extends AbstractScreen {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-    var pos = new Position(Helper.tileToScreenX(c.getX(), c.getY()), Helper.tileToScreenY(c.getX(), c.getY()));
-    batch.draw(tankTexture, pos.getX(), pos.getY());
+
+    var pos = new Position((1920-c.getY())/32, (1920 -c.getX())/32);
+
+    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+    cell.setTile(tileSet.getTile(1));
+
+    tileObjects.add(pos);
+
+    wallLayer.setCell(pos.getX(),pos.getY(),cell);
+
+    //batch.draw(tankTexture, pos.getX(), pos.getY());
   }
 
   private void renderOrthoContainer(Container c, SpriteBatch batch) {
