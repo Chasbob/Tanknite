@@ -403,6 +403,17 @@ public class MainMenuScreen extends AbstractScreen {
   private void switchTabMouse(MenuTable newTable) {
     //deselect previous table
     MenuTable previousTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
+    //get current vertical group and make current button unselected
+    if (previousTable.getGroup() != null) {
+      for (Actor table : previousTable.getGroup().getChildren()) {
+        MenuTable menuTable = (MenuTable) table;
+        if (menuTable.isShowGroup()) {
+          menuTable.setShowGroup(false);
+          dropDownIndex = 0;
+          break;
+        }
+      }
+    }
     //remove tables vertical group from visible table
     dropDownTable.clear();
     previousTable.setShowGroup(false);
