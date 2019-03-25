@@ -3,7 +3,6 @@ package com.aticatac.server.networking;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.BulletsChangedEvent;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.PowerupsChangedEvent;
@@ -15,6 +14,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
+
+import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
 /**
  * The type EmptyUpdate.
@@ -44,7 +45,7 @@ public class Updater implements Runnable {
     projectiles = update.projectileMap();
     powerups = update.getPowerups();
     newShots = update.getNewShots();
-    EventBusFactory.getEventBus().register(this);
+    eventBus.register(this);
     updatePlayers();
   }
 

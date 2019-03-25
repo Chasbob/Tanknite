@@ -7,7 +7,6 @@ import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
 import com.aticatac.server.ai.PlayerState;
-import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.BulletsChangedEvent;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
 import com.aticatac.server.bus.event.ShootEvent;
@@ -20,9 +19,10 @@ import com.aticatac.server.objectsystem.interfaces.DependantTickable;
 import com.aticatac.server.objectsystem.interfaces.Hurtable;
 import com.aticatac.server.objectsystem.physics.Physics;
 import com.aticatac.server.objectsystem.physics.PhysicsResponse;
-import com.google.common.eventbus.EventBus;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
 /**
  * The type Tank.
@@ -125,21 +125,21 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
               setAmmo(newAmmo);
             }
             onPlayerHit(e);
-            EventBusFactory.getEventBus().post(new TankCollisionEvent(this, e));
+            eventBus.post(new TankCollisionEvent(this, e));
             break;
           case SPEED_POWERUP:
             // TODO: Implement thread for 20 seconds (in terms of ticks) where speedIncrease = true
             onPlayerHit(e);
-            EventBusFactory.getEventBus().post(new TankCollisionEvent(this, e));
+            eventBus.post(new TankCollisionEvent(this, e));
             break;
           case HEALTH_POWERUP:
             heal(10);
             onPlayerHit(e);
-            EventBusFactory.getEventBus().post(new TankCollisionEvent(this, e));
+            eventBus.post(new TankCollisionEvent(this, e));
             break;
           case DAMAGE_POWERUP:
             onPlayerHit(e);
-            EventBusFactory.getEventBus().post(new TankCollisionEvent(this, e));
+            eventBus.post(new TankCollisionEvent(this, e));
             break;
         }
       }
@@ -158,7 +158,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
       var response = getPhysics().move(vector.angle(), getPosition(), speedIncrease);
       checkCollisions(response);
     }
-    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
+    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
   }
 
   /**
@@ -273,8 +273,8 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    * @param bullet the bullet
    */
   public void addBullet(Bullet bullet) {
-    getBus().post(new ShootEvent(this, bullet));
-    getBus().post(new BulletsChangedEvent(BulletsChangedEvent.Action.ADD, bullet.getContainer()));
+    eventBus.post(new ShootEvent(this, bullet));
+    eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.ADD, bullet.getContainer()));
 //    output.addBullet(bullet);
   }
 
@@ -285,7 +285,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    */
   public void onPlayerHit(Entity entity) {
 //    getBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
-    getBus().post(new TankCollisionEvent(this, entity));
+    eventBus.post(new TankCollisionEvent(this, entity));
   }
 
   /**
@@ -304,15 +304,6 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    */
   public Physics getPhysics() {
     return physics;
-  }
-
-  /**
-   * Gets bus.
-   *
-   * @return the bus
-   */
-  public EventBus getBus() {
-    return EventBusFactory.getEventBus();
   }
 
   /**

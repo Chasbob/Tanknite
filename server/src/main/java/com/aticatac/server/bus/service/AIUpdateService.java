@@ -3,20 +3,16 @@ package com.aticatac.server.bus.service;
 import com.aticatac.server.ai.AIInput;
 import com.aticatac.server.ai.PlayerState;
 import com.aticatac.server.ai.PowerUpState;
-import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.Tank;
-import com.google.common.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class AIUpdateService {
-  private final EventBus bus;
+import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
-  public AIUpdateService() {
-    bus = EventBusFactory.getEventBus();
-  }
+public class AIUpdateService {
+
 
   public void update(final ConcurrentHashMap<String, Tank> tanks, final CopyOnWriteArraySet<Entity> powerups) {
     ArrayList<PlayerState> playerStates = new ArrayList<>();
@@ -29,6 +25,6 @@ public class AIUpdateService {
         powerups) {
       powerUpStates.add(new PowerUpState(e.getType(), e.getPosition()));
     }
-    bus.post(new AIInput(30, playerStates, powerUpStates));
+    eventBus.post(new AIInput(30, playerStates, powerUpStates));
   }
 }

@@ -3,7 +3,6 @@ package com.aticatac.server.networking;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.game.Survival;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
@@ -18,12 +17,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
+import static com.aticatac.server.bus.EventBusFactory.eventBus;
+
 /**
  * The type Server.
  *
  * @author Charles de Freitas
  */
 public class Server extends Thread {
+
   private final Logger logger;
   private final String id;
   private final boolean singleplayer;
@@ -135,7 +137,7 @@ public class Server extends Thread {
   }
 
   public void onClientInput(CommandModel model) {
-    EventBusFactory.getEventBus().post(model);
+    eventBus.post(model);
   }
 
   private void disconnectClient(CommandModel model) {

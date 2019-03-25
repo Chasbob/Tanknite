@@ -5,7 +5,6 @@ import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
-import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.BulletCollisionEvent;
 import com.aticatac.server.bus.event.BulletsChangedEvent;
 import com.aticatac.server.bus.event.PlayersChangedEvent;
@@ -27,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.log4j.Logger;
+
+import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
 /**
  * The type Game mode.
@@ -71,7 +72,7 @@ public abstract class GameMode implements Game {
     frame = new Update();
     bullets = new CopyOnWriteArraySet<>();
     powerups = new CopyOnWriteArraySet<>();
-    EventBusFactory.getEventBus().register(this);
+    eventBus.register(this);
   }
 
   /**
@@ -128,7 +129,7 @@ public abstract class GameMode implements Game {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
-      EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
+      eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
 //      for (int i = 0; i < 1; i++) {
 //        Tank tank2 = createTank(player + " AI" + i, true);
 //        playerMap.put(player + " AI" + i, tank2);
@@ -139,7 +140,7 @@ public abstract class GameMode implements Game {
 
   @Override
   public void removePlayer(String player) {
-    EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
+    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     playerMap.remove(player);
     AmmoPowerup ammoPowerUp = null; // get name of powerUp
     Position ammoPosition = getClearPosition();
@@ -224,7 +225,7 @@ public abstract class GameMode implements Game {
     Entity newPowerup = new Entity(String.valueOf(Objects.hash(type, p)), type, p);
     DataServer.INSTANCE.addEntity(newPowerup);
     powerups.add(newPowerup);
-    EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
+    eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
   }
 
   @Subscribe
@@ -246,7 +247,7 @@ public abstract class GameMode implements Game {
       case DAMAGE_POWERUP:
         this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        EventBusFactory.getEventBus().post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity()).setDamageIncrease(true);
         break;
@@ -261,7 +262,7 @@ public abstract class GameMode implements Game {
       this.logger.info(event);
     }
     bullets.remove(event.getBullet());
-    EventBusFactory.getEventBus().post(new BulletsChangedEvent(BulletsChangedEvent.Action.REMOVE, event.getBullet().getContainer()));
+    eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.REMOVE, event.getBullet().getContainer()));
   }
 
   @Subscribe

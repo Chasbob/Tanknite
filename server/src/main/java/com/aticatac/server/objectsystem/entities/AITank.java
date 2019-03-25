@@ -6,11 +6,11 @@ import com.aticatac.server.ai.AI;
 import com.aticatac.server.ai.AIInput;
 import com.aticatac.server.ai.Decision;
 import com.aticatac.server.ai.PlayerState;
-import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.listener.AIInputListener;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.apache.log4j.Logger;
+
+import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
@@ -24,7 +24,7 @@ public class AITank extends Tank {
     frames = new ConcurrentLinkedQueue<>();
     logger = Logger.getLogger(getClass());
     ai = new AI();
-    EventBusFactory.getEventBus().register(new AIInputListener(frames));
+    eventBus.register(new AIInputListener(frames));
   }
 
   @Override
@@ -46,7 +46,6 @@ public class AITank extends Tank {
         this.logger.error(e);
         this.logger.error("Error while moving.");
       }
-
       if (decision.getShoot()) {
         this.logger.trace("shoot");
         if (!(getAmmo() == 0 || getHealth() == 0) && getFramesToShoot() < 0) {

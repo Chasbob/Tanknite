@@ -3,13 +3,14 @@ package com.aticatac.server.objectsystem.entities;
 import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
-import com.aticatac.server.bus.EventBusFactory;
 import com.aticatac.server.bus.event.BulletCollisionEvent;
 import com.aticatac.server.bus.event.BulletsChangedEvent;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.aticatac.server.objectsystem.physics.Physics;
 import java.util.Objects;
+
+import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
 /**
  * The type Bullet.
@@ -76,11 +77,11 @@ public class Bullet extends Entity implements Tickable {
             break;
           case WALL:
           case OUTOFBOUNDS:
-            EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
+            eventBus.post(new BulletCollisionEvent(this, e));
             return;
           case TANK:
             if (!e.getName().equals(getShooter().getName())) {
-              EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
+              eventBus.post(new BulletCollisionEvent(this, e));
             }
             break;
           case BULLET:
@@ -96,7 +97,7 @@ public class Bullet extends Entity implements Tickable {
         }
       }
       setPosition(response.getPosition(), false);
-      EventBusFactory.getEventBus().post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
+      eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
       this.logger.trace(getPosition());
     }
   }
@@ -107,7 +108,7 @@ public class Bullet extends Entity implements Tickable {
    * @param e the e
    */
   public void onBulletCollision(Entity e) {
-    EventBusFactory.getEventBus().post(new BulletCollisionEvent(this, e));
+    eventBus.post(new BulletCollisionEvent(this, e));
   }
 
   public Container getContainer() {
