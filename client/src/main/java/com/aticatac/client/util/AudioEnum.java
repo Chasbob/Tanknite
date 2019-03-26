@@ -89,17 +89,17 @@ public enum AudioEnum {
    */
   public void loadSound() {
 
-    shoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.wav"));
+    shoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.mp3"));
 
-    tankMove = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank-SoundBible.com-1359027625.mp3"));
+    tankMove = Gdx.audio.newMusic(Gdx.files.internal("audio/TankMovement-SoundBible.com-1359027625.mp3"));
 
-    powerUp = Gdx.audio.newMusic(Gdx.files.internal("audio/Power-Up-KP-1879176533.mp3"));
+    powerUp = Gdx.audio.newMusic(Gdx.files.internal("audio/Coin_Drop-Willem_Hunt-569197907-[AudioTrimmer.com].mp3"));
 
     tankDeath = Gdx.audio.newMusic(Gdx.files.internal("audio/Bomb_Exploding-Sound_Explorer-68256487.mp3"));
 
-    buttonClick = Gdx.audio.newMusic(Gdx.files.internal("audio/Gun_Cocking_Slow-Mike_Koenig-1019236976.mp3"));
+    buttonClick = Gdx.audio.newMusic(Gdx.files.internal("audio/ButtonClick_Slow-Mike_Koenig-1019236976.mp3"));
 
-    theme = Gdx.audio.newMusic(Gdx.files.internal("audio/Puzzle-Land.mp3"));
+    theme = Gdx.audio.newMusic(Gdx.files.internal("audio/arcade-music-loop.wav"));
 
   }
 
