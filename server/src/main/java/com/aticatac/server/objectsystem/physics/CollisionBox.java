@@ -2,17 +2,23 @@ package com.aticatac.server.objectsystem.physics;
 
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
+import org.apache.log4j.Logger;
+
 import java.util.HashSet;
 import java.util.Objects;
-import org.apache.log4j.Logger;
 
 /**
  * The type Collision box.
  */
 public class CollisionBox {
+
+  /***/
   private final int radius;
+  /***/
   private final Logger logger;
+  /***/
   private Position position;
+  /***/
   private HashSet<Position> box;
 
   /**
@@ -38,6 +44,12 @@ public class CollisionBox {
     this(position, type.radius);
   }
 
+
+  /**
+   *
+   * @param p
+   * @return
+   */
   private HashSet<Position> calcCollisionBox(final Position p) {
     HashSet<Position> out = new HashSet<>();
     int lowerY = p.getY() - radius;
@@ -56,6 +68,13 @@ public class CollisionBox {
     return out;
   }
 
+  /**
+   *
+   * @param out
+   * @param lowerY
+   * @param lowerX
+   * @param limit
+   */
   private void calcYoffset(final HashSet<Position> out, final int lowerY, final int lowerX, final int limit) {
     for (int y = 0; y < limit; y++) {
       Position position = new Position(lowerX, lowerY + y);
@@ -63,6 +82,13 @@ public class CollisionBox {
     }
   }
 
+  /**
+   *
+   * @param out
+   * @param lowerY
+   * @param lowerX
+   * @param limit
+   */
   private void calcXoffset(final HashSet<Position> out, final int lowerY, final int lowerX, final int limit) {
     for (int x = 0; x < limit; x++) {
       Position position = new Position(lowerX + x, lowerY);
@@ -79,11 +105,20 @@ public class CollisionBox {
     return box;
   }
 
+  /**
+   *
+   * @return
+   */
   @Override
   public int hashCode() {
     return Objects.hash(radius, position, getBox());
   }
 
+  /**
+   *
+   * @param o
+   * @return
+   */
   @Override
   public boolean equals(final Object o) {
     if (this == o) {

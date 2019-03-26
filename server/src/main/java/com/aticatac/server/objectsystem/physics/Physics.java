@@ -19,6 +19,7 @@ public class Physics {
    * The D.
    */
   private final DataServer d;
+  /***/
   private final Entity entity;
   /**
    * The mass of this object
@@ -36,15 +37,30 @@ public class Physics {
    * The velocity for this tank
    */
   private int velocity;
+  /***/
   private Position position;
+  /***/
   private int rotation;
 
+  /**
+   *
+   * @param position
+   * @param type
+   * @param name
+   */
   public Physics(final Position position, final EntityType type, final String name) {
     this.position = position;
     this.entity = new Entity(name, type);
     d = DataServer.INSTANCE;
   }
 
+  /**
+   *
+   * @param rotation
+   * @param position
+   * @param speedPowerUp
+   * @return
+   */
   public PhysicsResponse move(int rotation, final Position position, boolean speedPowerUp) {
     this.position = position;
     int xCoord = this.position.getX();
@@ -67,7 +83,6 @@ public class Physics {
     double dy = (newY - yCoord);
     double ddx = Math.ceil(dx / entity.getType().radius);
     double ddy = Math.ceil(dy / entity.getType().radius);
-//    System.out.println(ddx + ", " + ddy);
     double x = 0;
     double y = 0;
     VectorF oV = new VectorF(position.getX(), position.getY());
@@ -83,6 +98,11 @@ public class Physics {
   }
 
 
+  /**
+   *
+   * @param newPosition
+   * @return
+   */
   private HashSet<Entity> collision2(Position newPosition) {
     HashSet<Entity> collisions = new HashSet<>();
     CollisionBox box = new CollisionBox(newPosition, entity.getType());
@@ -93,16 +113,14 @@ public class Physics {
         collisions.add(collision);
       }
     }
-//    for (int i = 0; i < box.getBox().size(); i++) {
-//      Position position = box.getBox().get(i);
-//      Entity collision = findCollision(position);
-//      if (collision.getType() != EntityType.NONE) {
-//        collisions.add(collision);
-//      }
-//    }
     return collisions;
   }
 
+  /**
+   *
+   * @param p
+   * @return
+   */
   private Entity findCollision(Position p) {
     if (GameMode.inMap(new Vector(p.getX(), p.getY()))) {
       return d.INSTANCE.getEntity(p);
@@ -110,6 +128,13 @@ public class Physics {
       return Entity.outOfBounds;
     }
   }
+
+
+  /**
+   *
+   * @param sign
+   * @param speedPowerUp
+   */
   private void setAcceleration(String sign, boolean speedPowerUp) {
     if(sign.equals("positive")) {
       if(speedPowerUp){

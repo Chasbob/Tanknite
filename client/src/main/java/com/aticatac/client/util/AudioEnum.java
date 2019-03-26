@@ -51,10 +51,18 @@ public enum AudioEnum {
 
   }
 
+  /**
+   *
+   * @return
+   */
   public boolean isSound() {
     return sound;
   }
 
+  /**
+   *
+   * @return
+   */
   public boolean isMusic() {
     return music;
   }
