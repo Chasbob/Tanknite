@@ -98,17 +98,17 @@ class PopUp {
     loginButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //TODO sign in the player and give errors
       Data.INSTANCE.setUsername(usernameText.getText());
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
       Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
       Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
       Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
       return false;
     }));
     registerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //TODO register player and give errors
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
       Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
       Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
       Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
       return false;
     }));

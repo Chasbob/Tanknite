@@ -4,6 +4,7 @@ import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.model.Updates.Response;
 import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -324,7 +325,10 @@ public class MainMenuScreen extends AbstractScreen {
       Server server = new Server(true, "Single-Player");
       server.start();
       refresh();
-      ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      //ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      //join single player server
+      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
+      Screens.INSTANCE.showScreen(GameScreen.class);
       return false;
     }));
     singlePlayerTable.setButton(singlePlayerButton);
