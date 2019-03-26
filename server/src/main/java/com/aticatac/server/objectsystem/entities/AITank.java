@@ -1,12 +1,15 @@
 package com.aticatac.server.objectsystem.entities;
 
 import com.aticatac.common.model.Command;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
 import com.aticatac.server.ai.AI;
 import com.aticatac.server.ai.AIInput;
 import com.aticatac.server.ai.Decision;
 import com.aticatac.server.ai.PlayerState;
 import com.aticatac.server.bus.listener.AIInputListener;
+import com.aticatac.server.objectsystem.Entity;
+import com.aticatac.server.objectsystem.physics.CollisionBox;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
@@ -15,12 +18,23 @@ import static com.aticatac.server.bus.EventBusFactory.eventBus;
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
   protected final ConcurrentLinkedQueue<AIInput> frames;
+  protected final Entity entity;
   protected final Logger logger;
   private final AI ai;
+  protected Position position;
   protected AIInput input;
+  protected CollisionBox box;
+  protected int health;
+  protected int maxHealth;
+  protected int maxAmmo;
+  protected int ammo;
+  private int deathCountdown = -1;
 
+  //todo add in a parameter boolean which is ai true or false
+  //TODO add in the parameter changes everywhere
   public AITank(String name, Position p, int health, int ammo) {
     super(name, p, health, ammo);
+    entity = new Entity(name, EntityType.TANK);
     frames = new ConcurrentLinkedQueue<>();
     logger = Logger.getLogger(getClass());
     ai = new AI();
@@ -30,6 +44,11 @@ public class AITank extends Tank {
   @Override
   public void tick() {
     logger.trace("tick");
+    deathCountdown--;
+    frozen--;
+    if (deathCountdown == 0) {
+      hit(10, false);
+    }
     if (frames.size() > 5) {
       frames.clear();
     }
@@ -39,8 +58,8 @@ public class AITank extends Tank {
       Decision decision = ai.getDecision(i);
       setRotation(decision.getAngle());
       try {
-        if (getHealth() > 10 && decision.getCommand() != null && decision.getCommand() != Command.DEFAULT) {
-          move(decision.getCommand().vector, isSpeedIncrease());
+        if (getHealth() > 10 && decision.getCommand() != null && decision.getCommand() != Command.DEFAULT && frozen < 0) {
+          move(decision.getCommand().vector);
         }
       } catch (Exception e) {
         this.logger.error(e);
@@ -48,12 +67,12 @@ public class AITank extends Tank {
       }
       if (decision.getShoot()) {
         this.logger.trace("shoot");
-        if (!(getAmmo() == 0 || getHealth() == 0) && getFramesToShoot() < 0) {
+        if (!(getAmmo() == 0 || getHealth() == 0) && getFramesToShoot() < 0 && frozen < 0) {
           setAmmo(getAmmo() - 1);
-          if (isDamageIncrease()) {
-            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 20));
+          if (getDamageIncrease() > 0) {
+            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 20, false));
           } else {
-            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 10));
+            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 10, false));
           }
           setFramesToShoot(30);
         }

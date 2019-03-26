@@ -4,7 +4,7 @@ import com.aticatac.common.model.Vector;
 import com.aticatac.common.model.VectorF;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
-import com.aticatac.server.game.GameMode;
+import com.aticatac.server.game.BaseGame;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import java.util.HashSet;
@@ -61,7 +61,7 @@ public class Physics {
    * @param speedPowerUp
    * @return
    */
-  public PhysicsResponse move(int rotation, final Position position, boolean speedPowerUp) {
+  public PhysicsResponse move(int rotation, final Position position, int speedPowerUp) {
     this.position = position;
     int xCoord = this.position.getX();
     int yCoord = this.position.getY();
@@ -122,7 +122,7 @@ public class Physics {
    * @return
    */
   private Entity findCollision(Position p) {
-    if (GameMode.inMap(new Vector(p.getX(), p.getY()))) {
+    if (BaseGame.inMap(new Vector(p.getX(), p.getY()))) {
       return d.INSTANCE.getEntity(p);
     } else {
       return Entity.outOfBounds;
@@ -135,9 +135,9 @@ public class Physics {
    * @param sign
    * @param speedPowerUp
    */
-  private void setAcceleration(String sign, boolean speedPowerUp) {
+  private void setAcceleration(String sign, int speedPowerUp) {
     if(sign.equals("positive")) {
-      if(speedPowerUp){
+      if(speedPowerUp>0){
         acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
       }else {
         if (velocity < entity.getType().velocity) {

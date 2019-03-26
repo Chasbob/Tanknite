@@ -3,7 +3,7 @@ package com.aticatac.server.networking;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.server.game.Survival;
+import com.aticatac.server.game.BaseGame;
 import com.aticatac.server.networking.listen.NewClients;
 import com.aticatac.server.objectsystem.DataServer;
 import java.io.IOException;
@@ -184,7 +184,7 @@ public class Server extends Thread {
     private InetAddress multicast;
     private int port;
     private int broadcastPort;
-    private Survival game;
+    private BaseGame game;
     private boolean start;
     private int maxPlayers;
     private int broadcastCount;
@@ -207,7 +207,7 @@ public class Server extends Thread {
       this.port = port;
       this.maxPlayers = 10;
       this.id = name;
-      this.game = new Survival();
+      this.game = new BaseGame();
       try {
         this.server = InetAddress.getLocalHost();
         this.multicastSocket = new MulticastSocket();
@@ -293,7 +293,7 @@ public class Server extends Thread {
      *
      * @return the game
      */
-    public Survival getGame() {
+    public BaseGame getGame() {
       return game;
     }
 
@@ -302,7 +302,7 @@ public class Server extends Thread {
      *
      * @param game the game
      */
-    public void setGame(Survival game) {
+    public void setGame(BaseGame game) {
       this.game = game;
     }
 

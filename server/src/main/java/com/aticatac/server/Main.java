@@ -24,10 +24,9 @@ public class Main {
             System.out.println(Server.ServerData.INSTANCE.getGame().getPlayerMap().values());
             break;
           case kill:
-            Server.ServerData.INSTANCE.getGame().getPlayerMap().get(input[1]).hit(100000);
+            Server.ServerData.INSTANCE.getGame().getPlayerMap().get(input[1]).hit(100000,false);
             break;
           case move:
-//            Server.ServerData.INSTANCE.getGame().getPlayerMap().get(input[1]).move(Integer.valueOf(input[2]), Integer.valueOf(input[3]), false);
             break;
           case start:
             Server.ServerData.INSTANCE.putCommand(new CommandModel("admin", Command.START));

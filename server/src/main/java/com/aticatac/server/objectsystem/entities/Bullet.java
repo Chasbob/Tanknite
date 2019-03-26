@@ -22,6 +22,7 @@ public class Bullet extends Entity implements Tickable {
    */
   private final int damage;
   private final Physics physics;
+  private final boolean freezeBullet;
   private int bearing;
   private Position prevPosistion;
 
@@ -33,7 +34,7 @@ public class Bullet extends Entity implements Tickable {
    * @param bearing  the bearing
    * @param damage   the damage
    */
-  public Bullet(final Entity shooter, final Position position, final int bearing, final int damage) {
+  public Bullet(final Entity shooter, final Position position, final int bearing, final int damage, boolean freezeBullet) {
     super(Integer.toString(Objects.hash(shooter, position, bearing, damage)), EntityType.BULLET, position);
     this.damage = damage;
     this.logger.info(shooter.toString() + position.toString() + "\t" + bearing);
@@ -41,6 +42,8 @@ public class Bullet extends Entity implements Tickable {
     this.setPosition(position);
     this.setPrevPosistion(this.getPosition());
     this.setBearing(bearing);
+    this.freezeBullet = freezeBullet;
+    // TODO: Make freeze bulet a different colour to regular bullet
     physics = new Physics(this.getPosition().copy(), getType(), getName());
   }
   /**
@@ -65,7 +68,7 @@ public class Bullet extends Entity implements Tickable {
   }
 
   private void move() {
-    var response = getPhysics().move(getBearing(), getPosition().copy(), false);
+    var response = getPhysics().move(getBearing(), getPosition(), 0);
     if (!response.getCollisions().contains(Entity.outOfBounds)) {
       for (Entity e :
           response.getCollisions()) {
@@ -93,6 +96,10 @@ public class Bullet extends Entity implements Tickable {
           case HEALTH_POWERUP:
             break;
           case DAMAGE_POWERUP:
+            break;
+          case BULLETSPRAY_POWERUP:
+            break;
+          case FREEZEBULLET_POWERUP:
             break;
         }
       }
@@ -175,5 +182,9 @@ public class Bullet extends Entity implements Tickable {
    */
   public void setPrevPosistion(Position prevPosistion) {
     this.prevPosistion = prevPosistion;
+  }
+
+  public boolean getFreezeBullet() {
+    return freezeBullet;
   }
 }

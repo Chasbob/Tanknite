@@ -5,23 +5,29 @@ import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
-import com.aticatac.server.bus.event.*;
+import com.aticatac.server.bus.event.BulletCollisionEvent;
+import com.aticatac.server.bus.event.BulletsChangedEvent;
+import com.aticatac.server.bus.event.PlayersChangedEvent;
+import com.aticatac.server.bus.event.PowerupsChangedEvent;
+import com.aticatac.server.bus.event.ShootEvent;
+import com.aticatac.server.bus.event.TankCollisionEvent;
+import com.aticatac.server.bus.service.AIUpdateService;
 import com.aticatac.server.objectsystem.DataServer;
 import com.aticatac.server.objectsystem.Entity;
 import com.aticatac.server.objectsystem.entities.AITank;
 import com.aticatac.server.objectsystem.entities.Bullet;
 import com.aticatac.server.objectsystem.entities.Tank;
-import com.aticatac.server.objectsystem.entities.powerups.AmmoPowerup;
+import com.aticatac.server.objectsystem.interfaces.Tickable;
 import com.aticatac.server.objectsystem.physics.CollisionBox;
+import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
-import org.apache.log4j.Logger;
-
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
+import org.apache.log4j.Logger;
 
 import static com.aticatac.server.bus.EventBusFactory.eventBus;
 
@@ -29,7 +35,7 @@ import static com.aticatac.server.bus.EventBusFactory.eventBus;
  * The type Game mode.
  */
 @SuppressWarnings("ALL")
-public abstract class GameMode implements Game {
+public class BaseGame implements Runnable {
   /**
    * The constant maxXY.
    */
@@ -55,6 +61,9 @@ public abstract class GameMode implements Game {
   protected final Logger logger;
   private final int min = 0;
   private final int max = 1920;
+  private final AIUpdateService aiUpdateService;
+  private volatile boolean run;
+  private int counter;
 
   /**
    * Instantiates a new Game mode.
@@ -62,13 +71,14 @@ public abstract class GameMode implements Game {
    * @throws InvalidClassInstance     the invalid class instance
    * @throws ComponentExistsException the component exists exception
    */
-  GameMode() {
-    this.playerMap = new ConcurrentHashMap<>();
+  public BaseGame() {
     this.logger = Logger.getLogger(getClass());
+    eventBus.register(this);
+    this.playerMap = new ConcurrentHashMap<>();
     frame = new Update();
     bullets = new CopyOnWriteArraySet<>();
     powerups = new CopyOnWriteArraySet<>();
-    eventBus.register(this);
+    aiUpdateService = new AIUpdateService(playerMap, powerups);
   }
 
   /**
@@ -120,7 +130,6 @@ public abstract class GameMode implements Game {
     return this.playerMap.size();
   }
 
-  @Override
   public void addPlayer(String player) {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
@@ -134,24 +143,16 @@ public abstract class GameMode implements Game {
     }
   }
 
-  @Override
   public void removePlayer(String player) {
     eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
+    Position position = playerMap.get(player).getPosition();
+    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
+    DataServer.INSTANCE.removeBoxFromData(playerMap.get(player).getCollisionBox());
     playerMap.remove(player);
-    AmmoPowerup ammoPowerUp = null; // get name of powerUp
-    Position ammoPosition = getClearPosition(EntityType.BULLET.radius);
-    ammoPowerUp = new AmmoPowerup("ammoPowerUp", ammoPosition);
-    DataServer.INSTANCE.addBoxToData(ammoPowerUp.getCollisionBox(), ammoPowerUp);
-    powerups.add(ammoPowerUp);
-    this.logger.trace("Adding: " + ammoPowerUp.toString());
-  }
-
-  @Override
-  public void startGame() {
-  }
-
-  @Override
-  public void gameOver() {
+    Entity newPowerup = new Entity(String.valueOf(Objects.hash(EntityType.AMMO_POWERUP, position)), EntityType.AMMO_POWERUP, position);
+    DataServer.INSTANCE.addEntity(newPowerup);
+    powerups.add(newPowerup);
+    eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
   }
 
   private Tank createTank(String player, boolean isAI) {
@@ -216,14 +217,48 @@ public abstract class GameMode implements Game {
       case OUTOFBOUNDS:
         break;
       case AMMO_POWERUP:
+        this.logger.info(e);
+        DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
+        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        powerups.remove(e.getHit());
+        playerMap.get(e.getEntity().getName()).setAmmo(playerMap.get(e.getEntity().getName()).getAmmo() + 10);
+        break;
       case SPEED_POWERUP:
+        this.logger.info(e);
+        DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
+        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        powerups.remove(e.getHit());
+        playerMap.get(e.getEntity().getName()).setSpeedIncrease(1200);
+        break;
       case HEALTH_POWERUP:
+        this.logger.info(e);
+        DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
+        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        powerups.remove(e.getHit());
+        playerMap.get(e.getEntity().getName()).heal(10);
+        break;
       case DAMAGE_POWERUP:
         this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
-        playerMap.get(e.getEntity()).setDamageIncrease(true);
+        playerMap.get(e.getEntity().getName()).setDamageIncrease(1200);
+        break;
+      case BULLETSPRAY_POWERUP:
+        // TODO: Tell player they can press shift to unleash a bullet spray
+        this.logger.info(e);
+        DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
+        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        powerups.remove(e.getHit());
+        playerMap.get(e.getEntity().getName()).setBulletSprays(playerMap.get(e.getEntity().getName()).getBulletSprays() + 1);
+        break;
+      case FREEZEBULLET_POWERUP:
+        // TODO: Tell player they can press control to shoot a freeze bullet
+        this.logger.info(e);
+        DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
+        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        powerups.remove(e.getHit());
+        playerMap.get(e.getEntity().getName()).setFreezeBullets(playerMap.get(e.getEntity().getName()).getFreezeBullets() + 1);
         break;
     }
   }
@@ -232,7 +267,7 @@ public abstract class GameMode implements Game {
   public void bulletCollision(BulletCollisionEvent event) {
     this.logger.info(event);
     if (event.getHit().getType() == EntityType.TANK) {
-      playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage());
+      playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage(), event.getBullet().getFreezeBullet());
       this.logger.info(event);
     }
     bullets.remove(event.getBullet());
@@ -259,6 +294,33 @@ public abstract class GameMode implements Game {
     if (!playerMap.containsKey(id)) {
       playerMap.put(id, createTank(id, true));
       Position p = playerMap.get(id).getPosition();
+    }
+  }
+
+  @Override
+  public void run() {
+    counter = 0;
+    run = true;
+    this.logger.trace("Running...");
+    while (run) {
+      //checkPowerup();
+      //createPowerUps();
+      this.logger.trace("tick");
+      double nanoTime = System.nanoTime();
+      aiUpdateService.update(playerMap, powerups);
+      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
+//      playerMap.values().parallelStream().forEach(Tank::tick);
+//      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
+//      if(playerMap.containsKey("asd")){
+//        playerMap.get("asd").move(1000,1920);
+//      }
+      while (System.nanoTime() - nanoTime < 1000000000 / 60) {
+        try {
+          Thread.sleep(0);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
 }
