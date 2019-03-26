@@ -16,9 +16,8 @@
         <result column="loss"/>
     </resultMap>
     <insert id="insert" parameterType="Player">
-        INSERT INTO players (id, username, password, tank_colour, top_kill_streak, kills, deaths, win, loss)
-        VALUES (#{id}, #{username}, #{password}, #{tank_colour}, #{top_kill_streak}, #{kills}, #{deaths}, #{win},
-                #{loss})
+        INSERT INTO players (username, password)
+        VALUES (#{username}, #{password})
         ;
     </insert>
     <select id="getByUsername" resultType="Player" parameterType="String">

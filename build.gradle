@@ -26,12 +26,13 @@ allprojects {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile 'org.apache.commons:commons-collections4:4.1'
         compile 'org.jetbrains:annotations:16.0.1'
+        implementation 'com.google.guava:guava:27.1-jre'
+
     }
     test {
         useJUnitPlatform()
     }
 }
-
 
 
 project(':server') {
@@ -42,7 +43,6 @@ project(':server') {
     }
     dependencies {
         compile project(':common')
-        implementation 'com.google.guava:guava:27.1-jre'
     }
 }
 
@@ -102,9 +102,16 @@ project(':database') {
     dependencies {
         compile 'org.mybatis:mybatis:3.4.6'
         implementation 'org.postgresql:postgresql:42.2.5.jre7'
+        compile project(':common')
+
     }
     task database(type: JavaExec) {
         main = "com.aticatac.database.Main"
+        classpath = sourceSets.main.runtimeClasspath
+        jvmArgs '--illegal-access=deny'
+    }
+    task dbclient(type: JavaExec) {
+        main = "com.aticatac.database.Client"
         classpath = sourceSets.main.runtimeClasspath
         jvmArgs '--illegal-access=deny'
     }

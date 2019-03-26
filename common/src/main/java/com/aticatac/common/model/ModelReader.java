@@ -25,7 +25,7 @@ public class ModelReader {
    * @param model the model
    * @return the byte [ ]
    */
-  public byte[] toBytes(Model model) throws IOException {
+  public byte[] toBytes(Object model) throws IOException {
     logger.trace("Reading " + model.getClass().getName());
     String json = toJson(model);
     byte[] data = json.getBytes();
@@ -39,7 +39,7 @@ public class ModelReader {
    * @param model the model
    * @return the string
    */
-  public String toJson(Model model) {
+  public String toJson(Object model) {
     Gson gson = new Gson();
     return gson.toJson(model);
   }
@@ -53,7 +53,7 @@ public class ModelReader {
    * @return the t
    * @throws InvalidBytes the invalid bytes
    */
-  public <T extends Model> T toModel(byte[] in, Class<T> type) throws InvalidBytes, IOException {
+  public <T> T toModel(byte[] in, Class<T> type) throws InvalidBytes, IOException {
     logger.trace("Converting bytes to " + type.getCanonicalName());
     byte[] decompressed = decompress(in);
     int length = ByteBuffer.wrap(Arrays.copyOfRange(decompressed, 0, 4)).getInt();
@@ -69,15 +69,16 @@ public class ModelReader {
    * @return the t
    * @throws InvalidBytes the invalid bytes
    */
-  public <T extends Model> T fromJson(String json, Class<T> type) throws InvalidBytes {
+  public <T> T fromJson(String json, Class<T> type) throws InvalidBytes {
     Gson gson = new Gson();
     T output;
     output = gson.fromJson(json, type);
-    if (!(output.isModelType(type.getName()))) {
-      throw new InvalidBytes();
-    } else {
-      return output;
-    }
+    return output;
+//    if (!(output.isModelType(type.getName()))) {
+//      throw new InvalidBytes();
+//    } else {
+//      return output;
+//    }
   }
 
   private byte[] compress(byte[] data) throws IOException {
