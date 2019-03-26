@@ -28,6 +28,7 @@ public class ListenerFactory {
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         Boolean result = false;
         try {
+          AudioEnum.INSTANCE.getButtonClick();
           result = func.call();
         } catch (Exception e) {
           e.printStackTrace();

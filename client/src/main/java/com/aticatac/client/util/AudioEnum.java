@@ -26,6 +26,8 @@ public enum AudioEnum {
   private Music buttonClick;
   /***/
   private Music theme;
+  /***/
+  private Music main;
 
 
   /***/
@@ -34,9 +36,9 @@ public enum AudioEnum {
   /***/
   private boolean music = true;
   /***/
-  private float soundVolume = 1;
+  private float soundVolume = 0.6f;
   /***/
-  private float musicVolume = 0.5f;
+  private float musicVolume = 0.4f;
 
   /**
    *
@@ -97,9 +99,11 @@ public enum AudioEnum {
 
     tankDeath = Gdx.audio.newMusic(Gdx.files.internal("audio/Bomb_Exploding-Sound_Explorer-68256487.mp3"));
 
-    buttonClick = Gdx.audio.newMusic(Gdx.files.internal("audio/ButtonClick_Slow-Mike_Koenig-1019236976.mp3"));
+    buttonClick = Gdx.audio.newMusic(Gdx.files.internal("audio/ButtonClick.mp3"));
 
     theme = Gdx.audio.newMusic(Gdx.files.internal("audio/arcade-music-loop.wav"));
+
+    main = Gdx.audio.newMusic(Gdx.files.internal("audio/Impulse.mp3"));
 
   }
 
@@ -119,14 +123,22 @@ public enum AudioEnum {
   /**
    * @return
    */
-  public Music getBackgroundMusic() {
+  public Music getMain() {
 
     if (music) {
-      theme.setVolume(musicVolume);
-      theme.setLooping(true);
-      theme.play();
+      main.setVolume(musicVolume);
+      main.play();
     }
     return theme;
+
+  }
+
+  /**
+   * @return
+   */
+  public void stopMain() {
+
+    main.stop();
 
   }
 

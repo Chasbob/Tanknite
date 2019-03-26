@@ -1,14 +1,11 @@
 package com.aticatac.client.networking;
 
-import com.aticatac.common.model.Command;
-import com.aticatac.common.model.CommandModel;
+import com.aticatac.common.model.*;
 import com.aticatac.common.model.Exception.InvalidBytes;
-import com.aticatac.common.model.Login;
-import com.aticatac.common.model.ModelReader;
-import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.model.Vector;
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +15,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Logger;
 
 /**
  * The type Client.
@@ -119,7 +115,7 @@ public class Client {
       Login login = new Login(id);
       this.logger.trace("ID: " + id);
       this.logger.trace("login: " + modelReader.toJson(login));
-      this.logger.trace("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
+      this.logger.trace("Trying to conneentct to: " + server.getAddress() + ":" + server.getPort());
       Socket socket = new Socket(server.getAddress(), server.getPort());
       this.logger.trace("Connected to server at " + socket.getInetAddress());
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));

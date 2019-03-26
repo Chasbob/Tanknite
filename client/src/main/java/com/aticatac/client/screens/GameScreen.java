@@ -128,6 +128,10 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void render(float delta) {
+
+    AudioEnum.INSTANCE.stopMain();
+    AudioEnum.INSTANCE.getTheme();
+
     backgroundInput();
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -479,12 +483,24 @@ public class GameScreen extends AbstractScreen {
     }
     if (tractionHealth && tractionPopUp) {
       if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+          AudioEnum.INSTANCE.getTankMove();
+        }
         Data.INSTANCE.sendCommand(Command.LEFT);
       } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+          AudioEnum.INSTANCE.getTankMove();
+        }
         Data.INSTANCE.sendCommand(Command.RIGHT);
       } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+          AudioEnum.INSTANCE.getTankMove();
+        }
         Data.INSTANCE.sendCommand(Command.UP);
       } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+          AudioEnum.INSTANCE.getTankMove();
+        }
         Data.INSTANCE.sendCommand(Command.DOWN);
       } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
         this.camera.getCamera().zoom -= 0.1f;
@@ -493,6 +509,7 @@ public class GameScreen extends AbstractScreen {
       }
     }
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+      AudioEnum.INSTANCE.getShoot();
       Data.INSTANCE.sendCommand(Command.SHOOT);
     }
     Data.INSTANCE.submit(getBearing());
