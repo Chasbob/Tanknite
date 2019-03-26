@@ -291,6 +291,10 @@ public class GameScreen extends AbstractScreen {
       if (health > 0.1f) {
         tractionPopUp = true;
       }
+      //TODO test this
+      if (health == 0f){
+        AudioEnum.INSTANCE.getTankDeath();
+      }
       popUpTable.setVisible(false);
       return false;
     }));
