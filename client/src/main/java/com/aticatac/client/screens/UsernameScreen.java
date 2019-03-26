@@ -56,13 +56,6 @@ public class UsernameScreen extends AbstractScreen {
       dataTable.add(serverTextField);
       dataTable.row();
     }
-    //create username label
-    Label usernameLabel = Styles.INSTANCE.createLabel("USERNAME");
-    dataTable.add(usernameLabel);
-    dataTable.row();
-    //create text field for username
-    usernameTextField = Styles.INSTANCE.createTextField("");
-    dataTable.add(usernameTextField);
     //create button for submit
     TextButton submitButton = Styles.INSTANCE.createButton("SUBMIT");
     dataTable.add(submitButton);
@@ -70,7 +63,7 @@ public class UsernameScreen extends AbstractScreen {
     submitButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (!Data.INSTANCE.isHosting() && Screens.INSTANCE.getPreviousScreen() == MainMenuScreen.class) {
         //join single player server
-        Response response = Data.INSTANCE.connect(usernameTextField.getText(), true);
+        Response response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
         switch (response) {
           case ACCEPTED:
             refresh();
@@ -86,18 +79,18 @@ public class UsernameScreen extends AbstractScreen {
         Response response;
         if (Data.INSTANCE.isManualConfigForServer()) {
           //join server with ip
-          response = Data.INSTANCE.connect(usernameTextField.getText(), false, serverTextField.getText());
+          response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false, serverTextField.getText());
         } else if (Data.INSTANCE.isHosting()) {
           //create custom server
           Server server = new Server(false, serverTextField.getText());
           server.start();
           Data.INSTANCE.setSingleplayer(false);
           //TODO make getter for port and ip
-          Data.INSTANCE.setCurrentInformation(new ServerInformation(serverTextField.getText(), InetAddress.getByName("127.0.0.1"), 5500, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
-          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+          Data.INSTANCE.setCurrentInformation(new ServerInformation(Data.INSTANCE.getUsername(), InetAddress.getByName("127.0.0.1"), 5500, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
+          response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
         } else {
           //join server previously collected
-          response = Data.INSTANCE.connect(usernameTextField.getText(), false);
+          response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
         }
         switch (response) {
           case ACCEPTED:
