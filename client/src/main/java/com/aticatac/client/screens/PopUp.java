@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
 
@@ -168,23 +169,22 @@ class PopUp {
     loginButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //TODO sign in the player and give errors
       Data.INSTANCE.setUsername(usernameText.getText());
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
-      return false;
+      return resetMainMenu();
     }));
-    registerButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      //TODO register player and give errors
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
-      return false;
-    }));
+    //TODO register player and give errors
+    registerButton.addListener(ListenerFactory.newListenerEvent(PopUp::resetMainMenu));
     InputEvent clickEvent = new InputEvent();
     clickEvent.setType(InputEvent.Type.touchDown);
     return rootGroup;
+  }
+
+  @NotNull
+  private static Boolean resetMainMenu() {
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
+    return false;
   }
 
   static MenuTable createBackButton(boolean mainPopUp, VerticalGroup parentGroup) {

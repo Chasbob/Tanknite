@@ -149,19 +149,7 @@ public class ServerScreen extends AbstractScreen {
     } else {
       currentTable.setShowGroup(false);
     }
-    if (rightOrDown) {
-      if (index == group.getChildren().size - 1) {
-        index = 0;
-      } else {
-        index++;
-      }
-    } else {
-      if (index == 0) {
-        index = group.getChildren().size - 1;
-      } else {
-        index--;
-      }
-    }
+    super.applyIndex(group, index, rightOrDown);
     //get new table and select
     MenuTable newTable = (MenuTable) group.getChildren().get(index);
     newTable.setShowGroup(true);

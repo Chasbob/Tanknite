@@ -31,12 +31,9 @@ public class MainMenuScreen extends AbstractScreen {
   private int popUpIndex;
   private Table dropDownTable;
   private MenuTable playTable;
-  private MenuTable challengesButtonTable;
-  private MenuTable customizeTable;
   MenuTable settingsTable;
   VerticalGroup popUpGroup;
   Table popUpRootTable;
-  private MenuTable exitTable;
   public boolean popUpMultiplayer;
   public boolean popUpLogin;
   private Table containerTable;
@@ -163,14 +160,14 @@ public class MainMenuScreen extends AbstractScreen {
     //challenges
     createChallenges();
     //customize
-    customizeTable = Styles.INSTANCE.createMenuTable(false, true);
+    MenuTable customizeTable = Styles.INSTANCE.createMenuTable(false, true);
     TextButton customizeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
     switchTabListener(customizeButton, customizeTable, horizontalGroup);
     ListenerFactory.addHoverListener(customizeButton, customizeTable);
     //settings with child buttons
     createSettings();
     //create button to close game
-    exitTable = Styles.INSTANCE.createMenuTable(false, true);
+    MenuTable exitTable = Styles.INSTANCE.createMenuTable(false, true);
     TextButton exitButton = Styles.INSTANCE.createBackButton("QUIT");
     exitTable.setButton(exitButton);
     horizontalGroup
@@ -189,7 +186,7 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createChallenges() {
-    challengesButtonTable = Styles.INSTANCE.createMenuTable(false, true);
+    MenuTable challengesButtonTable = Styles.INSTANCE.createMenuTable(false, true);
     TextButton challengesButton = Styles.INSTANCE.createButton("CHALLENGES");
     switchTabListener(challengesButton, challengesButtonTable, horizontalGroup);
     ListenerFactory.addHoverListener(challengesButton, challengesButtonTable);
@@ -359,22 +356,7 @@ public class MainMenuScreen extends AbstractScreen {
 
 
   private void switchTab(boolean right) {
-    //deselect previous table
-    MenuTable previousTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
-    //get current vertical group and make current button unselected
-    if (previousTable.getGroup() != null) {
-      for (Actor table : previousTable.getGroup().getChildren()) {
-        MenuTable menuTable = (MenuTable) table;
-        if (menuTable.isShowGroup()) {
-          menuTable.setShowGroup(false);
-          dropDownIndex = 0;
-          break;
-        }
-      }
-    }
-    //remove tables group/groups from visible tables
-    dropDownTable.clear();
-    previousTable.setShowGroup(false);
+    deselectTab();
     //select new table
     MenuTable newTable;
     if (right) {
@@ -393,16 +375,10 @@ public class MainMenuScreen extends AbstractScreen {
       newTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
     }
     //add tables vertical group to visible table
-    if (newTable.getGroup() == null) {
-      dropDownTable.add(newTable.getTable());
-    } else {
-      dropDownTable.add(newTable.getGroup());
-    }
-    newTable.setShowGroup(true);
-    setDropDown(newTable);
+    selectTab(newTable);
   }
 
-  private void switchTabMouse(MenuTable newTable) {
+  private void deselectTab() {
     //deselect previous table
     MenuTable previousTable = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
     //get current vertical group and make current button unselected
@@ -416,12 +392,20 @@ public class MainMenuScreen extends AbstractScreen {
         }
       }
     }
-    //remove tables vertical group from visible table
+    //remove tables group/groups from visible tables
     dropDownTable.clear();
     previousTable.setShowGroup(false);
+  }
+
+  private void switchTabMouse(MenuTable newTable) {
+    deselectTab();
     //select new table
     tabIndex = horizontalGroup.getChildren().indexOf(newTable, true);
     //add new tables vertical group to visible table
+    selectTab(newTable);
+  }
+
+  private void selectTab(MenuTable newTable) {
     if (newTable.getGroup() == null) {
       //we know to add a table instead
       dropDownTable.add(newTable.getTable());
@@ -536,19 +520,7 @@ public class MainMenuScreen extends AbstractScreen {
     }
     MenuTable menuTable = (MenuTable) group.getChildren().get(index);
     menuTable.setShowGroup(false);
-    if (downOrRight) {
-      if (index == group.getChildren().size - 1) {
-        index = 0;
-      } else {
-        index++;
-      }
-    } else {
-      if (index == 0) {
-        index = group.getChildren().size - 1;
-      } else {
-        index--;
-      }
-    }
+    index = super.applyIndex(group, index, downOrRight);
     if (popUpMultiplayer || popUpLogin) {
       popUpIndex = index;
     } else {

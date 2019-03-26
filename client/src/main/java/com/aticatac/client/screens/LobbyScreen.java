@@ -126,20 +126,9 @@ public class LobbyScreen extends AbstractScreen {
     //get current tab and unselect
     MenuTable currentTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
     currentTab.setShowGroup(false);
-    //move the index
-    if (right) {
-      if (tabIndex == buttonGroup.getChildren().size - 1) {
-        tabIndex = 0;
-      } else {
-        tabIndex++;
-      }
-    } else {
-      if (tabIndex == 0) {
-        tabIndex = buttonGroup.getChildren().size - 1;
-      } else {
-        tabIndex--;
-      }
-    }
+    MenuTable menuTable = (MenuTable) buttonGroup.getChildren().get(tabIndex);
+    menuTable.setShowGroup(false);
+    tabIndex = super.applyIndex(buttonGroup, tabIndex, right);
     //get new tab
     MenuTable newTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
     newTab.setShowGroup(true);

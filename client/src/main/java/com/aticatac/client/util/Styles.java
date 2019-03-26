@@ -147,20 +147,8 @@ public enum Styles {
     return new Label(text, createLabelStyle(smallFont, Color.WHITE));
   }
 
-  public Label createColouredLabel() {
-    return new Label("WAITING FOR HOST", createLabelStyle(baseFont, accentColour));
-  }
-
-  public Label createSubtleLabel(String text) {
-    return new Label(text, createLabelStyle(baseFont, Color.YELLOW));
-  }
-
   public Label createItalicLabel(String text) {
     return new Label(text, createLabelStyle(italicFont, Color.WHITE));
-  }
-
-  public Label createErrorLabel() {
-    return new Label("NAME TAKEN", createLabelStyle(baseFont, INSTANCE.hiddenColour));
   }
 
   public TextButton createBackButton(String text) {
@@ -169,10 +157,6 @@ public enum Styles {
 
   public TextButton createButton(String text) {
     return new TextButton(text, createButtonStyle(baseFont, Color.WHITE));
-  }
-
-  public TextButton createStartButton(String text) {
-    return new TextButton(text, createButtonStyle(baseFont, accentColour));
   }
 
   public TextButton createItalicButton(String text) {

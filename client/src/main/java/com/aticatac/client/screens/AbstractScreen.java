@@ -1,11 +1,13 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.ListenerFactory;
+import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -95,5 +97,22 @@ public class AbstractScreen extends Stage implements Screen {
 
   @Override
   public void hide() {
+  }
+
+  int applyIndex(Group group, int index, boolean downOrRight) {
+    if (downOrRight) {
+      if (index == group.getChildren().size - 1) {
+        index = 0;
+      } else {
+        index++;
+      }
+    } else {
+      if (index == 0) {
+        index = group.getChildren().size - 1;
+      } else {
+        index--;
+      }
+    }
+    return index;
   }
 }

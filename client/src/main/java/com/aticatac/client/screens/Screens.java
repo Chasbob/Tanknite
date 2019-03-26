@@ -18,7 +18,6 @@ public enum Screens {
     private final HashMap<Class, AbstractScreen> screens;
     private Game game;
     private Class currentScreen;
-    private Class previousScreen;
 
     Screens() {
         screens = new HashMap<>();
@@ -26,21 +25,11 @@ public enum Screens {
         screens.put(LobbyScreen.class, new LobbyScreen());
         screens.put(MainMenuScreen.class, new MainMenuScreen());
         screens.put(ServerScreen.class, new ServerScreen());
-        screens.put(UsernameScreen.class, new UsernameScreen());
         logger = Logger.getLogger(getClass());
     }
 
     public Class getCurrentScreen() {
         return currentScreen;
-    }
-
-    /**
-     * Gets previous screen.
-     *
-     * @return the previous screen
-     */
-    public Class getPreviousScreen() {
-        return previousScreen;
     }
 
     /**
@@ -77,19 +66,13 @@ public enum Screens {
      */
     public void showScreen(Class type) {
         this.logger.info("Going from " + this.currentScreen + " to " + type);
-        this.previousScreen = this.currentScreen;
         this.game.setScreen(getScreen(type));
         this.currentScreen = type;
     }
 
     public void reloadScreen(Class type) {
         this.logger.info("reloading " + type + ".");
-        if (type == UsernameScreen.class){
-            getScreen(UsernameScreen.class).dispose();
-            screens.remove(UsernameScreen.class);
-            screens.put(UsernameScreen.class, new UsernameScreen());
-            screens.get(UsernameScreen.class).buildStage();
-        }else if(type == LobbyScreen.class){
+        if (type == LobbyScreen.class) {
             getScreen(LobbyScreen.class).dispose();
             screens.remove(LobbyScreen.class);
             screens.put(LobbyScreen.class, new LobbyScreen());
