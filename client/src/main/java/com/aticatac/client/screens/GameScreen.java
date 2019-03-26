@@ -184,7 +184,7 @@ public class GameScreen extends AbstractScreen {
           float dx = c.getX() - (1920-player.getX());
           float dy = c.getY() - (1920-player.getY());
 
-          int max = 640;
+          int max = 320;
 
           double distance = Math.sqrt(dx*dx + dy*dy);
 
