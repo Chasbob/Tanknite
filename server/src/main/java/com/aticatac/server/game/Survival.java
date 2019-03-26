@@ -49,7 +49,7 @@ public class Survival extends GameMode implements Runnable {
 //      if(playerMap.containsKey("asd")){
 //        playerMap.get("asd").move(1000,1920);
 //      }
-      while (System.nanoTime() - nanoTime < 1000000000 / 1000) {
+      while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
         } catch (InterruptedException e) {
@@ -61,7 +61,7 @@ public class Survival extends GameMode implements Runnable {
 
   private void checkPowerup() {
     counter++;
-    if (counter == 200000000) {
+    if (counter == 300) {
       createPowerUps();
       counter = 0;
     }
