@@ -26,13 +26,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
     private final SpriteBatch healthBarBatch;
-    private final SpriteBatch tanks;
+    private final SpriteBatch game;
     private final SpriteBatch tanksMiniMap;
     private final SpriteBatch minimapBackGround;
     private final int maxX;
@@ -100,7 +102,7 @@ public class GameScreen extends AbstractScreen {
             e.printStackTrace();
         }
         healthBarBatch = new SpriteBatch();
-        tanks = new SpriteBatch();
+        game = new SpriteBatch();
         tanksMiniMap = new SpriteBatch();
         minimapBackGround = new SpriteBatch();
     }
@@ -157,7 +159,7 @@ public class GameScreen extends AbstractScreen {
 //      this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
             this.camera.setPosititon(Helper.tileToScreenX(player.getX(), player.getY()), Helper.tileToScreenY(player.getX(), player.getY()));
 //      this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
-            this.tankXY.setText(player.getX() + ", " + player.getY());
+            this.tankXY.setText(player.getX() / 32 + "," + (60 - player.getY() / 32));
             if (player.getR() == 0) {
                 this.direction.setText("UP");
             } else if (player.getR() == 90) {
@@ -172,29 +174,17 @@ public class GameScreen extends AbstractScreen {
         camera.getViewport().apply();
         renderer.setView(this.camera.getCamera());
 
-        renderer.getBatch().begin();
-
-        renderer.renderTileLayer((TiledMapTileLayer) mapLayers.get(0));
-
-        renderer.renderTileLayer(wallLayer);
-
-
-        renderer.getBatch().end();
-
         //health bar
         healthBar();
-        //tanks
-        tanks.setProjectionMatrix(this.camera.getCamera().combined);
-        tanks.setColor(Color.CORAL);
-        tanks.begin();
 
-        for (var obj : tileObjects) {
-            if(wallLayer.getCell(obj.getX(), obj.getY()) != null)
-                wallLayer.getCell(obj.getX(), obj.getY()).setTile(null);
-        }
+        //game
+        game.setProjectionMatrix(this.camera.getCamera().combined);
+        game.setColor(Color.CORAL);
+        game.begin();
 
+        renderWalls(game);
 
-        renderTanks(tanks);
+        game.end();
 
         //mini viewport
         minimapViewport.apply();
@@ -226,6 +216,100 @@ public class GameScreen extends AbstractScreen {
         act(delta);
         getViewport().apply();
         draw();
+    }
+
+    public void renderWalls(SpriteBatch sb) {
+
+        var tanks = new ArrayList<Container>();
+
+        if (update != null) {
+
+            for (int i = 0; i < update.getPlayers().values().size(); i++) {
+                Container updater = update.getI(i);
+                tanks.add(updater);
+            }
+        }
+
+
+        ArrayList<ArrayList<Position>> rows = new ArrayList<>();
+
+        for (int i = 0; i != 61; i++) {
+            ArrayList<Position> ps = new ArrayList<>();
+            rows.add(ps);
+        }
+
+        int counter = 1;
+
+        for (int j = 0; j <= 61; j++) {
+            for (int i = -counter; i < counter + 1; i++) {
+                int x = (int) (j + 0.5f - i);
+                int y = (int) (j - 0.5f+ i);
+                try {
+                    rows.get(j).add(new Position(x, y));
+                } catch (Exception ignored) {}
+
+            }
+
+            for (int i = -counter; i < counter + 1; i++) {
+                int x = j - i;
+                int y = j + i;
+                try {
+                    rows.get(j).add(new Position(x, y));
+                } catch (Exception ignored) {}
+
+            }
+
+            counter++;
+        }
+
+
+        for (ArrayList<Position> ps : rows) {
+            for (Position pp : ps) {
+                try {
+                    var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(pp.getX(), pp.getY()).getTile();
+                    drawTiles(sb, pp.getX(), pp.getY(), tile);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+//        for (int i = 0; i <= 60; i++) {
+//            for (int j = 60; j != -1; j--) {
+//                try {
+//                    var tile = ((TiledMapTileLayer) map.getLayers().get(0)).getCell(i, j).getTile();
+//                    drawTiles(sb, i+1, j-1, tile);
+//
+//                } catch (Exception ignored) {
+//                }
+//            }
+//        }
+//
+//        for (int i = 0; i <= 60; i++) {
+//            for (int j = 60; j != -1; j--) {
+//                try {
+//                    for (var c : tanks) {
+//                        if(c.getX()>i*32 && c.getX()<(i+1)*32 && c.getY()>(60-j)*32 && c.getY()<(60-(j-1))*32) {
+//                            sb.draw(tankTexture, Helper.tileToScreenX(c.getX(), c.getY()), Helper.tileToScreenY(c.getX(), c.getY()));
+//                        }
+//                    }
+//                    var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(i, j).getTile();
+//                    drawTiles(sb, i, j, tile);
+//
+//                } catch (Exception ignored) {
+//                }
+//            }
+//        }
+    }
+
+    private void drawTiles(SpriteBatch sb, int i, int j, TiledMapTile tile) {
+        var pos = new Position((i) * 32, (j) * 32);
+
+        var pos1 = new Position(pos.getX() - 960, pos.getY() - 960);
+        var pos2 = new Position(pos1.getY(), -pos1.getX());
+        var pos3 = new Position(pos2.getX() + 960, pos2.getY() + 960);
+        var pos4 = Helper.tileToScreen(pos3);
+
+        sb.draw(tile.getTextureRegion(), pos4.getX(), pos4.getY());
     }
 
     @Override
@@ -376,8 +460,8 @@ public class GameScreen extends AbstractScreen {
 
             }
         }
-//    renderProjectiles(tanks);
-//    renderPowerups(tanks, false);
+//    renderProjectiles(game);
+//    renderPowerups(game, false);
         tanks.end();
     }
 
@@ -524,7 +608,7 @@ public class GameScreen extends AbstractScreen {
         super.dispose();
         map.dispose();
         renderer.dispose();
-        tanks.dispose();
+        game.dispose();
         tanksMiniMap.dispose();
         healthBarBatch.dispose();
     }
