@@ -71,6 +71,28 @@ project(':client') {
         jvmArgs '--illegal-access=deny'
     }
 }
+project(':database') {
+    apply plugin: 'application'
+    application {
+        mainClassName = "com.aticatac.database.Main"
+    }
+    dependencies {
+        compile 'org.mybatis:mybatis:3.4.6'
+        implementation 'org.postgresql:postgresql:42.2.5.jre7'
+        compile project(':common')
+
+    }
+    task database(type: JavaExec) {
+        main = "com.aticatac.database.Main"
+        classpath = sourceSets.main.runtimeClasspath
+        jvmArgs '--illegal-access=deny'
+    }
+    task dbclient(type: JavaExec) {
+        main = "com.aticatac.database.Client"
+        classpath = sourceSets.main.runtimeClasspath
+        jvmArgs '--illegal-access=deny'
+    }
+}
 
 
 

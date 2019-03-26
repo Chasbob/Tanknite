@@ -19,7 +19,6 @@ public class NewClients implements Runnable {
    */
   public NewClients() {
     this.shutdown = false;
-//        this.serverSocket = new ServerSocket(Server.ServerData.INSTANCE.getPort());
     this.logger = Logger.getLogger(getClass());
   }
 

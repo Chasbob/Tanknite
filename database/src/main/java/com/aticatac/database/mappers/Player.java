@@ -1,4 +1,4 @@
-package com.aticatac.database;
+package com.aticatac.database.mappers;
 
 /**
  * The type Player.
@@ -40,6 +40,20 @@ public class Player {
   }
 
   public Player() {
+  }
+
+  public Player(final String username, final String password) {
+    this.username = username;
+    this.password = password;
+  }
+
+  public void applyKillDeath(KillDeath killDeath) {
+    kills += killDeath.getKill();
+    deaths += killDeath.getDeath();
+  }
+
+  public void addWin() {
+    win++;
   }
 
   /**

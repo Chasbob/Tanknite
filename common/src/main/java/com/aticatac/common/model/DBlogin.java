@@ -1,0 +1,38 @@
+package com.aticatac.common.model;
+
+public class DBlogin extends Model {
+  private String username;
+  private String password;
+
+  public DBlogin(final String username, final String password) {
+    this.username = username;
+    this.password = password;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  @Override
+  public String toString() {
+    return "DBlogin{"
+        +
+        "username='"
+        +
+        username
+        +
+        '\''
+        +
+        ", password='"
+        +
+        password
+        +
+        '\''
+        +
+        '}';
+  }
+
+  public String getUsername() {
+    return username;
+  }
+}

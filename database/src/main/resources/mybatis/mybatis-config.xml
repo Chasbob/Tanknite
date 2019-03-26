@@ -7,7 +7,7 @@
         <setting name="logImpl" value="LOG4J"/>
     </settings>
     <typeAliases>
-        <typeAlias alias="Player" type="com.aticatac.database.Player"/>
+        <typeAlias alias="Player" type="com.aticatac.database.mappers.Player"/>
     </typeAliases>
     <environments default="sample_id">
         <environment id="sample_id">
