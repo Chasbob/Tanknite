@@ -115,7 +115,7 @@ public class Physics {
       if(speedPowerUp){
         acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
       }else {
-        if (velocity != entity.getType().velocity) {
+        if (velocity < entity.getType().velocity) {
           acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
         } else if (velocity >= entity.getType().velocity) {
           velocity = entity.getType().velocity;
