@@ -2,6 +2,8 @@ package com.aticatac.server.ai;
 
 import com.aticatac.server.Position;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A SearchNode is a node in the graph representing the game's map. Path finding using A* search is performed on a graph
@@ -42,8 +44,8 @@ class SearchNode extends Position {
    *
    * @return The nodes of a sub graph
    */
-  ArrayList<SearchNode> getSubGraph(int depth) {
-    ArrayList<SearchNode> subNodes = new ArrayList<>();
+  Set<SearchNode> getSubGraph(int depth) {
+    HashSet<SearchNode> subNodes = new HashSet<>();
     subNodes.add(this);
     if (depth == 1) {
       return subNodes;

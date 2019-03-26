@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
@@ -20,7 +19,7 @@ import java.util.Set;
  */
 @SuppressWarnings("ALL")
 public class AI {
-  private final static int VIEW_RANGE = 32*10; // some value equivalent to the actual view range that a player would have
+  private final static int VIEW_RANGE = 32*12; // some value equivalent to the actual view range that a player would have
   private final static Set<SearchNode> occupiedNodes = new HashSet<>();
   private final static Graph graph = new Graph();
   private final PathFinder pathFinder;
@@ -48,8 +47,8 @@ public class AI {
     this.recentlyVisitedNodes = new HashSet<>();
     this.commandHistory = new ArrayList<>();
     Random rand = new Random();
-    this.aggression = (rand.nextInt(4) + 8) / 10;
-    this.collectiveness = (rand.nextInt(4) + 8) / 10;
+    this.aggression = (double)(rand.nextInt(4) + 8) / 10;
+    this.collectiveness = (double)(rand.nextInt(4) + 8) / 10;
     this.aimAngle = 0;
   }
 
@@ -65,8 +64,15 @@ public class AI {
     updateInformation();
     // Check if can shoot at an enemy
     shooting = canShoot();
-    // Do "random" aiming if can't
-    if (!shooting && !searchPath.isEmpty()) {
+    // If health <= 10 (stuck), don't make a movement command
+    if (tankHealth <= 10) {
+      if (enemiesInRange.isEmpty()) {
+        aimAngle = changeAngle(aimAngle, 4);
+      }
+      return new Decision(Command.DEFAULT, aimAngle, shooting);
+    }
+    // Do "random" aiming if can't shoot
+    if (!shooting && !searchPath.isEmpty() && state == State.SEARCHING) {
       aimAngle = getNewAimAngle(searchPath.peekLast());
     }
     // Check for a state change
@@ -114,6 +120,7 @@ public class AI {
     int attackingUtility = getAttackingUtility();
     int fleeingUtility = getFleeingUtility();
     int obtainingUtility = getObtainingUtility();
+//    System.out.println("S: " + searchingUtility + " | A: " + attackingUtility + " | F: " + fleeingUtility + " | O: " + obtainingUtility);
     // Return state with highest utility
     int maxUtility = Math.max(Math.max(searchingUtility, attackingUtility), Math.max(fleeingUtility, obtainingUtility));
     if (maxUtility == searchingUtility) {
@@ -222,13 +229,13 @@ public class AI {
    * @return A command from the current state
    */
   private Command performStateAction() {
-    // Keep going along same path if state has not changed
-    if (prevState == state && !searchPath.isEmpty() && commandHistory.size() < 60) {
-      return commandToPerform(searchPath.peek());
-    }
     // Do searching action if stuck
-    if (commandHistory.size() > 60) {
+    if (commandHistory.size() > 30) {
       return performSearchingAction();
+    }
+    // Keep going along same path if state has not changed
+    if (prevState == state && !searchPath.isEmpty()) {
+      return commandToPerform(searchPath.peek());
     }
     switch (state) {
       case SEARCHING:
@@ -268,11 +275,11 @@ public class AI {
     if (target == null) {
       return Command.DEFAULT;
     }
-    if (Math.sqrt(Math.pow(tankPos.getX(),target.getX()) + Math.pow(tankPos.getY(),target.getY())) < 96) {
+    if (Math.sqrt(Math.pow(tankPos.getX()-target.getX(),2) + Math.pow(tankPos.getY()-target.getY(), 2)) < 96) {
       return performSearchingAction();
     }
     searchPath = getPath(tankPos, target.getPosition());
-    while (searchPath.size() > 5) {
+    while (searchPath.size() > 4) {
       ((LinkedList<SearchNode>) searchPath).removeLast();
     }
     return commandToPerform(searchPath.peek());
@@ -362,10 +369,15 @@ public class AI {
   private ArrayList<Position> getEmptyPositions(int range) {
     ArrayList<Position> emptyPositions = new ArrayList<>();
     ArrayList<SearchNode> nodes = graph.getNodesInRange(tankPos, range);
+    // Occupied nodes are not empty
     for (SearchNode node : nodes) {
       if (!occupiedNodes.contains(node)) {
         emptyPositions.add(node);
       }
+    }
+    // Enemy and near-enemy positions are not empty
+    for (PlayerState enemy : enemiesInRange) {
+      emptyPositions.removeAll(graph.getNearestNode(enemy.getPosition()).getSubGraph(2));
     }
     return emptyPositions;
   }
@@ -460,12 +472,13 @@ public class AI {
    * @return A list of enemies in range of the position
    */
   private ArrayList<PlayerState> getEnemiesInRange(Position position, int range) {
-    ArrayList<PlayerState> inRange = new ArrayList<>();
+    ArrayList<PlayerState> inRange = new ArrayList<>(currentInput.getPlayers());
+    inRange.remove(getClosestEnemy(currentInput.getPlayers())); // remove self...
     for (PlayerState enemy : currentInput.getPlayers()) {
       int dX = Math.abs(position.getX() - enemy.getPosition().getX());
       int dY = Math.abs(position.getY() - enemy.getPosition().getY());
-      if (dX <= range && dY <= range && dX > 10 && dY > 10 && enemy.getHealth() > 0) {
-        inRange.add(enemy);
+      if (dX > range || dY > range && enemy.getHealth() > 0) {
+        inRange.remove(enemy);
       }
     }
     return inRange;
@@ -597,7 +610,7 @@ public class AI {
     Position target = getTargetedEnemy().getPosition();
     if (target != null) {
       aimAngle = getNewAimAngle(target);
-      if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 3) {
+      if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 5) {
         return true;
       }
     }
@@ -610,6 +623,9 @@ public class AI {
    * @return An aim angle
    */
   private int getNewAimAngle(Position target) {
+    if (target == null) {
+      return aimAngle;
+    }
     int targetAngle = getAngleToPosition(target);
     int change = Math.abs(targetAngle - aimAngle) / 8;
     if (Math.abs(changeAngle(aimAngle, change) - targetAngle) < Math.abs(changeAngle(aimAngle, -change) - targetAngle)) {
@@ -629,6 +645,9 @@ public class AI {
    * @return An angle between the tank and a position
    */
   private int getAngleToPosition(Position target) {
+    if (target == null) {
+      return 0;
+    }
     Position targetCenter = new Position(target.getX() + 16, target.getY() + 16);
     double angle = Math.atan2(targetCenter.getX() - tankPos.getX(), tankPos.getY() - targetCenter.getY());
     if (angle < 0) {
