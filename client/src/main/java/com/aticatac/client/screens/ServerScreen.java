@@ -39,8 +39,8 @@ public class ServerScreen extends AbstractScreen {
     Gdx.input.setInputProcessor(this);
   }
 
-  public void setServerSelected(Boolean serverSelected) {
-    this.serverSelected = serverSelected;
+  private void setServerSelected() {
+    this.serverSelected = true;
   }
 
   @Override
@@ -90,7 +90,7 @@ public class ServerScreen extends AbstractScreen {
     dataTable.add(serversContainer);
     //add vertical group to store all servers and player count in them
     dropDownGroup = new VerticalGroup();
-    dropDownGroup.space(5);
+    dropDownGroup.space(5).columnLeft();
     serversContainer.add(dropDownGroup).left().pad(10);
     listServers = new ListServers(dropDownGroup);
     listServers.update();
@@ -191,7 +191,7 @@ public class ServerScreen extends AbstractScreen {
     MenuTable currentDrop = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
     ServerButton currentButton = (ServerButton) currentDrop.getButton();
     if (currentButton.getText().toString().equals("JOIN") && !currentButton.getLabel().getText().toString().equals("<EMPTY>")) {
-      setServerSelected(true);
+      setServerSelected();
       Data.INSTANCE.setCurrentInformation(currentButton.getServerInformation());
     }
     //fire the current tab

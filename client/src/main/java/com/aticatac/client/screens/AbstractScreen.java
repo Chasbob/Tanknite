@@ -63,15 +63,6 @@ public class AbstractScreen extends Stage implements Screen {
     rootTable.addActor(table);
   }
 
-  Table createTopLabelTable(Table dataTable){
-    addToRoot(dataTable);
-    Table topLabelTable = new Table();
-    topLabelTable.setFillParent(true);
-    dataTable.addActor(topLabelTable);
-    topLabelTable.top().padTop(50);
-    return topLabelTable;
-  }
-
   public void refresh(){
 
   }
