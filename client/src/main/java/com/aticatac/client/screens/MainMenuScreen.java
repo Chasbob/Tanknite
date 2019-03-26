@@ -160,10 +160,7 @@ public class MainMenuScreen extends AbstractScreen {
     //challenges
     createChallenges();
     //customize
-    MenuTable customizeTable = Styles.INSTANCE.createMenuTable(false, true);
-    TextButton customizeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
-    switchTabListener(customizeButton, customizeTable, horizontalGroup);
-    ListenerFactory.addHoverListener(customizeButton, customizeTable);
+    createCustomize();
     //settings with child buttons
     createSettings();
     //create button to close game
@@ -183,6 +180,23 @@ public class MainMenuScreen extends AbstractScreen {
     containerTable.row();
     containerTable.add(dropDownTable).left().padTop(20);
     dropDownTable.add(playTable.getGroup());
+  }
+
+  private void createCustomize() {
+    MenuTable customizeTable = Styles.INSTANCE.createMenuTable(false, true);
+    TextButton customizeButton = Styles.INSTANCE.createButton("CUSTOMIZE");
+    switchTabListener(customizeButton, customizeTable, horizontalGroup);
+    ListenerFactory.addHoverListener(customizeButton, customizeTable);
+    //create table to store buttons
+    Table customizeDataTable = createTableWithPadding();
+    customizeTable.setTable(customizeDataTable);
+    //create button
+    TextButton yellowButton = Styles.INSTANCE.createItalicButton("YELLOW (test)");
+    yellowButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Data.INSTANCE.setTankColour(Color.YELLOW);
+      return false;
+    }));
+    customizeDataTable.add(yellowButton).padBottom(10);
   }
 
   private void createChallenges() {

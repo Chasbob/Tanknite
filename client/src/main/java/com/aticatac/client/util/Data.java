@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.badlogic.gdx.graphics.Color;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,6 +33,7 @@ public enum Data {
   private boolean singleplayer;
   private Client client;
   private String username;
+  private Color tankColour;
   private Container playerPos;
   private ArrayList<Container> playerList;
   private boolean serverSelected;
@@ -43,6 +46,7 @@ public enum Data {
     serverSelected = false;
     manualConfigForServer = false;
     isHosting = false;
+    this.tankColour = Color.CORAL;
     try {
       //TODO don't hard code the port.
       final Server.ServerData s = Server.ServerData.INSTANCE;
@@ -312,4 +316,12 @@ public enum Data {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public Color getTankColour() {
+    return tankColour;
+  }
+
+  public void setTankColour(Color tankColour) {
+    this.tankColour = tankColour;
   }}

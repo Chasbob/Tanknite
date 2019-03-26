@@ -281,7 +281,7 @@ public class GameScreen extends AbstractScreen {
     healthBar();
     //tanks
     tanks.setProjectionMatrix(this.camera.getCamera().combined);
-    tanks.setColor(Color.CORAL);
+    tanks.setColor(Data.INSTANCE.getTankColour());
     tanks.begin();
     renderTanks(tanks);
     //mini viewport
