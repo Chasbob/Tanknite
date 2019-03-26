@@ -173,13 +173,14 @@ public class GameScreen extends AbstractScreen {
         //main viewport
         camera.getViewport().apply();
         renderer.setView(this.camera.getCamera());
-
+        renderer.getBatch().begin();
+        renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(0));
+        renderer.getBatch().end();
         //health bar
         healthBar();
 
         //game
         game.setProjectionMatrix(this.camera.getCamera().combined);
-        game.setColor(Color.CORAL);
         game.begin();
 
         renderWalls(game);
@@ -230,7 +231,6 @@ public class GameScreen extends AbstractScreen {
             }
         }
 
-
         ArrayList<ArrayList<Position>> rows = new ArrayList<>();
 
         for (int i = 0; i != 61; i++) {
@@ -243,10 +243,11 @@ public class GameScreen extends AbstractScreen {
         for (int j = 0; j <= 61; j++) {
             for (int i = -counter; i < counter + 1; i++) {
                 int x = (int) (j + 0.5f - i);
-                int y = (int) (j - 0.5f+ i);
+                int y = (int) (j - 0.5f + i);
                 try {
                     rows.get(j).add(new Position(x, y));
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
             }
 
@@ -255,7 +256,8 @@ public class GameScreen extends AbstractScreen {
                 int y = j + i;
                 try {
                     rows.get(j).add(new Position(x, y));
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
             }
 
@@ -263,15 +265,23 @@ public class GameScreen extends AbstractScreen {
         }
 
 
+        int index = 0;
         for (ArrayList<Position> ps : rows) {
             for (Position pp : ps) {
                 try {
                     var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(pp.getX(), pp.getY()).getTile();
-                    drawTiles(sb, pp.getX(), pp.getY(), tile);
+                    drawTiles(sb, pp.getX()-1, pp.getY(), tile);
                 } catch (Exception ignored) {
                 }
             }
+            for (var c : tanks) {
+                if((int)((Math.ceil(c.getX()/32f)+Math.ceil(60-(c.getY()/32f)))/2f)==index) {
+                    sb.draw(tankTexture, Helper.tileToScreenX(c.getX(), c.getY()), Helper.tileToScreenY(c.getX(), c.getY()));
+                }
+            }
+            index++;
         }
+
 
 //        for (int i = 0; i <= 60; i++) {
 //            for (int j = 60; j != -1; j--) {
