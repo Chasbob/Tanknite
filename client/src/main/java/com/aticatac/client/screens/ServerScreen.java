@@ -4,9 +4,12 @@ import com.aticatac.client.util.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.SnapshotArray;
 
 
 /**
@@ -15,11 +18,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 public class ServerScreen extends AbstractScreen {
 
   private Boolean serverSelected;
+  Boolean popUpPresent;
   private ListServers listServers;
   private int tabIndex;
   public int dropDownIndex;
   private HorizontalGroup tabGroup;
   public VerticalGroup dropDownGroup;
+  Table popUp;
 
   /**
    * Instantiates a new Server screen.
@@ -27,6 +32,7 @@ public class ServerScreen extends AbstractScreen {
   ServerScreen() {
     super();
     serverSelected = false;
+    popUpPresent = false;
     Data.INSTANCE.setManualConfigForServer(false);
     tabIndex = 0;
     dropDownIndex = 0;
@@ -56,7 +62,9 @@ public class ServerScreen extends AbstractScreen {
     tabGroup.addActor(joinTable);
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
         if (serverSelected) {
-          ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+          //join the server selected
+          Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
+          ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
         }
         return false;
       }
@@ -68,7 +76,9 @@ public class ServerScreen extends AbstractScreen {
     manualTable.setButton(manualButton);
     manualButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setManualConfigForServer(true);
-      ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      popUpPresent = true;
+      toggleButtons(true);
+      PopUp.createPopUp(false);
       return false;
     }));
     ListenerFactory.addHoverListener(manualButton, manualTable);
@@ -116,16 +126,18 @@ public class ServerScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
     //need to poll for input
-    if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-      tabIndex = switcher(true, tabGroup, tabIndex, false);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-      tabIndex = switcher(false, tabGroup, tabIndex, false);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-      dropDownIndex = switcher(true, dropDownGroup, dropDownIndex, true);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-      dropDownIndex = switcher(false, dropDownGroup, dropDownIndex, true);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-      enterPressed();
+    if (!popUpPresent) {
+      if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+        tabIndex = switcher(true, tabGroup, tabIndex, false);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+        tabIndex = switcher(false, tabGroup, tabIndex, false);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+        dropDownIndex = switcher(true, dropDownGroup, dropDownIndex, true);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+        dropDownIndex = switcher(false, dropDownGroup, dropDownIndex, true);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+        enterPressed();
+      }
     }
   }
 
@@ -192,5 +204,33 @@ public class ServerScreen extends AbstractScreen {
     currentTable.setShowGroup(false);
     currentTable.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.GRAY));
     currentTable.getButton().setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY));
+  }
+
+  void removePopUp() {
+    rootTable.removeActor(popUp);
+    popUp.clear();
+  }
+
+  void toggleButtons(boolean disable) {
+    //deactivate tabs
+    toggleButtonsHelper(disable, tabGroup.getChildren());
+    toggleButtonsHelper(disable, dropDownGroup.getChildren());
+    if (disable) {
+      super.backButton.setTouchable(Touchable.disabled);
+    } else {
+      super.backButton.setTouchable(Touchable.enabled);
+    }
+  }
+
+  private void toggleButtonsHelper(boolean disable, SnapshotArray<Actor> children) {
+    for (int i = 0; i < children.size; i++) {
+      //get the current table
+      MenuTable currentTable = (MenuTable) children.get(i);
+      if (disable) {
+        currentTable.getButton().setTouchable(Touchable.disabled);
+      } else {
+        currentTable.getButton().setTouchable(Touchable.enabled);
+      }
+    }
   }
 }

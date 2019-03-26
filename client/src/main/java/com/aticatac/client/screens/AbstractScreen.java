@@ -24,6 +24,7 @@ public class AbstractScreen extends Stage implements Screen {
    */
   protected final Logger logger;
   Table rootTable;
+  TextButton backButton;
 
   /**
    * Instantiates a new Abstract screen.
@@ -48,7 +49,7 @@ public class AbstractScreen extends Stage implements Screen {
     rootTable.addActor(backTable);
     backTable.bottom();
     //create back button
-    TextButton backButton = Styles.INSTANCE.createBackButton("BACK");
+    backButton = Styles.INSTANCE.createBackButton("BACK");
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();

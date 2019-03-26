@@ -17,7 +17,6 @@ import java.net.InetAddress;
  * The type Username screen.
  */
 public class UsernameScreen extends AbstractScreen {
-  private TextField usernameTextField;
   private TextField serverTextField;
   private Label errorLabel;
 
@@ -130,6 +129,5 @@ public class UsernameScreen extends AbstractScreen {
     Data.INSTANCE.setHosting(false);
     Data.INSTANCE.setManualConfigForServer(false);
     errorLabel.setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.baseFont, Styles.INSTANCE.hiddenColour));
-    usernameTextField.setText("");
   }
 }

@@ -4,44 +4,57 @@ import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.model.ServerInformation;
+import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+
+import java.net.InetAddress;
 
 class PopUp {
 
   static void createPopUp(boolean startUp) {
     Table popUpRootTable = new Table();
     Styles.INSTANCE.addTableColour(popUpRootTable, new Color(new Color(0f, 0f, 0f, 0.5f)));
-    Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.addActor(popUpRootTable);
-    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable = popUpRootTable;
+    if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.addActor(popUpRootTable);
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable = popUpRootTable;
+    } else {
+      Screens.INSTANCE.getScreen(ServerScreen.class).popUp = popUpRootTable;
+      Screens.INSTANCE.getScreen(ServerScreen.class).rootTable.addActor(popUpRootTable);
+    }
     popUpRootTable.setFillParent(true);
     Table popUpTable = new Table();
     Styles.INSTANCE.addTableColour(popUpTable, Color.BLACK);
     if (startUp) {
       popUpTable.add(createLogin());
     } else {
-      popUpTable.add(createMultiplayerChildren());
+      VerticalGroup multiplayerChildren = new VerticalGroup();
+      multiplayerChildren.space(5);
+      if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
+        manualJoin(multiplayerChildren);
+        popUpTable.add(multiplayerChildren);
+      } else {
+        createMultiplayerChildren(multiplayerChildren);
+        popUpTable.add(multiplayerChildren);
+      }
     }
     popUpTable.padTop(20).padBottom(20).padLeft(60).padRight(60);
     popUpRootTable.add(popUpTable);
   }
 
-  static Group createMultiplayerChildren() {
-    VerticalGroup multplayerChildren = new VerticalGroup();
-    multplayerChildren.space(5);
+  static void createMultiplayerChildren(VerticalGroup multiplayerChildren) {
     MenuTable hostTable = Styles.INSTANCE.createMenuTable(true, false);
     //create button for hosting game
     TextButton hostButton = Styles.INSTANCE.createButton("HOST");
     hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Data.INSTANCE.setHosting(true);
-      //reload username screen and show
-      ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
+      host(multiplayerChildren);
       return false;
     }));
     hostTable.setButton(hostButton);
-    multplayerChildren.addActor(hostTable);
+    multiplayerChildren.addActor(hostTable);
     //create button for joining
     MenuTable joinTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton joinButton = Styles.INSTANCE.createButton("JOIN");
@@ -52,12 +65,68 @@ class PopUp {
       return false;
     }));
     joinTable.setButton(joinButton);
-    multplayerChildren.addActor(joinTable);
+    multiplayerChildren.addActor(joinTable);
     //create button for going back
-    multplayerChildren.addActor(createBackButton());
-    multplayerChildren.pack();
-    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = multplayerChildren;
-    return multplayerChildren;
+    multiplayerChildren.addActor(createBackButton(true, multiplayerChildren));
+    multiplayerChildren.pack();
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = multiplayerChildren;
+  }
+
+  private static void host(VerticalGroup multiplayerChildren) {
+    Data.INSTANCE.setHosting(true);
+    //clear the pop up
+    multiplayerChildren.clear();
+    VerticalGroup bodyGroup = new VerticalGroup();
+    bodyGroup.space(10);
+    multiplayerChildren.addActor(bodyGroup);
+    //create actors
+    Label serverNameLabel = Styles.INSTANCE.createLabel("SERVER NAME");
+    TextField serverNameField = Styles.INSTANCE.createTextField("");
+    //add actors
+    bodyGroup.addActor(serverNameLabel);
+    bodyGroup.addActor(serverNameField);
+    //new horizontal group to store host and back
+    HorizontalGroup buttonGroup = new HorizontalGroup();
+    buttonGroup.space(5);
+    multiplayerChildren.addActor(buttonGroup);
+    buttonGroup.addActor(createBackButton(false, multiplayerChildren));
+    TextButton startButton = Styles.INSTANCE.createButton("HOST");
+    startButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      //create custom server
+      Server server = new Server(false, serverNameField.getText());
+      server.start();
+      Data.INSTANCE.setSingleplayer(false);
+      //TODO make getter for port and ip
+      Data.INSTANCE.setCurrentInformation(new ServerInformation(Data.INSTANCE.getUsername(), InetAddress.getByName("127.0.0.1"), 5500, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
+      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
+      ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
+      serverNameField.setText("");
+      return false;
+    }));
+    buttonGroup.addActor(startButton);
+  }
+
+  private static void manualJoin(VerticalGroup multiplayerChildren) {
+    //create actors
+    Label ipLabel = Styles.INSTANCE.createLabel("SERVER IP");
+    TextField ipField = Styles.INSTANCE.createTextField("");
+    TextButton joinButton = Styles.INSTANCE.createButton("JOIN");
+    //create listener
+    joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false, ipField.getText());
+      ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
+      ipField.setText("");
+      return false;
+    }));
+    //add actors
+    multiplayerChildren.addActor(ipLabel);
+    multiplayerChildren.addActor(ipField);
+    //create horizontal groups to store buttons
+    HorizontalGroup buttonGroup = new HorizontalGroup();
+    buttonGroup.space(10);
+    buttonGroup.addActor(createBackButton(false, multiplayerChildren));
+    buttonGroup.addActor(joinButton);
+    multiplayerChildren.addActor(buttonGroup);
   }
 
   static Group createLogin() {
@@ -117,13 +186,24 @@ class PopUp {
     return rootGroup;
   }
 
-  static MenuTable createBackButton() {
+  static MenuTable createBackButton(boolean mainPopUp, VerticalGroup parentGroup) {
     MenuTable backTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton backButton = Styles.INSTANCE.createButton("BACK");
     backButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpMultiplayer = false;
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
+      if (mainPopUp) {
+        Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
+        Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpMultiplayer = false;
+        Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
+      } else if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
+        //we want to remove pop up
+        Screens.INSTANCE.getScreen(ServerScreen.class).removePopUp();
+        Screens.INSTANCE.getScreen(ServerScreen.class).popUpPresent = false;
+        Screens.INSTANCE.getScreen(ServerScreen.class).toggleButtons(false);
+      } else {
+        //we just want to go back to the previous pop up
+        parentGroup.clear();
+        createMultiplayerChildren(parentGroup);
+      }
       return false;
     }));
     backTable.setButton(backButton);
