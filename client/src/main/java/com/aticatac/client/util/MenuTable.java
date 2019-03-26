@@ -17,7 +17,7 @@ public class MenuTable extends Table {
   private boolean showGroup;
   private boolean tab;
 
-  public MenuTable(boolean tab) {
+  MenuTable(boolean tab) {
     super();
     this.group = null;
     this.button = null;
@@ -44,7 +44,7 @@ public class MenuTable extends Table {
       if (tab) {
         Styles.INSTANCE.addTableColour(this, Color.BLACK);
       } else {
-        if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpPresent) {
+        if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpMultiplayer || Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin) {
           //from pop up menu
           Styles.INSTANCE.addTableColour(this, new Color(1, 1, 1, 0.25f));
         } else {

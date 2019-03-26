@@ -11,5 +11,6 @@ public class DesktopLauncher {
     config.width = 1000;
     config.height = 1000;
     //config.fullscreen = true;
+    //config.resizable = false;
   }
 }

@@ -11,102 +11,102 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public enum Styles {
-    INSTANCE;
-    private TextField.TextFieldStyle textFieldStyle;
-    private Texture blank;
-    public BitmapFont baseFont;
-    public BitmapFont titleFont;
-    public BitmapFont smallFont;
-    public BitmapFont italicFont;
-    public Color hiddenColour;
-    public Color selectedColour;
-    private Color accentColour;
-    private Color transparentColour;
+  INSTANCE;
+  private TextField.TextFieldStyle textFieldStyle;
+  private Texture blank;
+  public BitmapFont baseFont;
+  public BitmapFont titleFont;
+  public BitmapFont smallFont;
+  public BitmapFont italicFont;
+  public Color hiddenColour;
+  public Color selectedColour;
+  private Color accentColour;
+  private Color transparentColour;
 
-    Styles() {
-        System.out.println("Loading styles...");
-        loadStyles();
-        System.out.println("Loaded styles!");
-    }
+  Styles() {
+    System.out.println("Loading styles...");
+    loadStyles();
+    System.out.println("Loaded styles!");
+  }
 
-    public static Styles getInstance() {
-        return INSTANCE;
-    }
+  public static Styles getInstance() {
+    return INSTANCE;
+  }
 
-    private void loadStyles() {
-        //load in font
-        loadFonts();
-        //create text field style with cursor
-        createTextFieldStyle();
-        //assign colours
-        hiddenColour = Color.valueOf("363636");
-        selectedColour = Color.CYAN;
-        accentColour = Color.CORAL;
-        transparentColour = new Color(new Color(0f, 0f, 0f, 0.25f));
-        //load in blank texture for healthbar
-        blank = new Texture(Gdx.files.internal("img/white.png"));
-    }
+  private void loadStyles() {
+    //load in font
+    loadFonts();
+    //create text field style with cursor
+    createTextFieldStyle();
+    //assign colours
+    hiddenColour = Color.valueOf("363636");
+    selectedColour = Color.CYAN;
+    accentColour = Color.CORAL;
+    transparentColour = new Color(new Color(0f, 0f, 0f, 0.25f));
+    //load in blank texture for health bar
+    blank = new Texture(Gdx.files.internal("img/white.png"));
+  }
 
-    private void createTextFieldStyle() {
-        textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = baseFont;
-        textFieldStyle.fontColor = Color.WHITE;
-        Label.LabelStyle cursorStyle = new Label.LabelStyle();
-        cursorStyle.font = baseFont;
-        Label cursorImage = new Label("|", cursorStyle);
-        Pixmap cursorColor = new Pixmap((int) cursorImage.getWidth(),
-          (int) cursorImage.getHeight(),
-          Pixmap.Format.RGB888);
-        cursorColor.setColor(Color.CORAL);
-        cursorColor.fill();
-        textFieldStyle.cursor = new Image(new Texture(cursorColor)).getDrawable();
-        Pixmap textFieldColour = new Pixmap(150, 15, Pixmap.Format.RGB888);
-        textFieldColour.setColor(Color.DARK_GRAY);
-        textFieldColour.fill();
-        textFieldStyle.background = new Image(new Texture(textFieldColour)).getDrawable();
-    }
+  private void createTextFieldStyle() {
+    textFieldStyle = new TextField.TextFieldStyle();
+    textFieldStyle.font = baseFont;
+    textFieldStyle.fontColor = Color.WHITE;
+    Label.LabelStyle cursorStyle = new Label.LabelStyle();
+    cursorStyle.font = baseFont;
+    Label cursorImage = new Label("|", cursorStyle);
+    Pixmap cursorColor = new Pixmap((int) cursorImage.getWidth(),
+      (int) cursorImage.getHeight(),
+      Pixmap.Format.RGB888);
+    cursorColor.setColor(Color.CORAL);
+    cursorColor.fill();
+    textFieldStyle.cursor = new Image(new Texture(cursorColor)).getDrawable();
+    Pixmap textFieldColour = new Pixmap(150, 15, Pixmap.Format.RGB888);
+    textFieldColour.setColor(Color.DARK_GRAY);
+    textFieldColour.fill();
+    textFieldStyle.background = new Image(new Texture(textFieldColour)).getDrawable();
+  }
 
-    private void loadFonts() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
-        FreeTypeFontGenerator generator_title = new FreeTypeFontGenerator(Gdx.files.internal("styles/title_font.ttf"));
-        FreeTypeFontGenerator generator_italic_bold = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font_italic_bold.ttf"));
-        System.out.println("Loaded ttf");
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter10.size = 10;
-        parameter15.size = 15;
-        parameter40.size = 70;
-        smallFont = generator.generateFont(parameter10);
-        baseFont = generator.generateFont(parameter15);
-        titleFont = generator_title.generateFont(parameter40);
-        italicFont = generator_italic_bold.generateFont(parameter10);
-        generator.dispose();
-        generator_title.dispose();
-        generator_italic_bold.dispose();
-    }
+  private void loadFonts() {
+    FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
+    FreeTypeFontGenerator generator_title = new FreeTypeFontGenerator(Gdx.files.internal("styles/title_font.ttf"));
+    FreeTypeFontGenerator generator_italic_bold = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font_italic_bold.ttf"));
+    System.out.println("Loaded ttf");
+    FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    parameter10.size = 10;
+    parameter15.size = 15;
+    parameter40.size = 70;
+    smallFont = generator.generateFont(parameter10);
+    baseFont = generator.generateFont(parameter15);
+    titleFont = generator_title.generateFont(parameter40);
+    italicFont = generator_italic_bold.generateFont(parameter10);
+    generator.dispose();
+    generator_title.dispose();
+    generator_italic_bold.dispose();
+  }
 
-    public TextButton.TextButtonStyle createButtonStyle(BitmapFont font, Color color) {
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = color;
-        return buttonStyle;
-    }
+  public TextButton.TextButtonStyle createButtonStyle(BitmapFont font, Color color) {
+    TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+    buttonStyle.font = font;
+    buttonStyle.fontColor = color;
+    return buttonStyle;
+  }
 
-    public void addTableColour(Table table, Color color) {
-        Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        tableColour.setBlending(Pixmap.Blending.None);
-        tableColour.setColor(color);
-        tableColour.fill();
-        table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
-    }
+  public void addTableColour(Table table, Color color) {
+    Pixmap tableColour = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+    tableColour.setBlending(Pixmap.Blending.None);
+    tableColour.setColor(color);
+    tableColour.fill();
+    table.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(tableColour))));
+  }
 
-    public Label.LabelStyle createLabelStyle(BitmapFont font, Color color) {
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = color;
-        return labelStyle;
-    }
+  public Label.LabelStyle createLabelStyle(BitmapFont font, Color color) {
+    Label.LabelStyle labelStyle = new Label.LabelStyle();
+    labelStyle.font = font;
+    labelStyle.fontColor = color;
+    return labelStyle;
+  }
 
   public MenuTable createMenuTable(boolean selected, boolean tab) {
     MenuTable table = new MenuTable(tab);
@@ -119,74 +119,74 @@ public enum Styles {
     return table;
   }
 
-    public TextField createTextField(String text) {
-        return new TextField(text, textFieldStyle);
-    }
+  public TextField createTextField(String text) {
+    return new TextField(text, textFieldStyle);
+  }
 
-    public Texture getBlank() {
-        return blank;
-    }
+  public Texture getBlank() {
+    return blank;
+  }
 
-    public Label createTitleLabel() {
-        return new Label("TANKNITE", createLabelStyle(titleFont, accentColour));
-    }
+  public Label createTitleLabel() {
+    return new Label("TANKNITE", createLabelStyle(titleFont, accentColour));
+  }
 
-    public Label createLabel(String text) {
-        return new Label(text, createLabelStyle(baseFont, Color.WHITE));
-    }
+  public Label createLabel(String text) {
+    return new Label(text, createLabelStyle(baseFont, Color.WHITE));
+  }
 
-    public Label createCustomLabel(String text, Color color) {
-        return new Label(text, createLabelStyle(baseFont, color));
-    }
+  public Label createCustomLabel(String text, Color color) {
+    return new Label(text, createLabelStyle(baseFont, color));
+  }
 
-    public Label createCustomLabelWithFont(BitmapFont font, String text, Color color) {
-        return new Label(text, createLabelStyle(font, color));
-    }
+  public Label createCustomLabelWithFont(BitmapFont font, String text, Color color) {
+    return new Label(text, createLabelStyle(font, color));
+  }
 
-    public Label createSmallLabel(String text) {
-        return new Label(text, createLabelStyle(smallFont, Color.WHITE));
-    }
+  public Label createSmallLabel(String text) {
+    return new Label(text, createLabelStyle(smallFont, Color.WHITE));
+  }
 
-    public Label createColouredLabel() {
-        return new Label("WAITING FOR HOST", createLabelStyle(baseFont, accentColour));
-    }
+  public Label createColouredLabel() {
+    return new Label("WAITING FOR HOST", createLabelStyle(baseFont, accentColour));
+  }
 
-    public Label createSubtleLabel(String text) {
-      return new Label(text, createLabelStyle(baseFont, Color.YELLOW));
-    }
+  public Label createSubtleLabel(String text) {
+    return new Label(text, createLabelStyle(baseFont, Color.YELLOW));
+  }
 
   public Label createItalicLabel(String text) {
     return new Label(text, createLabelStyle(italicFont, Color.WHITE));
   }
 
-    public Label createErrorLabel() {
-        return new Label("NAME TAKEN", createLabelStyle(baseFont, INSTANCE.hiddenColour));
-    }
+  public Label createErrorLabel() {
+    return new Label("NAME TAKEN", createLabelStyle(baseFont, INSTANCE.hiddenColour));
+  }
 
-    public TextButton createBackButton(String text) {
-        return new TextButton(text, createButtonStyle(baseFont, Color.WHITE));
-    }
+  public TextButton createBackButton(String text) {
+    return new TextButton(text, createButtonStyle(baseFont, Color.WHITE));
+  }
 
-    public TextButton createButton(String text) {
-        return new TextButton(text, createButtonStyle(baseFont, Color.WHITE));
-    }
+  public TextButton createButton(String text) {
+    return new TextButton(text, createButtonStyle(baseFont, Color.WHITE));
+  }
 
-    public TextButton createStartButton(String text) {
-        return new TextButton(text, createButtonStyle(baseFont, accentColour));
-    }
+  public TextButton createStartButton(String text) {
+    return new TextButton(text, createButtonStyle(baseFont, accentColour));
+  }
 
-    public TextButton createItalicButton(String text) {
-        return new TextButton(text, createButtonStyle(italicFont, Color.WHITE));
-    }
+  public TextButton createItalicButton(String text) {
+    return new TextButton(text, createButtonStyle(italicFont, Color.WHITE));
+  }
 
-    public VerticalGroup createVerticalGroup() {
-        VerticalGroup verticalGroup = new VerticalGroup();
-        verticalGroup.columnLeft();
-        verticalGroup.space(10);
-        return verticalGroup;
-    }
+  public VerticalGroup createVerticalGroup() {
+    VerticalGroup verticalGroup = new VerticalGroup();
+    verticalGroup.columnLeft();
+    verticalGroup.space(10);
+    return verticalGroup;
+  }
 
-    public Color getTransparentColour() {
-        return transparentColour;
-    }
+  public Color getTransparentColour() {
+    return transparentColour;
+  }
 }

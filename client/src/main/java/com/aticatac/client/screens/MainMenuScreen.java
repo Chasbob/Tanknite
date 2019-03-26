@@ -36,7 +36,8 @@ public class MainMenuScreen extends AbstractScreen {
   VerticalGroup popUpGroup;
   Table popUpRootTable;
   private MenuTable exitTable;
-  public boolean popUpPresent;
+  public boolean popUpMultiplayer;
+  public boolean popUpLogin;
   private Table containerTable;
   private Label screenTitle;
   private float green;
@@ -49,7 +50,7 @@ public class MainMenuScreen extends AbstractScreen {
   MainMenuScreen() {
     super();
     Gdx.input.setInputProcessor(this);
-    popUpPresent = false;
+    popUpMultiplayer = false;
     green = 0.5f;
     aidBarBatch = new SpriteBatch();
   }
@@ -59,7 +60,7 @@ public class MainMenuScreen extends AbstractScreen {
     //TODO batch is not being drawn under aid label
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    if (!popUpPresent) {
+    if (!popUpMultiplayer && !popUpLogin) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
         switchTab(true);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
@@ -74,7 +75,7 @@ public class MainMenuScreen extends AbstractScreen {
     } else {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
         rootTable.removeActor(popUpRootTable);
-        popUpPresent = false;
+        popUpMultiplayer = false;
         toggleButtonDeactivation(false);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
         keySwitcher(popUpGroup, popUpIndex, false);
@@ -82,6 +83,10 @@ public class MainMenuScreen extends AbstractScreen {
         keySwitcher(popUpGroup, popUpIndex, true);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
         enterPressed();
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+        keySwitcher(popUpGroup, popUpIndex, true);
+      } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+        keySwitcher(popUpGroup, popUpIndex, false);
       }
     }
     //setting colour dynamic for title label
@@ -121,15 +126,13 @@ public class MainMenuScreen extends AbstractScreen {
     rootTable.setFillParent(true);
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
-    //create points and username table
-    createAssets();
-    //create top half of screen
-    createNavigationMenus();
-    //create table to store lower part of screen info
-    containerTable.row();
-    createLockedTable();
-    //create label for aid at bottom of screen
-    createAidTable();
+    //create title table
+    Table titleTable = new Table().top().left().padTop(30).padLeft(50);
+    screenTitle = Styles.INSTANCE.createTitleLabel();
+    titleTable.add(screenTitle);
+    super.addToRoot(titleTable);
+    popUpLogin = true;
+    PopUp.createPopUp(true);
   }
 
   private void createAidTable() {
@@ -141,11 +144,6 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   private void createNavigationMenus() {
-    //create title table
-    Table titleTable = new Table().top().left().padTop(30).padLeft(50);
-    screenTitle = Styles.INSTANCE.createTitleLabel();
-    titleTable.add(screenTitle);
-    super.addToRoot(titleTable);
     //create table to store all buttons
     containerTable = new Table().top().left().padLeft(50).padTop(150).padRight(50);
     super.addToRoot(containerTable);
@@ -228,7 +226,7 @@ public class MainMenuScreen extends AbstractScreen {
     assetsTable.top().right().pad(10);
     assetsTable.defaults().left();
     assetsTable.add(Styles.INSTANCE.createLabel("ID: "));
-    assetsTable.add(Styles.INSTANCE.createCustomLabel("acidArchie", Color.CORAL)).padRight(10);
+    assetsTable.add(Styles.INSTANCE.createCustomLabel(Data.INSTANCE.getUsername(), Color.CORAL)).padRight(10);
     assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
     assetsTable.add(Styles.INSTANCE.createCustomLabel("1500", Color.CORAL));
     super.addToRoot(assetsTable);
@@ -335,8 +333,8 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton multiPlayerButton = Styles.INSTANCE.createItalicButton("MULTI-PLAYER");
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(multiPlayerTable);
-      popUpPresent = true;
-      PopUp.createPopUp();
+      popUpMultiplayer = true;
+      PopUp.createPopUp(false);
       toggleButtonDeactivation(true);
       return false;
     }));
@@ -472,9 +470,14 @@ public class MainMenuScreen extends AbstractScreen {
   private void enterPressed() {
     InputEvent inputEvent = new InputEvent();
     inputEvent.setType(InputEvent.Type.touchDown);
-    if (popUpPresent) {
+    if (popUpMultiplayer) {
       //get current menu table and fire button
       MenuTable menuTable = (MenuTable) popUpGroup.getChildren().get(popUpIndex);
+      menuTable.getButton().fire(inputEvent);
+    } else if (popUpLogin) {
+      //get horizontal group
+      HorizontalGroup horizontalGroup = (HorizontalGroup) popUpGroup.getChildren().get(0);
+      MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(popUpIndex);
       menuTable.getButton().fire(inputEvent);
     } else {
       //get current highlighted menu table
@@ -523,10 +526,13 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
-  private void keySwitcher(Group group, int index, boolean down) {
+  private void keySwitcher(Group group, int index, boolean downOrRight) {
+    if (popUpLogin) {
+      group = (Group) group.getChildren().get(0);
+    }
     MenuTable menuTable = (MenuTable) group.getChildren().get(index);
     menuTable.setShowGroup(false);
-    if (down) {
+    if (downOrRight) {
       if (index == group.getChildren().size - 1) {
         index = 0;
       } else {
@@ -539,7 +545,7 @@ public class MainMenuScreen extends AbstractScreen {
         index--;
       }
     }
-    if (popUpPresent) {
+    if (popUpMultiplayer || popUpLogin) {
       popUpIndex = index;
     } else {
       dropDownIndex = index;
@@ -559,6 +565,18 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
+  void loadInMainMenu() {
+    //create points and username table
+    createAssets();
+    //create top half of screen
+    createNavigationMenus();
+    //create table to store lower part of screen info
+    containerTable.row();
+    createLockedTable();
+    //create label for aid at bottom of screen
+    createAidTable();
+  }
+
   @Override
   public void refresh() {
     //unhighlight the drop down if we come back from server screen
@@ -566,7 +584,7 @@ public class MainMenuScreen extends AbstractScreen {
     MenuTable menuTable = (MenuTable) currentDropDown.getChildren().get(dropDownIndex);
     menuTable.setShowGroup(false);
     //set variables back to normal
-    popUpPresent = false;
+    popUpMultiplayer = false;
     toggleButtonDeactivation(false);
     popUpIndex = 0;
     dropDownIndex = 0;

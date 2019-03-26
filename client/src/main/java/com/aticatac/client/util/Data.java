@@ -30,6 +30,7 @@ public enum Data {
   private ServerInformation currentInformation;
   private boolean singleplayer;
   private Client client;
+  private String username;
   private Container playerPos;
   private ArrayList<Container> playerList;
   private boolean serverSelected;
@@ -303,4 +304,12 @@ public enum Data {
    */
   public void setHosting(boolean hosting) {
     isHosting = hosting;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }}
