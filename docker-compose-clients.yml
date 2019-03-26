@@ -1,0 +1,67 @@
+version: '3.5'
+networks:
+  lan:
+    external:
+      name: 'lan'
+
+services:
+  client1:
+    container_name: 'client1'
+    image: 'client'
+    networks:
+      - 'lan'
+
+  client2:
+    container_name: 'client2'
+    image: 'client'
+    networks:
+      - 'lan'
+
+#  client3:
+#    container_name: 'client3'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#
+#  client4:
+#    container_name: 'client4'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#
+#  client5:
+#    container_name: 'client5'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#
+#  client6:
+#    container_name: 'client6'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#
+#  client7:
+#    container_name: 'client7'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#
+#  client8:
+#    container_name: 'client8'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#
+#  client9:
+#    container_name: 'client9'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#
+#  client10:
+#    container_name: 'client10'
+#    image: 'client'
+#    networks:
+#      - 'lan'
+#

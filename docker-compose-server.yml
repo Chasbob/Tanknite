@@ -1,0 +1,13 @@
+version: '3.5'
+networks:
+  lan:
+    external:
+      name: 'lan'
+
+
+services:
+  server:
+    container_name: 'server'
+    image: 'server'
+    networks:
+      - 'lan'

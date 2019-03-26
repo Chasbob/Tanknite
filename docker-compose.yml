@@ -1,0 +1,30 @@
+version: '3.5'
+networks:
+  lan:
+    name: 'lan'
+
+
+services:
+  server:
+    container_name: 'server'
+    image: 'server:testing'
+    build:
+      context: './server'
+    networks:
+      - 'lan'
+
+  client1:
+    container_name: 'client1'
+    image: 'client'
+    networks:
+      - 'lan'
+    depends_on:
+      - server
+
+  client2:
+    container_name: 'client2'
+    image: 'client'
+    networks:
+      - 'lan'
+    depends_on:
+      - server

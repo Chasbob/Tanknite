@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Player">
+    <resultMap id="result" type="Player">
+        <result column="id"/>
+        <result column="username"/>
+        <result column="password"/>
+        <result column="tank_colour"/>
+        <result column="top_kill_streak"/>
+        <result column="kills"/>
+        <result column="deaths"/>
+        <result column="win"/>
+        <result column="loss"/>
+    </resultMap>
+    <insert id="insert" parameterType="Player">
+        INSERT INTO players (username, password)
+        VALUES (#{username}, #{password})
+        ;
+    </insert>
+    <select id="getByUsername" resultType="Player" parameterType="String">
+        SELECT *
+        FROM players
+        WHERE username = #{username}
+        ;
+    </select>
+    <select id="selectAll" resultType="Player">
+        SELECT *
+        FROM tanknite.public.players
+        ;
+    </select>
+    <select id="getByID" resultMap="result" parameterType="int">
+        SELECT *
+        FROM players
+        WHERE id = #{id}
+    </select>
+</mapper>
