@@ -1,9 +1,9 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.server.networking.Server;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
-import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;

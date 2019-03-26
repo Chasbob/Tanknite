@@ -2,12 +2,12 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
+import com.aticatac.client.server.networking.Server;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.server.networking.Server;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;

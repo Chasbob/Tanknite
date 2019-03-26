@@ -1,12 +1,12 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.game.GDXGame;
+import com.aticatac.client.server.networking.Server;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
-import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;

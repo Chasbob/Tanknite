@@ -1,8 +1,8 @@
 package com.aticatac.client.game;
 
 import com.aticatac.client.screens.Screens;
+import com.aticatac.client.server.networking.Server;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Game;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
