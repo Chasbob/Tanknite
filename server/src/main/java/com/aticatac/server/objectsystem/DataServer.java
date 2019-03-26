@@ -45,7 +45,7 @@ public enum DataServer {
         for (int i = 0; i < 60; i++) {
             for (int j = 0; j < 60; j++) {
                 if ((map[i][j]).equals("1")) {
-                    createCollisionBox(i,j);
+                    createCollisionBox(i+1,60-j-2);
                 }
             }
         }

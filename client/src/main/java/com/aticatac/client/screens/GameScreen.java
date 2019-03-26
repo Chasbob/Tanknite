@@ -1,12 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.isometric.Helper;
-import com.aticatac.client.util.Camera;
-import com.aticatac.client.util.Data;
-import com.aticatac.client.util.HudUpdate;
-import com.aticatac.client.util.ListenerFactory;
-import com.aticatac.client.util.MinimapViewport;
-import com.aticatac.client.util.Styles;
+import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -23,11 +18,12 @@ import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * The type Game screen.
@@ -67,6 +63,7 @@ public class GameScreen extends AbstractScreen {
     private boolean tractionPopUp;
 
     private ArrayList<Position> tileObjects;
+    private ArrayList<ArrayList<Position>> rows = new ArrayList<>();
 
     /**
      * Instantiates a new Game screen.
@@ -101,10 +98,43 @@ public class GameScreen extends AbstractScreen {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         healthBarBatch = new SpriteBatch();
         game = new SpriteBatch();
         tanksMiniMap = new SpriteBatch();
         minimapBackGround = new SpriteBatch();
+
+        for (int i = 0; i != 61; i++) {
+            ArrayList<Position> ps = new ArrayList<>();
+            rows.add(ps);
+        }
+
+        int counter = 1;
+
+        for (int j = 0; j <= 61; j++) {
+            for (int i = -counter; i < counter + 1; i++) {
+                int x = (int) (j + 0.5f - i);
+                int y = (int) (j - 0.5f + i);
+                try {
+                    rows.get(j).add(new Position(x, y));
+                } catch (Exception ignored) {
+                }
+
+            }
+
+            for (int i = -counter; i < counter + 1; i++) {
+                int x = j - i;
+                int y = j + i;
+                try {
+                    rows.get(j).add(new Position(x, y));
+                } catch (Exception ignored) {
+                }
+
+            }
+
+            counter++;
+        }
+
     }
 
     @Override
@@ -183,7 +213,17 @@ public class GameScreen extends AbstractScreen {
         game.setProjectionMatrix(this.camera.getCamera().combined);
         game.begin();
 
-        renderWalls(game);
+        var array = new ArrayList<Position>();
+        if (update != null) {
+
+            for (int i = 0; i < update.getPlayers().values().size(); i++) {
+                Container updater = update.getI(i);
+                var pos1 = new Position(updater.getX(),updater.getY());
+                array.add(pos1);
+            }
+        }
+
+        renderWalls(game,array);
 
         game.end();
 
@@ -219,96 +259,23 @@ public class GameScreen extends AbstractScreen {
         draw();
     }
 
-    public void renderWalls(SpriteBatch sb) {
-
-        var tanks = new ArrayList<Container>();
-
-        if (update != null) {
-
-            for (int i = 0; i < update.getPlayers().values().size(); i++) {
-                Container updater = update.getI(i);
-                tanks.add(updater);
-            }
-        }
-
-        ArrayList<ArrayList<Position>> rows = new ArrayList<>();
-
-        for (int i = 0; i != 61; i++) {
-            ArrayList<Position> ps = new ArrayList<>();
-            rows.add(ps);
-        }
-
-        int counter = 1;
-
-        for (int j = 0; j <= 61; j++) {
-            for (int i = -counter; i < counter + 1; i++) {
-                int x = (int) (j + 0.5f - i);
-                int y = (int) (j - 0.5f + i);
-                try {
-                    rows.get(j).add(new Position(x, y));
-                } catch (Exception ignored) {
-                }
-
-            }
-
-            for (int i = -counter; i < counter + 1; i++) {
-                int x = j - i;
-                int y = j + i;
-                try {
-                    rows.get(j).add(new Position(x, y));
-                } catch (Exception ignored) {
-                }
-
-            }
-
-            counter++;
-        }
-
-
+    public void renderWalls(SpriteBatch sb,ArrayList<Position> tanks) {
         int index = 0;
         for (ArrayList<Position> ps : rows) {
             for (Position pp : ps) {
                 try {
                     var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(pp.getX(), pp.getY()).getTile();
-                    drawTiles(sb, pp.getX()-1, pp.getY(), tile);
+                    drawTiles(sb, pp.getX(), pp.getY(), tile);
                 } catch (Exception ignored) {
                 }
             }
             for (var c : tanks) {
                 if((int)((Math.ceil(c.getX()/32f)+Math.ceil(60-(c.getY()/32f)))/2f)==index) {
-                    sb.draw(tankTexture, Helper.tileToScreenX(c.getX(), c.getY()), Helper.tileToScreenY(c.getX(), c.getY()));
+                    sb.draw(tankTexture, Helper.tileToScreenX(c.getX() +10 , c.getY() -10), Helper.tileToScreenY(c.getX() +10, c.getY() -10));
                 }
             }
             index++;
         }
-
-
-//        for (int i = 0; i <= 60; i++) {
-//            for (int j = 60; j != -1; j--) {
-//                try {
-//                    var tile = ((TiledMapTileLayer) map.getLayers().get(0)).getCell(i, j).getTile();
-//                    drawTiles(sb, i+1, j-1, tile);
-//
-//                } catch (Exception ignored) {
-//                }
-//            }
-//        }
-//
-//        for (int i = 0; i <= 60; i++) {
-//            for (int j = 60; j != -1; j--) {
-//                try {
-//                    for (var c : tanks) {
-//                        if(c.getX()>i*32 && c.getX()<(i+1)*32 && c.getY()>(60-j)*32 && c.getY()<(60-(j-1))*32) {
-//                            sb.draw(tankTexture, Helper.tileToScreenX(c.getX(), c.getY()), Helper.tileToScreenY(c.getX(), c.getY()));
-//                        }
-//                    }
-//                    var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(i, j).getTile();
-//                    drawTiles(sb, i, j, tile);
-//
-//                } catch (Exception ignored) {
-//                }
-//            }
-//        }
     }
 
     private void drawTiles(SpriteBatch sb, int i, int j, TiledMapTile tile) {
