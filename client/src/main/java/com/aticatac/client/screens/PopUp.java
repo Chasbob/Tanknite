@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Align;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
@@ -78,7 +79,7 @@ class PopUp {
     //clear the pop up
     multiplayerChildren.clear();
     VerticalGroup bodyGroup = new VerticalGroup();
-    bodyGroup.space(10);
+    bodyGroup.space(10).columnLeft();
     multiplayerChildren.addActor(bodyGroup);
     //create actors
     Label serverNameLabel = Styles.INSTANCE.createLabel("SERVER NAME");
@@ -88,6 +89,7 @@ class PopUp {
     bodyGroup.addActor(serverNameField);
     //new horizontal group to store host and back
     HorizontalGroup buttonGroup = new HorizontalGroup();
+    buttonGroup.align(Align.left);
     buttonGroup.space(5);
     multiplayerChildren.addActor(buttonGroup);
     buttonGroup.addActor(createBackButton(false, multiplayerChildren));

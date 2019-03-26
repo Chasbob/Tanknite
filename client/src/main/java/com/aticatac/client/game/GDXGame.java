@@ -3,6 +3,9 @@ package com.aticatac.client.game;
 import com.aticatac.client.screens.Screens;
 import com.aticatac.common.model.Updates.Update;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Cursor;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
