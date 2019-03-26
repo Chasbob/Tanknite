@@ -331,10 +331,16 @@ public class AI {
    * @return A path from one position to another
    */
   private LinkedList<SearchNode> getPath(Position from, Position to) {
+    ArrayList<SearchNode> enemyPositions = new ArrayList<>();
+    for (PlayerState enemy : enemiesInRange) {
+      enemyPositions.addAll(graph.getNearestNode(enemy.getPosition()).getSubGraph(2));
+    }
+    occupiedNodes.addAll(enemyPositions);
     occupiedNodes.removeAll(searchPath);
     pathFinder.setOccupiedNodes(occupiedNodes);
     LinkedList<SearchNode> path = pathFinder.getPathToLocation(graph.getNearestNode(from), graph.getNearestNode(to));
     occupiedNodes.addAll(path);
+    occupiedNodes.removeAll(enemyPositions);
     return path;
   }
 
@@ -368,9 +374,9 @@ public class AI {
    */
   private ArrayList<Position> getEmptyPositions(int range) {
     ArrayList<Position> emptyPositions = new ArrayList<>();
-    ArrayList<SearchNode> nodes = graph.getNodesInRange(tankPos, range);
+    ArrayList<Position> nodes = new ArrayList<>(graph.getNodesInRange(tankPos, range));
     // Occupied nodes are not empty
-    for (SearchNode node : nodes) {
+    for (Position node : nodes) {
       if (!occupiedNodes.contains(node)) {
         emptyPositions.add(node);
       }
@@ -378,6 +384,9 @@ public class AI {
     // Enemy and near-enemy positions are not empty
     for (PlayerState enemy : enemiesInRange) {
       emptyPositions.removeAll(graph.getNearestNode(enemy.getPosition()).getSubGraph(2));
+    }
+    if (emptyPositions.isEmpty()) {
+      return nodes;
     }
     return emptyPositions;
   }
