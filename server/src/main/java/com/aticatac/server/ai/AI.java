@@ -331,16 +331,16 @@ public class AI {
    * @return A path from one position to another
    */
   private LinkedList<SearchNode> getPath(Position from, Position to) {
-    ArrayList<SearchNode> enemyPositions = new ArrayList<>();
-    for (PlayerState enemy : enemiesInRange) {
-      enemyPositions.addAll(graph.getNearestNode(enemy.getPosition()).getSubGraph(2));
-    }
-    occupiedNodes.addAll(enemyPositions);
-    occupiedNodes.removeAll(searchPath);
-    pathFinder.setOccupiedNodes(occupiedNodes);
+//    ArrayList<SearchNode> enemyPositions = new ArrayList<>();
+//    for (PlayerState enemy : enemiesInRange) {
+//      enemyPositions.addAll(graph.getNearestNode(enemy.getPosition()).getSubGraph(2));
+//    }
+//    occupiedNodes.addAll(enemyPositions);
+//    occupiedNodes.removeAll(searchPath);
+//    pathFinder.setOccupiedNodes(occupiedNodes);
     LinkedList<SearchNode> path = pathFinder.getPathToLocation(graph.getNearestNode(from), graph.getNearestNode(to));
-    occupiedNodes.addAll(path);
-    occupiedNodes.removeAll(enemyPositions);
+//    occupiedNodes.addAll(path);
+//    occupiedNodes.removeAll(enemyPositions);
     return path;
   }
 
