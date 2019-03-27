@@ -59,7 +59,7 @@ public class PopUp {
 
   private static void createGameSettings(VerticalGroup multiplayerChildren) {
     //create button for resuming
-    MenuTable resumeTable = Styles.INSTANCE.createMenuTable(true, false);
+    MenuTable resumeTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton resumeButton = Styles.INSTANCE.createButton("RESUME");
     resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Screens.INSTANCE.getScreen(GameScreen.class).tractionPopUp = true;
@@ -76,7 +76,7 @@ public class PopUp {
       multiplayerChildren.clear();
       Settings.createSettings();
       //create back button
-      TextButton backButton = Styles.INSTANCE.createButton("Back");
+      TextButton backButton = Styles.INSTANCE.createButton("BACK");
       backButton.addListener(ListenerFactory.newListenerEvent(() -> {
         multiplayerChildren.clear();
         createGameSettings(multiplayerChildren);
@@ -100,6 +100,7 @@ public class PopUp {
     quitTable.setButton(quitButton);
     ListenerFactory.addHoverListener(quitButton, quitTable);
     multiplayerChildren.addActor(quitTable);
+    Screens.INSTANCE.getScreen(GameScreen.class).verticalGroup = multiplayerChildren;
   }
 
   private static void createMultiplayerChildren(VerticalGroup multiplayerChildren) {
