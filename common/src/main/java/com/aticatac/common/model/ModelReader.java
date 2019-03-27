@@ -2,7 +2,6 @@ package com.aticatac.common.model;
 
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.google.gson.Gson;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -25,6 +23,7 @@ public class ModelReader {
    * To bytes udp byte [ ].
    *
    * @param model the model
+   *
    * @return the byte [ ]
    */
   public byte[] toBytes(Object model) throws IOException {
@@ -39,6 +38,7 @@ public class ModelReader {
    * To json string.
    *
    * @param model the model
+   *
    * @return the string
    */
   public String toJson(Object model) {
@@ -52,7 +52,9 @@ public class ModelReader {
    * @param <T>  the type parameter
    * @param in   the in
    * @param type the type
+   *
    * @return the t
+   *
    * @throws InvalidBytes the invalid bytes
    */
   public <T> T toModel(byte[] in, Class<T> type) throws InvalidBytes, IOException {
@@ -68,7 +70,9 @@ public class ModelReader {
    * @param <T>  the type parameter
    * @param json the json
    * @param type the type
+   *
    * @return the t
+   *
    * @throws InvalidBytes the invalid bytes
    */
   public <T> T fromJson(String json, Class<T> type) throws InvalidBytes {
@@ -77,7 +81,6 @@ public class ModelReader {
     try {
       output = gson.fromJson(json, type);
       return output;
-
     } catch (NumberFormatException e) {
       return null;
     }
@@ -86,6 +89,11 @@ public class ModelReader {
 //    } else {
 //      return output;
 //    }
+  }
+
+  public Object objectJson(String json) {
+    Gson gson = new Gson();
+    return gson.fromJson(json, Object.class);
   }
 
   private byte[] compress(byte[] data) throws IOException {
