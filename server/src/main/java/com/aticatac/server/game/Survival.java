@@ -38,8 +38,8 @@ public class Survival extends GameMode implements Runnable {
     run = true;
     this.logger.trace("Running...");
     while (run) {
-//      checkPowerup();
-      //createPowerUps();
+      checkPowerup();
+//      createPowerUps();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
       aiUpdateService.update(playerMap, powerups);
@@ -61,7 +61,7 @@ public class Survival extends GameMode implements Runnable {
 
   private void checkPowerup() {
     counter++;
-    if (counter == 600) {
+    if (counter == 300) {
       createPowerUps();
       counter = 0;
     }

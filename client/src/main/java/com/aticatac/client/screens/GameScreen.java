@@ -5,6 +5,7 @@ import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -54,8 +55,10 @@ public class GameScreen extends AbstractScreen {
     private Label fpsValue;
     private Label tankXY;
     private Texture tankTexture;
-    private Texture tankTexture2;
+    private Texture powerUpTexture;
+    private Texture bulletTexture;
     private Texture projectileTexture;
+    private Texture tankTexture2;
     private Label direction;
     private Container player;
     private HudUpdate hudUpdate;
@@ -88,6 +91,8 @@ public class GameScreen extends AbstractScreen {
             wallLayer = (TiledMapTileLayer) mapLayers.get(1);
             tankTexture = new Texture("maps/tank1.png");
             tankTexture2 = new Texture("img/tank.png");
+            powerUpTexture = new Texture("maps/powerup.png");
+            bulletTexture = new Texture("maps/bullet.png");
             projectileTexture = new Texture("img/bullet.png");
             tractionHealth = true;
             tractionPopUp = true;
@@ -213,7 +218,12 @@ public class GameScreen extends AbstractScreen {
         game.setProjectionMatrix(this.camera.getCamera().combined);
         game.begin();
 
-        renderGame(game,returnTanks(),returnProjectiles());
+        var collection = new ArrayList<Container>();
+        collection.addAll(returnTanks());
+        collection.addAll(returnProjectiles());
+        collection.addAll(returnPowerups());
+
+        renderGame(game,collection);
 
         game.end();
 
@@ -249,7 +259,9 @@ public class GameScreen extends AbstractScreen {
         draw();
     }
 
-    public void renderGame(SpriteBatch sb, ArrayList<Position> tanks, ArrayList<Position> bullets) {
+    /*Isometric rendering begin*/
+
+    public void renderGame(SpriteBatch sb, ArrayList<Container> objects) {
         int index = 0;
         for (ArrayList<Position> ps : rows) {
             for (Position pp : ps) {
@@ -259,15 +271,50 @@ public class GameScreen extends AbstractScreen {
                 } catch (Exception ignored) {
                 }
             }
-            tanks.addAll(bullets);
-            for (var c : tanks) {
+            for (var c : objects) {
                 if((int)((Math.ceil(c.getX()/32f)+Math.ceil(60-(c.getY()/32f)))/2f)==index) {
-                    sb.draw(tankTexture, Helper.tileToScreenX(c.getX() +10 , c.getY() -10), Helper.tileToScreenY(c.getX() +10, c.getY() -10));
+                    if(c.getObjectType() == EntityType.BULLET) {
+                        sb.draw(bulletTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+                    }else if(c.getObjectType() == EntityType.AMMO_POWERUP || c.getObjectType() == EntityType.HEALTH_POWERUP || c.getObjectType() == EntityType.DAMAGE_POWERUP || c.getObjectType() == EntityType.SPEED_POWERUP) {
+                        sb.draw(powerUpTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+                    }else if(c.getObjectType() == EntityType.TANK) {
+                        sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+                    }
                 }
             }
             index++;
         }
     }
+
+    private ArrayList<Container> returnProjectiles() {
+        var array = new ArrayList<Container>();
+        if (update != null) {
+            array.addAll(update.getProjectiles().values());
+        }
+        return array;
+    }
+
+    private ArrayList<Container> returnTanks(){
+        var array = new ArrayList<Container>();
+        if (update != null) {
+
+            for (int i = 0; i < update.getPlayers().values().size(); i++) {
+                Container updater = update.getI(i);
+                array.add(updater);
+            }
+        }
+        return array;
+    }
+
+    private ArrayList<Container> returnPowerups() {
+        var array = new ArrayList<Container>();
+        if (update != null) {
+            array.addAll(update.getPowerups().values());
+        }
+        return array;
+    }
+
+    /*Isometric rendering ends*/
 
     private void drawTiles(SpriteBatch sb, int i, int j, TiledMapTile tile) {
         var pos = new Position((i) * 32, (j) * 32);
@@ -410,103 +457,16 @@ public class GameScreen extends AbstractScreen {
         return alertTable;
     }
 
-    private void renderTanks(SpriteBatch tanks) {
-        if (update != null) {
-
-            for (int i = 0; i < update.getPlayers().values().size(); i++) {
-                Container updater = update.getI(i);
-
-                var pos = new Position((1920 - updater.getY()) / 32, (1920 - updater.getX()) / 32);
-
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(tileSet.getTile(1));
-                cell.setRotation(180);
-
-                tileObjects.add(pos);
-
-                wallLayer.setCell(pos.getX(), pos.getY(), cell);
-
-            }
-        }
-//    renderProjectiles(game);
-        renderPowerups(game, false);
-        tanks.end();
-    }
-
-    private ArrayList<Position> returnProjectiles() {
-        var array = new ArrayList<Position>();
-//        if (update != null) {
-//
-//            for (int i = 0; i < update.getProjectiles().values().size(); i++) {
-//                Container updater = update.getProjectiles().get(i);
-//                var pos1 = new Position(updater.getX(),updater.getY());
-//                array.add(pos1);
-//            }
-//        }
-        return array;
-    }
-
-    private ArrayList<Position> returnTanks(){
-        var array = new ArrayList<Position>();
-        if (update != null) {
-
-            for (int i = 0; i < update.getPlayers().values().size(); i++) {
-                Container updater = update.getI(i);
-                var pos1 = new Position(updater.getX(),updater.getY());
-                array.add(pos1);
-            }
-        }
-        return array;
-    }
 
     private void renderProjectiles(SpriteBatch tanks) {
         if (update != null) {
-            for (int i = 0; i < update.getProjectiles().size(); i++) {
-                renderProjectiles(update.getProjectiles().get(i), tanks);
+            for (var c : update.getProjectiles().values()) {
+                renderProjectiles(c, tanks);
             }
         }
     }
 
     private void renderPowerups(SpriteBatch tanks, boolean ortho) {
-        if (update != null) {
-            for (Container c :
-                    update.getPowerups().values()) {
-                switch (c.getObjectType()) {
-                    case NONE:
-                        break;
-                    case TANK:
-                        break;
-                    case BULLET:
-                        break;
-                    case WALL:
-                        break;
-                    case OUTOFBOUNDS:
-                        break;
-                    case AMMO_POWERUP:
-                        tanks.setColor(Color.CYAN);
-                        break;
-                    case SPEED_POWERUP:
-                        tanks.setColor(Color.RED);
-                        break;
-                    case HEALTH_POWERUP:
-                        tanks.setColor(Color.BLUE);
-                        break;
-                    case DAMAGE_POWERUP:
-                        tanks.setColor(Color.YELLOW);
-                        break;
-                }
-                if (ortho) {
-                    tanks.setColor(Color.WHITE);
-                    renderOrthoContainer(c, tanks);
-                } else {
-                    tanks.setColor(Color.BLACK);
-                    renderContainer(c, tanks);
-                }
-            }
-        }
-    }
-
-    private ArrayList<Position> renderPowerups() {
         if (update != null) {
             for (Container c :
                     update.getPowerups().values()) {
@@ -601,12 +561,17 @@ public class GameScreen extends AbstractScreen {
 
     private int getBearing() {
         Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        Vector2 mouseMapPos = new Vector2(Helper.screenXtoTile((int) mouseMapPos3.x, (int) mouseMapPos3.y), Helper.screenYtoTile((int) mouseMapPos3.x, (int) mouseMapPos3.y));
 
-        Vector2 tankVec = new Vector2(player.getX(), player.getY());
+        Position mouseMapIso =
+                Helper.screenToTile(new Position(
+                        (int)(mouseMapPos3.x),
+                        (int)(mouseMapPos3.y))
+                );
 
-        Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
-        return Math.round(mouseRel.angle());
+        float deltaX = mouseMapIso.getX()-player.getX();
+        float deltaY = mouseMapIso.getY()-player.getY();
+
+        return (int)(Math.round(Math.toDegrees(Math.atan2(deltaY,deltaX))));
     }
 
     private void backgroundInput() {
@@ -633,7 +598,13 @@ public class GameScreen extends AbstractScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             Data.INSTANCE.sendCommand(Command.SHOOT);
         }
-        Data.INSTANCE.submit(0);
+        Data.INSTANCE.submit(changeAngle(getBearing(),180));
+    }
+
+    private int changeAngle(int angle, int change) {
+        if (angle + change >= 0)
+            return (angle + change) % 360;
+        return (angle + change + 360) % 360;
     }
 
     @Override
