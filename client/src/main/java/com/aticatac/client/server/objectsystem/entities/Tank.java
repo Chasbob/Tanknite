@@ -231,6 +231,13 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     return getHealth();
   }
 
+  public void ammoIncrease(final int amount){
+    if (getAmmo() + amount >= maxAmmo){
+      setAmmo(getMaxAmmo());
+    }
+    else setAmmo(getAmmo() + amount);
+  }
+
   /**
    * Sets health.
    *
