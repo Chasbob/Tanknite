@@ -583,15 +583,19 @@ public class GameScreen extends AbstractScreen {
         if (tractionHealth && tractionPopUp) {
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 Data.INSTANCE.sendCommand(Command.LEFT);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                Data.INSTANCE.sendCommand(Command.RIGHT);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                Data.INSTANCE.sendCommand(Command.UP);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
                 Data.INSTANCE.sendCommand(Command.DOWN);
-            } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            } if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                Data.INSTANCE.sendCommand(Command.RIGHT);
+                Data.INSTANCE.sendCommand(Command.UP);
+            } if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                Data.INSTANCE.sendCommand(Command.RIGHT);
+                Data.INSTANCE.sendCommand(Command.DOWN);
+            } if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                Data.INSTANCE.sendCommand(Command.LEFT);
+                Data.INSTANCE.sendCommand(Command.UP);
+            } if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
                 this.camera.getCamera().zoom -= 0.1f;
-            } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            } if (Gdx.input.isKeyPressed(Input.Keys.E)) {
                 this.camera.getCamera().zoom += 0.1f;
             }
         }
