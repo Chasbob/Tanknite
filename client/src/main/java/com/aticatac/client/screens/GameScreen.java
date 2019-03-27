@@ -229,8 +229,7 @@ public class GameScreen extends AbstractScreen {
         renderer.getBatch().begin();
         renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(0));
         renderer.getBatch().end();
-        //health bar
-        healthBar();
+
 
         //game
         game.setProjectionMatrix(this.camera.getCamera().combined);
@@ -244,6 +243,9 @@ public class GameScreen extends AbstractScreen {
         renderGame(game,collection);
 
         game.end();
+
+        //health bar
+        healthBar();
 
         //mini viewport
         minimapViewport.apply();
