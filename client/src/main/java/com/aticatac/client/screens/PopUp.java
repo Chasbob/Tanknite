@@ -5,7 +5,6 @@ import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.mappers.Player;
 import com.aticatac.common.model.DBResponse;
 import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.ServerInformation;
@@ -14,10 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
-import com.google.common.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
-
-import static com.aticatac.client.bus.EventBusFactory.eventBus;
 
 import java.net.InetAddress;
 
@@ -233,9 +229,9 @@ public class PopUp {
     rootGroup.pack();
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = rootGroup;
     //add main listeners for buttons
-    createErrorListener(loginButton, errorLabel, usernameText, passwordText);
+    createErrorListener(false, loginButton, errorLabel, usernameText, passwordText);
     //TODO register player and give errors
-    createErrorListener(registerButton, errorLabel, usernameText, passwordText);
+    createErrorListener(true, registerButton, errorLabel, usernameText, passwordText);
     InputEvent clickEvent = new InputEvent();
     clickEvent.setType(InputEvent.Type.touchDown);
     return rootGroup;
@@ -275,18 +271,27 @@ public class PopUp {
     return backTable;
   }
 
-  private static void createErrorListener(TextButton button, Label errorLabel, TextField usernameText, TextField passwordText) {
+  private static void createErrorListener(boolean register, TextButton button, Label errorLabel, TextField usernameText, TextField passwordText) {
     button.addListener(ListenerFactory.newListenerEvent(() -> {
-      DBResponse response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText()));
+      DBResponse response;
+      if (register) {
+        response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText(), true));
+      } else {
+        response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText(), false));
+      }
       switch (response.getResponse()) {
         case accepted:
+          resetMainMenu();
           break;
         case wrong_password:
           errorLabel.setText("WRONG PASSWORD");
+          break;
         case username_taken:
           errorLabel.setText("NAME TAKEN");
+          break;
         case no_user:
           errorLabel.setText("NO USER");
+          break;
       }
       return false;
     }));
