@@ -14,6 +14,7 @@
         <result column="deaths"/>
         <result column="win"/>
         <result column="loss"/>
+        <result column="score"/>
     </resultMap>
     <insert id="insert" parameterType="Player">
         INSERT INTO players (username, password)
@@ -26,14 +27,25 @@
         WHERE username = #{username}
         ;
     </select>
-    <select id="selectAll" resultType="Player">
-        SELECT *
-        FROM tanknite.public.players
-        ;
-    </select>
+    <!--<select id="selectAll" resultType="Player">-->
+        <!--SELECT *-->
+        <!--FROM aticatac.public.players-->
+        <!--;-->
+    <!--</select>-->
     <select id="getByID" resultMap="result" parameterType="int">
         SELECT *
         FROM players
         WHERE id = #{id}
     </select>
+    <update id="updateStats" parameterType="Player">
+        UPDATE players
+        SET top_kill_streak = #{top_kill_streak},
+            kills           = #{kills},
+            deaths          = #{deaths},
+            win             = #{win},
+            loss            = #{loss},
+            score           = calc_score(#{kills}, #{deaths}, #{win}, #{loss}, #{top_kill_streak})
+        WHERE username = #{username}
+        ;
+    </update>
 </mapper>

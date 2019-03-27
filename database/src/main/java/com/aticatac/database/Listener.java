@@ -57,8 +57,9 @@ public class Listener implements Runnable {
       this.logger.info(op.toString());
       if (op.isPresent()) {
         Player p = op.get();
-        if (p.getUsername().equals(dBlogin.getUsername()) && p.getPassword().equals(dBlogin.getPassword())) {
+        if (p.username.equals(dBlogin.getUsername()) && p.password.equals(dBlogin.getPassword())) {
           printer.println(modelReader.toJson(p));
+          this.logger.info(p);
         } else {
           printer.println(modelReader.toJson(dBlogin));
         }

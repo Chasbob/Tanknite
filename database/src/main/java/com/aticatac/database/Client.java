@@ -13,7 +13,7 @@ public class Client {
     Logger logger = Logger.getLogger(Client.class);
     try {
       ModelReader modelReader = new ModelReader();
-      Socket socket = new Socket("chasbob.co.uk", 6000);
+      Socket socket = new Socket("localhost", 6000);
       DBlogin dBlogin = new DBlogin("charlie", "charlie");
       String json = modelReader.toJson(dBlogin);
       logger.info(json);

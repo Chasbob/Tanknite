@@ -14,7 +14,7 @@
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
                 <property name="driver" value="org.postgresql.Driver"/>
-                <property name="url" value="jdbc:postgresql://postgres/aticatac"/>
+                <property name="url" value="jdbc:postgresql://localhost/aticatac"/>
                 <property name="username" value="example"/>
                 <property name="password" value="example"/>
             </dataSource>

@@ -1,3 +1,8 @@
+//plugins{
+//    id "org.sglahn.gradle-dockerfile-plugin" version "0.4"
+//}
+
+
 allprojects {
     group 'aticatac'
     apply plugin: 'java'
@@ -28,11 +33,13 @@ allprojects {
         compile 'org.jetbrains:annotations:16.0.1'
         implementation 'com.google.guava:guava:27.1-jre'
 
+
     }
     test {
         useJUnitPlatform()
     }
 }
+
 
 
 project(':server') {
@@ -96,14 +103,14 @@ project(':client') {
 }
 project(':database') {
     apply plugin: 'application'
-    application {
-        mainClassName = "com.aticatac.database.Main"
-    }
     dependencies {
         compile 'org.mybatis:mybatis:3.4.6'
         implementation 'org.postgresql:postgresql:42.2.5.jre7'
         compile project(':common')
 
+    }
+    application {
+        mainClassName = "com.aticatac.database.Main"
     }
     task database(type: JavaExec) {
         main = "com.aticatac.database.Main"
@@ -115,6 +122,8 @@ project(':database') {
         classpath = sourceSets.main.runtimeClasspath
         jvmArgs '--illegal-access=deny'
     }
+//    dockerBuild.dependsOn(distTar)
+//    dockerPush.dependsOn(dockerBuild)
 }
 
 
