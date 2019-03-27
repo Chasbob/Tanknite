@@ -2,12 +2,13 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
+import com.aticatac.client.server.networking.Server;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
-import com.aticatac.server.networking.Server;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -50,12 +51,12 @@ public enum Data {
     try {
       //TODO don't hard code the port.
       final Server.ServerData s = Server.ServerData.INSTANCE;
-      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), s.getPort(), s.getMaxPlayers(), s.playerCount());
+      this.localhost = new ServerInformation("localhost", InetAddress.getByName("127.0.0.1"), s.getPort());
     } catch (UnknownHostException e) {
       e.printStackTrace();
     }
     players = new HashMap<>();
-    this.update = new Update(true);
+    this.update = new Update();
     this.clients = new ArrayList<>();
   }
 
@@ -144,7 +145,6 @@ public enum Data {
    * Gets player.
    *
    * @param i the
-   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -218,7 +218,6 @@ public enum Data {
    *
    * @param id           the id
    * @param singlePlayer the single player
-   *
    * @return the response
    */
   public Response connect(String id, boolean singlePlayer) {
@@ -240,9 +239,7 @@ public enum Data {
    * @param id           the id
    * @param singleplayer the singleplayer
    * @param host         the host
-   *
    * @return the response
-   *
    * @throws UnknownHostException the unknown host exception
    */
   public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
@@ -267,12 +264,11 @@ public enum Data {
    * @param command the command
    */
   public void sendCommand(Command command) {
-    this.client.sendCommand(command);
+    this.client.addCommand(command);
   }
-
-  public void sendCommand(Command command, int bearing) {
-    this.client.sendCommand(command, bearing);
-  }
+//  public void sendCommand(Command command, int bearing) {
+//    this.client.addCommand(command, bearing);
+//  }
 
   /**
    * Is manual config for server boolean.
@@ -324,4 +320,8 @@ public enum Data {
 
   public void setTankColour(Color tankColour) {
     this.tankColour = tankColour;
+  }
+
+  public void submit(final int bearing) {
+    this.client.submit(bearing);
   }}

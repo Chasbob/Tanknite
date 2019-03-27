@@ -4,6 +4,7 @@ import com.aticatac.common.model.*;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -110,6 +111,7 @@ public class Client {
    * @throws InvalidBytes the invalid bytes
    */
   public Response connect(ServerInformation server, String id) {
+    this.logger.setLevel(Level.ALL);
     try {
       this.connected = false;
       Login login = new Login(id);

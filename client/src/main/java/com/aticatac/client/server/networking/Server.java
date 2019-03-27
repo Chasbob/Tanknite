@@ -190,6 +190,7 @@ public class Server extends Thread {
     private int broadcastCount;
 
     ServerData() {
+      this.port = 5000;
       this.modelReader = new ModelReader();
       this.requests = new ConcurrentLinkedQueue<>();
       this.clients = new ConcurrentHashMap<>();

@@ -47,6 +47,8 @@ public class GameScreen extends AbstractScreen {
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
+  private Texture projectileTexture;
+  private Texture stick;
   private Label direction;
   private Container player;
   private HudUpdate hudUpdate;
@@ -70,6 +72,8 @@ public class GameScreen extends AbstractScreen {
       direction = Styles.INSTANCE.createLabel("");
       map = new TmxMapLoader().load("maps/map.tmx");
       tankTexture = new Texture("img/tank.png");
+      projectileTexture = new Texture("img/bullet.png");
+      stick = new Texture("img/top.png");
       tractionHealth = true;
       tractionPopUp = true;
       renderer = new OrthogonalTiledMapRenderer(map);
@@ -286,12 +290,92 @@ public class GameScreen extends AbstractScreen {
 
   private void renderTanks(SpriteBatch tanks) {
     if (update != null) {
-      for (int i = 0; i < update.getPlayers().values().size(); i++) {
-        Container updater = update.getI(i);
-        renderContainer(updater, tanks);
+      for (Container c : update.getPlayers().values()) {
+        renderContainer(c, tanks);
+        tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
+      }
+//      for (int i = 0; i < update.getPlayers().values().size(); i++) {
+//        Container updater = update.getI(i);
+//        renderContainer(updater, tanks);
+//      }
+    }
+//    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
+//      Container c = update.getMe(Data.INSTANCE.getID());
+////      VectorF v = new VectorF(
+////          (float) Math.cos(Math.toRadians(c.getR())),
+////          (float) Math.sin(Math.toRadians(c.getR())));
+////      v.scl(10);
+////      v.sub(new VectorF(c.getX(), c.getY()));
+////      if (Math.abs(c.getR() - rot) > 10) {
+////        this.logger.info(c.getR() + "->" + rot);
+////      }
+////      if (rot == 360) {
+////        rot = 0;
+////      }
+////      rot = c.getR();
+//    }
+    renderProjectiles(tanks);
+    renderPowerups(tanks);
+    tanks.end();
+  }
+
+  private void renderProjectiles(SpriteBatch tanks) {
+    if (update != null) {
+      for (Container c :
+        update.getProjectiles().values()) {
+        renderProjectiles(c, tanks);
+      }
+//      for (int i = 0; i < update.getProjectiles().size(); i++) {
+//        renderProjectiles(update.getProjectiles().get(i), tanks);
+//      }
+    }
+  }
+
+  private void renderPowerups(SpriteBatch tanks) {
+    if (update != null) {
+      for (Container c :
+        update.getPowerups().values()) {
+        switch (c.getObjectType()) {
+          case NONE:
+            break;
+          case TANK:
+            break;
+          case BULLET:
+            break;
+          case WALL:
+            break;
+          case OUTOFBOUNDS:
+            break;
+          case AMMO_POWERUP:
+            tanks.setColor(Color.CYAN);
+            break;
+          case SPEED_POWERUP:
+            tanks.setColor(Color.RED);
+            break;
+          case HEALTH_POWERUP:
+            tanks.setColor(Color.BLUE);
+            break;
+          case DAMAGE_POWERUP:
+            tanks.setColor(Color.YELLOW);
+            break;
+          case BULLETSPRAY_POWERUP:
+            tanks.setColor(Color.PURPLE);
+            break;
+          case FREEZEBULLET_POWERUP:
+            tanks.setColor(Color.FOREST);
+            break;
+        }
+        tanks.setColor(Color.WHITE);
+        renderContainer(c, tanks);
       }
     }
-    tanks.end();
+  }
+
+  private void renderProjectiles(Container c, SpriteBatch batch) {
+//    if (c.getId().equals("")) {
+//      this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
+//    }
+    batch.draw(projectileTexture, maxX - c.getX(), maxY - c.getY());
   }
 
   private void minimap() {
@@ -331,7 +415,7 @@ public class GameScreen extends AbstractScreen {
     if (c.getId().equals("")) {
       this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
     }
-    batch.draw(tankTexture, maxX - c.getX(), maxY - c.getY());
+    batch.draw(tankTexture, maxX - c.getX() - tankTexture.getWidth() / 2f, maxY - c.getY() - tankTexture.getHeight() / 2f);
   }
 
   private int getBearing() {
@@ -344,33 +428,55 @@ public class GameScreen extends AbstractScreen {
 
 
   private void backgroundInput() {
+
     if (tractionPopUp) {
+      if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        PopUp.createPopUp(false);
+//          //show the pop up table
+        popUpTable.setVisible(true);
+        tractionPopUp = false;
+      }
       if (tractionHealth) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-          PopUp.createPopUp(false);
-          //show the pop up table
-          popUpTable.setVisible(true);
-          tractionPopUp = false;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+          if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+            AudioEnum.INSTANCE.getTankMove();
+          }
           Data.INSTANCE.sendCommand(Command.LEFT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+          if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+            AudioEnum.INSTANCE.getTankMove();
+          }
           Data.INSTANCE.sendCommand(Command.RIGHT);
         } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+          if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+            AudioEnum.INSTANCE.getTankMove();
+          }
           Data.INSTANCE.sendCommand(Command.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+          if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+            AudioEnum.INSTANCE.getTankMove();
+          }
           Data.INSTANCE.sendCommand(Command.DOWN);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+          this.camera.getCamera().zoom -= 0.1f;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+          this.camera.getCamera().zoom += 0.1f;
         }
       }
-      if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-        Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
-      }
-    } else {
-      if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-        //close the pop up
-        popUpTable.setVisible(false);
-        tractionPopUp = true;
+      if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        AudioEnum.INSTANCE.getShoot();
+        Data.INSTANCE.sendCommand(Command.SHOOT);
       }
     }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) {
+      AudioEnum.INSTANCE.getShoot();
+      Data.INSTANCE.sendCommand(Command.BULLET_SPRAY);
+    }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) {
+      AudioEnum.INSTANCE.getShoot();
+      Data.INSTANCE.sendCommand(Command.FREEZE_BULLET);
+    }
+    Data.INSTANCE.submit(getBearing());
   }
 
   @Override

@@ -1,11 +1,10 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.game.GDXGame;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.model.Updates.Response;
-import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -334,8 +333,9 @@ public class MainMenuScreen extends AbstractScreen {
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(singlePlayerTable);
       Data.INSTANCE.setSingleplayer(true);
-      Server server = new Server(true, "Single-Player");
-      server.start();
+      GDXGame.createServer(true, "Single-Player");
+//      Server server = new Server(true, "Single-Player");
+//      server.start();
       refresh();
       //ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       //join single player server

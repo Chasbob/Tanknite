@@ -43,7 +43,7 @@ public enum Screens {
         AudioEnum.INSTANCE.getMain();
 
         this.logger.warn("Initializing...");
-      Data.INSTANCE.initialise();
+//      Data.INSTANCE.initialise();
         this.game = game;
         this.game.setScreen(getScreen(MainMenuScreen.class));
         this.currentScreen = MainMenuScreen.class;

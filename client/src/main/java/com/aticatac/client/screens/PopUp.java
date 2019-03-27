@@ -1,11 +1,11 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.game.GDXGame;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.ServerInformation;
-import com.aticatac.server.networking.Server;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -143,11 +143,12 @@ class PopUp {
     hostTable.setButton(hostButton);
     hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //create custom server
-      Server server = new Server(false, serverNameField.getText());
-      server.start();
+      GDXGame.createServer(false, serverNameField.getText());
+//      Server server = new Server(false, serverNameField.getText());
+//      server.start();
       Data.INSTANCE.setSingleplayer(false);
       //TODO make getter for port and ip
-      Data.INSTANCE.setCurrentInformation(new ServerInformation(Data.INSTANCE.getUsername(), InetAddress.getByName("127.0.0.1"), 5500, Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount()));
+      Data.INSTANCE.setCurrentInformation(new ServerInformation(Data.INSTANCE.getUsername(), InetAddress.getByName("127.0.0.1"), 5500));
       Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
       Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
       ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
