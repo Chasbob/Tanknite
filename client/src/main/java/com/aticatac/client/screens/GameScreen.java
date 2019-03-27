@@ -123,24 +123,24 @@ public class GameScreen extends AbstractScreen {
     Table aliveTable = new Table();
     Table aliveLabelTable = new Table();
     Styles.INSTANCE
-      .addTableColour(aliveLabelTable, Color.GRAY);
+        .addTableColour(aliveLabelTable, Color.GRAY);
     Label aliveLabel = Styles.INSTANCE.createLabel("Alive");
     aliveLabelTable.add(aliveLabel);
     Table playerCountTable = new Table();
     playerCountTable.add(playerCount).center();
     Styles.INSTANCE
-      .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
+        .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
     aliveTable.add(playerCountTable);
     aliveTable.add(aliveLabelTable);
     Table killTable = new Table();
     Table killLableTable = new Table();
     Styles.INSTANCE
-      .addTableColour(killLableTable, Color.GRAY);
+        .addTableColour(killLableTable, Color.GRAY);
     Label killLabel = Styles.INSTANCE.createLabel("Killed");
     killLableTable.add(killLabel);
     Table killCountTable = new Table();
     Styles.INSTANCE
-      .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
+        .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
     killCountTable.add(killCount);
     killTable.add(killCountTable);
     killTable.add(killLableTable);
@@ -165,12 +165,12 @@ public class GameScreen extends AbstractScreen {
     Table ammoTable = new Table();
     Table ammoValueTable = new Table();
     Styles.INSTANCE
-      .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
+        .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
     ammoValueTable.add(ammoValue);
     Label ammoLabel = Styles.INSTANCE.createLabel("Ammo");
     Table ammoLabelTable = new Table();
     Styles.INSTANCE
-      .addTableColour(ammoLabelTable, Color.GRAY);
+        .addTableColour(ammoLabelTable, Color.GRAY);
     ammoLabelTable.add(ammoLabel);
     ammoTable.add(ammoValueTable);
     ammoTable.add(ammoLabelTable);
@@ -207,7 +207,7 @@ public class GameScreen extends AbstractScreen {
     }));
     verticalGroup.addActor(quitButton);
     Styles.INSTANCE
-      .addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
+        .addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
     return popUpTable;
   }
 
@@ -279,8 +279,29 @@ public class GameScreen extends AbstractScreen {
     tanksMiniMap.begin();
     tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
     tanksMiniMap.setColor(Color.CYAN);
-    if (newUpdate != null) {
+    if (update != null) {
       renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
+      tanksMiniMap.setColor(Color.RED);
+      for (Container c :
+          update.getNewShots().values()) {
+        renderContainer(c, tanksMiniMap);
+        //Audio: plays sound when tank shoots in range
+        if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
+
+          float dx = c.getX() - (1920-player.getX());
+          float dy = c.getY() - (1920-player.getY());
+
+          int max = 320;
+
+          double distance = Math.sqrt(dx*dx + dy*dy);
+
+          double volumeScalar = (max-distance)/max;
+
+          this.logger.warn("Sound when in range");
+          AudioEnum.INSTANCE.getOtherTankShoot((float)volumeScalar);
+
+        }
+      }
     }
     tanksMiniMap.end();
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
@@ -307,7 +328,7 @@ public class GameScreen extends AbstractScreen {
   private void renderProjectiles(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-        update.getProjectiles().values()) {
+          update.getProjectiles().values()) {
         renderProjectiles(c, tanks);
       }
     }
@@ -316,7 +337,7 @@ public class GameScreen extends AbstractScreen {
   private void renderPowerups(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-        update.getPowerups().values()) {
+          update.getPowerups().values()) {
         switch (c.getObjectType()) {
           case NONE:
             break;

@@ -97,6 +97,15 @@ public enum AudioEnum {
   }
 
   /**
+   * @param volume
+   */
+  public void setMusicVolume(float volume) {
+
+    musicVolume = volume;
+
+  }
+
+  /**
    *
    */
   public void loadSound() {
