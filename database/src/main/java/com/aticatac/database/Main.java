@@ -1,8 +1,6 @@
 package com.aticatac.database;
 
-import com.aticatac.common.GameResult;
 import com.aticatac.database.mappers.Player;
-import com.google.common.eventbus.Subscribe;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.log4j.Logger;
 

@@ -12,4 +12,8 @@ public class SessionFactory {
   public static SqlSession getSession() {
     return factory.openSession();
   }
+
+  public static void returnSession(SqlSession session) {
+    session.close();
+  }
 }

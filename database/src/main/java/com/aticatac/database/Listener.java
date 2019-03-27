@@ -1,11 +1,9 @@
 package com.aticatac.database;
 
-import com.aticatac.common.GameResult;
 import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.database.mappers.Player;
-import com.google.common.eventbus.Subscribe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,8 +13,6 @@ import java.net.Socket;
 import java.util.Optional;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.log4j.Logger;
-
-import static com.aticatac.database.bus.EventBusFactory.eventBus;
 
 public class Listener implements Runnable {
   private final ServerSocket serverSocket;
@@ -40,6 +36,7 @@ public class Listener implements Runnable {
       this.logger.info("running");
       try {
         Socket socket = serverSocket.accept();
+        this.logger.info("connected!");
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintStream printer = new PrintStream(socket.getOutputStream());
         String json = reader.readLine();
@@ -55,25 +52,29 @@ public class Listener implements Runnable {
   }
 
   private void checkUser(DBlogin dBlogin, PrintStream printer) {
-    Optional<Player> op = dBinterface.getPlayer(dBlogin.getUsername());
-    this.logger.info(op.toString());
-    if (op.isPresent()) {
-      Player p = op.get();
-      if (p.getUsername().equals(dBlogin.getUsername()) && p.getPassword().equals(dBlogin.getPassword())) {
-        printer.println(modelReader.toJson(p));
+    try {
+      Optional<Player> op = dBinterface.getPlayer(dBlogin.getUsername());
+      this.logger.info(op.toString());
+      if (op.isPresent()) {
+        Player p = op.get();
+        if (p.username.equals(dBlogin.getUsername()) && p.password.equals(dBlogin.getPassword())) {
+          printer.println(modelReader.toJson(p));
+          this.logger.info(p);
+        } else {
+          printer.println(modelReader.toJson(dBlogin));
+        }
       } else {
-        printer.println(modelReader.toJson(dBlogin));
-      }
-    } else {
-      try {
         Player newPlayer = registerUser(dBlogin);
         printer.println(modelReader.toJson(newPlayer));
-      } catch (PersistenceException e) {
-        this.logger.error(e);
-        printer.println(modelReader.toJson(dBlogin));
       }
+    } catch (PersistenceException e) {
+      this.logger.error(e);
+      printer.println(modelReader.toJson(dBlogin));
+    } catch (NullPointerException e) {
+      this.logger.error(e);
     }
   }
+
   private Player registerUser(DBlogin dBlogin) throws PersistenceException {
     this.logger.info("registering player...");
     this.logger.info(dBlogin.toString());
@@ -88,18 +89,6 @@ public class Listener implements Runnable {
       serverSocket.close();
     } catch (IOException e) {
       e.printStackTrace();
-    }
-  }
-
-  @Subscribe
-  private void processGame(GameResult result) {
-    for (String username : result.getKd().keySet()) {
-      Player player = new Player();
-      player.setUsername(username);
-      player.applyKillDeath(result.getKd().get(username));
-      if (result.getWinners().contains(username)) {
-        player.addWin();
-      }
     }
   }
 }

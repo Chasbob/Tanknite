@@ -1,19 +1,14 @@
 package com.aticatac.database;
 
 import com.aticatac.database.mappers.Player;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
 
-import static com.aticatac.database.bus.EventBusFactory.eventBus;
-
 public class DBinterface {
-  public DBinterface() {
-    eventBus.register(this);
-  }
-
   public Optional<Player> getPlayer(String id) {
+    stats(id);
     SqlSession session = SessionFactory.getSession();
     Player player = session.selectOne("Player.getByUsername", id);
     session.close();
@@ -24,22 +19,27 @@ public class DBinterface {
     }
   }
 
+  public void stats(String id) {
+    SqlSession session = SessionFactory.getSession();
+    Player player = session.selectOne("Player.getByUsername", id);
+    session.update("Player.updateStats", player);
+    SessionFactory.returnSession(session);
+  }
+
+  public List<Player> getLeaderboard() {
+    SqlSession session = SessionFactory.getSession();
+    List<Player> leaderboard = session.selectList("Player.getLeaderboard");
+    SessionFactory.returnSession(session);
+    return leaderboard;
+  }
+
   public Player addPlayer(final Player player) throws PersistenceException {
     SqlSession session = SessionFactory.getSession();
     session.insert("Player.insert", player);
     session.commit();
-    session.close();
     Player player1 = new Player();
     session.selectOne("Player.getByUsername", player1);
+    SessionFactory.returnSession(session);
     return player1;
-  }
-
-  public void applyGame(ArrayList<Player> players) {
-    SqlSession session = SessionFactory.getSession();
-    for (Player p : players) {
-      session.insert("Player.updateStats", p);
-    }
-    session.commit();
-    session.close();
   }
 }

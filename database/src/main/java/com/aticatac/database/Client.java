@@ -13,7 +13,7 @@ public class Client {
     Logger logger = Logger.getLogger(Client.class);
     try {
       ModelReader modelReader = new ModelReader();
-      Socket socket = new Socket("127.0.0.1", 6000);
+      Socket socket = new Socket("chasbob.co.uk", 6000);
       DBlogin dBlogin = new DBlogin("charlie", "charlie");
       String json = modelReader.toJson(dBlogin);
       logger.info(json);
@@ -22,7 +22,6 @@ public class Client {
       printer.println(json);
       logger.info("wrote to stream");
       String json2 = reader.readLine();
-
       logger.info(json2);
     } catch (Exception e) {
       e.printStackTrace();
