@@ -7,8 +7,15 @@ import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.log4j.Logger;
 
 public class DBinterface {
+  private final Logger logger;
+
+  public DBinterface() {
+    logger = Logger.getLogger(getClass());
+  }
+
   public Optional<Player> getPlayer(String id) {
     stats(id);
     SqlSession session = SessionFactory.getSession();
@@ -49,9 +56,11 @@ public class DBinterface {
   public Player addPlayer(final Player player) throws PersistenceException {
     SqlSession session = SessionFactory.getSession();
     session.insert("Player.insert", player);
-    session.commit();
     Player player1 = new Player();
-    session.selectOne("Player.getByUsername", player1);
+    this.logger.info(player);
+    session.selectOne("Player.getByUsername", player.username);
+    this.logger.info(player1);
+    session.commit();
     SessionFactory.returnSession(session);
     return player1;
   }

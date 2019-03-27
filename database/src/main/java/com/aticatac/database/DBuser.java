@@ -67,9 +67,13 @@ public class DBuser extends Thread {
         if (dBlogin.isRegister()) {
           this.logger.info("registering");
           try {
-            Player newPlayer = registerUser(dBlogin);
-            this.logger.info("registered");
-            this.printer.println(modelReader.toJson(new DBResponse(newPlayer, DBResponse.Response.accepted)));
+            Optional<Player> optnewPlayer = registerUser(dBlogin);
+            if (optnewPlayer.isPresent()) {
+              this.logger.info("registered");
+              this.printer.println(modelReader.toJson(new DBResponse(optnewPlayer.get(), DBResponse.Response.accepted)));
+            } else {
+              this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
+            }
           } catch (PersistenceException e) {
             this.logger.info("name taken");
             this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
@@ -86,11 +90,13 @@ public class DBuser extends Thread {
     }
   }
 
-  private Player registerUser(DBlogin dBlogin) throws PersistenceException {
+  private Optional<Player> registerUser(DBlogin dBlogin) throws PersistenceException {
     this.logger.info("registering player...");
     this.logger.info(dBlogin.toString());
     Player player = new Player(dBlogin.getUsername(), dBlogin.getPassword());
-    return dBinterface.addPlayer(player);
+    dBinterface.addPlayer(player);
+    Optional<Player> out = dBinterface.getPlayer(dBlogin.getUsername());
+    return out;
   }
 
   @Override
@@ -102,6 +108,7 @@ public class DBuser extends Thread {
       checkUser(dBlogin);
     } catch (IOException | InvalidBytes e) {
       try {
+        this.logger.info("Shit broke");
         printer.close();
         reader.close();
       } catch (IOException e1) {
@@ -110,8 +117,10 @@ public class DBuser extends Thread {
       return;
     }
     while (!this.isInterrupted() && run) {
+      this.logger.info("run");
       try {
         String json = reader.readLine();
+        this.logger.info(json);
         if (json.contains("LobbyPlayers")) {
           LobbyPlayers lobbyPlayers = modelReader.fromJson(json, LobbyPlayers.class);
           HashMap<String, Player> players = dBinterface.getLobby(lobbyPlayers.getNames());
