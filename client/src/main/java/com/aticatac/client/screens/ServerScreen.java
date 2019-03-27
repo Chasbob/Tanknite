@@ -84,7 +84,7 @@ public class ServerScreen extends AbstractScreen {
       Data.INSTANCE.setManualConfigForServer(true);
       popUpPresent = true;
       toggleButtons(true);
-      PopUp.createPopUp(false);
+      PopUp.createPopUp(false, false);
       return false;
     }));
     ListenerFactory.addHoverListener(manualButton, manualTable);
