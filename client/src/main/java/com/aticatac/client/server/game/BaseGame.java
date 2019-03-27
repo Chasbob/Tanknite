@@ -221,7 +221,7 @@ public class BaseGame implements Runnable {
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
-        playerMap.get(e.getEntity().getName()).setAmmo(playerMap.get(e.getEntity().getName()).getAmmo() + 10);
+        playerMap.get(e.getEntity().getName()).ammoIncrease(10);
         break;
       case SPEED_POWERUP:
         this.logger.info(e);
