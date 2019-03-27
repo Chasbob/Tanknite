@@ -208,7 +208,6 @@ public class Client {
     }
     String json = modelReader.toJson(commandModel);
     this.printer.println(json);
-    this.logger.trace("Sent command: " + commandModel);
     currentCommands.clear();
     commandModel.reset();
   }

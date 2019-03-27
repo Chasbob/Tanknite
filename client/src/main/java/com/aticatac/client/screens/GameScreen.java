@@ -4,6 +4,7 @@ import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.EntityType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -280,6 +281,17 @@ public class GameScreen extends AbstractScreen {
     tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
     tanksMiniMap.setColor(Color.CYAN);
     if (update != null) {
+      for (Container c : update.getPlayers().values()) {
+        louderSound(c);
+      }
+      Container corner = new Container(0, 0, 0, 0, 0, "", EntityType.NONE);
+      louderSound(corner);
+      Container corner2 = new Container(0, 1920, 0, 0, 0, "", EntityType.NONE);
+      louderSound(corner2);
+      Container corner3 = new Container(1920, 0, 0, 0, 0, "", EntityType.NONE);
+      louderSound(corner3);
+      Container corner4 = new Container(1920, 1920, 0, 0, 0, "", EntityType.NONE);
+      louderSound(corner4);
       renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
       tanksMiniMap.setColor(Color.RED);
       for (Container c :
@@ -297,7 +309,6 @@ public class GameScreen extends AbstractScreen {
 
           double volumeScalar = (max-distance)/max;
 
-          this.logger.warn("Sound when in range");
           AudioEnum.INSTANCE.getOtherTankShoot((float)volumeScalar);
 
         }
@@ -313,11 +324,36 @@ public class GameScreen extends AbstractScreen {
     draw();
   }
 
+  private void louderSound(Container c){
+    if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
+
+      float dx = c.getX() - (1920-player.getX());
+      float dy = c.getY() - (1920-player.getY());
+
+      double distance = Math.sqrt(dx*dx + dy*dy);
+
+      if(distance < 160) {
+
+        int max = 160;
+
+        double volumeScalar = (max - distance) / max;
+
+        float musicVolume = AudioEnum.INSTANCE.getMusicVolume();
+
+        this.logger.info(musicVolume + volumeScalar);
+        AudioEnum.INSTANCE.getTheme().setVolume((float) (musicVolume+volumeScalar));
+        this.logger.info(musicVolume + volumeScalar);
+
+      }
+    }
+  }
+
   private void renderTanks(SpriteBatch tanks) {
     if (update != null) {
       for (Container c : update.getPlayers().values()) {
         renderContainer(c, tanks);
         tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
+
       }
     }
     renderProjectiles(tanks);

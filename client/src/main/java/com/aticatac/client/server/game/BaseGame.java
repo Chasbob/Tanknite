@@ -1,12 +1,7 @@
 package com.aticatac.client.server.game;
 
 import com.aticatac.client.server.Position;
-import com.aticatac.client.server.bus.event.BulletCollisionEvent;
-import com.aticatac.client.server.bus.event.BulletsChangedEvent;
-import com.aticatac.client.server.bus.event.PlayersChangedEvent;
-import com.aticatac.client.server.bus.event.PowerupsChangedEvent;
-import com.aticatac.client.server.bus.event.ShootEvent;
-import com.aticatac.client.server.bus.event.TankCollisionEvent;
+import com.aticatac.client.server.bus.event.*;
 import com.aticatac.client.server.bus.service.AIUpdateService;
 import com.aticatac.client.server.objectsystem.DataServer;
 import com.aticatac.client.server.objectsystem.Entity;
@@ -21,13 +16,14 @@ import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
+import org.apache.log4j.Logger;
+
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.log4j.Logger;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
 
@@ -221,28 +217,24 @@ public class BaseGame implements Runnable {
       case OUTOFBOUNDS:
         break;
       case AMMO_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).ammoIncrease(10);
         break;
       case SPEED_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setSpeedIncrease(1200);
         break;
       case HEALTH_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).heal(10);
         break;
       case DAMAGE_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
@@ -250,7 +242,6 @@ public class BaseGame implements Runnable {
         break;
       case BULLETSPRAY_POWERUP:
         // TODO: Tell player they can press shift to unleash a bullet spray
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
@@ -258,7 +249,6 @@ public class BaseGame implements Runnable {
         break;
       case FREEZEBULLET_POWERUP:
         // TODO: Tell player they can press control to shoot a freeze bullet
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
@@ -269,10 +259,8 @@ public class BaseGame implements Runnable {
 
   @Subscribe
   public void bulletCollision(BulletCollisionEvent event) {
-    this.logger.info(event);
     if (event.getHit().getType() == EntityType.TANK) {
       playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage(), event.getBullet().getFreezeBullet());
-      this.logger.info(event);
     }
     bullets.remove(event.getBullet());
     eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.REMOVE, event.getBullet().getContainer()));

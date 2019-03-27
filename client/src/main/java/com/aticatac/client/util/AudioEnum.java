@@ -38,6 +38,8 @@ public enum AudioEnum {
   /***/
   private float soundVolume = 0.6f;
   /***/
+  private float moveVolume = 0.4f;
+  /***/
   private float musicVolume = 0.4f;
   /***/
   private float mainVolume = 0.1f;
@@ -103,6 +105,18 @@ public enum AudioEnum {
 
     musicVolume = volume;
 
+  }
+
+  public float getSoundVolume() {
+    return soundVolume;
+  }
+
+  public float getMusicVolume() {
+    return musicVolume;
+  }
+
+  public float getMainVolume() {
+    return mainVolume;
   }
 
   /**
@@ -197,7 +211,7 @@ public enum AudioEnum {
   public Music getTankMove() {
 
     if (!tankMove.isPlaying() && sound) {
-      tankMove.setVolume(soundVolume);
+      tankMove.setVolume(moveVolume);
       tankMove.play();
     }
     return tankMove;

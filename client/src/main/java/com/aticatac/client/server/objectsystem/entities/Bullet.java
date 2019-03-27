@@ -73,7 +73,6 @@ public class Bullet extends Entity implements Tickable {
       for (Entity e :
           response.getCollisions()) {
         if (e.getType() != EntityType.NONE) {
-          this.logger.info("Hit: " + e);
         }
         switch (e.getType()) {
           case NONE:
