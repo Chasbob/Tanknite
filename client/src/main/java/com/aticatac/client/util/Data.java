@@ -99,7 +99,6 @@ public enum Data {
       logger.info(json2);
       DBResponse output = modelReader.fromJson(json2, DBResponse.class);
       if (output.getResponse() == DBResponse.Response.accepted) {
-
         eventBus.post(output.getPlayer());
       }
       return output;

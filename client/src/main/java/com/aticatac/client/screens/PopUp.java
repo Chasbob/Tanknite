@@ -197,6 +197,11 @@ public class PopUp {
     //create group container
     VerticalGroup rootGroup = new VerticalGroup();
     rootGroup.pad(10).columnLeft().space(10);
+    //create table to store error message
+    Table errorTable = new Table();
+    Label errorLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "", Color.RED);
+    errorTable.add(errorLabel);
+    rootGroup.addActor(errorLabel);
     //tabs
     HorizontalGroup tabGroup = new HorizontalGroup();
     tabGroup.space(5);
@@ -228,32 +233,9 @@ public class PopUp {
     rootGroup.pack();
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = rootGroup;
     //add main listeners for buttons
-    loginButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      //TODO sign in the player and give errors
-      DBResponse response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText()));
-      switch (response.getResponse()) {
-        case accepted:
-          break;
-        case wrong_password:
-          break;
-        case username_taken:
-          break;
-      }
-      return false;
-    }));
+    createErrorListener(loginButton, errorLabel, usernameText, passwordText);
     //TODO register player and give errors
-    registerButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      DBResponse response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText()));
-      switch (response.getResponse()) {
-        case accepted:
-          break;
-        case wrong_password:
-          break;
-        case username_taken:
-          break;
-      }
-      return false;
-    }));
+    createErrorListener(registerButton, errorLabel, usernameText, passwordText);
     InputEvent clickEvent = new InputEvent();
     clickEvent.setType(InputEvent.Type.touchDown);
     return rootGroup;
@@ -291,6 +273,23 @@ public class PopUp {
     ListenerFactory.addHoverListener(backButton, backTable);
     backTable.setButton(backButton);
     return backTable;
+  }
+
+  private static void createErrorListener(TextButton button, Label errorLabel, TextField usernameText, TextField passwordText) {
+    button.addListener(ListenerFactory.newListenerEvent(() -> {
+      DBResponse response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText()));
+      switch (response.getResponse()) {
+        case accepted:
+          break;
+        case wrong_password:
+          errorLabel.setText("WRONG PASSWORD");
+        case username_taken:
+          errorLabel.setText("NAME TAKEN");
+        case no_user:
+          errorLabel.setText("NO USER");
+      }
+      return false;
+    }));
   }
 
 
