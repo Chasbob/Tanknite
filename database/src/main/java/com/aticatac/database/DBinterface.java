@@ -1,6 +1,7 @@
 package com.aticatac.database;
 
 import com.aticatac.database.mappers.Player;
+import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.session.SqlSession;
@@ -23,6 +24,13 @@ public class DBinterface {
     Player player = session.selectOne("Player.getByUsername", id);
     session.update("Player.updateStats", player);
     SessionFactory.returnSession(session);
+  }
+
+  public List<Player> getLeaderboard() {
+    SqlSession session = SessionFactory.getSession();
+    List<Player> leaderboard = session.selectList("Player.getLeaderboard");
+    SessionFactory.returnSession(session);
+    return leaderboard;
   }
 
   public Player addPlayer(final Player player) throws PersistenceException {

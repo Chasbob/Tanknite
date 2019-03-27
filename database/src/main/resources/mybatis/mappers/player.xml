@@ -27,11 +27,12 @@
         WHERE username = #{username}
         ;
     </select>
-    <!--<select id="selectAll" resultType="Player">-->
-        <!--SELECT *-->
-        <!--FROM aticatac.public.players-->
-        <!--;-->
-    <!--</select>-->
+    <select id="getLeaderboard" resultType="Player">
+        SELECT *
+        FROM players
+        ORDER BY score
+        ;
+    </select>
     <select id="getByID" resultMap="result" parameterType="int">
         SELECT *
         FROM players
