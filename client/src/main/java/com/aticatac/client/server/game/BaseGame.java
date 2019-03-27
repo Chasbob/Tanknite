@@ -1,12 +1,7 @@
 package com.aticatac.client.server.game;
 
 import com.aticatac.client.server.Position;
-import com.aticatac.client.server.bus.event.BulletCollisionEvent;
-import com.aticatac.client.server.bus.event.BulletsChangedEvent;
-import com.aticatac.client.server.bus.event.PlayersChangedEvent;
-import com.aticatac.client.server.bus.event.PowerupsChangedEvent;
-import com.aticatac.client.server.bus.event.ShootEvent;
-import com.aticatac.client.server.bus.event.TankCollisionEvent;
+import com.aticatac.client.server.bus.event.*;
 import com.aticatac.client.server.bus.service.AIUpdateService;
 import com.aticatac.client.server.objectsystem.DataServer;
 import com.aticatac.client.server.objectsystem.Entity;
@@ -21,13 +16,14 @@ import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
+import org.apache.log4j.Logger;
+
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.log4j.Logger;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
 
@@ -64,6 +60,7 @@ public class BaseGame implements Runnable {
   private final AIUpdateService aiUpdateService;
   private volatile boolean run;
   private int counter;
+  protected int powerUpCount;
 
   /**
    * Instantiates a new Game mode.
@@ -195,12 +192,15 @@ public class BaseGame implements Runnable {
   }
 
   protected void createPowerUps() {
-    EntityType type = Entity.randomPowerUP();
-    Position p = getClearPosition(type.radius);
-    Entity newPowerup = new Entity(String.valueOf(Objects.hash(type, p)), type, p);
-    DataServer.INSTANCE.addEntity(newPowerup);
-    powerups.add(newPowerup);
-    eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
+    if(powerUpCount <= 0) {
+      EntityType type = Entity.randomPowerUP();
+      Position p = getClearPosition(type.radius);
+      Entity newPowerup = new Entity(String.valueOf(Objects.hash(type, p)), type, p);
+      DataServer.INSTANCE.addEntity(newPowerup);
+      powerups.add(newPowerup);
+      powerUpCount = 600;
+      eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
+    }
   }
 
   @Subscribe
@@ -303,8 +303,8 @@ public class BaseGame implements Runnable {
     run = true;
     this.logger.trace("Running...");
     while (run) {
-      //checkPowerup();
-      //createPowerUps();
+      powerUpCount--;
+      createPowerUps();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
       aiUpdateService.update(playerMap, powerups);
