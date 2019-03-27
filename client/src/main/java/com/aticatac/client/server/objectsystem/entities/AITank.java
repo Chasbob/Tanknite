@@ -46,6 +46,8 @@ public class AITank extends Tank {
     logger.trace("tick");
     deathCountdown--;
     frozen--;
+    damageIncrease--;
+    speedIncrease--;
     if (deathCountdown == 0) {
       hit(10, false);
     }
