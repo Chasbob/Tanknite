@@ -19,7 +19,7 @@ public class ServerScreen extends AbstractScreen {
 
   private Boolean serverSelected;
   Boolean popUpPresent;
-  private ListServers listServers;
+  private PopulateServers populateServers;
   private int tabIndex;
   public int dropDownIndex;
   private HorizontalGroup tabGroup;
@@ -61,11 +61,17 @@ public class ServerScreen extends AbstractScreen {
     joinTable.setButton(joinButton);
     tabGroup.addActor(joinTable);
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
-        if (serverSelected) {
-          //join the server selected
-          Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
-          ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
+      if (!serverSelected) {
+        MenuTable currentDrop = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
+        ServerButton currentButton = (ServerButton) currentDrop.getButton();
+        if (!currentButton.getLabel().getText().toString().equals("<EMPTY>")) {
+          setServerSelected();
+          Data.INSTANCE.setCurrentInformation(currentButton.getServerInformation());
         }
+      }
+      //join the server selected
+      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
+      ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
         return false;
       }
     ));
@@ -92,13 +98,13 @@ public class ServerScreen extends AbstractScreen {
     dropDownGroup = new VerticalGroup();
     dropDownGroup.space(5).columnLeft();
     serversContainer.add(dropDownGroup).left().pad(10);
-    listServers = new ListServers(dropDownGroup);
-    listServers.update();
+    populateServers = new PopulateServers(dropDownGroup);
+    populateServers.update();
     new Thread(() -> {
       while (!Thread.currentThread().isInterrupted()) {
         double nanoTime = System.nanoTime();
         this.logger.trace("Updating servers...");
-        listServers.update();
+        populateServers.update();
         while (Math.abs(System.nanoTime() - nanoTime) < 1000000000 / 10) {
           try {
             Thread.sleep(0);
@@ -190,8 +196,6 @@ public class ServerScreen extends AbstractScreen {
     //get current menu table from drop down
     MenuTable currentTable = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
     currentTable.setShowGroup(false);
-    currentTable.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.GRAY));
-    currentTable.getButton().setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY));
   }
 
   void removePopUp() {

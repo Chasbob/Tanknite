@@ -16,18 +16,16 @@ import org.apache.log4j.Logger;
 /**
  * The type List servers.
  */
-public class ListServers {
+public class PopulateServers {
   private final ArrayList<ServerButton> buttons;
   private final ArrayList<Label> labels;
-  private final Logger logger;
 
   /**
    * Instantiates a new List servers.
    *
    * @param verticalGroup the group that stores horizontal group for each server
    */
-  public ListServers(VerticalGroup verticalGroup) {
-    this.logger = Logger.getLogger(getClass());
+  public PopulateServers(VerticalGroup verticalGroup) {
     int tableSize = 10;
     this.buttons = new ArrayList<>();
     this.labels = new ArrayList<>();
@@ -45,7 +43,7 @@ public class ListServers {
       horizontalGroup.space(200);
       ServerButton serverButton = new ServerButton();
       serverButton.getLabel().setAlignment(Align.left);
-      serverButton.setStyle(buttonStyle());
+      serverButton.setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY));
       menuTable.setButton(serverButton);
       serverButton.addListener(ListenerFactory.newListenerEvent(() -> {
         //get current table and unhighlight them
@@ -76,9 +74,9 @@ public class ListServers {
     ArrayList<ServerInformation> servers = new ArrayList<>(Servers.INSTANCE.getServers().values());
     for (int i = 0; i < buttons.size(); i++) {
       if (i < servers.size()) {
-        if (!buttons.get(i).getLabel().getText().toString().equals(servers.get(i).getId())) {
-          buttons.get(i).setStyle(buttonStyle());
-        }
+//        if (!buttons.get(i).getLabel().getText().toString().equals(servers.get(i).getId())) {
+//          buttons.get(i).setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE));
+//        }
         buttons.get(i).getLabel().setText(servers.get(i).getId());
         buttons.get(i).setServerInformation(servers.get(i));
         int playerCount = buttons.get(i).getServerInformation().getPlayerCount();
@@ -89,17 +87,10 @@ public class ListServers {
           labels.get(i).setText("FULL");
         }
         labels.get(i).setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.LIME));
-        buttons.get(i).setTouchable(Touchable.enabled);
+        buttons.get(i).setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE));
       } else {
         buttons.get(i).getLabel().setText("<EMPTY>");
-        //buttons.get(i).setTouchable(Touchable.disabled);
       }
-      buttons.get(i).getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.baseFont, Color.WHITE));
     }
   }
-
-  private Button.ButtonStyle buttonStyle() {
-    return Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.GRAY);
-  }
-
 }
