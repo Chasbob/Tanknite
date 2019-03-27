@@ -1,9 +1,12 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.isometric.Helper;
+import com.aticatac.client.server.Position;
 import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.EntityType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -11,9 +14,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.tiled.*;
+import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -21,12 +24,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
+import java.util.ArrayList;
+
 /**
  * The type Game screen.
  */
 public class GameScreen extends AbstractScreen {
   private final SpriteBatch healthBarBatch;
-  private final SpriteBatch tanks;
+  private final SpriteBatch game;
   private final SpriteBatch tanksMiniMap;
   private final SpriteBatch minimapBackGround;
   private final int maxX;
@@ -41,19 +46,31 @@ public class GameScreen extends AbstractScreen {
   private Label playerCount;
   private float health;
   private TiledMap map;
-  private OrthogonalTiledMapRenderer renderer;
+  private MapLayers mapLayers;
+  private TiledMapTileSet tileSet;
+  private TiledMapTileLayer wallLayer;
+  private IsometricTiledMapRenderer renderer;
   private Camera camera;
   private MinimapViewport minimapViewport;
   private Label fpsValue;
   private Label tankXY;
   private Texture tankTexture;
+  private Texture powerUpTexture;
+  private Texture bulletTexture;
   private Texture projectileTexture;
+  private Texture tankTexture2;
+  private Texture shadow;
+  private Texture shadowUltraLight;
+  private ArrayList<Texture> rotations;
   private Texture stick;
   private Label direction;
   private Container player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
   boolean tractionPopUp;
+
+  private ArrayList<Position> tileObjects;
+  private ArrayList<ArrayList<Position>> rows = new ArrayList<>();
 
   /**
    * Instantiates a new Game screen.
@@ -70,13 +87,57 @@ public class GameScreen extends AbstractScreen {
       fpsValue = Styles.INSTANCE.createLabel("");
       tankXY = Styles.INSTANCE.createLabel("");
       direction = Styles.INSTANCE.createLabel("");
+
+      tileObjects = new ArrayList<>();
       map = new TmxMapLoader().load("maps/map.tmx");
-      tankTexture = new Texture("img/tank.png");
+      renderer = new IsometricTiledMapRenderer(map);
+      tileSet = map.getTileSets().getTileSet(0);
+      mapLayers = map.getLayers();
+      wallLayer = (TiledMapTileLayer) mapLayers.get(1);
+      tankTexture = new Texture("maps/tank1.png");
+      tankTexture2 = new Texture("img/tank.png");
+      powerUpTexture = new Texture("maps/powerup.png");
+      shadow = new Texture("maps/shadow.png");
+      shadowUltraLight = new Texture("maps/shadow2.png");
+      bulletTexture = new Texture("maps/bullet.png");
       projectileTexture = new Texture("img/bullet.png");
-      stick = new Texture("img/top.png");
-      tractionHealth = true;
-      tractionPopUp = true;
-      renderer = new OrthogonalTiledMapRenderer(map);
+
+      rotations = new ArrayList<>();
+      for (int i = 0;i<=359;i++){
+        rotations.add(new Texture("maps/turret_with_base/"+String.format("%04d", i)+ ".png"));
+      }
+
+      for (int i = 0; i != 61; i++) {
+        ArrayList<Position> ps = new ArrayList<>();
+        rows.add(ps);
+      }
+
+      int counter = 1;
+
+      for (int j = 0; j <= 61; j++) {
+        for (int i = -counter; i < counter + 1; i++) {
+          int x = (int) (j + 0.5f - i);
+          int y = (int) (j - 0.5f + i);
+          try {
+            rows.get(j).add(new Position(x, y));
+          } catch (Exception ignored) {
+          }
+
+        }
+
+        for (int i = -counter; i < counter + 1; i++) {
+          int x = j - i;
+          int y = j + i;
+          try {
+            rows.get(j).add(new Position(x, y));
+          } catch (Exception ignored) {
+          }
+
+        }
+
+        counter++;
+      }
+
       minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
       minimapViewport.setWorldSize(maxX, maxY);
       this.camera = new Camera(maxX, maxY, 640, 640);
@@ -86,7 +147,7 @@ public class GameScreen extends AbstractScreen {
 
     }
     healthBarBatch = new SpriteBatch();
-    tanks = new SpriteBatch();
+    game = new SpriteBatch();
     tanksMiniMap = new SpriteBatch();
     minimapBackGround = new SpriteBatch();
   }
@@ -246,7 +307,7 @@ public class GameScreen extends AbstractScreen {
       player = update.getMe(Data.INSTANCE.getID());
     }
     if (player != null) {
-      this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
+      this.camera.setPosititon(Helper.tileToScreenX(player.getX(), player.getY()), Helper.tileToScreenY(player.getX(), player.getY()));
       this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
       if (player.getR() == 0) {
         this.direction.setText("UP");
@@ -260,15 +321,28 @@ public class GameScreen extends AbstractScreen {
     }
     //main viewport
     camera.getViewport().apply();
+
     renderer.setView(this.camera.getCamera());
-    renderer.render();
+    renderer.getBatch().begin();
+    renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(0));
+    renderer.getBatch().end();
+
+    //game
+    game.setProjectionMatrix(this.camera.getCamera().combined);
+    game.begin();
+
+    var collection = new ArrayList<Container>();
+    collection.addAll(returnTanks());
+    collection.addAll(returnProjectiles());
+    collection.addAll(returnPowerups());
+
+    renderGame(game,collection);
+
+    game.end();
+
     //health bar
     healthBar();
-    //tanks
-    tanks.setProjectionMatrix(this.camera.getCamera().combined);
-    tanks.setColor(Data.INSTANCE.getTankColour());
-    tanks.begin();
-    renderTanks(tanks);
+
     //mini viewport
     minimapViewport.apply();
     minimap();
@@ -395,23 +469,30 @@ public class GameScreen extends AbstractScreen {
 
   private int getBearing() {
     Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-    Vector2 mouseMapPos = new Vector2(mouseMapPos3.x, mouseMapPos3.y);
-    Vector2 tankVec = new Vector2(player.getX(), player.getY());
-    Vector2 mouseRel = new Vector2(mouseMapPos.x - maxX + tankVec.x, mouseMapPos.y - maxY + tankVec.y);
-    return Math.round(mouseRel.angle());
+
+    Position mouseMapIso =
+            Helper.screenToTile(new Position(
+                    (int)(mouseMapPos3.x),
+                    (int)(mouseMapPos3.y))
+            );
+
+    float deltaX = mouseMapIso.getX()-player.getX()+tankTexture.getWidth()/2f;
+    float deltaY = mouseMapIso.getY()-player.getY()+tankTexture.getHeight()/2f;
+
+    return (int)(Math.round(Math.toDegrees(Math.atan2(deltaY,deltaX))));
   }
 
 
   private void backgroundInput() {
 
-    if (tractionPopUp) {
+    if (true) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
         PopUp.createPopUp(false);
         //show the pop up table
         popUpTable.setVisible(true);
         tractionPopUp = false;
       }
-      if (tractionHealth) {
+      if (true) {
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
             AudioEnum.INSTANCE.getTankMove();
@@ -446,7 +527,7 @@ public class GameScreen extends AbstractScreen {
         AudioEnum.INSTANCE.getShoot();
         Data.INSTANCE.sendCommand(Command.BULLET_SPRAY);
       }
-      if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) {
+      if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT) || Gdx.input.isButtonPressed(0)) {
         AudioEnum.INSTANCE.getShoot();
         Data.INSTANCE.sendCommand(Command.FREEZE_BULLET);
       }
@@ -459,7 +540,7 @@ public class GameScreen extends AbstractScreen {
     super.dispose();
     map.dispose();
     renderer.dispose();
-    tanks.dispose();
+    game.dispose();
     tanksMiniMap.dispose();
     healthBarBatch.dispose();
   }
@@ -475,4 +556,95 @@ public class GameScreen extends AbstractScreen {
     alertTable.setVisible(false);
     tractionHealth = true;
   }
+
+  /*Isometric rendering begin*/
+
+  public void renderGame(SpriteBatch sb, ArrayList<Container> objects) {
+    int index = 0;
+    for (ArrayList<Position> ps : rows) {
+      for (Position pp : ps) {
+        try {
+          var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(pp.getX(), pp.getY()).getTile();
+          drawTiles(sb, pp.getX(), pp.getY(), tile);
+          drawShadow(sb,pp.getX(), pp.getY(), shadow);
+        } catch (Exception ignored) {
+        }
+      }
+      for (var c : objects) {
+        if((int)((Math.ceil(c.getX()/32f)+Math.ceil(60-(c.getY()/32f)))/2f)==index) {
+          if(c.getObjectType() == EntityType.BULLET) {
+            sb.draw(bulletTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+          }else if(c.getObjectType() == EntityType.AMMO_POWERUP || c.getObjectType() == EntityType.HEALTH_POWERUP || c.getObjectType() == EntityType.DAMAGE_POWERUP || c.getObjectType() == EntityType.SPEED_POWERUP) {
+            sb.draw(powerUpTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+            sb.draw(shadow,Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+            sb.draw(shadowUltraLight,Helper.tileToScreenX(c.getX() + 10, c.getY() - 32 - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 32 - 10));
+          }else if(c.getObjectType() == EntityType.TANK) {
+            //sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+            int t = changeAngle(-getBearing(),90);
+            if (t==359) t = 0;
+            sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+          }
+        }
+      }
+      index++;
+    }
+  }
+
+  private ArrayList<Container> returnProjectiles() {
+    var array = new ArrayList<Container>();
+    if (update != null) {
+      array.addAll(update.getProjectiles().values());
+    }
+    return array;
+  }
+
+  private ArrayList<Container> returnTanks(){
+    var array = new ArrayList<Container>();
+    if (update != null) {
+
+      for (int i = 0; i < update.getPlayers().values().size(); i++) {
+        Container updater = update.getI(i);
+        array.add(updater);
+      }
+    }
+    return array;
+  }
+
+  private ArrayList<Container> returnPowerups() {
+    var array = new ArrayList<Container>();
+    if (update != null) {
+      array.addAll(update.getPowerups().values());
+    }
+    return array;
+  }
+
+  private void drawTiles(SpriteBatch sb, int i, int j, TiledMapTile tile) {
+    var pos = new Position((i) * 32, (j) * 32);
+
+    var pos1 = new Position(pos.getX() - 960, pos.getY() - 960);
+    var pos2 = new Position(pos1.getY(), -pos1.getX());
+    var pos3 = new Position(pos2.getX() + 960, pos2.getY() + 960);
+    var pos4 = Helper.tileToScreen(pos3);
+
+    sb.draw(tile.getTextureRegion(), pos4.getX(), pos4.getY());
+  }
+
+  private void drawShadow(SpriteBatch sb, int i, int j, Texture shadow) {
+    var pos = new Position((i+1) * 32, (j) * 32);
+
+    var pos1 = new Position(pos.getX() - 960, pos.getY() - 960);
+    var pos2 = new Position(pos1.getY(), -pos1.getX());
+    var pos3 = new Position(pos2.getX() + 960, pos2.getY() + 960);
+    var pos4 = Helper.tileToScreen(pos3);
+
+    sb.draw(shadow, pos4.getX(), pos4.getY());
+  }
+
+  private int changeAngle(int angle, int change) {
+    if (angle + change >= 0)
+      return (angle + change) % 360;
+    return (angle + change + 360) % 360;
+  }
+
+  /*Isometric rendering ends*/
 }

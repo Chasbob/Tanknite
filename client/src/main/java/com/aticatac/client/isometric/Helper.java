@@ -1,7 +1,7 @@
 package com.aticatac.client.isometric;
 
 
-import com.aticatac.server.Position;
+import com.aticatac.client.server.Position;
 
 public class Helper {
     public static int tileToScreenX(int x, int y) {
