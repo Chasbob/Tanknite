@@ -2,22 +2,23 @@ package com.aticatac.client.server.objectsystem.physics;
 
 import com.aticatac.client.server.Position;
 import com.aticatac.common.objectsystem.EntityType;
+import org.apache.log4j.Logger;
+
 import java.util.HashSet;
 import java.util.Objects;
-import org.apache.log4j.Logger;
 
 /**
  * The type Collision box.
  */
 public class CollisionBox {
 
-  /***/
+  /**Radius of the entity*/
   private final int radius;
-  /***/
+  /**logger*/
   private final Logger logger;
-  /***/
+  /**Position of the entity*/
   private Position position;
-  /***/
+  /**Set of positions making up the collision box of this entity*/
   private HashSet<Position> box;
 
   /**
@@ -45,9 +46,9 @@ public class CollisionBox {
 
 
   /**
-   *
-   * @param p
-   * @return
+   * Calculates all the positions for a box around a given position
+   * @param p the position that needs a box creating around it
+   * @return a set of positions representing a box around a position
    */
   private HashSet<Position> calcCollisionBox(final Position p) {
     HashSet<Position> out = new HashSet<>();
@@ -68,11 +69,11 @@ public class CollisionBox {
   }
 
   /**
-   *
-   * @param out
-   * @param lowerY
-   * @param lowerX
-   * @param limit
+   * Calculates the offset for Y
+   * @param out the set of positions that represent a box
+   * @param lowerY the lowest Y value for the box
+   * @param lowerX the lowest X value for the box
+   * @param limit The limit of the box size
    */
   private void calcYoffset(final HashSet<Position> out, final int lowerY, final int lowerX, final int limit) {
     for (int y = 0; y < limit; y++) {
@@ -82,11 +83,11 @@ public class CollisionBox {
   }
 
   /**
-   *
-   * @param out
-   * @param lowerY
-   * @param lowerX
-   * @param limit
+   * Calculates the offset for X
+   * @param out the set of positions that represent a box
+   * @param lowerY The lowest Y value for the box
+   * @param lowerX The lowest X value for the box
+   * @param limit The limit of the box size
    */
   private void calcXoffset(final HashSet<Position> out, final int lowerY, final int lowerX, final int limit) {
     for (int x = 0; x < limit; x++) {
@@ -105,8 +106,8 @@ public class CollisionBox {
   }
 
   /**
-   *
-   * @return
+   * Creates the hashcode for a collisionbox
+   * @return the integer hashcode
    */
   @Override
   public int hashCode() {
@@ -114,9 +115,9 @@ public class CollisionBox {
   }
 
   /**
-   *
-   * @param o
-   * @return
+   * Compares the X and Y values of the positions of a collision box to determine equality
+   * @param o the object being compared
+   * @return true if the objects are equal, else false.
    */
   @Override
   public boolean equals(final Object o) {
@@ -127,9 +128,7 @@ public class CollisionBox {
       return false;
     }
     final CollisionBox that = (CollisionBox) o;
-    return radius == that.radius &&
-        position.equals(that.position) &&
-        getBox().equals(that.getBox());
+    return radius == that.radius && position.equals(that.position) && getBox().equals(that.getBox());
   }
 
   /**

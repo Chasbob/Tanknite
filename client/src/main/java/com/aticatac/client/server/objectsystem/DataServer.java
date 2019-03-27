@@ -11,8 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The enum Data server.
- *
- * @author Claire Fletcher
  */
 public enum DataServer {
   /**
@@ -34,32 +32,51 @@ public enum DataServer {
   private int playerCount;
 
   /**
-   *
+   * Creates the DataServer
+   * Initialises the map into the occupied coordinates
+   * Walls are now objects that can be collided with.
    */
   DataServer() {
+    //Wall entities to be added to the map
     wall = new Entity(EntityType.WALL);
     //initialises the map
     map = convertTMXFileToArray();
-    //adds the map to occupied coordinates
+
+    //adds the map to occupied coordinates using file reader
     for (int x = 0; x < 60; x++) {
       for (int y = 0; y < 60; y++) {
+        //Walls are 2 in the map file
         if ((map[x][y]).equals("2")) {
+          //sets collision box within the entity
           wall.setPosition(x * 32 + 16, y * 32 + 16);
           addEntity(wall);
-//          createCollisionBox(y, x);
         }
+
       }
     }
   }
 
+  /**
+   * Gets the size of the occupied Coordinates map
+   * @return size of occupied coordinates map
+   */
   public int size() {
     return occupiedCoordinates.size();
   }
 
+  /**
+   * Gets the map
+   * @return the map as a 2d array of strings
+   */
   public String[][] getMap() {
     return map;
   }
 
+  /**
+   * Converts a TMXfile to an array
+   * Converts the map file to an array
+   * @return the map as a 2d array of strings
+   */
   private String[][] convertTMXFileToArray() {
     String[][] map = new String[60][60];
     TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
@@ -77,30 +94,14 @@ public enum DataServer {
   }
 
   /**
-   * Sets the
+   * Gets the occupied coordinates map.
    *
-   * @return occupied coordinates
+   * @return occupied coordinates map.
    */
   public ConcurrentHashMap<Position, Entity> getOccupiedCoordinates() {
     return occupiedCoordinates;
   }
 
-  /**
-   * Sets the coordinates for the object in the map
-   *
-   * @param newPosition the new position
-   * @param type        the type
-   * @param oldPosition the old position
-   */
-  public void setCoordinates(Position newPosition, Entity type, Position oldPosition) {
-    //if old position is not in there then don't remove
-    if (!(occupiedCoordinates.containsKey(oldPosition))) {
-      occupiedCoordinates.put(newPosition, type);
-    } else {
-      occupiedCoordinates.remove(oldPosition);
-      occupiedCoordinates.put(newPosition, type);
-    }
-  }
 
   /**
    * Sets the coordinates for the object in the map
@@ -108,13 +109,12 @@ public enum DataServer {
    * @param newPosition the new position
    * @param type        the type
    */
-  //only called when the objects are first put into the map.
   public void setCoordinates(Position newPosition, Entity type) {
     occupiedCoordinates.put(newPosition, type);
   }
 
   /**
-   * Delete coordinates.
+   * Delete coordinates from the map of occupied coordinates
    *
    * @param key the key
    */
@@ -140,37 +140,6 @@ public enum DataServer {
     playerCount = count;
   }
 
-  private void createCollisionBox(int mapX, int mapY) {
-    int mapPositionX = (32 * (mapX));
-    int mapPositionY = (32 * (mapY));
-    //adds centre of the element to the occupied
-    Position centrePosition = new Position(mapPositionX, mapPositionY);
-//    setCoordinates(centrePosition, wall);
-    int lowerY = mapPositionX;
-    int lowerX = mapPositionY;
-    int higherY = mapPositionX + 32;
-    int higherX = mapPositionY + 32;
-    //positions for bottom of box
-    for (int x = 0; x < 31; x++) {
-      Position position = new Position(lowerX + x, lowerY);
-      setCoordinates(position, wall);
-    }
-    //positions for left of box
-    for (int y = 0; y < 31; y++) {
-      Position position = new Position(lowerX, lowerY + y);
-      setCoordinates(position, wall);
-    }
-    //positions for top of box
-    for (int x = 0; x < 31; x++) {
-      Position position = new Position(lowerX + x, higherY);
-      setCoordinates(position, wall);
-    }
-    //positions for right of box
-    for (int y = 0; y < 31; y++) {
-      Position position = new Position(higherX, lowerY + y);
-      setCoordinates(position, wall);
-    }
-  }
 
   /**
    * Remove box from data.
@@ -178,10 +147,6 @@ public enum DataServer {
    * @param box the box
    */
   public void removeBoxFromData(HashSet<Position> box) {
-//    for (int i = 0; i < box.size(); i++) {
-//      Position position = box.(i);
-//      deleteCoordinates(position);
-//    }
     for (Position p :
         box) {
       deleteCoordinates(p);
@@ -228,7 +193,6 @@ public enum DataServer {
   public void addBoxToData(HashSet<Position> box, Entity entity) {
     for (Position position : box) {
       occupiedCoordinates.put(position, entity);
-//      DataServer.INSTANCE.setCoordinates(position, entity);
     }
   }
 
@@ -242,13 +206,24 @@ public enum DataServer {
     addBoxToData(box.getBox(), entity);
   }
 
+  /**
+   * Add the entity to the occupied coordinates map
+   * @param entity the entity that is being added
+   */
   public void addEntity(Entity entity) {
     addBoxToData(entity.getCollisionBox().getBox(), entity);
   }
 
+
+  /**
+   * Checks if something contains the given box
+   * @param box the box to be compared
+   * @return true if box does exist, false if not.
+   */
   public boolean containsBox(CollisionBox box) {
-    for (Position p :
-        box.getBox()) {
+    //checks each position of the box
+    for (Position p : box.getBox()) {
+      //if the occupied contains the position return true
       if (occupiedCoordinates.containsKey(p)) {
         return true;
       }
