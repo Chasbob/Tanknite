@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
+import java.math.BigDecimal;
+
 
 /**
  * The type Main menu screen.
@@ -241,11 +243,11 @@ public class MainMenuScreen extends AbstractScreen {
     assetsTable.add(Styles.INSTANCE.createLabel("ID: "));
     if (online) {
       assetsTable.add(Styles.INSTANCE.createCustomLabel(player.username, Color.CORAL)).padRight(10);
+      assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
+      assetsTable.add(Styles.INSTANCE.createCustomLabel(Integer.toString(player.xp), Color.CORAL));
     } else {
       assetsTable.add(Styles.INSTANCE.createCustomLabel("OFFLINE", Color.CORAL)).padRight(10);
     }
-    assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
-    assetsTable.add(Styles.INSTANCE.createCustomLabel("1500", Color.CORAL));
     super.addToRoot(assetsTable);
   }
 
@@ -295,31 +297,49 @@ public class MainMenuScreen extends AbstractScreen {
 
   private void populateStats(Table statsContainerTable) {
     Table statsTable = new Table();
-    statsTable.defaults().left().padRight(20).top();
+    statsTable.defaults().left().top();
     //we want to seperate the stats as too many to just list so have left table
     Table statsLeftTable = new Table();
     statsLeftTable.defaults().left();
-    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("TOP KILLSTREAK: "));
-    statsLeftTable.row();
-    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("KILLS: "));
-    statsLeftTable.row();
-    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("DEATHS: "));
-    statsLeftTable.row();
-    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("K/D: "));
-    statsLeftTable.row();
+    addStat(statsLeftTable, "TOP KILLSTREAK: ", player.top_kill_streak);
+    addStat(statsLeftTable, "KILLS: ", player.kills);
+    addStat(statsLeftTable, "DEATHS: ", player.deaths);
+    float kd = 0;
+    if (player.deaths == 0) {
+      kd = player.kills;
+    } else {
+      kd = (float) player.kills / (float) player.deaths;
+    }
+    addStat(statsLeftTable, "K/D: ", kd);
+    addStat(statsLeftTable, "WINS: ", player.win);
     //create right table
     Table statsRightTable = new Table();
     statsRightTable.defaults().left();
-    statsLeftTable.add(Styles.INSTANCE.createItalicLabel("WINS: "));
-    //statsRightTable.row();
-    statsRightTable.add(Styles.INSTANCE.createItalicLabel("LOSSES: "));
-    statsRightTable.row();
-    statsRightTable.add((Styles.INSTANCE.createItalicLabel("W/L: ")));
-    statsRightTable.row();
-    statsRightTable.add((Styles.INSTANCE.createItalicLabel("RANKING: ")));
-    statsTable.add(statsLeftTable);
+    addStat(statsRightTable, "LOSSES: ", player.loss);
+    int wl = 0;
+    if (player.loss == 0) {
+      wl = player.win;
+    } else {
+      wl = player.win / player.loss;
+    }
+    addStat(statsRightTable, "W/L: ", wl);
+    addStat(statsRightTable, "SCORE: ", player.score);
+    statsTable.add(statsLeftTable).padRight(10);
     statsTable.add(statsRightTable);
     statsContainerTable.add(statsTable).padBottom(10);
+  }
+
+  private void addStat(Table statsTable, String string, int stat) {
+    statsTable.add(Styles.INSTANCE.createItalicLabel(string));
+    statsTable.add(Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.smallFont, Integer.toString(stat), Color.LIME));
+    statsTable.row();
+  }
+
+  private void addStat(Table statsTable, String string, float stat) {
+    stat = Math.round(stat * 100.0f) / 100.0f;
+    statsTable.add(Styles.INSTANCE.createItalicLabel(string));
+    statsTable.add(Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.smallFont, Float.toString(stat), Color.LIME));
+    statsTable.row();
   }
 
   private void createPlay() {
@@ -339,10 +359,7 @@ public class MainMenuScreen extends AbstractScreen {
       switchDropDownMouse(singlePlayerTable);
       Data.INSTANCE.setSingleplayer(true);
       GDXGame.createServer(true, "Single-Player");
-//      Server server = new Server(true, "Single-Player");
-//      server.start();
       refresh();
-      //ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       //join single player server
       Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
       Screens.INSTANCE.showScreen(GameScreen.class);
@@ -607,4 +624,5 @@ public class MainMenuScreen extends AbstractScreen {
     super.dispose();
     aidBarBatch.dispose();
   }
+
 }
