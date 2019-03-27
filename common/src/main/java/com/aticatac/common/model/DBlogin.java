@@ -16,11 +16,6 @@ public class DBlogin extends Model {
     this.register = register;
   }
 
-  public DBlogin(final String username, final String password, final boolean register) {
-    this(username, password);
-    this.register = register;
-  }
-
   public boolean isRegister() {
     return register;
   }
