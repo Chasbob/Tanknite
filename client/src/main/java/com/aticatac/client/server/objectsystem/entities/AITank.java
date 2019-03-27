@@ -59,7 +59,7 @@ public class AITank extends Tank {
       Decision decision = ai.getDecision(i);
       setRotation(decision.getAngle());
       try {
-        if (getHealth() > 10 && decision.getCommand() != null && decision.getCommand() != Command.DEFAULT && frozen < 0) {
+        if (getHealth() > 10 && decision.getCommand() != null && decision.getCommand() != Command.DEFAULT && getFrozen() < 0) {
           move(decision.getCommand().vector);
         }
       } catch (Exception e) {
