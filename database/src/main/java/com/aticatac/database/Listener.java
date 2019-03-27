@@ -1,9 +1,9 @@
 package com.aticatac.database;
 
+import com.aticatac.common.mappers.Player;
 import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
-import com.aticatac.database.mappers.Player;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

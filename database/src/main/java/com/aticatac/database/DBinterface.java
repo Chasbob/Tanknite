@@ -1,6 +1,6 @@
 package com.aticatac.database;
 
-import com.aticatac.database.mappers.Player;
+import com.aticatac.common.mappers.Player;
 import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.exceptions.PersistenceException;
