@@ -39,7 +39,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   protected int speedIncrease = -1;
   protected int deathCountdown = -1;
   private int bulletSprays = 0;
-  private int freezeBullets = 10;
+  private int freezeBullets = 0;
   protected int frozen = -1;
   private int framesToShoot;
 
