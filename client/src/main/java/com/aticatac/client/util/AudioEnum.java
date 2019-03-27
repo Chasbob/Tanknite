@@ -39,6 +39,8 @@ public enum AudioEnum {
   private float soundVolume = 0.6f;
   /***/
   private float musicVolume = 0.4f;
+  /***/
+  private float mainVolume = 0.1f;
 
   /**
    *
@@ -134,8 +136,8 @@ public enum AudioEnum {
   public Music getMain() {
 
     if (music) {
-      main.setVolume(musicVolume);
-      main.play();
+      theme.setVolume(mainVolume);
+      theme.play();
     }
     return theme;
 
