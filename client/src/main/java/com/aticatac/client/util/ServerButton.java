@@ -62,7 +62,7 @@ public class ServerButton extends TextButton {
    *
    * @return the server information
    */
-  ServerInformation getServerInformation() {
+  public ServerInformation getServerInformation() {
     return serverInformation;
   }
 

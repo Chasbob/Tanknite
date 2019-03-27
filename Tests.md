@@ -20,7 +20,7 @@
 1. Camera?
 2. Listener factory
 3. List servers
-4. Populate players
+4. Populate names
 5. Server button
 6. Styles singleton?
 7. Audio singleton

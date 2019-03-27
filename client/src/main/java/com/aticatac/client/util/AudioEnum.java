@@ -26,6 +26,8 @@ public enum AudioEnum {
   private Music buttonClick;
   /***/
   private Music theme;
+  /***/
+  private Music main;
 
 
   /***/
@@ -34,9 +36,9 @@ public enum AudioEnum {
   /***/
   private boolean music = true;
   /***/
-  private float soundVolume = 1;
+  private float soundVolume = 0.6f;
   /***/
-  private float musicVolume = 0.5f;
+  private float musicVolume = 0.4f;
 
   /**
    *
@@ -45,14 +47,22 @@ public enum AudioEnum {
 
     this.logger = Logger.getLogger(getClass());
     this.logger.trace("boo");
-    //loadSound();
+    loadSound();
 
   }
 
+  /**
+   *
+   * @return
+   */
   public boolean isSound() {
     return sound;
   }
 
+  /**
+   *
+   * @return
+   */
   public boolean isMusic() {
     return music;
   }
@@ -91,15 +101,17 @@ public enum AudioEnum {
 
     shoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.mp3"));
 
-    tankMove = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank-SoundBible.com-1359027625.mp3"));
+    tankMove = Gdx.audio.newMusic(Gdx.files.internal("audio/TankMovement-SoundBible.com-1359027625.mp3"));
 
-    powerUp = Gdx.audio.newMusic(Gdx.files.internal("audio/Power-Up-KP-1879176533.mp3"));
+    powerUp = Gdx.audio.newMusic(Gdx.files.internal("audio/Coin_Drop-Willem_Hunt-569197907-[AudioTrimmer.com].mp3"));
 
     tankDeath = Gdx.audio.newMusic(Gdx.files.internal("audio/Bomb_Exploding-Sound_Explorer-68256487.mp3"));
 
-    buttonClick = Gdx.audio.newMusic(Gdx.files.internal("audio/Gun_Cocking_Slow-Mike_Koenig-1019236976.mp3"));
+    buttonClick = Gdx.audio.newMusic(Gdx.files.internal("audio/ButtonClick.mp3"));
 
-    theme = Gdx.audio.newMusic(Gdx.files.internal("audio/Puzzle-Land.mp3"));
+    theme = Gdx.audio.newMusic(Gdx.files.internal("audio/arcade-music-loop.wav"));
+
+    main = Gdx.audio.newMusic(Gdx.files.internal("audio/Impulse.mp3"));
 
   }
 
@@ -119,14 +131,22 @@ public enum AudioEnum {
   /**
    * @return
    */
-  public Music getBackgroundMusic() {
+  public Music getMain() {
 
     if (music) {
-      theme.setVolume(musicVolume);
-      theme.setLooping(true);
-      theme.play();
+      main.setVolume(musicVolume);
+      main.play();
     }
     return theme;
+
+  }
+
+  /**
+   * @return
+   */
+  public void stopMain() {
+
+    main.stop();
 
   }
 
@@ -140,6 +160,24 @@ public enum AudioEnum {
       shoot.play();
     }
     return shoot;
+  }
+
+  /**
+   * @return
+   */
+  //can play this even if it is being played elsewhere
+  public Music getOtherTankShoot(float volume) {
+
+    try {
+      Music otherShoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.wav"));
+      if (sound) {
+        otherShoot.setVolume(volume);
+        otherShoot.play();
+      }
+      return otherShoot;
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /**

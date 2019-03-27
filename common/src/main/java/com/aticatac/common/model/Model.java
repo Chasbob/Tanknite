@@ -5,7 +5,7 @@ package com.aticatac.common.model;
  */
 public abstract class Model {
   private final String className;
-  public String id;
+  private String id;
 
   /**
    * Instantiates a new Model.
@@ -15,6 +15,10 @@ public abstract class Model {
   public Model(String id) {
     this.id = id;
     className = this.getClass().getName();
+  }
+
+  public Model() {
+    this("");
   }
 
   /**

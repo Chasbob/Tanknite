@@ -1,16 +1,26 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.ListenerFactory;
+import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.mappers.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
+
+import static com.aticatac.client.bus.EventBusFactory.eventBus;
 
 /**
  * The type Abstract screen.
@@ -21,21 +31,30 @@ public class AbstractScreen extends Stage implements Screen {
    */
   protected final Logger logger;
   Table rootTable;
+  TextButton backButton;
+  protected Player player;
 
   /**
    * Instantiates a new Abstract screen.
    */
   AbstractScreen() {
-    super(new ExtendViewport(640, 640));
+    super(new StretchViewport(640, 640));
+    eventBus.register(this);
     logger = Logger.getLogger(getClass());
+    rootTable = new Table();
+  }
+
+  @Subscribe
+  private void playerUpdate(Player player) {
+    this.logger.info("update player");
+    this.player = player;
   }
 
   /**
    * Build stage.
    */
-  public void buildStage(){
+  public void buildStage() {
     //create root table
-    rootTable = new Table();
     rootTable.setFillParent(true);
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
@@ -45,7 +64,7 @@ public class AbstractScreen extends Stage implements Screen {
     rootTable.addActor(backTable);
     backTable.bottom();
     //create back button
-    TextButton backButton = Styles.INSTANCE.createBackButton("BACK");
+    backButton = Styles.INSTANCE.createBackButton("BACK");
     backTable.add(backButton).bottom().padBottom(10);
     backButton.addListener(ListenerFactory.newListenerEvent(() -> {
       refresh();
@@ -54,21 +73,12 @@ public class AbstractScreen extends Stage implements Screen {
     }));
   }
 
-  void addToRoot(Table table){
+  void addToRoot(Table table) {
     table.setFillParent(true);
     rootTable.addActor(table);
   }
 
-  Table createTopLabelTable(Table dataTable){
-    addToRoot(dataTable);
-    Table topLabelTable = new Table();
-    topLabelTable.setFillParent(true);
-    dataTable.addActor(topLabelTable);
-    topLabelTable.top().padTop(50);
-    return topLabelTable;
-  }
-
-  public void refresh(){
+  public void refresh() {
 
   }
 
@@ -100,5 +110,22 @@ public class AbstractScreen extends Stage implements Screen {
 
   @Override
   public void hide() {
+  }
+
+  int applyIndex(Group group, int index, boolean downOrRight) {
+    if (downOrRight) {
+      if (index == group.getChildren().size - 1) {
+        index = 0;
+      } else {
+        index++;
+      }
+    } else {
+      if (index == 0) {
+        index = group.getChildren().size - 1;
+      } else {
+        index--;
+      }
+    }
+    return index;
   }
 }

@@ -1,5 +1,8 @@
 package com.aticatac.common.objectsystem;
 
+/**
+ * The enum Entity type.
+ */
 public enum EntityType {
   /**
    * None entity type.
@@ -8,7 +11,7 @@ public enum EntityType {
   /**
    * Tank entity type.
    */
-  TANK(14, 6),
+  TANK(13, 6),
   /**
    * Bullet entity type.
    */
@@ -16,7 +19,7 @@ public enum EntityType {
   /**
    * Wall entity type.
    */
-  WALL(15),
+  WALL(13),
   /**
    * Outofbounds entity type.
    */
@@ -36,7 +39,15 @@ public enum EntityType {
   /**
    * Damage powerup entity type.
    */
-  DAMAGE_POWERUP(10);
+  DAMAGE_POWERUP(10),
+  /**
+   * Bulletspray powerup entity type.
+   */
+  BULLETSPRAY_POWERUP(10),
+  /**
+   * Freezebullet powerup entity type.
+   */
+  FREEZEBULLET_POWERUP(10);
   /**
    * The Radius.
    */
