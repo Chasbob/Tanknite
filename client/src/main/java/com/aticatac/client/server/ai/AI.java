@@ -36,7 +36,7 @@ public class AI {
   private int tankHealth;
   private int tankAmmo;
   private int aimAngle;
-  private boolean shooting;
+  private Decision.ShootType shooting;
   private AIInput currentInput;
 
   public AI() {
@@ -78,7 +78,7 @@ public class AI {
    */
   private void updateInformation() {
     tankPos = currentInput.getMe().getPosition();
-    tankHealth = currentInput.getMe().health;
+    tankHealth = currentInput.getMe().getHealth();
     tankAmmo = currentInput.getAmmo();
     enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
     powerupsInRange = getPowerUpsInRange(tankPos, currentInput.getPowerups());
@@ -165,7 +165,7 @@ public class AI {
       // Enemies near and tank has no ammo
       return 90;
     }
-    int closestEnemyHealth = getTargetedEnemy().health;
+    int closestEnemyHealth = getTargetedEnemy().getHealth();
     if (tankHealth <= 30 && closestEnemyHealth > tankHealth) {
       Position clearPos = getClearPosition();
       if (Math.sqrt(Math.pow(clearPos.getY() - tankPos.getY(), 2) + Math.pow(clearPos.getX() - tankPos.getX(), 2)) < 128) {
@@ -594,13 +594,19 @@ public class AI {
    *
    * @return If the tank can shoot at an enemy
    */
-  private boolean canShoot() {
+  private Decision.ShootType canShoot() {
     if (!(tankAmmo <= 0 || enemiesInRange.isEmpty())) {
+      if (getEnemiesInSight().size() > 1 && Math.random() > 0.5 && currentInput.getSprayAmmo() > 0) {
+        return Decision.ShootType.SPRAY;
+      }
       Position target = getTargetedEnemy().getPosition();
       if (target != null) {
         aimAngle = getNewAimAngle(target);
         if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 5) {
-          return true;
+          if (currentInput.getFreezeAmmo() > 0 && Math.random() > 0.75) {
+            return Decision.ShootType.FREEZE;
+          }
+          return Decision.ShootType.NORMAL;
         }
       }
     }
@@ -608,7 +614,7 @@ public class AI {
     if (!searchPath.isEmpty() && state == State.WANDERING) {
       aimAngle = getNewAimAngle(searchPath.peekLast());
     }
-    return false;
+    return Decision.ShootType.NONE;
   }
 
   /**

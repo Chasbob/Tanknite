@@ -28,7 +28,6 @@ public class AITank extends Tank {
   protected int maxHealth;
   protected int maxAmmo;
   protected int ammo;
-  private int deathCountdown = -1;
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
@@ -44,17 +43,19 @@ public class AITank extends Tank {
   @Override
   public void tick() {
     logger.trace("tick");
-    deathCountdown--;
-    frozen--;
-    if (deathCountdown == 0) {
-      hit(10, false);
+    setFrozen(getFrozen() - 1);
+    setDamageIncrease(getDamageIncrease() - 1);
+    setSpeedIncrease(getSpeedIncrease() - 1);
+    setDeathCountdown(getDeathCountdown() - 1);
+    if(getDeathCountdown() == 0){
+      hit(10,false);
     }
     if (frames.size() > 5) {
       frames.clear();
     }
     if (!frames.isEmpty()) {
       input = frames.poll();
-      AIInput i = new AIInput(new PlayerState(getPosition(), getHealth()), 30, input.getPlayers(), input.getPowerups());
+      AIInput i = new AIInput(new PlayerState(getPosition(), getHealth()), getAmmo(), getFreezeBullets(), getBulletSprays(), input.getPlayers(), input.getPowerups());
       Decision decision = ai.getDecision(i);
       setRotation(decision.getAngle());
       try {
@@ -65,9 +66,9 @@ public class AITank extends Tank {
         this.logger.error(e);
         this.logger.error("Error while moving.");
       }
-      if (decision.getShoot()) {
+      if (decision.getShoot() /*== Decision.ShootType.NORMAL*/ != Decision.ShootType.NONE) { // swap commented with uncommented
         this.logger.trace("shoot");
-        if (!(getAmmo() == 0 || getHealth() == 0) && getFramesToShoot() < 0 && frozen < 0) {
+        if (!(getAmmo() == 0 || getHealth() == 0) && getFramesToShoot() < 0 && getFrozen() < 0) {
           setAmmo(getAmmo() - 1);
           if (getDamageIncrease() > 0) {
             addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 20, false));
@@ -77,6 +78,22 @@ public class AITank extends Tank {
           setFramesToShoot(30);
         }
       }
+//      if (decision.getShoot() == Decision.ShootType.FREEZE) {
+//        this.logger.trace("freeze bullet");
+//        if (getFreezeBullets() > 0 && getFrozen() < 0) {
+//          addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 0, true));
+//          setFreezeBullets(getFreezeBullets() - 1);
+//        }
+//      }
+//      if (decision.getShoot() == Decision.ShootType.SPRAY) {
+//        this.logger.trace("bullet spray");
+//        if (getBulletSprays() > 0 && getFrozen() < 0) {
+//          for (int j = 0; j < 375; j += 15) {
+//            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle() + j, 5, false));
+//          }
+//          setBulletSprays(getBulletSprays() - 1);
+//        }
+//      }
     }
     if (getFramesToShoot() == 1) {
       this.logger.trace("Ready to fire!");

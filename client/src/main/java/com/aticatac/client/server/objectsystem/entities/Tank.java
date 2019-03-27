@@ -39,7 +39,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   private int speedIncrease = -1;
   private int deathCountdown = -1;
   private int bulletSprays = 0;
-  private int freezeBullets = 10;
+  private int freezeBullets = 0;
   protected int frozen = -1;
   private int framesToShoot;
 
@@ -456,6 +456,14 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
 
   public void setFreezeBullets(int value){
     freezeBullets = value;
+  }
+
+  public void setDeathCountdown(int value) {
+    deathCountdown = value;
+  }
+
+  public int getDeathCountdown() {
+    return deathCountdown;
   }
 
 }

@@ -8,7 +8,7 @@ import com.aticatac.common.model.Command;
 public class Decision {
   private final Command command;
   private final int angle;
-  private final boolean shoot;
+  private final ShootType shoot;
 
   /**
    * Creates a new decision: A command and angle change pair.
@@ -17,7 +17,7 @@ public class Decision {
    * @param angle   The aim angle
    * @param shoot   Shooting?
    */
-  public Decision(Command command, int angle, boolean shoot) {
+  public Decision(Command command, int angle, ShootType shoot) {
     this.command = command;
     this.angle = angle;
     this.shoot = shoot;
@@ -41,7 +41,11 @@ public class Decision {
     return angle;
   }
 
-  public boolean getShoot() {
+  public ShootType getShoot() {
     return shoot;
+  }
+
+  public enum ShootType {
+    NONE, NORMAL, FREEZE, SPRAY
   }
 }
