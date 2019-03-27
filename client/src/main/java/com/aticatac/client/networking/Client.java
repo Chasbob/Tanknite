@@ -178,6 +178,10 @@ public class Client {
       commandModel.setCommand(Command.MOVE);
     } else if (command == Command.SHOOT) {
       commandModel.setCommand(Command.SHOOT);
+    } else if (command == Command.BULLET_SPRAY){
+      commandModel.setCommand(Command.BULLET_SPRAY);
+    } else if (command == Command.FREEZE_BULLET){
+      commandModel.setCommand(Command.FREEZE_BULLET);
     }
   }
 

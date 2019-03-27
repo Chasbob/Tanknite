@@ -413,6 +413,12 @@ public class GameScreen extends AbstractScreen {
           case DAMAGE_POWERUP:
             tanks.setColor(Color.YELLOW);
             break;
+          case BULLETSPRAY_POWERUP:
+            tanks.setColor(Color.PURPLE);
+            break;
+          case FREEZEBULLET_POWERUP:
+            tanks.setColor(Color.FOREST);
+            break;
         }
         tanks.setColor(Color.WHITE);
         renderContainer(c, tanks);
@@ -515,6 +521,14 @@ public class GameScreen extends AbstractScreen {
     if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
       AudioEnum.INSTANCE.getShoot();
       Data.INSTANCE.sendCommand(Command.SHOOT);
+    }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)){
+      AudioEnum.INSTANCE.getShoot();
+      Data.INSTANCE.sendCommand(Command.BULLET_SPRAY);
+    }
+    if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)){
+      AudioEnum.INSTANCE.getShoot();
+      Data.INSTANCE.sendCommand(Command.FREEZE_BULLET);
     }
     Data.INSTANCE.submit(getBearing());
     if (rot > 360) {
