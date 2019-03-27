@@ -1,24 +1,27 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.Data;
-import com.aticatac.client.util.ListenerFactory;
-import com.aticatac.client.util.PopulatePlayers;
-import com.aticatac.client.util.Styles;
+import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 /**
  * The type Lobby screen.
  */
 public class LobbyScreen extends AbstractScreen {
 
+  private int tabIndex;
+  private HorizontalGroup buttonGroup;
+
   /**
    * Instantiates a new Lobby screen.
    */
   LobbyScreen() {
     super();
+    Gdx.input.setInputProcessor(this);
   }
 
   @Override
@@ -26,46 +29,60 @@ public class LobbyScreen extends AbstractScreen {
     super.buildStage();
     //create data table
     Table dataTable = new Table();
-    //create table for waiting for players label and player count for the lobby
-    Table lobbyDetailsTable = super.createTopLabelTable(dataTable);
-    //add labels to lobbyDetailsTable
-    Label lookingLabel = Styles.INSTANCE.createLabel("");
-    lobbyDetailsTable.add(lookingLabel);
-    Label countLabel = Styles.INSTANCE.createLabel("0");
-    lobbyDetailsTable.add(countLabel);
-    Label maxLabel = Styles.INSTANCE.createLabel("/10");
-    lobbyDetailsTable.add(maxLabel);
-    //add table with start button or waiting for host label
-    Table startTable = new Table();
-    startTable.defaults().padRight(25).padLeft(25);
-    startTable.setFillParent(true);
-    startTable.top().padTop(100);
+    dataTable.defaults();
+    super.addToRoot(dataTable);
+    //add horizontal group to store looking label and player count
+    HorizontalGroup lobbyInfoGroup = new HorizontalGroup();
+    dataTable.add(lobbyInfoGroup).padBottom(20);
+    dataTable.row();
+    //create lobby info actors
+    Label lookingLabel = Styles.INSTANCE.createCustomLabel("", Color.CORAL);
+    lobbyInfoGroup.addActor(lookingLabel);
+    Label countLabel = Styles.INSTANCE.createCustomLabel("0", Color.CORAL);
+    lobbyInfoGroup.addActor(countLabel);
+    Label maxLabel = Styles.INSTANCE.createCustomLabel("/10", Color.CORAL);
+    lobbyInfoGroup.addActor(maxLabel);
+    //add horizontal group to store buttons
+    buttonGroup = new HorizontalGroup();
+    dataTable.add(buttonGroup);
+    dataTable.row();
+    //create button group actors
     if (Data.INSTANCE.isHosting()) {
-      TextButton startButton = Styles.INSTANCE.createStartButton("START");
-      startTable.add(startButton);
-      TextButton aiButton = Styles.INSTANCE.createStartButton("FILL AI");
-      aiButton.addListener(ListenerFactory.newListenerEvent(() -> {
-        Data.INSTANCE.sendCommand(Command.FILL_AI);
-        return true;
-      }));
-      startTable.add(aiButton);
+      MenuTable startTable = Styles.INSTANCE.createMenuTable(true, true);
+      TextButton startButton = Styles.INSTANCE.createButton("START");
+      ListenerFactory.addHoverListener(startButton, startTable);
+      startTable.setButton(startButton);
       startButton.addListener(ListenerFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.START);
         return true;
       }));
+      buttonGroup.addActor(startTable);
+      MenuTable aiTable = Styles.INSTANCE.createMenuTable(false, true);
+      TextButton aiButton = Styles.INSTANCE.createButton("FILL AI");
+      ListenerFactory.addHoverListener(aiButton, aiTable);
+      aiButton.addListener(ListenerFactory.newListenerEvent(() -> {
+        Data.INSTANCE.sendCommand(Command.FILL_AI);
+        return true;
+      }));
+      aiTable.setButton(aiButton);
+      buttonGroup.addActor(aiTable);
     } else {
-      Label waitingLabel = Styles.INSTANCE.createColouredLabel();
-      startTable.add(waitingLabel);
+      MenuTable waitingTable = Styles.INSTANCE.createMenuTable(false, false);
+      Label waitingLabel = Styles.INSTANCE.createLabel("WAITING FOR HOST");
+      waitingTable.add(waitingLabel);
+      buttonGroup.addActor(waitingTable);
     }
-    dataTable.addActor(startTable);
-    //add table to store players joining server
-    Table playersTable = new Table();
-    playersTable.setFillParent(true);
-    playersTable.defaults().pad(5).left().width(450);
-    playersTable.top().padTop(150);
-    PopulatePlayers populatePlayers = new PopulatePlayers(playersTable, countLabel, lookingLabel);
+    //add table to store player group
+    Table playersContainer = new Table();
+    Styles.INSTANCE.addTableColour(playersContainer, Color.DARK_GRAY);
+    dataTable.add(playersContainer);
+    //add vertical group to store players
+    VerticalGroup playersGroup = new VerticalGroup();
+    playersGroup.space(5).columnLeft();
+    playersContainer.add(playersGroup).left().pad(10);
+    //populate players
+    PopulatePlayers populatePlayers = new PopulatePlayers(playersGroup, countLabel, lookingLabel);
     populatePlayers.start();
-    dataTable.addActor(playersTable);
   }
 
   @Override
@@ -81,5 +98,39 @@ public class LobbyScreen extends AbstractScreen {
       Screens.INSTANCE.showScreen(GameScreen.class);
       refresh();
     }
+    keyPressed();
+  }
+
+  private void keyPressed() {
+    if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+      switchTab(true);
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+      switchTab(false);
+    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+      enterPressed();
+    }
+  }
+
+  private void enterPressed() {
+    if (Data.INSTANCE.isHosting()) {
+      //get current tab
+      MenuTable currentTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
+      //create an input event to fire the button
+      InputEvent inputEvent = new InputEvent();
+      inputEvent.setType(InputEvent.Type.touchDown);
+      currentTab.getButton().fire(inputEvent);
+    }
+  }
+
+  private void switchTab(boolean right) {
+    //get current tab and unselect
+    MenuTable currentTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
+    currentTab.setShowGroup(false);
+    MenuTable menuTable = (MenuTable) buttonGroup.getChildren().get(tabIndex);
+    menuTable.setShowGroup(false);
+    tabIndex = super.applyIndex(buttonGroup, tabIndex, right);
+    //get new tab
+    MenuTable newTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
+    newTab.setShowGroup(true);
   }
 }

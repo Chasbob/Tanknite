@@ -1,14 +1,12 @@
 package com.aticatac.client.networking;
 
-import com.aticatac.common.model.Command;
-import com.aticatac.common.model.CommandModel;
+import com.aticatac.common.model.*;
 import com.aticatac.common.model.Exception.InvalidBytes;
-import com.aticatac.common.model.Login;
-import com.aticatac.common.model.ModelReader;
-import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.model.Vector;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +16,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Logger;
 
 /**
  * The type Client.
@@ -114,19 +111,20 @@ public class Client {
    * @throws InvalidBytes the invalid bytes
    */
   public Response connect(ServerInformation server, String id) {
+    this.logger.setLevel(Level.ALL);
     try {
       this.connected = false;
       Login login = new Login(id);
       this.logger.trace("ID: " + id);
       this.logger.trace("login: " + modelReader.toJson(login));
-      this.logger.trace("Trying to connect to: " + server.getAddress() + ":" + server.getPort());
+      this.logger.trace("Trying to conneentct to: " + server.getAddress() + ":" + server.getPort());
       Socket socket = new Socket(server.getAddress(), server.getPort());
       this.logger.trace("Connected to server at " + socket.getInetAddress());
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       this.printer = new PrintStream(socket.getOutputStream());
       this.printer.println(modelReader.toJson(login));
       String json = reader.readLine();
-      this.logger.trace("Waiting for response...");
+      this.logger.trace("Waiting for Response...");
       Login output = modelReader.fromJson(json, Login.class);
       this.logger.trace("Authenticated = " + output.isAuthenticated());
       if (output.isAuthenticated() == Response.ACCEPTED) {
@@ -144,7 +142,7 @@ public class Client {
       this.logger.warn("No Server.");
       return Response.NO_SERVER;
     } catch (InvalidBytes e) {
-      this.logger.warn("Invalid response");
+      this.logger.warn("Invalid Response");
       return Response.INVALID_RESPONSE;
     }
   }
@@ -182,6 +180,10 @@ public class Client {
       commandModel.setCommand(Command.MOVE);
     } else if (command == Command.SHOOT) {
       commandModel.setCommand(Command.SHOOT);
+    } else if (command == Command.BULLET_SPRAY){
+      commandModel.setCommand(Command.BULLET_SPRAY);
+    } else if (command == Command.FREEZE_BULLET){
+      commandModel.setCommand(Command.FREEZE_BULLET);
     }
   }
 

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Player">
+    <resultMap id="result" type="Player">
+        <result column="id"/>
+        <result column="username"/>
+        <result column="password"/>
+        <result column="tank_colour"/>
+        <result column="top_kill_streak"/>
+        <result column="kills"/>
+        <result column="deaths"/>
+        <result column="win"/>
+        <result column="loss"/>
+        <result column="score"/>
+    </resultMap>
+    <insert id="insert" parameterType="Player">
+        INSERT INTO players (username, password)
+        VALUES (#{username}, #{password})
+        ;
+    </insert>
+    <select id="getByUsername" resultType="Player" parameterType="String">
+        SELECT *
+        FROM players
+        WHERE username = #{username}
+        ;
+    </select>
+    <select id="getLeaderboard" resultType="Player">
+        SELECT *
+        FROM players
+        ORDER BY score
+        ;
+    </select>
+    <select id="getByID" resultMap="result" parameterType="int">
+        SELECT *
+        FROM players
+        WHERE id = #{id}
+    </select>
+    <update id="updateStats" parameterType="Player">
+        UPDATE players
+        SET top_kill_streak = #{top_kill_streak},
+            kills           = #{kills},
+            deaths          = #{deaths},
+            win             = #{win},
+            loss            = #{loss},
+            score           = calc_score(#{kills}, #{deaths}, #{win}, #{loss}, #{top_kill_streak})
+        WHERE username = #{username}
+        ;
+    </update>
+</mapper>
