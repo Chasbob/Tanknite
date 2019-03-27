@@ -8,7 +8,8 @@ import com.aticatac.client.server.objectsystem.entities.Bullet;
 import com.aticatac.client.server.objectsystem.entities.Tank;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
+import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -27,7 +28,7 @@ public class Updater implements Runnable {
   private final Logger logger;
   private final ModelReader modelReader;
   private final Update update;
-  private final ConcurrentHashMap<String, Container> players;
+  private final ConcurrentHashMap<String, PlayerContainer> players;
   private final ConcurrentHashMap<String, Container> projectiles;
   private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
@@ -63,14 +64,13 @@ public class Updater implements Runnable {
       this.update.addProjectile(b.getContainer());
       this.logger.trace(b.getContainer());
     }
-    for (Entity e :
-        data.getGame().getPowerups()) {
+    for (Entity e : data.getGame().getPowerups()) {
       this.update.addPowerup(e.getContainer());
       this.logger.trace(e.getContainer());
     }
     for (Tank c : data.getGame().getPlayerMap().values()) {
       this.logger.trace("Adding tank: " + c.getName());
-      this.update.addPlayer(c.getContainer());
+      this.update.addPlayer(c.getPlayerContainer());
     }
   }
 
@@ -100,14 +100,6 @@ public class Updater implements Runnable {
     }
   }
 
-  void tcpBroadcast(Update update) {
-    this.logger.trace("Broadcasting...");
-    final Server.ServerData s = Server.ServerData.INSTANCE;
-    for (Client c : s.getClients().values()) {
-      c.sendUpdate(update);
-    }
-  }
-
   private void broadcast() throws IOException {
     this.logger.trace("Broadcasting...");
     byte[] bytes = modelReader.toBytes(this.update);
@@ -121,13 +113,15 @@ public class Updater implements Runnable {
   private void playersChanged(PlayersChangedEvent e) {
     switch (e.action) {
       case ADD:
-        this.players.put(e.getContainer().getId(), e.getContainer());
+        this.logger.info(e);
+        this.players.put(e.getPlayerContainer().getId(), e.getPlayerContainer());
         break;
       case REMOVE:
-        this.players.remove(e.getContainer().getId());
+        this.logger.info(e);
+        this.players.remove(e.getPlayerContainer().getId());
         break;
       case UPDATE:
-        this.players.put(e.getContainer().getId(), e.getContainer());
+        this.players.put(e.getPlayerContainer().getId(), e.getPlayerContainer());
         break;
       default:
         break;

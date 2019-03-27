@@ -31,8 +31,8 @@ public class AITank extends Tank {
 
   //todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
-  public AITank(String name, Position p, int health, int ammo) {
-    super(name, p, health, ammo);
+  public AITank(String name, Position p, int health, int ammo, int playerNo) {
+    super(name, p, health, ammo, playerNo);
     entity = new Entity(name, EntityType.TANK);
     frames = new ConcurrentLinkedQueue<>();
     logger = Logger.getLogger(getClass());
@@ -47,8 +47,8 @@ public class AITank extends Tank {
     setDamageIncrease(getDamageIncrease() - 1);
     setSpeedIncrease(getSpeedIncrease() - 1);
     setDeathCountdown(getDeathCountdown() - 1);
-    if(getDeathCountdown() == 0){
-      hit(10,false);
+    if (getDeathCountdown() == 0) {
+      hit(10, false);
     }
     if (frames.size() > 5) {
       frames.clear();

@@ -1,6 +1,6 @@
 package com.aticatac.client.server.bus.event;
 
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
 
 public class PowerupsChangedEvent {
   private final Action action;

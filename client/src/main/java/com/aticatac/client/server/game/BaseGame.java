@@ -131,19 +131,17 @@ public class BaseGame implements Runnable {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
-      eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
       for (int i = 0; i < 1; i++) {
         Tank tank2 = createTank(player + " AI" + i, true);
         playerMap.put(player + " AI" + i, tank2);
-        eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
       }
     }
   }
 
   public void removePlayer(String player) {
-    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
+    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getPlayerContainer()));
     Position position = playerMap.get(player).getPosition();
-    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
+    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getPlayerContainer()));
     DataServer.INSTANCE.removeBoxFromData(playerMap.get(player).getCollisionBox());
     playerMap.remove(player);
     Entity newPowerup = new Entity(String.valueOf(Objects.hash(EntityType.AMMO_POWERUP, position)), EntityType.AMMO_POWERUP, position);
@@ -181,11 +179,11 @@ public class BaseGame implements Runnable {
   private Tank createTank(String player, boolean isAI, int x, int y) {
     Position position = new Position(x, y);
     if (isAI) {
-      AITank tank = new AITank(player, position, 100, 30);
+      AITank tank = new AITank(player, position, 100, 30, playerMap.size());
       DataServer.INSTANCE.setCoordinates(position, tank);
       return tank;
     } else {
-      Tank tank = new Tank(player, position, 100, 30);
+      Tank tank = new Tank(player, position, 100, 30, playerMap.size());
       DataServer.INSTANCE.setCoordinates(position, tank);
       return tank;
     }

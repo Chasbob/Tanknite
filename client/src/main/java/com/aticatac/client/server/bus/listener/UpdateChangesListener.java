@@ -16,13 +16,13 @@ public class UpdateChangesListener {
 //  private void playersChanged(PlayersChangedEvent e) {
 //    switch (e.action) {
 //      case ADD:
-//        update.addPlayer(e.getContainer());
+//        update.addPlayer(e.getPlayerContainer());
 //        break;
 //      case REMOVE:
-//        update.removePlayer(e.getContainer());
+//        update.removePlayer(e.getPlayerContainer());
 //        break;
 //      case UPDATE:
-//        update.addPlayer(e.getContainer());
+//        update.addPlayer(e.getPlayerContainer());
 //        break;
 //    }
 //  }
@@ -31,13 +31,13 @@ public class UpdateChangesListener {
 //  private void powerupsChanged(PowerupsChangedEvent e) {
 //    switch (e.getAction()) {
 //      case ADD:
-//        update.addPowerup(e.getContainer());
+//        update.addPowerup(e.getPlayerContainer());
 //        break;
 //      case REMOVE:
-//        update.removePowerup((e.getContainer()));
+//        update.removePowerup((e.getPlayerContainer()));
 //        break;
 //      case UPDATE:
-//        update.addPowerup(e.getContainer());
+//        update.addPowerup(e.getPlayerContainer());
 //        break;
 //    }
 //  }

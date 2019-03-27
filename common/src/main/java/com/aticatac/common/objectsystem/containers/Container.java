@@ -1,22 +1,19 @@
-package com.aticatac.common.objectsystem;
+package com.aticatac.common.objectsystem.containers;
 
+import com.aticatac.common.objectsystem.EntityType;
 import java.util.Objects;
 
 public class Container {
-  private final int x;
-  private final int y;
-  private final int r;
-  private final int health;
-  private final int ammo;
-  private final String id;
-  private final EntityType objectType;
+  protected final int x;
+  protected final int y;
+  protected final int r;
+  protected final String id;
+  protected final EntityType objectType;
 
-  public Container(int x, int y, int r, int health, int ammo, String id, EntityType objectType) {
+  public Container(int x, int y, int r, String id, EntityType objectType) {
     this.x = x;
     this.y = y;
     this.r = r;
-    this.health = health;
-    this.ammo = ammo;
     this.id = id;
     this.objectType = objectType;
   }
@@ -25,23 +22,21 @@ public class Container {
     this.x = 1000;
     this.y = 1000;
     this.r = 0;
-    this.health = 100;
-    this.ammo = 30;
     this.id = "";
     this.objectType = EntityType.NONE;
   }
 
-  public int getHealth() {
-    return health;
-  }
-
-  public int getAmmo() {
-    return ammo;
+  public Container(Container container) {
+    this.x = container.x;
+    this.y = container.y;
+    this.r = container.r;
+    this.id = container.id;
+    this.objectType = container.objectType;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getX(), getY(), getR(), getHealth(), getAmmo(), getId(), getObjectType());
+    return Objects.hash(getX(), getY(), getR(), getId(), getObjectType());
   }
 
   @Override
@@ -56,8 +51,6 @@ public class Container {
     return getX() == container.getX()
         && getY() == container.getY()
         && getR() == container.getR()
-        && getHealth() == container.getHealth()
-        && getAmmo() == container.getAmmo()
         && getId().equals(container.getId())
         && getObjectType() == container.getObjectType();
   }
@@ -68,8 +61,6 @@ public class Container {
         ", x=" + x +
         ", y=" + y +
         ", r=" + r +
-        ", health=" + health +
-        ", ammo=" + ammo +
         ", id='" + id + '\'' +
         ", objectType=" + objectType +
         '}';

@@ -6,7 +6,7 @@ import com.aticatac.client.server.bus.event.BulletsChangedEvent;
 import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.interfaces.Tickable;
 import com.aticatac.client.server.objectsystem.physics.Physics;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import java.util.Objects;
 
@@ -118,7 +118,7 @@ public class Bullet extends Entity implements Tickable {
   }
 
   public Container getContainer() {
-    return new Container(getPosition().getX(), getPosition().getY(), getBearing(), 0, 0, getName(), EntityType.BULLET);
+    return new Container(getPosition().getX(), getPosition().getY(), getBearing(), getName(), EntityType.BULLET);
   }
 
   @Override

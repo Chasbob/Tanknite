@@ -2,7 +2,7 @@ package com.aticatac.client.server.objectsystem;
 
 import com.aticatac.client.server.Position;
 import com.aticatac.client.server.objectsystem.physics.CollisionBox;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import java.security.SecureRandom;
 import java.util.Objects;
@@ -134,7 +134,7 @@ public class Entity {
    * @return the container
    */
   public Container getContainer() {
-    return new Container(getPosition().getX(), getPosition().getY(), 0, 0, 0, getName(), getType());
+    return new Container(getPosition().getX(), getPosition().getY(), 0, getName(), getType());
   }
 
   /**

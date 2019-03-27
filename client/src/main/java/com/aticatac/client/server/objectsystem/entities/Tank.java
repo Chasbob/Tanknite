@@ -17,17 +17,19 @@ import com.aticatac.client.server.objectsystem.physics.PhysicsResponse;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Vector;
-import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import com.google.common.eventbus.EventBus;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.jetbrains.annotations.NotNull;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+
 /**
  * The type Tank.
  */
-public class Tank extends Entity implements DependantTickable<CommandModel>, Hurtable {
+public class Tank extends Entity implements DependantTickable<CommandModel>, Hurtable, Comparable<Tank> {
   private final ConcurrentLinkedQueue<CommandModel> frames;
   private final Physics physics;
   private CommandModel input;
@@ -42,6 +44,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   private int freezeBullets = 0;
   private int frozen = -1;
   private int framesToShoot;
+  private int playerNo;
 
   /**
    * Instantiates a new Tank.
@@ -51,8 +54,9 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    * @param health the health
    * @param ammo   the ammo
    */
-  public Tank(String name, Position p, int health, int ammo) {
+  public Tank(String name, Position p, int health, int ammo, int playerNo) {
     super(name, EntityType.TANK, p);
+    this.playerNo = playerNo;
     frames = new ConcurrentLinkedQueue<>();
     setInput(new CommandModel("", Command.DEFAULT));
     this.setMaxHealth(100);
@@ -70,8 +74,8 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     damageIncrease--;
     speedIncrease--;
     deathCountdown--;
-    if(deathCountdown == 0){
-      hit(10,false);
+    if (deathCountdown == 0) {
+      hit(10, false);
     }
     if (getFrames().size() > 5) {
       getFrames().clear();
@@ -124,25 +128,20 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   }
 
   /**
-   *
    * @param tankPosition
    * @param rotation
+   *
    * @return
    */
-  private Position turretCalculation(Position tankPosition, int rotation){
-
+  private Position turretCalculation(Position tankPosition, int rotation) {
     double distance = 50;
-
-    double dX= Math.cos(Math.toRadians(rotation));
+    double dX = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -dX;
     double dY = Math.sin(Math.toRadians(rotation));
     double distanceY = distance * -dY;
-
     double newX = tankPosition.getX() + distanceX;
     double newY = tankPosition.getY() + distanceY;
-
-    return new Position((int)newX, (int)newY);
-
+    return new Position((int) newX, (int) newY);
   }
 
   private void checkCollisions(PhysicsResponse response) {
@@ -199,14 +198,14 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   /**
    * Move.
    *
-   * @param vector        the vector
+   * @param vector the vector
    */
   void move(Vector vector) {
     if (!vector.equals(Vector.Zero)) {
       var response = getPhysics().move(vector.angle(), getPosition(), speedIncrease);
       checkCollisions(response);
     }
-    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
+    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getPlayerContainer()));
   }
 
   /**
@@ -235,7 +234,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   @Override
   public int hit(final int damage, boolean freezeBullet) {
     this.logger.trace(clamp(getHealth() - damage));
-    if (freezeBullet){
+    if (freezeBullet) {
       frozen = 300;
     }
     if (getHealth() <= 10 && getHealth() > 0) {
@@ -253,13 +252,6 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     return getHealth();
   }
 
-  public void ammoIncrease(final int amount){
-    if (getAmmo() + amount >= maxAmmo){
-      setAmmo(getMaxAmmo());
-    }
-    else setAmmo(getAmmo() + amount);
-  }
-
   /**
    * Sets health.
    *
@@ -267,6 +259,14 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    */
   public void setHealth(int health) {
     this.health = health;
+  }
+
+  public void ammoIncrease(final int amount) {
+    if (getAmmo() + amount >= maxAmmo) {
+      setAmmo(getMaxAmmo());
+    } else {
+      setAmmo(getAmmo() + amount);
+    }
   }
 
   private int clamp(int value) {
@@ -279,14 +279,12 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     return value;
   }
 
-  public Container getContainer() {
-    return new Container(this.getPosition().getX(),
+  public PlayerContainer getPlayerContainer() {
+    return new PlayerContainer(this.getPosition().getX(),
         this.getPosition().getY(),
         this.getRotation(),
-        this.getHealth(),
-        this.getAmmo(),
         this.getName(),
-        EntityType.TANK);
+        EntityType.TANK, this.health, this.ammo);
   }
 
   @Override
@@ -297,7 +295,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   }
 //  public void move(int x, int y) {
 //    setPosition(new Position(x, y), true);
-//    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
+//    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getPlayerContainer()));
 //  }
 
   @Override
@@ -342,10 +340,9 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    * @param entity the entity
    */
   public void onPlayerHit(Entity entity) {
-//    getBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getContainer()));
+//    getBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getPlayerContainer()));
     getBus().post(new TankCollisionEvent(this, entity));
   }
-
 
   /**
    * Gets frames.
@@ -428,7 +425,6 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     this.maxAmmo = maxAmmo;
   }
 
-
   /**
    * Gets frames to shoot.
    *
@@ -447,52 +443,56 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     this.framesToShoot = framesToShoot;
   }
 
-  public void setSpeedIncrease(int value){
-    speedIncrease = value;
-
-  }
-  public void setDamageIncrease(int value){
-    damageIncrease = value;
-  }
-
-  public int getSpeedIncrease(){
+  public int getSpeedIncrease() {
     return speedIncrease;
   }
 
-  public int getDamageIncrease(){
+  public void setSpeedIncrease(int value) {
+    speedIncrease = value;
+  }
+
+  public int getDamageIncrease() {
     return damageIncrease;
   }
 
-  public void setBulletSprays(int value){
-    bulletSprays = value;
+  public void setDamageIncrease(int value) {
+    damageIncrease = value;
   }
 
-  public int getBulletSprays(){
+  public int getBulletSprays() {
     return bulletSprays;
+  }
+
+  public void setBulletSprays(int value) {
+    bulletSprays = value;
   }
 
   public int getFrozen() {
     return frozen;
   }
 
+  public void setFrozen(int value) {
+    frozen = value;
+  }
+
   public int getFreezeBullets() {
     return freezeBullets;
   }
 
-  public void setFrozen(int value){
-    frozen = value;
-  }
-
-  public void setFreezeBullets(int value){
+  public void setFreezeBullets(int value) {
     freezeBullets = value;
-  }
-
-  public void setDeathCountdown(int value) {
-    deathCountdown = value;
   }
 
   public int getDeathCountdown() {
     return deathCountdown;
   }
 
+  public void setDeathCountdown(int value) {
+    deathCountdown = value;
+  }
+
+  @Override
+  public int compareTo(@NotNull final Tank o) {
+    return this.playerNo - o.playerNo;
+  }
 }

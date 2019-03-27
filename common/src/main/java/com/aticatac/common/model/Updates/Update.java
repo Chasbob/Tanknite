@@ -1,7 +1,8 @@
 package com.aticatac.common.model.Updates;
 
 import com.aticatac.common.model.Model;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
+import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +13,7 @@ public class Update extends Model {
   /**
    * The Players.
    */
-  private final ConcurrentHashMap<String, Container> players;
+  private final ConcurrentHashMap<String, PlayerContainer> players;
   private final ConcurrentHashMap<String, Container> projectiles;
   private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
@@ -83,7 +84,7 @@ public class Update extends Model {
    *
    * @return the me
    */
-  public Container getMe(String id) {
+  public PlayerContainer getMe(String id) {
     return players.getOrDefault(id, null);
   }
 
@@ -96,7 +97,7 @@ public class Update extends Model {
    *
    * @return the players
    */
-  public ConcurrentHashMap<String, Container> getPlayers() {
+  public ConcurrentHashMap<String, PlayerContainer> getPlayers() {
     return players;
   }
 
@@ -105,7 +106,7 @@ public class Update extends Model {
    *
    * @param c the c
    */
-  public void addPlayer(Container c) {
+  public void addPlayer(PlayerContainer c) {
     this.players.put(c.getId(), c);
   }
 
