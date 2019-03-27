@@ -200,14 +200,14 @@ public enum Data {
 //   */
 //  public void setUpdate(Update update) {
 //    this.update = update;
-//    this.players = this.update.getPlayers();
+//    this.players = this.update.getNames();
 //    if (playerPos != null) {
 //      if (Math.abs(this.playerPos.getX() - this.players.get(client.getId()).getX()) > 1) {
 //        this.logger.info("moved");
 //      }
 //    }
 //    this.playerPos = this.players.get(client.getId());
-//    this.playerList = getPlayers();
+//    this.playerList = getNames();
 //  }
 
   /**

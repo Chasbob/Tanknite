@@ -1,4 +1,4 @@
-CREATE TABLE aticatac.public.players
+CREATE TABLE aticatac.public.names
 (
   id              SERIAL NOT NULL
     CONSTRAINT table_name_pk
@@ -11,20 +11,21 @@ CREATE TABLE aticatac.public.players
   deaths          INTEGER DEFAULT 0,
   win             INTEGER DEFAULT 0,
   loss            INTEGER DEFAULT 0,
-  score           INTEGER DEFAULT 0
+  score           INTEGER DEFAULT 0,
+  xp              INTEGER DEFAULT 0
 )
 ;
 
-ALTER TABLE players
+ALTER TABLE names
   OWNER TO example
 ;
 
 CREATE UNIQUE INDEX table_name_id_uindex
-  ON players (id)
+  ON names (id)
 ;
 
 CREATE UNIQUE INDEX table_name_username_uindex
-  ON players (username)
+  ON names (username)
 ;
 
 CREATE OR REPLACE FUNCTION calc_score(_kills           INT, _deaths INT, _win INT, _loss INT,
@@ -37,13 +38,14 @@ END;
 $$
   LANGUAGE 'plpgsql'
 ;
+
 --
 -- CREATE OR REPLACE FUNCTION set_stats(_username        TEXT, _kills INT, _deaths INT, _win INT, _loss INT,
 --                                      _top_kill_streak INT)
 -- AS
 -- $$
 -- BEGIN
---   UPDATE players
+--   UPDATE names
 --   SET score=calc_score(_kills, _deaths, _win, _loss,
 --                        _top_kill_streak)
 --   WHERE username = _username;
@@ -54,7 +56,7 @@ $$
 --
 -- CREATE TRIGGER update_stats
 --   AFTER UPDATE
---   ON players
+--   ON names
 -- EXECUTE PROCEDURE set_stats(username, kills, deaths, win, loss, top_kill_streak)
 -- ;
 --
