@@ -16,7 +16,7 @@ public class Client {
     try {
       ModelReader modelReader = new ModelReader();
       Socket socket = new Socket("chasbob.co.uk", 6000);
-      DBlogin dBlogin = new DBlogin("charlie", "charlie");
+      DBlogin dBlogin = new DBlogin("charlie", "charlie", true);
       String json = modelReader.toJson(dBlogin);
       logger.info(json);
       BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
