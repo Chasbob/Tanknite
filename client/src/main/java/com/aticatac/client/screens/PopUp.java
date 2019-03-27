@@ -23,9 +23,13 @@ class PopUp {
     if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
       Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.addActor(popUpRootTable);
       Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable = popUpRootTable;
-    } else {
+    } else if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
       Screens.INSTANCE.getScreen(ServerScreen.class).popUp = popUpRootTable;
       Screens.INSTANCE.getScreen(ServerScreen.class).rootTable.addActor(popUpRootTable);
+    } else {
+      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable = popUpRootTable;
+      Screens.INSTANCE.getScreen(GameScreen.class).rootTable.addActor(popUpRootTable);
+      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
     }
     popUpRootTable.setFillParent(true);
     Table popUpTable = new Table();
@@ -38,13 +42,52 @@ class PopUp {
       if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
         manualJoin(multiplayerChildren);
         popUpTable.add(multiplayerChildren);
-      } else {
+      } else if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
         createMultiplayerChildren(multiplayerChildren);
+        popUpTable.add(multiplayerChildren);
+      } else {
+        createGameSettings(multiplayerChildren);
         popUpTable.add(multiplayerChildren);
       }
     }
     popUpTable.padTop(20).padBottom(20).padLeft(60).padRight(60);
     popUpRootTable.add(popUpTable);
+  }
+
+  private static void createGameSettings(VerticalGroup multiplayerChildren) {
+    //create button for resuming
+    MenuTable resumeTable = Styles.INSTANCE.createMenuTable(true, false);
+    TextButton resumeButton = Styles.INSTANCE.createButton("RESUME");
+    resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Screens.INSTANCE.getScreen(GameScreen.class).tractionPopUp = true;
+      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
+      return false;
+    }));
+    resumeTable.setButton(resumeButton);
+    ListenerFactory.addHoverListener(resumeButton, resumeTable);
+    multiplayerChildren.addActor(resumeTable);
+    //create button to get settings
+    MenuTable settingsTable = Styles.INSTANCE.createMenuTable(false, false);
+    TextButton settingsButton = Styles.INSTANCE.createButton("SETTINGS");
+    settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
+
+      return false;
+    }));
+    settingsTable.setButton(settingsButton);
+    ListenerFactory.addHoverListener(settingsButton, settingsTable);
+    multiplayerChildren.addActor(settingsTable);
+    //create button for quitting
+    MenuTable quitTable = Styles.INSTANCE.createMenuTable(false, false);
+    TextButton quitButton = Styles.INSTANCE.createButton("QUIT");
+    quitButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Screens.INSTANCE.showScreen(MainMenuScreen.class);
+      Data.INSTANCE.quit();
+      Screens.INSTANCE.getScreen(GameScreen.class).refresh();
+      return false;
+    }));
+    quitTable.setButton(quitButton);
+    ListenerFactory.addHoverListener(quitButton, quitTable);
+    multiplayerChildren.addActor(quitTable);
   }
 
   private static void createMultiplayerChildren(VerticalGroup multiplayerChildren) {

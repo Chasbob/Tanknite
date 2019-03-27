@@ -32,7 +32,7 @@ public class GameScreen extends AbstractScreen {
   private final int maxX;
   private final int maxY;
   private Update update;
-  private Table popUpTable;
+  Table popUpTable;
   VerticalGroup verticalGroup;
   private Table alertTable;
   private Table killLogTable;
@@ -51,7 +51,7 @@ public class GameScreen extends AbstractScreen {
   private Container player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
-  private boolean tractionPopUp;
+  boolean tractionPopUp;
 
   /**
    * Instantiates a new Game screen.
@@ -109,24 +109,6 @@ public class GameScreen extends AbstractScreen {
     super.addToRoot(createHudBottomRight());
     //create alert table - BOTTOM MIDDLE
     super.addToRoot(createHudAlertTable());
-    //create pop up table
-    popUpTable = new Table();
-    popUpTable.center();
-    popUpTable.setVisible(false);
-    rootTable.add(createHudPopUp());
-    new Thread(() -> {
-      while (!Thread.currentThread().isInterrupted()) {
-        double nanoTime = System.nanoTime();
-        backgroundInput();
-        while (System.nanoTime() - nanoTime < 1000000000 / 60) {
-          try {
-            Thread.sleep(0);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }).start();
     hudUpdate = new HudUpdate(killLogTable, ammoValue, playerCount, killCount);
   }
 
@@ -199,9 +181,7 @@ public class GameScreen extends AbstractScreen {
     //create resume button
     TextButton resumeButton = Styles.INSTANCE.createButton("Resume");
     resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      if (health > 0.1f) {
-        tractionPopUp = true;
-      }
+      tractionPopUp = true;
       popUpTable.setVisible(false);
       return false;
     }));
@@ -254,6 +234,7 @@ public class GameScreen extends AbstractScreen {
   public void render(float delta) {
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    backgroundInput();
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
@@ -363,24 +344,32 @@ public class GameScreen extends AbstractScreen {
 
 
   private void backgroundInput() {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-      //show the pop up table
-      popUpTable.setVisible(true);
-      tractionPopUp = false;
-    }
-    if (tractionHealth && tractionPopUp) {
-      if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-        Data.INSTANCE.sendCommand(Command.LEFT);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-        Data.INSTANCE.sendCommand(Command.RIGHT);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-        Data.INSTANCE.sendCommand(Command.UP);
-      } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-        Data.INSTANCE.sendCommand(Command.DOWN);
+    if (tractionPopUp) {
+      if (tractionHealth) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+          PopUp.createPopUp(false);
+          //show the pop up table
+          popUpTable.setVisible(true);
+          tractionPopUp = false;
+        } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+          Data.INSTANCE.sendCommand(Command.LEFT);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+          Data.INSTANCE.sendCommand(Command.RIGHT);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+          Data.INSTANCE.sendCommand(Command.UP);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+          Data.INSTANCE.sendCommand(Command.DOWN);
+        }
       }
-    }
-    if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-      Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        Data.INSTANCE.sendCommand(Command.SHOOT, getBearing());
+      }
+    } else {
+      if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        //close the pop up
+        popUpTable.setVisible(false);
+        tractionPopUp = true;
+      }
     }
   }
 

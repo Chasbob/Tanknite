@@ -35,6 +35,7 @@ public class AbstractScreen extends Stage implements Screen {
   AbstractScreen() {
     super(new StretchViewport(640, 640));
     logger = Logger.getLogger(getClass());
+    rootTable = new Table();
   }
 
   /**
@@ -42,7 +43,6 @@ public class AbstractScreen extends Stage implements Screen {
    */
   public void buildStage(){
     //create root table
-    rootTable = new Table();
     rootTable.setFillParent(true);
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);

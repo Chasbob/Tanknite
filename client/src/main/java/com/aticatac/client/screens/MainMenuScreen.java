@@ -122,7 +122,6 @@ public class MainMenuScreen extends AbstractScreen {
   @Override
   public void buildStage() {
     //create root table
-    rootTable = new Table();
     rootTable.setFillParent(true);
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
     addActor(rootTable);
