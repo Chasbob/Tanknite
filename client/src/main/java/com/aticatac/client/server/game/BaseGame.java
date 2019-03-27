@@ -1,7 +1,12 @@
 package com.aticatac.client.server.game;
 
 import com.aticatac.client.server.Position;
-import com.aticatac.client.server.bus.event.*;
+import com.aticatac.client.server.bus.event.BulletCollisionEvent;
+import com.aticatac.client.server.bus.event.BulletsChangedEvent;
+import com.aticatac.client.server.bus.event.PlayersChangedEvent;
+import com.aticatac.client.server.bus.event.PowerupsChangedEvent;
+import com.aticatac.client.server.bus.event.ShootEvent;
+import com.aticatac.client.server.bus.event.TankCollisionEvent;
 import com.aticatac.client.server.bus.service.AIUpdateService;
 import com.aticatac.client.server.objectsystem.DataServer;
 import com.aticatac.client.server.objectsystem.Entity;
@@ -16,14 +21,13 @@ import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
-import org.apache.log4j.Logger;
-
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
+import org.apache.log4j.Logger;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
 
@@ -58,9 +62,9 @@ public class BaseGame implements Runnable {
   private final int min = 0;
   private final int max = 1920;
   private final AIUpdateService aiUpdateService;
+  protected int powerUpCount;
   private volatile boolean run;
   private int counter;
-  protected int powerUpCount;
 
   /**
    * Instantiates a new Game mode.
@@ -132,11 +136,11 @@ public class BaseGame implements Runnable {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
       eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
-//      for (int i = 0; i < 1; i++) {
-//        Tank tank2 = createTank(player + " AI" + i, true);
-//        playerMap.put(player + " AI" + i, tank2);
-//        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
-//      }
+      for (int i = 0; i < 1; i++) {
+        Tank tank2 = createTank(player + " AI" + i, true);
+        playerMap.put(player + " AI" + i, tank2);
+        eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
+      }
     }
   }
 
@@ -192,7 +196,7 @@ public class BaseGame implements Runnable {
   }
 
   protected void createPowerUps() {
-    if(powerUpCount <= 0) {
+    if (powerUpCount <= 0) {
       EntityType type = Entity.randomPowerUP();
       Position p = getClearPosition(type.radius);
       Entity newPowerup = new Entity(String.valueOf(Objects.hash(type, p)), type, p);
@@ -306,14 +310,9 @@ public class BaseGame implements Runnable {
       powerUpCount--;
       createPowerUps();
       this.logger.trace("tick");
-      double nanoTime = System.nanoTime();
       aiUpdateService.update(playerMap, powerups);
       Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
-//      playerMap.values().parallelStream().forEach(Tank::tick);
-//      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
-//      if(playerMap.containsKey("asd")){
-//        playerMap.get("asd").move(1000,1920);
-//      }
+      double nanoTime = System.nanoTime();
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
