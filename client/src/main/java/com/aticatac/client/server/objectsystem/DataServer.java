@@ -48,7 +48,7 @@ public enum DataServer {
         //Walls are 2 in the map file
         if (!(map[x][y]).equals("0")) {
           //sets collision box within the entity
-          wall.setPosition((x+1) * 32, (60-y-2) * 32);
+          wall.setPosition((60-y-1) * 32, (x+1) * 32);
           addEntity(wall);
         }
 

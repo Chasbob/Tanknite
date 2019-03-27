@@ -468,18 +468,20 @@ public class GameScreen extends AbstractScreen {
   }
 
   private int getBearing() {
-    Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+    try {
+      Vector3 mouseMapPos3 = camera.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
-    Position mouseMapIso =
-            Helper.screenToTile(new Position(
-                    (int)(mouseMapPos3.x),
-                    (int)(mouseMapPos3.y))
-            );
+      Position mouseMapIso =
+              Helper.screenToTile(new Position(
+                      (int) (mouseMapPos3.x),
+                      (int) (mouseMapPos3.y))
+              );
 
-    float deltaX = mouseMapIso.getX()-player.getX()+tankTexture.getWidth()/2f;
-    float deltaY = mouseMapIso.getY()-player.getY()+tankTexture.getHeight()/2f;
+      float deltaX = mouseMapIso.getX() - player.getX() + tankTexture.getWidth() / 2f;
+      float deltaY = mouseMapIso.getY() - player.getY() + tankTexture.getHeight() / 2f;
 
-    return (int)(Math.round(Math.toDegrees(Math.atan2(deltaY,deltaX))));
+      return (int) (Math.round(Math.toDegrees(Math.atan2(deltaY, deltaX))));
+    }catch (Exception ignored){return 0;}
   }
 
 
@@ -582,7 +584,7 @@ public class GameScreen extends AbstractScreen {
             //sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
             int t = changeAngle(-getBearing(),90);
             if (t==359) t = 0;
-            sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+            sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
           }
         }
       }
