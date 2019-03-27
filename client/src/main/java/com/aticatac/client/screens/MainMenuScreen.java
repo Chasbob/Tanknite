@@ -5,7 +5,6 @@ import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
-import com.aticatac.common.mappers.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -235,12 +234,16 @@ public class MainMenuScreen extends AbstractScreen {
     return table;
   }
 
-  private void createAssets() {
+  private void createAssets(boolean online) {
     Table assetsTable = new Table();
     assetsTable.top().right().pad(10);
     assetsTable.defaults().left();
     assetsTable.add(Styles.INSTANCE.createLabel("ID: "));
-    assetsTable.add(Styles.INSTANCE.createCustomLabel(player.username, Color.CORAL)).padRight(10);
+    if (online) {
+      assetsTable.add(Styles.INSTANCE.createCustomLabel(player.username, Color.CORAL)).padRight(10);
+    } else {
+      assetsTable.add(Styles.INSTANCE.createCustomLabel("OFFLINE", Color.CORAL)).padRight(10);
+    }
     assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
     assetsTable.add(Styles.INSTANCE.createCustomLabel("1500", Color.CORAL));
     super.addToRoot(assetsTable);
@@ -560,16 +563,18 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
-  void loadInMainMenu() {
-    while (player == null) {
-      try {
-        Thread.sleep(0);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
+  void loadInMainMenu(boolean online) {
+    if (online) {
+      while (player == null) {
+        try {
+          Thread.sleep(0);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
       }
     }
     //create points and username table
-    createAssets();
+    createAssets(online);
     //create top half of screen
     createNavigationMenus();
     //create table to store lower part of screen info

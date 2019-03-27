@@ -190,50 +190,53 @@ public class PopUp {
   }
 
   private static Group createLogin() {
-    //create group container
     VerticalGroup rootGroup = new VerticalGroup();
     rootGroup.pad(10).columnLeft().space(10);
-    //create table to store error message
-    Table errorTable = new Table();
-    Label errorLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "", Color.RED);
-    errorTable.add(errorLabel);
-    rootGroup.addActor(errorLabel);
-    //tabs
-    HorizontalGroup tabGroup = new HorizontalGroup();
-    tabGroup.space(5);
-    rootGroup.addActor(tabGroup);
-    //create tab buttons in menu tables
-    MenuTable loginTable = Styles.INSTANCE.createMenuTable(true, false);
-    MenuTable registerTable = Styles.INSTANCE.createMenuTable(false, false);
-    //create buttons to store in these tables
-    TextButton loginButton = Styles.INSTANCE.createButton("LOGIN");
-    TextButton registerButton = Styles.INSTANCE.createButton("REGISTER");
-    loginTable.setButton(loginButton);
-    registerTable.setButton(registerButton);
-    //add hover listeners for both buttons
-    ListenerFactory.addHoverListener(loginButton, loginTable);
-    ListenerFactory.addHoverListener(registerButton, registerTable);
-    tabGroup.addActor(loginTable);
-    tabGroup.addActor(registerTable);
-    //create actors for table
-    Label usernameLabel = Styles.INSTANCE.createLabel("USERNAME");
-    Label passwordLabel = Styles.INSTANCE.createLabel("PASSWORD");
-    TextField usernameText = Styles.INSTANCE.createTextField("");
-    TextField passwordText = Styles.INSTANCE.createTextField("");
-    passwordText.setPasswordMode(true);
-    //add to tables
-    rootGroup.addActor(usernameLabel);
-    rootGroup.addActor(usernameText);
-    rootGroup.addActor(passwordLabel);
-    rootGroup.addActor(passwordText);
-    rootGroup.pack();
+    if (Data.INSTANCE.isConnected()) {
+      //create table to store error message
+      Table errorTable = new Table();
+      Label errorLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "", Color.RED);
+      errorTable.add(errorLabel);
+      rootGroup.addActor(errorLabel);
+      //tabs
+      HorizontalGroup tabGroup = new HorizontalGroup();
+      tabGroup.space(5);
+      rootGroup.addActor(tabGroup);
+      //create tab buttons in menu tables
+      MenuTable loginTable = Styles.INSTANCE.createMenuTable(true, false);
+      MenuTable registerTable = Styles.INSTANCE.createMenuTable(false, false);
+      //create buttons to store in these tables
+      TextButton loginButton = Styles.INSTANCE.createButton("LOGIN");
+      TextButton registerButton = Styles.INSTANCE.createButton("REGISTER");
+      loginTable.setButton(loginButton);
+      registerTable.setButton(registerButton);
+      //add hover listeners for both buttons
+      ListenerFactory.addHoverListener(loginButton, loginTable);
+      ListenerFactory.addHoverListener(registerButton, registerTable);
+      tabGroup.addActor(loginTable);
+      tabGroup.addActor(registerTable);
+      //create actors for table
+      Label usernameLabel = Styles.INSTANCE.createLabel("USERNAME");
+      Label passwordLabel = Styles.INSTANCE.createLabel("PASSWORD");
+      TextField usernameText = Styles.INSTANCE.createTextField("");
+      TextField passwordText = Styles.INSTANCE.createTextField("");
+      passwordText.setPasswordMode(true);
+      //add to tables
+      rootGroup.addActor(usernameLabel);
+      rootGroup.addActor(usernameText);
+      rootGroup.addActor(passwordLabel);
+      rootGroup.addActor(passwordText);
+      rootGroup.pack();
+      //add main listeners for buttons
+      createErrorListener(rootGroup, false, loginButton, errorLabel, usernameText, passwordText);
+      //TODO register player and give errors
+      createErrorListener(rootGroup, true, registerButton, errorLabel, usernameText, passwordText);
+      InputEvent clickEvent = new InputEvent();
+      clickEvent.setType(InputEvent.Type.touchDown);
+    } else {
+      playOffline(rootGroup);
+    }
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = rootGroup;
-    //add main listeners for buttons
-    createErrorListener(false, loginButton, errorLabel, usernameText, passwordText);
-    //TODO register player and give errors
-    createErrorListener(true, registerButton, errorLabel, usernameText, passwordText);
-    InputEvent clickEvent = new InputEvent();
-    clickEvent.setType(InputEvent.Type.touchDown);
     return rootGroup;
   }
 
@@ -241,7 +244,7 @@ public class PopUp {
   public static Boolean resetMainMenu() {
     Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
-    Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu(Data.INSTANCE.isConnected());
     Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
     return false;
   }
@@ -271,7 +274,7 @@ public class PopUp {
     return backTable;
   }
 
-  private static void createErrorListener(boolean register, TextButton button, Label errorLabel, TextField usernameText, TextField passwordText) {
+  private static void createErrorListener(VerticalGroup group, boolean register, TextButton button, Label errorLabel, TextField usernameText, TextField passwordText) {
     button.addListener(ListenerFactory.newListenerEvent(() -> {
       DBResponse response;
       if (register) {
@@ -297,5 +300,23 @@ public class PopUp {
     }));
   }
 
-
+  private static void playOffline(VerticalGroup rootGroup) {
+    //clear the group
+    rootGroup.clear();
+    //create actors
+    Table labelTable = new Table();
+    Label label = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "NO DATABASE CONNECTION - OFFLINE MODE", Color.WHITE);
+    labelTable.add(label);
+    rootGroup.addActor(labelTable);
+    MenuTable okButtonTable = Styles.INSTANCE.createMenuTable(true, false);
+    okButtonTable.defaults().center();
+    TextButton okButton = Styles.INSTANCE.createButton("PLAY");
+    okButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      resetMainMenu();
+      return false;
+    }));
+    okButtonTable.setButton(okButton);
+    ListenerFactory.addHoverListener(okButton, okButtonTable);
+    rootGroup.addActor(okButtonTable);
+  }
 }

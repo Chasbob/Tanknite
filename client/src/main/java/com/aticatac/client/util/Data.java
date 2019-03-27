@@ -2,10 +2,7 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
-import com.aticatac.client.screens.PopUp;
-import com.aticatac.client.screens.Screens;
 import com.aticatac.client.server.networking.Server;
-import com.aticatac.common.mappers.Player;
 import com.aticatac.common.model.*;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Updates.Response;
@@ -20,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.Color;
-import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
 
 import static com.aticatac.client.bus.EventBusFactory.eventBus;
@@ -52,13 +48,19 @@ public enum Data {
   private BufferedReader reader;
   private PrintStream printer;
   ModelReader modelReader;
+  private boolean connected;
 
   Data() {
     eventBus.register(this);
     this.logger = Logger.getLogger(getClass());
     client = new Client();
     modelReader = new ModelReader();
-
+    try {
+      dbSocket = new Socket("chasbob.co.uk", 6000);
+      connected = true;
+    } catch (IOException e) {
+      connected = false;
+    }
     serverSelected = false;
     manualConfigForServer = false;
     isHosting = false;
@@ -84,28 +86,21 @@ public enum Data {
     return client.isStarted();
   }
 
-  public DBResponse login(DBlogin dBlogin) {
+  public DBResponse login(DBlogin dBlogin) throws IOException, InvalidBytes {
     this.logger.info(dBlogin);
-    try {
-      dbSocket = new Socket("chasbob.co.uk", 6000);
-//    DBlogin dBlogin = new DBlogin("charlie", "charlie");
-      String json = modelReader.toJson(dBlogin);
-      logger.info(json);
-      reader = new BufferedReader(new InputStreamReader(dbSocket.getInputStream()));
-      printer = new PrintStream(dbSocket.getOutputStream());
-      printer.println(json);
-      logger.info("wrote to stream");
-      String json2 = reader.readLine();
-      logger.info(json2);
-      DBResponse output = modelReader.fromJson(json2, DBResponse.class);
-      if (output.getResponse() == DBResponse.Response.accepted) {
-        eventBus.post(output.getPlayer());
-      }
-      return output;
-    } catch (IOException | InvalidBytes e) {
-      return null;
+    String json = modelReader.toJson(dBlogin);
+    logger.info(json);
+    reader = new BufferedReader(new InputStreamReader(dbSocket.getInputStream()));
+    printer = new PrintStream(dbSocket.getOutputStream());
+    printer.println(json);
+    logger.info("wrote to stream");
+    String json2 = reader.readLine();
+    logger.info(json2);
+    DBResponse output = modelReader.fromJson(json2, DBResponse.class);
+    if (output.getResponse() == DBResponse.Response.accepted) {
+      eventBus.post(output.getPlayer());
     }
-
+    return output;
   }
 
   /**
@@ -367,4 +362,8 @@ public enum Data {
 
   public void initialise() {
 
+  }
+
+  public boolean isConnected() {
+    return connected;
   }}
