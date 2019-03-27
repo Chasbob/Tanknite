@@ -39,7 +39,7 @@ public class Survival extends GameMode implements Runnable {
     this.logger.trace("Running...");
     while (run) {
 //      checkPowerup();
-//      createPowerUps();
+      //createPowerUps();
       this.logger.trace("tick");
       double nanoTime = System.nanoTime();
       aiUpdateService.update(playerMap, powerups);

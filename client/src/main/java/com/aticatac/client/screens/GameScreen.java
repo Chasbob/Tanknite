@@ -86,7 +86,7 @@ public class GameScreen extends AbstractScreen {
             tileSet = map.getTileSets().getTileSet(0);
             mapLayers = map.getLayers();
             wallLayer = (TiledMapTileLayer) mapLayers.get(1);
-            tankTexture = new Texture("maps/box.png");
+            tankTexture = new Texture("maps/tank1.png");
             tankTexture2 = new Texture("img/tank.png");
             projectileTexture = new Texture("img/bullet.png");
             tractionHealth = true;
@@ -213,17 +213,7 @@ public class GameScreen extends AbstractScreen {
         game.setProjectionMatrix(this.camera.getCamera().combined);
         game.begin();
 
-        var array = new ArrayList<Position>();
-        if (update != null) {
-
-            for (int i = 0; i < update.getPlayers().values().size(); i++) {
-                Container updater = update.getI(i);
-                var pos1 = new Position(updater.getX(),updater.getY());
-                array.add(pos1);
-            }
-        }
-
-        renderWalls(game,array);
+        renderGame(game,returnTanks(),returnProjectiles());
 
         game.end();
 
@@ -259,7 +249,7 @@ public class GameScreen extends AbstractScreen {
         draw();
     }
 
-    public void renderWalls(SpriteBatch sb,ArrayList<Position> tanks) {
+    public void renderGame(SpriteBatch sb, ArrayList<Position> tanks, ArrayList<Position> bullets) {
         int index = 0;
         for (ArrayList<Position> ps : rows) {
             for (Position pp : ps) {
@@ -269,6 +259,7 @@ public class GameScreen extends AbstractScreen {
                 } catch (Exception ignored) {
                 }
             }
+            tanks.addAll(bullets);
             for (var c : tanks) {
                 if((int)((Math.ceil(c.getX()/32f)+Math.ceil(60-(c.getY()/32f)))/2f)==index) {
                     sb.draw(tankTexture, Helper.tileToScreenX(c.getX() +10 , c.getY() -10), Helper.tileToScreenY(c.getX() +10, c.getY() -10));
@@ -438,8 +429,34 @@ public class GameScreen extends AbstractScreen {
             }
         }
 //    renderProjectiles(game);
-//    renderPowerups(game, false);
+        renderPowerups(game, false);
         tanks.end();
+    }
+
+    private ArrayList<Position> returnProjectiles() {
+        var array = new ArrayList<Position>();
+//        if (update != null) {
+//
+//            for (int i = 0; i < update.getProjectiles().values().size(); i++) {
+//                Container updater = update.getProjectiles().get(i);
+//                var pos1 = new Position(updater.getX(),updater.getY());
+//                array.add(pos1);
+//            }
+//        }
+        return array;
+    }
+
+    private ArrayList<Position> returnTanks(){
+        var array = new ArrayList<Position>();
+        if (update != null) {
+
+            for (int i = 0; i < update.getPlayers().values().size(); i++) {
+                Container updater = update.getI(i);
+                var pos1 = new Position(updater.getX(),updater.getY());
+                array.add(pos1);
+            }
+        }
+        return array;
     }
 
     private void renderProjectiles(SpriteBatch tanks) {
@@ -451,6 +468,45 @@ public class GameScreen extends AbstractScreen {
     }
 
     private void renderPowerups(SpriteBatch tanks, boolean ortho) {
+        if (update != null) {
+            for (Container c :
+                    update.getPowerups().values()) {
+                switch (c.getObjectType()) {
+                    case NONE:
+                        break;
+                    case TANK:
+                        break;
+                    case BULLET:
+                        break;
+                    case WALL:
+                        break;
+                    case OUTOFBOUNDS:
+                        break;
+                    case AMMO_POWERUP:
+                        tanks.setColor(Color.CYAN);
+                        break;
+                    case SPEED_POWERUP:
+                        tanks.setColor(Color.RED);
+                        break;
+                    case HEALTH_POWERUP:
+                        tanks.setColor(Color.BLUE);
+                        break;
+                    case DAMAGE_POWERUP:
+                        tanks.setColor(Color.YELLOW);
+                        break;
+                }
+                if (ortho) {
+                    tanks.setColor(Color.WHITE);
+                    renderOrthoContainer(c, tanks);
+                } else {
+                    tanks.setColor(Color.BLACK);
+                    renderContainer(c, tanks);
+                }
+            }
+        }
+    }
+
+    private ArrayList<Position> renderPowerups() {
         if (update != null) {
             for (Container c :
                     update.getPowerups().values()) {
@@ -577,7 +633,7 @@ public class GameScreen extends AbstractScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             Data.INSTANCE.sendCommand(Command.SHOOT);
         }
-        Data.INSTANCE.submit(getBearing());
+        Data.INSTANCE.submit(0);
     }
 
     @Override

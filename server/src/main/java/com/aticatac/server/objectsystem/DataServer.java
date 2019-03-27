@@ -44,7 +44,7 @@ public enum DataServer {
         //adds the map to occupied coordinates
         for (int i = 0; i < 60; i++) {
             for (int j = 0; j < 60; j++) {
-                if ((map[i][j]).equals("1")) {
+                if (!(map[i][j]).equals("0")) {
                     createCollisionBox(i+1,60-j-2);
                 }
             }
