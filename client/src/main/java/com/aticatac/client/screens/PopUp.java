@@ -47,7 +47,7 @@ class PopUp {
     popUpRootTable.add(popUpTable);
   }
 
-  static void createMultiplayerChildren(VerticalGroup multiplayerChildren) {
+  private static void createMultiplayerChildren(VerticalGroup multiplayerChildren) {
     MenuTable hostTable = Styles.INSTANCE.createMenuTable(true, false);
     //create button for hosting game
     TextButton hostButton = Styles.INSTANCE.createButton("HOST");
@@ -56,6 +56,7 @@ class PopUp {
       return false;
     }));
     hostTable.setButton(hostButton);
+    ListenerFactory.addHoverListener(hostButton, hostTable);
     multiplayerChildren.addActor(hostTable);
     //create button for joining
     MenuTable joinTable = Styles.INSTANCE.createMenuTable(false, false);
@@ -67,6 +68,7 @@ class PopUp {
       return false;
     }));
     joinTable.setButton(joinButton);
+    ListenerFactory.addHoverListener(joinButton, joinTable);
     multiplayerChildren.addActor(joinTable);
     //create button for going back
     multiplayerChildren.addActor(createBackButton(true, multiplayerChildren));
@@ -90,11 +92,13 @@ class PopUp {
     //new horizontal group to store host and back
     HorizontalGroup buttonGroup = new HorizontalGroup();
     buttonGroup.align(Align.left);
-    buttonGroup.space(5);
+    buttonGroup.space(10).padTop(10);
     multiplayerChildren.addActor(buttonGroup);
     buttonGroup.addActor(createBackButton(false, multiplayerChildren));
-    TextButton startButton = Styles.INSTANCE.createButton("HOST");
-    startButton.addListener(ListenerFactory.newListenerEvent(() -> {
+    MenuTable hostTable = Styles.INSTANCE.createMenuTable(false, false);
+    TextButton hostButton = Styles.INSTANCE.createButton("HOST");
+    hostTable.setButton(hostButton);
+    hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //create custom server
       Server server = new Server(false, serverNameField.getText());
       server.start();
@@ -107,14 +111,20 @@ class PopUp {
       serverNameField.setText("");
       return false;
     }));
-    buttonGroup.addActor(startButton);
+    ListenerFactory.addHoverListener(hostButton, hostTable);
+    buttonGroup.addActor(hostTable);
   }
 
   private static void manualJoin(VerticalGroup multiplayerChildren) {
+    VerticalGroup bodyGroup = new VerticalGroup();
+    bodyGroup.space(10).columnLeft();
+    multiplayerChildren.addActor(bodyGroup);
     //create actors
     Label ipLabel = Styles.INSTANCE.createLabel("SERVER IP");
     TextField ipField = Styles.INSTANCE.createTextField("");
+    MenuTable joinTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton joinButton = Styles.INSTANCE.createButton("JOIN");
+    joinTable.setButton(joinButton);
     //create listener
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false, ipField.getText());
@@ -122,18 +132,19 @@ class PopUp {
       ipField.setText("");
       return false;
     }));
+    ListenerFactory.addHoverListener(joinButton, joinTable);
     //add actors
-    multiplayerChildren.addActor(ipLabel);
-    multiplayerChildren.addActor(ipField);
+    bodyGroup.addActor(ipLabel);
+    bodyGroup.addActor(ipField);
     //create horizontal groups to store buttons
     HorizontalGroup buttonGroup = new HorizontalGroup();
-    buttonGroup.space(10);
+    buttonGroup.space(10).padTop(10);
     buttonGroup.addActor(createBackButton(false, multiplayerChildren));
-    buttonGroup.addActor(joinButton);
+    buttonGroup.addActor(joinTable);
     multiplayerChildren.addActor(buttonGroup);
   }
 
-  static Group createLogin() {
+  private static Group createLogin() {
     //create group container
     VerticalGroup rootGroup = new VerticalGroup();
     rootGroup.pad(10).columnLeft().space(10);
@@ -189,7 +200,7 @@ class PopUp {
     return false;
   }
 
-  static MenuTable createBackButton(boolean mainPopUp, VerticalGroup parentGroup) {
+  private static MenuTable createBackButton(boolean mainPopUp, VerticalGroup parentGroup) {
     MenuTable backTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton backButton = Styles.INSTANCE.createButton("BACK");
     backButton.addListener(ListenerFactory.newListenerEvent(() -> {
@@ -209,6 +220,7 @@ class PopUp {
       }
       return false;
     }));
+    ListenerFactory.addHoverListener(backButton, backTable);
     backTable.setButton(backButton);
     return backTable;
   }

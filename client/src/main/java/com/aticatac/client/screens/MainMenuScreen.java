@@ -345,6 +345,7 @@ public class MainMenuScreen extends AbstractScreen {
       return false;
     }));
     singlePlayerTable.setButton(singlePlayerButton);
+    ListenerFactory.addHoverListener(singlePlayerButton, singlePlayerTable);
     //create button for multi player
     MenuTable multiPlayerTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton multiPlayerButton = Styles.INSTANCE.createItalicButton("MULTI-PLAYER");
@@ -356,6 +357,7 @@ public class MainMenuScreen extends AbstractScreen {
       return false;
     }));
     multiPlayerTable.setButton(multiPlayerButton);
+    ListenerFactory.addHoverListener(multiPlayerButton, multiPlayerTable);
     playChildren.addActor(singlePlayerTable);
     playChildren.addActor(multiPlayerTable);
     playChildren.pack();

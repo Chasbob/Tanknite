@@ -44,6 +44,7 @@ class Settings {
       label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSmallLabel("OFF") : Styles.INSTANCE.createLabel("OFF");
     }
     button.addListener(buttonToChangeBool(button, label, table));
+    ListenerFactory.addHoverListener(button, table);
     table.setButton(button);
     table.add(label);
     return table;
