@@ -179,20 +179,20 @@ public class GameScreen extends AbstractScreen {
     if (update != null && update.getNewShots() != null) {
       tanksMiniMap.setColor(Color.RED);
       for (Container c :
-          update.getNewShots().values()) {
+              update.getNewShots().values()) {
         renderContainer(c, tanksMiniMap);
 
         //Audio: plays sound when tank shoots in range
-        if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
+        if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0) && player != null) {
 
-          float dx = c.getX() - (1920-player.getX());
-          float dy = c.getY() - (1920-player.getY());
+          float dx = c.getX() - (1920 - player.getX());
+          float dy = c.getY() - (1920 - player.getY());
 
           int max = 320;
 
-          double distance = Math.sqrt(dx*dx + dy*dy);
+          double distance = Math.sqrt(dx * dx + dy * dy);
 
-          float volumeScalar = (max-(float)distance)/max;
+          float volumeScalar = (max - (float) distance) / max;
 
           this.logger.warn("Sound when in range");
           AudioEnum.INSTANCE.getOtherTankShoot(volumeScalar);
@@ -226,24 +226,24 @@ public class GameScreen extends AbstractScreen {
     Table aliveTable = new Table();
     Table aliveLabelTable = new Table();
     Styles.INSTANCE
-        .addTableColour(aliveLabelTable, Color.GRAY);
+            .addTableColour(aliveLabelTable, Color.GRAY);
     Label aliveLabel = Styles.INSTANCE.createGameLabel("Alive");
     aliveLabelTable.add(aliveLabel);
     Table playerCountTable = new Table();
     playerCountTable.add(playerCount).center();
     Styles.INSTANCE
-        .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
+            .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
     aliveTable.add(playerCountTable);
     aliveTable.add(aliveLabelTable);
     Table killTable = new Table();
     Table killLableTable = new Table();
     Styles.INSTANCE
-        .addTableColour(killLableTable, Color.GRAY);
+            .addTableColour(killLableTable, Color.GRAY);
     Label killLabel = Styles.INSTANCE.createGameLabel("Killed");
     killLableTable.add(killLabel);
     Table killCountTable = new Table();
     Styles.INSTANCE
-        .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
+            .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
     killCountTable.add(killCount);
     killTable.add(killCountTable);
     killTable.add(killLableTable);
@@ -268,12 +268,12 @@ public class GameScreen extends AbstractScreen {
     Table ammoTable = new Table();
     Table ammoValueTable = new Table();
     Styles.INSTANCE
-        .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
+            .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
     ammoValueTable.add(ammoValue);
     Label ammoLabel = Styles.INSTANCE.createGameLabel("Ammo");
     Table ammoLabelTable = new Table();
     Styles.INSTANCE
-        .addTableColour(ammoLabelTable, Color.GRAY);
+            .addTableColour(ammoLabelTable, Color.GRAY);
     ammoLabelTable.add(ammoLabel);
     ammoTable.add(ammoValueTable);
     ammoTable.add(ammoLabelTable);
@@ -292,7 +292,7 @@ public class GameScreen extends AbstractScreen {
         tractionPopUp = true;
       }
       //TODO test this
-      if (health == 0f){
+      if (health == 0f) {
         AudioEnum.INSTANCE.getTankDeath();
       }
       popUpTable.setVisible(false);
@@ -316,7 +316,7 @@ public class GameScreen extends AbstractScreen {
     }));
     verticalGroup.addActor(quitButton);
     Styles.INSTANCE
-        .addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
+            .addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
     return popUpTable;
   }
 
@@ -377,7 +377,7 @@ public class GameScreen extends AbstractScreen {
   private void renderProjectiles(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-          update.getProjectiles().values()) {
+              update.getProjectiles().values()) {
         renderProjectiles(c, tanks);
       }
 //      for (int i = 0; i < update.getProjectiles().size(); i++) {
@@ -389,7 +389,7 @@ public class GameScreen extends AbstractScreen {
   private void renderPowerups(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-          update.getPowerups().values()) {
+              update.getPowerups().values()) {
         switch (c.getObjectType()) {
           case NONE:
             break;
@@ -487,22 +487,22 @@ public class GameScreen extends AbstractScreen {
     }
     if (tractionHealth && tractionPopUp) {
       if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+        if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
           AudioEnum.INSTANCE.getTankMove();
         }
         Data.INSTANCE.sendCommand(Command.LEFT);
       } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+        if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
           AudioEnum.INSTANCE.getTankMove();
         }
         Data.INSTANCE.sendCommand(Command.RIGHT);
       } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+        if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
           AudioEnum.INSTANCE.getTankMove();
         }
         Data.INSTANCE.sendCommand(Command.UP);
       } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-        if(Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+        if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
           AudioEnum.INSTANCE.getTankMove();
         }
         Data.INSTANCE.sendCommand(Command.DOWN);
