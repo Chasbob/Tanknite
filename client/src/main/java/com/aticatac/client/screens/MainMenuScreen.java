@@ -5,6 +5,7 @@ import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.mappers.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+
 
 /**
  * The type Main menu screen.
@@ -238,7 +240,7 @@ public class MainMenuScreen extends AbstractScreen {
     assetsTable.top().right().pad(10);
     assetsTable.defaults().left();
     assetsTable.add(Styles.INSTANCE.createLabel("ID: "));
-    assetsTable.add(Styles.INSTANCE.createCustomLabel(Data.INSTANCE.getUsername(), Color.CORAL)).padRight(10);
+    assetsTable.add(Styles.INSTANCE.createCustomLabel(player.username, Color.CORAL)).padRight(10);
     assetsTable.add(Styles.INSTANCE.createLabel("XP: "));
     assetsTable.add(Styles.INSTANCE.createCustomLabel("1500", Color.CORAL));
     super.addToRoot(assetsTable);
@@ -559,6 +561,13 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   void loadInMainMenu() {
+    while (player == null) {
+      try {
+        Thread.sleep(0);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
     //create points and username table
     createAssets();
     //create top half of screen

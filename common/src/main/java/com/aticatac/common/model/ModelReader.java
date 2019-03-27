@@ -2,6 +2,7 @@ package com.aticatac.common.model;
 
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.google.gson.Gson;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 
@@ -72,8 +74,13 @@ public class ModelReader {
   public <T> T fromJson(String json, Class<T> type) throws InvalidBytes {
     Gson gson = new Gson();
     T output;
-    output = gson.fromJson(json, type);
-    return output;
+    try {
+      output = gson.fromJson(json, type);
+      return output;
+
+    } catch (NumberFormatException e) {
+      return null;
+    }
 //    if (!(output.isModelType(type.getName()))) {
 //      throw new InvalidBytes();
 //    } else {

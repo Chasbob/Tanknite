@@ -5,17 +5,24 @@ import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.mappers.Player;
+import com.aticatac.common.model.DBResponse;
+import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.ServerInformation;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
+import com.google.common.eventbus.Subscribe;
 import org.jetbrains.annotations.NotNull;
+
+import static com.aticatac.client.bus.EventBusFactory.eventBus;
 
 import java.net.InetAddress;
 
-class PopUp {
+public class PopUp {
+
 
   static void createPopUp(boolean startUp) {
     Table popUpRootTable = new Table();
@@ -144,8 +151,6 @@ class PopUp {
     hostButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //create custom server
       GDXGame.createServer(false, serverNameField.getText());
-//      Server server = new Server(false, serverNameField.getText());
-//      server.start();
       Data.INSTANCE.setSingleplayer(false);
       //TODO make getter for port and ip
       Data.INSTANCE.setCurrentInformation(new ServerInformation(Data.INSTANCE.getUsername(), InetAddress.getByName("127.0.0.1"), 5500));
@@ -225,18 +230,37 @@ class PopUp {
     //add main listeners for buttons
     loginButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //TODO sign in the player and give errors
-      Data.INSTANCE.setUsername(usernameText.getText());
-      return resetMainMenu();
+      DBResponse response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText()));
+      switch (response.getResponse()) {
+        case accepted:
+          break;
+        case wrong_password:
+          break;
+        case username_taken:
+          break;
+      }
+      return false;
     }));
     //TODO register player and give errors
-    registerButton.addListener(ListenerFactory.newListenerEvent(PopUp::resetMainMenu));
+    registerButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      DBResponse response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText()));
+      switch (response.getResponse()) {
+        case accepted:
+          break;
+        case wrong_password:
+          break;
+        case username_taken:
+          break;
+      }
+      return false;
+    }));
     InputEvent clickEvent = new InputEvent();
     clickEvent.setType(InputEvent.Type.touchDown);
     return rootGroup;
   }
 
   @NotNull
-  private static Boolean resetMainMenu() {
+  public static Boolean resetMainMenu() {
     Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
     Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu();
@@ -268,5 +292,6 @@ class PopUp {
     backTable.setButton(backButton);
     return backTable;
   }
+
 
 }

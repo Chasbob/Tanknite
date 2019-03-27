@@ -26,6 +26,7 @@ allprojects {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile 'org.apache.commons:commons-collections4:4.1'
         compile 'org.jetbrains:annotations:16.0.1'
+        implementation 'com.google.guava:guava:27.1-jre'
     }
     test {
         useJUnitPlatform()

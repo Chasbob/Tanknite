@@ -1,6 +1,6 @@
 package com.aticatac.database;
 
-import com.aticatac.database.mappers.Player;
+import com.aticatac.common.mappers.Player;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.log4j.Logger;
 

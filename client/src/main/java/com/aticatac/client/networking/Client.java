@@ -124,7 +124,7 @@ public class Client {
       this.printer = new PrintStream(socket.getOutputStream());
       this.printer.println(modelReader.toJson(login));
       String json = reader.readLine();
-      this.logger.trace("Waiting for response...");
+      this.logger.trace("Waiting for Response...");
       Login output = modelReader.fromJson(json, Login.class);
       this.logger.trace("Authenticated = " + output.isAuthenticated());
       if (output.isAuthenticated() == Response.ACCEPTED) {
@@ -142,7 +142,7 @@ public class Client {
       this.logger.warn("No Server.");
       return Response.NO_SERVER;
     } catch (InvalidBytes e) {
-      this.logger.warn("Invalid response");
+      this.logger.warn("Invalid Response");
       return Response.INVALID_RESPONSE;
     }
   }

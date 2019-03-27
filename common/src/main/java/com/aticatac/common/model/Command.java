@@ -12,7 +12,8 @@ public enum   Command {
   START(new Vector(0, 0)),
   FILL_AI(new Vector(0, 0)),
   FREEZE_BULLET(new Vector(0, 0)),
-  BULLET_SPRAY(new Vector(0, 0));
+  BULLET_SPRAY(new Vector(0, 0)),
+  PAUSE(new Vector(0, 0));
 
   public final Vector vector;
 

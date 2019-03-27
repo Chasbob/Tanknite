@@ -47,7 +47,7 @@ public class Physics {
    * @param rotation The rotation of the entity
    * @param position The position of the entity when move was called
    * @param speedPowerUp An integer representing whether a speedpowerup is currently active for the entity
-   * @return A physics response containing the new position and any collisions that happened when attempting to move
+   * @return A physics Response containing the new position and any collisions that happened when attempting to move
    */
   public PhysicsResponse move(int rotation, final Position position, int speedPowerUp) {
 

@@ -3,6 +3,7 @@ package com.aticatac.client.screens;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
+import com.aticatac.common.mappers.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -16,7 +17,10 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
+
+import static com.aticatac.client.bus.EventBusFactory.eventBus;
 
 /**
  * The type Abstract screen.
@@ -28,20 +32,28 @@ public class AbstractScreen extends Stage implements Screen {
   protected final Logger logger;
   Table rootTable;
   TextButton backButton;
+  protected Player player;
 
   /**
    * Instantiates a new Abstract screen.
    */
   AbstractScreen() {
     super(new StretchViewport(640, 640));
+    eventBus.register(this);
     logger = Logger.getLogger(getClass());
     rootTable = new Table();
+  }
+
+  @Subscribe
+  private void playerUpdate(Player player) {
+    this.logger.info("update player");
+    this.player = player;
   }
 
   /**
    * Build stage.
    */
-  public void buildStage(){
+  public void buildStage() {
     //create root table
     rootTable.setFillParent(true);
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
@@ -61,12 +73,12 @@ public class AbstractScreen extends Stage implements Screen {
     }));
   }
 
-  void addToRoot(Table table){
+  void addToRoot(Table table) {
     table.setFillParent(true);
     rootTable.addActor(table);
   }
 
-  public void refresh(){
+  public void refresh() {
 
   }
 

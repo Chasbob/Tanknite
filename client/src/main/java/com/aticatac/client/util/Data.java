@@ -2,20 +2,28 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
+import com.aticatac.client.screens.PopUp;
+import com.aticatac.client.screens.Screens;
 import com.aticatac.client.server.networking.Server;
-import com.aticatac.common.model.Command;
-import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.mappers.Player;
+import com.aticatac.common.model.*;
+import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
 
+import java.io.*;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.graphics.Color;
+import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
+
+import static com.aticatac.client.bus.EventBusFactory.eventBus;
 
 /**
  * The enum Data.
@@ -40,10 +48,17 @@ public enum Data {
   private boolean serverSelected;
   private boolean manualConfigForServer;
   private boolean isHosting;
+  private Socket dbSocket;
+  private BufferedReader reader;
+  private PrintStream printer;
+  ModelReader modelReader;
 
   Data() {
+    eventBus.register(this);
     this.logger = Logger.getLogger(getClass());
     client = new Client();
+    modelReader = new ModelReader();
+
     serverSelected = false;
     manualConfigForServer = false;
     isHosting = false;
@@ -67,6 +82,31 @@ public enum Data {
    */
   public boolean isStarted() {
     return client.isStarted();
+  }
+
+  public DBResponse login(DBlogin dBlogin) {
+    this.logger.info(dBlogin);
+    try {
+      dbSocket = new Socket("chasbob.co.uk", 6000);
+//    DBlogin dBlogin = new DBlogin("charlie", "charlie");
+      String json = modelReader.toJson(dBlogin);
+      logger.info(json);
+      reader = new BufferedReader(new InputStreamReader(dbSocket.getInputStream()));
+      printer = new PrintStream(dbSocket.getOutputStream());
+      printer.println(json);
+      logger.info("wrote to stream");
+      String json2 = reader.readLine();
+      logger.info(json2);
+      DBResponse output = modelReader.fromJson(json2, DBResponse.class);
+      if (output.getResponse() == DBResponse.Response.accepted) {
+
+        eventBus.post(output.getPlayer());
+      }
+      return output;
+    } catch (IOException | InvalidBytes e) {
+      return null;
+    }
+
   }
 
   /**
@@ -214,11 +254,11 @@ public enum Data {
   }
 
   /**
-   * Connect response.
+   * Connect Response.
    *
    * @param id           the id
    * @param singlePlayer the single player
-   * @return the response
+   * @return the Response
    */
   public Response connect(String id, boolean singlePlayer) {
     if (singlePlayer) {
@@ -227,19 +267,19 @@ public enum Data {
       if (this.serverSelected) {
         return this.client.connect(this.currentInformation, id);
       } else {
-        //this is just if the user has not selected a server instead of there being no response.
+        //this is just if the user has not selected a server instead of there being no Response.
         return Response.NO_SERVER;
       }
     }
   }
 
   /**
-   * Connect response.
+   * Connect Response.
    *
    * @param id           the id
    * @param singleplayer the singleplayer
    * @param host         the host
-   * @return the response
+   * @return the Response
    * @throws UnknownHostException the unknown host exception
    */
   public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
@@ -324,4 +364,8 @@ public enum Data {
 
   public void submit(final int bearing) {
     this.client.submit(bearing);
+  }
+
+  public void initialise() {
+
   }}

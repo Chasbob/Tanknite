@@ -294,26 +294,7 @@ public class GameScreen extends AbstractScreen {
         renderContainer(c, tanks);
         tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
       }
-//      for (int i = 0; i < update.getPlayers().values().size(); i++) {
-//        Container updater = update.getI(i);
-//        renderContainer(updater, tanks);
-//      }
     }
-//    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
-//      Container c = update.getMe(Data.INSTANCE.getID());
-////      VectorF v = new VectorF(
-////          (float) Math.cos(Math.toRadians(c.getR())),
-////          (float) Math.sin(Math.toRadians(c.getR())));
-////      v.scl(10);
-////      v.sub(new VectorF(c.getX(), c.getY()));
-////      if (Math.abs(c.getR() - rot) > 10) {
-////        this.logger.info(c.getR() + "->" + rot);
-////      }
-////      if (rot == 360) {
-////        rot = 0;
-////      }
-////      rot = c.getR();
-//    }
     renderProjectiles(tanks);
     renderPowerups(tanks);
     tanks.end();
@@ -325,9 +306,6 @@ public class GameScreen extends AbstractScreen {
         update.getProjectiles().values()) {
         renderProjectiles(c, tanks);
       }
-//      for (int i = 0; i < update.getProjectiles().size(); i++) {
-//        renderProjectiles(update.getProjectiles().get(i), tanks);
-//      }
     }
   }
 
@@ -372,9 +350,6 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderProjectiles(Container c, SpriteBatch batch) {
-//    if (c.getId().equals("")) {
-//      this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
-//    }
     batch.draw(projectileTexture, maxX - c.getX(), maxY - c.getY());
   }
 
@@ -432,7 +407,7 @@ public class GameScreen extends AbstractScreen {
     if (tractionPopUp) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
         PopUp.createPopUp(false);
-//          //show the pop up table
+        //show the pop up table
         popUpTable.setVisible(true);
         tractionPopUp = false;
       }
@@ -467,14 +442,14 @@ public class GameScreen extends AbstractScreen {
         AudioEnum.INSTANCE.getShoot();
         Data.INSTANCE.sendCommand(Command.SHOOT);
       }
-    }
-    if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) {
-      AudioEnum.INSTANCE.getShoot();
-      Data.INSTANCE.sendCommand(Command.BULLET_SPRAY);
-    }
-    if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) {
-      AudioEnum.INSTANCE.getShoot();
-      Data.INSTANCE.sendCommand(Command.FREEZE_BULLET);
+      if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) {
+        AudioEnum.INSTANCE.getShoot();
+        Data.INSTANCE.sendCommand(Command.BULLET_SPRAY);
+      }
+      if (Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) {
+        AudioEnum.INSTANCE.getShoot();
+        Data.INSTANCE.sendCommand(Command.FREEZE_BULLET);
+      }
     }
     Data.INSTANCE.submit(getBearing());
   }
