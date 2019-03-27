@@ -319,17 +319,7 @@ public class AI {
    * @return A path from one position to another
    */
   private LinkedList<SearchNode> getPath(Position from, Position to) {
-//    ArrayList<SearchNode> enemyPositions = new ArrayList<>();
-//    for (PlayerState enemy : enemiesInRange) {
-//      enemyPositions.addAll(graph.getNearestNode(enemy.getPosition()).getSubGraph(2));
-//    }
-//    occupiedNodes.addAll(enemyPositions);
-//    occupiedNodes.removeAll(searchPath);
-//    pathFinder.setOccupiedNodes(occupiedNodes);
-    LinkedList<SearchNode> path = pathFinder.getPathToLocation(graph.getNearestNode(from), graph.getNearestNode(to));
-//    occupiedNodes.addAll(path);
-//    occupiedNodes.removeAll(enemyPositions);
-    return path;
+    return pathFinder.getPathToLocation(graph.getNearestNode(from), graph.getNearestNode(to));
   }
 
   /**
@@ -435,6 +425,10 @@ public class AI {
    * @return True if there is a line of sight between
    */
   private boolean checkLineOfSightToPosition(Position from, Position to) {
+    // being this close and not having a line of sight is impossible
+    if (Math.sqrt(Math.pow(from.getX() - to.getX(),2) + Math.pow(from.getY() - to.getY(),2)) <= 32) {
+      return true;
+    }
     String[][] map = DataServer.INSTANCE.getMap();
     ArrayList<Position> linePoints = new ArrayList<>();
     Position start = new Position(Math.round((float) from.getX() / 32), Math.round((float) from.getY() / 32));
