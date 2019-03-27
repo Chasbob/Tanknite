@@ -7,7 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
- * The type Single player test.
+ * The type Single player game.
  */
 public class SinglePlayer extends Game {
   private BlockingQueue<Update> updates;

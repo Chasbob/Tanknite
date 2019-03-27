@@ -1,10 +1,11 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.util.AudioEnum;
+import com.aticatac.client.util.Data;
 import com.badlogic.gdx.Game;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-
-import org.apache.log4j.Logger;
 
 /**
  * The enum Screens.
@@ -38,7 +39,11 @@ public enum Screens {
      * @param game the game
      */
     public void initialize(Game game) {
+
+        AudioEnum.INSTANCE.getMain();
+
         this.logger.warn("Initializing...");
+      Data.INSTANCE.initialise();
         this.game = game;
         this.game.setScreen(getScreen(MainMenuScreen.class));
         this.currentScreen = MainMenuScreen.class;

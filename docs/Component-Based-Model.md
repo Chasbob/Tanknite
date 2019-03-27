@@ -53,7 +53,7 @@ To:
 
 ```Java
 package com.aticatac.common.prefabs;
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.client.server.objectsystem.GameObject;
 
 public class Tank extends GameObject {
     public Tank(GameObject Parent,String name) {
@@ -82,7 +82,7 @@ To create empty Component simply copy and add to body of code
 ```Java
 package com.aticatac.common.components;
 
-import com.aticatac.common.objectsystem.GameObject;
+import com.aticatac.client.server.objectsystem.GameObject;
 
 public class <Component> extends Component {
     
