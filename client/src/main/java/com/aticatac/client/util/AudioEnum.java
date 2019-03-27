@@ -168,12 +168,16 @@ public enum AudioEnum {
   //can play this even if it is being played elsewhere
   public Music getOtherTankShoot(float volume) {
 
-    Music otherShoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.wav"));
-    if (sound) {
-      otherShoot.setVolume(volume);
-      otherShoot.play();
+    try {
+      Music otherShoot = Gdx.audio.newMusic(Gdx.files.internal("audio/Tank Firing-SoundBible.com-998264747.wav"));
+      if (sound) {
+        otherShoot.setVolume(volume);
+        otherShoot.play();
+      }
+      return otherShoot;
+    } catch (Exception e) {
+      return null;
     }
-    return otherShoot;
   }
 
   /**
