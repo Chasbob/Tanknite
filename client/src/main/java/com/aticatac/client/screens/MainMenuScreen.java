@@ -131,7 +131,7 @@ public class MainMenuScreen extends AbstractScreen {
     titleTable.add(screenTitle);
     super.addToRoot(titleTable);
     popUpLogin = true;
-    PopUp.createPopUp(true);
+    PopUp.createPopUp(true, false);
   }
 
   private void createAidTable() {
@@ -356,7 +356,7 @@ public class MainMenuScreen extends AbstractScreen {
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(multiPlayerTable);
       popUpMultiplayer = true;
-      PopUp.createPopUp(false);
+      PopUp.createPopUp(false, false);
       toggleButtonDeactivation(true);
       return false;
     }));

@@ -69,8 +69,8 @@ public enum Styles {
   private void loadFonts() {
     FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
     FreeTypeFontGenerator generator_title = new FreeTypeFontGenerator(Gdx.files.internal("styles/title_font.ttf"));
+    FreeTypeFontGenerator generator_title_2 = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font.ttf"));
     FreeTypeFontGenerator generator_italic_bold = new FreeTypeFontGenerator(Gdx.files.internal("styles/menu_font_italic_bold.ttf"));
-    System.out.println("Loaded ttf");
     FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
     FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
     FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();

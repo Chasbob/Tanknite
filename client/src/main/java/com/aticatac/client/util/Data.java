@@ -39,6 +39,7 @@ public enum Data {
   private Client client;
   private String username;
   private Color tankColour;
+  private boolean won;
   private Container playerPos;
   private ArrayList<Container> playerList;
   private boolean serverSelected;
@@ -366,4 +367,13 @@ public enum Data {
 
   public boolean isConnected() {
     return connected;
-  }}
+  }
+
+  public boolean isWon() {
+    return won;
+  }
+
+  public void setWon(boolean won) {
+    this.won = won;
+  }
+}

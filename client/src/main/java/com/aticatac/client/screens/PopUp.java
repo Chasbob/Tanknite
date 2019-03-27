@@ -20,7 +20,7 @@ import java.net.InetAddress;
 public class PopUp {
 
 
-  static void createPopUp(boolean startUp) {
+  static void createPopUp(boolean startUp, boolean endGame) {
     Table popUpRootTable = new Table();
     Styles.INSTANCE.addTableColour(popUpRootTable, new Color(new Color(0f, 0f, 0f, 0.5f)));
     if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
@@ -44,14 +44,14 @@ public class PopUp {
       multiplayerChildren.space(5);
       if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
         manualJoin(multiplayerChildren);
-        popUpTable.add(multiplayerChildren);
       } else if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
         createMultiplayerChildren(multiplayerChildren);
-        popUpTable.add(multiplayerChildren);
+      } else if (endGame) {
+        endGame(multiplayerChildren);
       } else {
         createGameSettings(multiplayerChildren);
-        popUpTable.add(multiplayerChildren);
       }
+      popUpTable.add(multiplayerChildren);
     }
     popUpTable.padTop(20).padBottom(20).padLeft(60).padRight(60);
     popUpRootTable.add(popUpTable);
@@ -328,5 +328,23 @@ public class PopUp {
     Label label = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "NO DATABASE CONNECTION - OFFLINE MODE", Color.WHITE);
     labelTable.add(label);
     rootGroup.addActor(labelTable);
+  }
+
+  private static void endGame(VerticalGroup multiplayerChildren) {
+    VerticalGroup rootGroup = new VerticalGroup();
+    //create result of game
+    Table resultTable = new Table();
+    rootGroup.addActor(resultTable);
+    Label resultlabel;
+    if (Data.INSTANCE.isWon()) {
+      resultlabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "VICTORY", Color.GREEN);
+    } else {
+      resultlabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "DEFEAT", Color.RED);
+    }
+    resultTable.add(resultlabel);
+    //TODO show top 3 players
+    //create quit button
+    rootGroup.addActor(createBackButton(true, rootGroup));
+    multiplayerChildren.addActor(rootGroup);
   }
 }
