@@ -18,9 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
-import java.math.BigDecimal;
-
-
 /**
  * The type Main menu screen.
  */

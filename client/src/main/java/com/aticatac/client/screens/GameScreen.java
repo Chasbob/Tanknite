@@ -427,7 +427,7 @@ public class GameScreen extends AbstractScreen {
     healthBarBatch.begin();
     health = hudUpdate.getHealth();
     healthBarBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
-    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 15);
+    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 30, Gdx.graphics.getWidth() / 4f, 15);
     if (health > 0.6f) {
       healthBarBatch.setColor(Color.GREEN);
     } else if (health <= 0.6f && health > 0.2f) {
@@ -435,7 +435,7 @@ public class GameScreen extends AbstractScreen {
     } else {
       healthBarBatch.setColor(Color.RED);
     }
-    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 15);
+    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 30, Gdx.graphics.getWidth() / 4f * health, 15);
     if (health <= 0.1f) {
       tractionHealth = false;
       alertTable.setVisible(true);
