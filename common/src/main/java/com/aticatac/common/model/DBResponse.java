@@ -6,6 +6,15 @@ public class DBResponse {
   private Player player;
   private Response response;
 
+  public DBResponse(Player player, Response response) {
+    this.player = player;
+    this.response = response;
+  }
+
+  public DBResponse(Response response) {
+    this.response = response;
+  }
+
   public Player getPlayer() {
     return player;
   }
@@ -14,13 +23,7 @@ public class DBResponse {
     return response;
   }
 
-  public DBResponse(Player player, Response response) {
-    this.player = player;
-    this.response = response;
-  }
-
   public enum Response {
     accepted, wrong_password, username_taken, no_user
   }
-
 }

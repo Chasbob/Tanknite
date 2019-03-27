@@ -1,6 +1,7 @@
 package com.aticatac.database;
 
 import com.aticatac.common.mappers.Player;
+import com.aticatac.common.model.DBResponse;
 import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
@@ -56,16 +57,35 @@ public class Listener implements Runnable {
       Optional<Player> op = dBinterface.getPlayer(dBlogin.getUsername());
       this.logger.info(op.toString());
       if (op.isPresent()) {
+        this.logger.info("player exists");
+        if (dBlogin.isRegister()) {
+          this.logger.info("cant register a taken name");
+          printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
+          return;
+        }
         Player p = op.get();
         if (p.username.equals(dBlogin.getUsername()) && p.password.equals(dBlogin.getPassword())) {
-          printer.println(modelReader.toJson(p));
+          this.logger.info("name and password match");
+          printer.println(modelReader.toJson(new DBResponse(p, DBResponse.Response.accepted)));
           this.logger.info(p);
         } else {
-          printer.println(modelReader.toJson(dBlogin));
+          this.logger.info("password is wrong");
+          printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.wrong_password)));
         }
       } else {
-        Player newPlayer = registerUser(dBlogin);
-        printer.println(modelReader.toJson(newPlayer));
+        if (dBlogin.isRegister()) {
+          this.logger.info("registering");
+          try {
+            Player newPlayer = registerUser(dBlogin);
+            this.logger.info("registered");
+            printer.println(modelReader.toJson(new DBResponse(newPlayer, DBResponse.Response.accepted)));
+          } catch (PersistenceException e) {
+            this.logger.info("name taken");
+            printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
+          }
+        } else {
+          printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.no_user)));
+        }
       }
     } catch (PersistenceException e) {
       this.logger.error(e);

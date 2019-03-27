@@ -26,7 +26,6 @@ public class Server implements Runnable {
 
   @Override
   public void run() {
-//    new Thread(listener).start();
     while (true) {
       runnables.parallelStream().forEach(Runnable::run);
     }

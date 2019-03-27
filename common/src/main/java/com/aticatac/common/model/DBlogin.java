@@ -3,10 +3,20 @@ package com.aticatac.common.model;
 public class DBlogin extends Model {
   private String username;
   private String password;
+  private boolean register;
 
   public DBlogin(final String username, final String password) {
     this.username = username;
     this.password = password;
+  }
+
+  public DBlogin(final String username, final String password, final boolean register) {
+    this(username, password);
+    this.register = register;
+  }
+
+  public boolean isRegister() {
+    return register;
   }
 
   public String getPassword() {
