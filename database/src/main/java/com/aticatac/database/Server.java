@@ -9,7 +9,6 @@ import static com.aticatac.database.bus.EventBusFactory.eventBus;
 
 public class Server implements Runnable {
   private final Logger logger;
-  private Discovery discovery;
   private List<Runnable> runnables;
   private Listener listener;
 
@@ -18,10 +17,8 @@ public class Server implements Runnable {
     logger = Logger.getLogger(getClass());
     runnables = new ArrayList<>();
     try {
-      discovery = new Discovery();
       listener = new Listener();
-      runnables.add(discovery);
-//      runnables.add(listener);
+      runnables.add(listener);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -29,7 +26,7 @@ public class Server implements Runnable {
 
   @Override
   public void run() {
-    new Thread(listener).start();
+//    new Thread(listener).start();
     while (true) {
       runnables.parallelStream().forEach(Runnable::run);
     }

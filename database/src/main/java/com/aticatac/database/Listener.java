@@ -36,6 +36,7 @@ public class Listener implements Runnable {
       this.logger.info("running");
       try {
         Socket socket = serverSocket.accept();
+        this.logger.info("connected!");
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintStream printer = new PrintStream(socket.getOutputStream());
         String json = reader.readLine();
@@ -51,23 +52,25 @@ public class Listener implements Runnable {
   }
 
   private void checkUser(DBlogin dBlogin, PrintStream printer) {
-    Optional<Player> op = dBinterface.getPlayer(dBlogin.getUsername());
-    this.logger.info(op.toString());
-    if (op.isPresent()) {
-      Player p = op.get();
-      if (p.getUsername().equals(dBlogin.getUsername()) && p.getPassword().equals(dBlogin.getPassword())) {
-        printer.println(modelReader.toJson(p));
+    try {
+      Optional<Player> op = dBinterface.getPlayer(dBlogin.getUsername());
+      this.logger.info(op.toString());
+      if (op.isPresent()) {
+        Player p = op.get();
+        if (p.getUsername().equals(dBlogin.getUsername()) && p.getPassword().equals(dBlogin.getPassword())) {
+          printer.println(modelReader.toJson(p));
+        } else {
+          printer.println(modelReader.toJson(dBlogin));
+        }
       } else {
-        printer.println(modelReader.toJson(dBlogin));
-      }
-    } else {
-      try {
         Player newPlayer = registerUser(dBlogin);
         printer.println(modelReader.toJson(newPlayer));
-      } catch (PersistenceException e) {
-        this.logger.error(e);
-        printer.println(modelReader.toJson(dBlogin));
       }
+    } catch (PersistenceException e) {
+      this.logger.error(e);
+      printer.println(modelReader.toJson(dBlogin));
+    } catch (NullPointerException e) {
+      this.logger.error(e);
     }
   }
 

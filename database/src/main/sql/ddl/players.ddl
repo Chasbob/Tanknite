@@ -1,4 +1,4 @@
-CREATE TABLE tanknite.public.players
+CREATE TABLE aticatac.public.players
 (
   id              SERIAL NOT NULL
     CONSTRAINT table_name_pk
@@ -10,7 +10,8 @@ CREATE TABLE tanknite.public.players
   kills           INTEGER DEFAULT 0,
   deaths          INTEGER DEFAULT 0,
   win             INTEGER DEFAULT 0,
-  loss            INTEGER DEFAULT 0
+  loss            INTEGER DEFAULT 0,
+  score           INTEGER DEFAULT 0
 )
 ;
 

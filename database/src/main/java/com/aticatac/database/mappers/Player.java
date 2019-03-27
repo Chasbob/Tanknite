@@ -1,5 +1,7 @@
 package com.aticatac.database.mappers;
 
+import com.aticatac.common.KillDeath;
+
 /**
  * The type Player.
  */
