@@ -2,7 +2,7 @@ package com.aticatac.common.model;
 
 import com.aticatac.common.mappers.Player;
 
-public class DBResponse extends Model {
+public class DBResponse extends Model{
   private Player player;
   private Response response;
 

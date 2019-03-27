@@ -6,7 +6,6 @@ import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.LobbyPlayers;
 import com.aticatac.common.model.ModelReader;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,7 +13,6 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Optional;
-
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.log4j.Logger;
 

@@ -1,7 +1,6 @@
 package com.aticatac.database;
 
 import com.aticatac.common.mappers.Player;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
