@@ -2,6 +2,7 @@ package com.aticatac.client.screens;
 
 import com.aticatac.client.isometric.Helper;
 import com.aticatac.client.util.*;
+import com.aticatac.client.util.Camera;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.Container;
@@ -9,10 +10,7 @@ import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.server.Position;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.*;
@@ -59,6 +57,9 @@ public class GameScreen extends AbstractScreen {
     private Texture bulletTexture;
     private Texture projectileTexture;
     private Texture tankTexture2;
+    private Texture shadow;
+    private Texture shadowUltraLight;
+    private ArrayList<Texture> rotations;
     private Label direction;
     private Container player;
     private HudUpdate hudUpdate;
@@ -92,8 +93,16 @@ public class GameScreen extends AbstractScreen {
             tankTexture = new Texture("maps/tank1.png");
             tankTexture2 = new Texture("img/tank.png");
             powerUpTexture = new Texture("maps/powerup.png");
+            shadow = new Texture("maps/shadow.png");
+            shadowUltraLight = new Texture("maps/shadow2.png");
             bulletTexture = new Texture("maps/bullet.png");
             projectileTexture = new Texture("img/bullet.png");
+
+            rotations = new ArrayList<>();
+            for (int i = 0;i<=359;i++){
+                rotations.add(new Texture("maps/turret_with_base/"+String.format("%04d", i)+ ".png"));
+            }
+
             tractionHealth = true;
             tractionPopUp = true;
             minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
@@ -144,6 +153,14 @@ public class GameScreen extends AbstractScreen {
 
     @Override
     public void buildStage() {
+
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("img/gun-pointer.png"));
+        int xHotspot = pixmap.getWidth() / 2;
+        int yHotspot = pixmap.getHeight() / 2;
+        Cursor cursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
+        Gdx.graphics.setCursor(cursor);
+        pixmap.dispose();
+
         //create root table
         rootTable = new Table();
         rootTable.setFillParent(true);
@@ -207,6 +224,7 @@ public class GameScreen extends AbstractScreen {
         }
         //main viewport
         camera.getViewport().apply();
+
         renderer.setView(this.camera.getCamera());
         renderer.getBatch().begin();
         renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(0));
@@ -268,6 +286,7 @@ public class GameScreen extends AbstractScreen {
                 try {
                     var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(pp.getX(), pp.getY()).getTile();
                     drawTiles(sb, pp.getX(), pp.getY(), tile);
+                    drawShadow(sb,pp.getX(), pp.getY(), shadow);
                 } catch (Exception ignored) {
                 }
             }
@@ -277,8 +296,13 @@ public class GameScreen extends AbstractScreen {
                         sb.draw(bulletTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
                     }else if(c.getObjectType() == EntityType.AMMO_POWERUP || c.getObjectType() == EntityType.HEALTH_POWERUP || c.getObjectType() == EntityType.DAMAGE_POWERUP || c.getObjectType() == EntityType.SPEED_POWERUP) {
                         sb.draw(powerUpTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+                        sb.draw(shadow,Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+                        sb.draw(shadowUltraLight,Helper.tileToScreenX(c.getX() + 10, c.getY() - 32 - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 32 - 10));
                     }else if(c.getObjectType() == EntityType.TANK) {
-                        sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+                        //sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
+                        int t = changeAngle(-getBearing(),90);
+                        if (t==359) t = 0;
+                        sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
                     }
                 }
             }
@@ -314,8 +338,6 @@ public class GameScreen extends AbstractScreen {
         return array;
     }
 
-    /*Isometric rendering ends*/
-
     private void drawTiles(SpriteBatch sb, int i, int j, TiledMapTile tile) {
         var pos = new Position((i) * 32, (j) * 32);
 
@@ -326,6 +348,19 @@ public class GameScreen extends AbstractScreen {
 
         sb.draw(tile.getTextureRegion(), pos4.getX(), pos4.getY());
     }
+
+    private void drawShadow(SpriteBatch sb, int i, int j, Texture shadow) {
+        var pos = new Position((i+1) * 32, (j) * 32);
+
+        var pos1 = new Position(pos.getX() - 960, pos.getY() - 960);
+        var pos2 = new Position(pos1.getY(), -pos1.getX());
+        var pos3 = new Position(pos2.getX() + 960, pos2.getY() + 960);
+        var pos4 = Helper.tileToScreen(pos3);
+
+        sb.draw(shadow, pos4.getX(), pos4.getY());
+    }
+
+    /*Isometric rendering ends*/
 
     @Override
     public void resize(int width, int height) {
@@ -568,8 +603,8 @@ public class GameScreen extends AbstractScreen {
                         (int)(mouseMapPos3.y))
                 );
 
-        float deltaX = mouseMapIso.getX()-player.getX();
-        float deltaY = mouseMapIso.getY()-player.getY();
+        float deltaX = mouseMapIso.getX()-player.getX()+tankTexture.getWidth()/2f;
+        float deltaY = mouseMapIso.getY()-player.getY()+tankTexture.getHeight()/2f;
 
         return (int)(Math.round(Math.toDegrees(Math.atan2(deltaY,deltaX))));
     }
@@ -583,23 +618,23 @@ public class GameScreen extends AbstractScreen {
         if (tractionHealth && tractionPopUp) {
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 Data.INSTANCE.sendCommand(Command.LEFT);
-                Data.INSTANCE.sendCommand(Command.DOWN);
-            } if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                //Data.INSTANCE.sendCommand(Command.DOWN);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 Data.INSTANCE.sendCommand(Command.RIGHT);
-                Data.INSTANCE.sendCommand(Command.UP);
-            } if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                Data.INSTANCE.sendCommand(Command.RIGHT);
+                //Data.INSTANCE.sendCommand(Command.UP);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                //Data.INSTANCE.sendCommand(Command.RIGHT);
                 Data.INSTANCE.sendCommand(Command.DOWN);
-            } if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                Data.INSTANCE.sendCommand(Command.LEFT);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                //Data.INSTANCE.sendCommand(Command.LEFT);
                 Data.INSTANCE.sendCommand(Command.UP);
-            } if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
                 this.camera.getCamera().zoom -= 0.1f;
             } if (Gdx.input.isKeyPressed(Input.Keys.E)) {
                 this.camera.getCamera().zoom += 0.1f;
             }
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonPressed(0)) {
             Data.INSTANCE.sendCommand(Command.SHOOT);
         }
         Data.INSTANCE.submit(changeAngle(getBearing(),180));
