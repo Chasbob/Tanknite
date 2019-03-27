@@ -73,7 +73,16 @@ public class PopUp {
     MenuTable settingsTable = Styles.INSTANCE.createMenuTable(false, false);
     TextButton settingsButton = Styles.INSTANCE.createButton("SETTINGS");
     settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
-
+      multiplayerChildren.clear();
+      Settings.createSettings();
+      //create back button
+      TextButton backButton = Styles.INSTANCE.createButton("Back");
+      backButton.addListener(ListenerFactory.newListenerEvent(() -> {
+        multiplayerChildren.clear();
+        createGameSettings(multiplayerChildren);
+        return false;
+      }));
+      multiplayerChildren.addActor(backButton);
       return false;
     }));
     settingsTable.setButton(settingsButton);
@@ -193,11 +202,6 @@ public class PopUp {
     VerticalGroup rootGroup = new VerticalGroup();
     rootGroup.pad(10).columnLeft().space(10);
     if (Data.INSTANCE.isConnected()) {
-      //create table to store error message
-      Table errorTable = new Table();
-      Label errorLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "", Color.RED);
-      errorTable.add(errorLabel);
-      rootGroup.addActor(errorLabel);
       //tabs
       HorizontalGroup tabGroup = new HorizontalGroup();
       tabGroup.space(5);
@@ -228,12 +232,13 @@ public class PopUp {
       rootGroup.addActor(passwordText);
       rootGroup.pack();
       //add main listeners for buttons
-      createErrorListener(rootGroup, false, loginButton, errorLabel, usernameText, passwordText);
+      createErrorListener(rootGroup, false, loginButton, usernameText, passwordText);
       //TODO register player and give errors
-      createErrorListener(rootGroup, true, registerButton, errorLabel, usernameText, passwordText);
+      createErrorListener(rootGroup, true, registerButton, usernameText, passwordText);
       InputEvent clickEvent = new InputEvent();
       clickEvent.setType(InputEvent.Type.touchDown);
     } else {
+      Data.INSTANCE.setUsername("OFFLINE");
       playOffline(rootGroup);
     }
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = rootGroup;
@@ -274,7 +279,7 @@ public class PopUp {
     return backTable;
   }
 
-  private static void createErrorListener(VerticalGroup group, boolean register, TextButton button, Label errorLabel, TextField usernameText, TextField passwordText) {
+  private static void createErrorListener(VerticalGroup group, boolean register, TextButton button, TextField usernameText, TextField passwordText) {
     button.addListener(ListenerFactory.newListenerEvent(() -> {
       DBResponse response;
       if (register) {
@@ -282,8 +287,14 @@ public class PopUp {
       } else {
         response = Data.INSTANCE.login(new DBlogin(usernameText.getText(), passwordText.getText(), false));
       }
+      //create table to store error message
+      Table errorTable = new Table();
+      Label errorLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "", Color.RED);
+      errorTable.add(errorLabel);
+      group.addActorAt(1, errorLabel);
       switch (response.getResponse()) {
         case accepted:
+          Data.INSTANCE.setUsername(usernameText.getText());
           resetMainMenu();
           break;
         case wrong_password:
@@ -303,13 +314,7 @@ public class PopUp {
   private static void playOffline(VerticalGroup rootGroup) {
     //clear the group
     rootGroup.clear();
-    //create actors
-    Table labelTable = new Table();
-    Label label = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "NO DATABASE CONNECTION - OFFLINE MODE", Color.WHITE);
-    labelTable.add(label);
-    rootGroup.addActor(labelTable);
     MenuTable okButtonTable = Styles.INSTANCE.createMenuTable(true, false);
-    okButtonTable.defaults().center();
     TextButton okButton = Styles.INSTANCE.createButton("PLAY");
     okButton.addListener(ListenerFactory.newListenerEvent(() -> {
       resetMainMenu();
@@ -318,5 +323,10 @@ public class PopUp {
     okButtonTable.setButton(okButton);
     ListenerFactory.addHoverListener(okButton, okButtonTable);
     rootGroup.addActor(okButtonTable);
+    //create actors
+    Table labelTable = new Table();
+    Label label = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "NO DATABASE CONNECTION - OFFLINE MODE", Color.WHITE);
+    labelTable.add(label);
+    rootGroup.addActor(labelTable);
   }
 }
