@@ -20,7 +20,7 @@ public class DBResponse {
   }
 
   public enum Response {
-    accepted, wrong_password, username_taken
+    accepted, wrong_password, username_taken, no_user
   }
 
 }
