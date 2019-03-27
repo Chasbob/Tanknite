@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class PlayerState {
   public static final PlayerState none = new PlayerState(new Position(0, 0), 0);
-  public final int health;
+  private final int health;
   private final Position position;
 
   public PlayerState(final Position position, final int health) {

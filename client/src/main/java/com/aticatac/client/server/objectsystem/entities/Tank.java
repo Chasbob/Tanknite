@@ -35,12 +35,12 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   private int maxHealth;
   private int maxAmmo;
   private int ammo;
-  protected int damageIncrease = -1;
-  protected int speedIncrease = -1;
-  protected int deathCountdown = -1;
+  private int damageIncrease = -1;
+  private int speedIncrease = -1;
+  private int deathCountdown = -1;
   private int bulletSprays = 0;
-  private int freezeBullets = 10;
-  protected int frozen = -1;
+  private int freezeBullets = 0;
+  private int frozen = -1;
   private int framesToShoot;
 
   /**
@@ -91,7 +91,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     if (getInput().getCommand() == Command.FREEZE_BULLET) {
       this.logger.trace("freeze bullet");
       if (getFreezeBullets() > 0 && getFrozen() < 0) {
-        addBullet(new Bullet(this, getPosition().copy(), getInput().getBearing(), 0, true));
+        addBullet(new Bullet(this, turretCalculation(getPosition().copy(), getInput().getBearing()), getInput().getBearing(), 0, true));
         // TODO: Make tank turn blue while it is frozen
         freezeBullets--;
       }
@@ -110,9 +110,9 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
       if (!(getAmmo() == 0 || getHealth() == 0) && getFramesToShoot() < 0 && getFrozen() < 0) {
         setAmmo(getAmmo() - 1);
         if (damageIncrease > 0) {
-          addBullet(new Bullet(this, getPosition().copy(), getInput().getBearing(), 20, false));
+          addBullet(new Bullet(this, turretCalculation(getPosition().copy(), getInput().getBearing()), getInput().getBearing(), 20, false));
         } else {
-          addBullet(new Bullet(this, getPosition().copy(), getInput().getBearing(), 10, false));
+          addBullet(new Bullet(this, turretCalculation(getPosition().copy(), getInput().getBearing()), getInput().getBearing(), 10, false));
         }
         setFramesToShoot(30);
       }
@@ -121,6 +121,28 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
       this.logger.trace("Ready to fire!");
     }
     setFramesToShoot(getFramesToShoot() - 1);
+  }
+
+  /**
+   *
+   * @param tankPosition
+   * @param rotation
+   * @return
+   */
+  private Position turretCalculation(Position tankPosition, int rotation){
+
+    double distance = 50;
+
+    double dX= Math.cos(Math.toRadians(rotation));
+    double distanceX = distance * -dX;
+    double dY = Math.sin(Math.toRadians(rotation));
+    double distanceY = distance * -dY;
+
+    double newX = tankPosition.getX() + distanceX;
+    double newY = tankPosition.getY() + distanceY;
+
+    return new Position((int)newX, (int)newY);
+
   }
 
   private void checkCollisions(PhysicsResponse response) {
@@ -463,6 +485,14 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
 
   public void setFreezeBullets(int value){
     freezeBullets = value;
+  }
+
+  public void setDeathCountdown(int value) {
+    deathCountdown = value;
+  }
+
+  public int getDeathCountdown() {
+    return deathCountdown;
   }
 
 }

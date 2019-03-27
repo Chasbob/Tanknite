@@ -64,7 +64,7 @@ public class Physics {
     //calculate how far the entity will move
     int distance = dt * velocity;
 
-    //calculate the new position using the distance and basic vectors
+    //calculate the new position using the distance and vectors
     double xr = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -xr;
     double yr = Math.sin(Math.toRadians(rotation));
