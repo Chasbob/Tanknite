@@ -41,7 +41,7 @@ public class AI {
 
   public AI() {
     this.pathFinder = new PathFinder();
-    this.state = State.SEARCHING;
+    this.state = State.WANDERING;
     this.searchPath = new LinkedList<>();
     this.recentlyVisitedNodes = new HashSet<>();
     this.commandHistory = new ArrayList<>();
@@ -57,23 +57,11 @@ public class AI {
    * @return A decision
    */
   public Decision getDecision(AIInput input) {
+    // Update tank information
     currentInput = input;
-    if (currentInput.getMe().getHealth() <= 0)
-      return new Decision(Command.DEFAULT, 0, false);
     updateInformation();
     // Check if can shoot at an enemy
     shooting = canShoot();
-    // If health <= 10 (stuck), don't make a movement command
-    if (tankHealth <= 10) {
-      if (enemiesInRange.isEmpty()) {
-        aimAngle = changeAngle(aimAngle, 4);
-      }
-      return new Decision(Command.DEFAULT, aimAngle, shooting);
-    }
-    // Do "random" aiming if can't shoot
-    if (!shooting && !searchPath.isEmpty() && state == State.SEARCHING) {
-      aimAngle = getNewAimAngle(searchPath.peekLast());
-    }
     // Check for a state change
     state = getStateChange();
     // Create a movement command
@@ -115,18 +103,18 @@ public class AI {
   private State getStateChange() {
     prevState = state;
     // Get utility score for each state
-    int searchingUtility = getSearchingUtility();
-    int attackingUtility = getAttackingUtility();
+    int wanderingUtility = getWanderingUtility();
+    int chasingUtility = getChasingUtility();
     int fleeingUtility = getFleeingUtility();
     int obtainingUtility = getObtainingUtility();
-//    System.out.println("S: " + searchingUtility + " | A: " + attackingUtility + " | F: " + fleeingUtility + " | O: " + obtainingUtility);
+//    System.out.println("S: " + wanderingUtility + " | A: " + chasingUtility + " | F: " + fleeingUtility + " | O: " + obtainingUtility);
     // Return state with highest utility
-    int maxUtility = Math.max(Math.max(searchingUtility, attackingUtility), Math.max(fleeingUtility, obtainingUtility));
-    if (maxUtility == searchingUtility) {
-      return State.SEARCHING;
+    int maxUtility = Math.max(Math.max(wanderingUtility, chasingUtility), Math.max(fleeingUtility, obtainingUtility));
+    if (maxUtility == wanderingUtility) {
+      return State.WANDERING;
     }
-    if (maxUtility == attackingUtility) {
-      return State.ATTACKING;
+    if (maxUtility == chasingUtility) {
+      return State.CHASING;
     }
     if (maxUtility == fleeingUtility) {
       return State.FLEEING;
@@ -134,26 +122,26 @@ public class AI {
     if (maxUtility == obtainingUtility) {
       return State.OBTAINING;
     }
-    return State.SEARCHING;
+    return State.WANDERING;
   }
 
   /**
-   * Gets the utility score for the SEARCHING state.
+   * Gets the utility score for the WANDERING state.
    *
-   * @return The utility score for the SEARCHING state
+   * @return The utility score for the WANDERING state
    */
-  private int getSearchingUtility() {
+  private int getWanderingUtility() {
     return 30;
   }
 
   /**
-   * Gets the utility score for the ATTACKING state.
+   * Gets the utility score for the CHASING state.
    *
-   * @return The utility score for the ATTACKING state
+   * @return The utility score for the CHASING state
    */
-  private int getAttackingUtility() {
-    if (tankAmmo == 0) {
-      // Can't attack
+  private int getChasingUtility() {
+    PlayerState closestEnemy = getClosestEnemy(enemiesInRange);
+    if (tankAmmo == 0 || (closestEnemy != null && Math.sqrt(Math.pow(tankPos.getX() - closestEnemy.getX(),2) + Math.pow(tankPos.getY() - closestEnemy.getY(),2)) < 64)) {
       return 0;
     }
     if (!enemiesInRange.isEmpty()) {
@@ -229,53 +217,54 @@ public class AI {
    */
   private Command performStateAction() {
     // Do searching action if stuck
-    if (commandHistory.size() > 30) {
-      return performSearchingAction();
+    PlayerState closestEnemy = getClosestEnemy(enemiesInRange);
+    if (commandHistory.size() > 20) {
+      return performWanderingAction();
     }
     // Keep going along same path if state has not changed
     if (prevState == state && !searchPath.isEmpty()) {
       return commandToPerform(searchPath.peek());
     }
     switch (state) {
-      case SEARCHING:
-        return performSearchingAction();
-      case ATTACKING:
-        return performAttackingAction();
+      case WANDERING:
+        return performWanderingAction();
+      case CHASING:
+        return performChasingAction();
       case FLEEING:
         return performFleeingAction();
       case OBTAINING:
         return performObtainingAction();
     }
-    return performSearchingAction();
+    return performWanderingAction();
   }
 
   /**
-   * Gets a command from the SEARCHING state.
+   * Gets a command from the WANDERING state.
    * <p>
    * Travels a path to a clear position on the map.
    *
-   * @return A command from the SEARCHING state
+   * @return A command from the WANDERING state
    */
-  private Command performSearchingAction() {
+  private Command performWanderingAction() {
     Position goal = getRandomPosition();
     searchPath = getPath(tankPos, goal);
     return commandToPerform(searchPath.peek());
   }
 
   /**
-   * Gets a command from the ATTACKING state.
+   * Gets a command from the CHASING state.
    * <p>
    * Travels a path to stay in range of an enemy.
    *
-   * @return A command from the ATTACKING state
+   * @return A command from the CHASING state
    */
-  private Command performAttackingAction() {
+  private Command performChasingAction() {
     PlayerState target = getTargetedEnemy();
     if (target == null) {
       return Command.DEFAULT;
     }
-    if (Math.sqrt(Math.pow(tankPos.getX()-target.getX(),2) + Math.pow(tankPos.getY()-target.getY(), 2)) < 96) {
-      return performSearchingAction();
+    if (Math.sqrt(Math.pow(tankPos.getX()-target.getX(),2) + Math.pow(tankPos.getY()-target.getY(), 2)) < 96 && checkLineOfSightToPosition(tankPos, target.getPosition())) {
+      return performWanderingAction();
     }
     searchPath = getPath(tankPos, target.getPosition());
     while (searchPath.size() > 4) {
@@ -391,7 +380,7 @@ public class AI {
   }
 
   /**
-   * Finds a random position in range of the tank clear of enemies. Used in the default SEARCHING state.
+   * Finds a random position in range of the tank clear of enemies. Used in the default WANDERING state.
    *
    * @return A random position clear of enemies
    */
@@ -612,15 +601,18 @@ public class AI {
    * @return If the tank can shoot at an enemy
    */
   private boolean canShoot() {
-    if (tankAmmo <= 0 || enemiesInRange.isEmpty()) {
-      return false;
-    }
-    Position target = getTargetedEnemy().getPosition();
-    if (target != null) {
-      aimAngle = getNewAimAngle(target);
-      if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 5) {
-        return true;
+    if (!(tankAmmo <= 0 || enemiesInRange.isEmpty())) {
+      Position target = getTargetedEnemy().getPosition();
+      if (target != null) {
+        aimAngle = getNewAimAngle(target);
+        if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 5) {
+          return true;
+        }
       }
+    }
+    // Do "random" aiming if not shooting
+    if (!searchPath.isEmpty() && state == State.WANDERING) {
+      aimAngle = getNewAimAngle(searchPath.peekLast());
     }
     return false;
   }
@@ -634,13 +626,13 @@ public class AI {
     if (target == null) {
       return aimAngle;
     }
-    int targetAngle = getAngleToPosition(target);
-    int change = Math.abs(targetAngle - aimAngle) / 8;
+    double targetAngle = getAngleToPosition(target);
+    double change = Math.abs(targetAngle - aimAngle) / 8;
     if (Math.abs(changeAngle(aimAngle, change) - targetAngle) < Math.abs(changeAngle(aimAngle, -change) - targetAngle)) {
-      return changeAngle(aimAngle, change);
+      return (int) Math.round(changeAngle(aimAngle, change));
     }
     if (Math.abs(changeAngle(aimAngle, change) - targetAngle) > Math.abs(changeAngle(aimAngle, -change) - targetAngle)) {
-      return changeAngle(aimAngle, -change);
+      return (int) Math.round(changeAngle(aimAngle, -change));
     }
     // No change needed -> on target
     return aimAngle;
@@ -652,7 +644,7 @@ public class AI {
    * @param target The position
    * @return An angle between the tank and a position
    */
-  private int getAngleToPosition(Position target) {
+  private double getAngleToPosition(Position target) {
     if (target == null) {
       return 0;
     }
@@ -661,7 +653,7 @@ public class AI {
     if (angle < 0) {
       angle += (Math.PI * 2);
     }
-    return ((int) Math.round(Math.toDegrees(angle)) + 90) % 360;
+    return (Math.toDegrees(angle) + 90) % 360;
   }
 
   /**
@@ -670,7 +662,7 @@ public class AI {
    * @param change Amount to change by
    * @return Resultant angle
    */
-  private int changeAngle(int angle, int change) {
+  private double changeAngle(double angle, double change) {
     if (angle + change >= 0)
       return (angle + change) % 360;
     return (angle + change + 360) % 360;
@@ -681,13 +673,13 @@ public class AI {
    */
   private enum State {
     /**
-     * Searching state.
+     * Wandering state.
      */
-    SEARCHING,
+    WANDERING,
     /**
-     * Attacking state.
+     * Chasing state.
      */
-    ATTACKING,
+    CHASING,
     /**
      * Fleeing state.
      */
