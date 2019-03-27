@@ -64,7 +64,7 @@ public class Physics {
     //calculate how far the entity will move
     int distance = dt * velocity;
 
-    //calculate the new position using the distance and basic vectors
+    //calculate the new position using the distance and vectors
     double xr = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -xr;
     double yr = Math.sin(Math.toRadians(rotation));
@@ -158,7 +158,11 @@ public class Physics {
 
       //if there is an active speedpowerup velocity can go above maximum
       if(speedPowerUp>0){
-        acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+        if(velocity < (entity.getType().velocity)*2) {
+          acceleration = (gravity * ((0 + objectMass) + thrust)) / objectMass;
+        }else{
+          acceleration = 0;
+        }
       }
 
       //else the velocity can only reach a maximum

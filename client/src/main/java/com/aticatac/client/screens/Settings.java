@@ -58,10 +58,14 @@ class Settings {
       } else {
         if (AudioEnum.INSTANCE.isMusic()) {
           AudioEnum.INSTANCE.setMusic(false);
+          AudioEnum.INSTANCE.stopMain();
           label.setText("OFF");
         } else {
           AudioEnum.INSTANCE.setMusic(true);
-          label.setText("ON");
+          if (Screens.INSTANCE.getCurrentScreen().equals(MainMenuScreen.class)) {
+            AudioEnum.INSTANCE.getMain();
+          }
+         label.setText("ON");
         }
       }
       return false;

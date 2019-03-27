@@ -62,6 +62,7 @@ public class BaseGame implements Runnable {
   private final int min = 0;
   private final int max = 1920;
   private final AIUpdateService aiUpdateService;
+  protected int powerUpCount;
   private volatile boolean run;
   private int counter;
 
@@ -135,11 +136,11 @@ public class BaseGame implements Runnable {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
       eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
-//      for (int i = 0; i < 1; i++) {
-//        Tank tank2 = createTank(player + " AI" + i, true);
-//        playerMap.put(player + " AI" + i, tank2);
-//        EventBusFactory.getEventBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
-//      }
+      for (int i = 0; i < 1; i++) {
+        Tank tank2 = createTank(player + " AI" + i, true);
+        playerMap.put(player + " AI" + i, tank2);
+        eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
+      }
     }
   }
 
@@ -195,12 +196,15 @@ public class BaseGame implements Runnable {
   }
 
   protected void createPowerUps() {
-    EntityType type = Entity.randomPowerUP();
-    Position p = getClearPosition(type.radius);
-    Entity newPowerup = new Entity(String.valueOf(Objects.hash(type, p)), type, p);
-    DataServer.INSTANCE.addEntity(newPowerup);
-    powerups.add(newPowerup);
-    eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
+    if (powerUpCount <= 0) {
+      EntityType type = Entity.randomPowerUP();
+      Position p = getClearPosition(type.radius);
+      Entity newPowerup = new Entity(String.valueOf(Objects.hash(type, p)), type, p);
+      DataServer.INSTANCE.addEntity(newPowerup);
+      powerups.add(newPowerup);
+      powerUpCount = 600;
+      eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
+    }
   }
 
   @Subscribe
@@ -221,7 +225,7 @@ public class BaseGame implements Runnable {
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
         eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
-        playerMap.get(e.getEntity().getName()).setAmmo(playerMap.get(e.getEntity().getName()).getAmmo() + 10);
+        playerMap.get(e.getEntity().getName()).ammoIncrease(10);
         break;
       case SPEED_POWERUP:
         this.logger.info(e);
@@ -303,17 +307,12 @@ public class BaseGame implements Runnable {
     run = true;
     this.logger.trace("Running...");
     while (run) {
-      //checkPowerup();
-      //createPowerUps();
+      powerUpCount--;
+      createPowerUps();
       this.logger.trace("tick");
-      double nanoTime = System.nanoTime();
       aiUpdateService.update(playerMap, powerups);
       Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
-//      playerMap.values().parallelStream().forEach(Tank::tick);
-//      Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
-//      if(playerMap.containsKey("asd")){
-//        playerMap.get("asd").move(1000,1920);
-//      }
+      double nanoTime = System.nanoTime();
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
