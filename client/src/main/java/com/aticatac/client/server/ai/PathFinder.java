@@ -20,20 +20,6 @@ class PathFinder {
     f score = g + an estimate of the cost from the current node to the goal node
   */
   /**
-   * The set of nodes which are currently deemed occupied.
-   */
-  private Set<SearchNode> occupiedNodes = new HashSet<>();
-
-  /**
-   * Updates the set of occupied nodes
-   *
-   * @param occupiedNodes The new set of occupied nodes
-   */
-  void setOccupiedNodes(Set<SearchNode> occupiedNodes) {
-    this.occupiedNodes = occupiedNodes;
-  }
-
-  /**
    * Uses A* search to find a path from one node to another.
    *
    * @param start The node to start from
@@ -61,7 +47,7 @@ class PathFinder {
         if (closedSet.contains(connectedNode)) {
           continue;
         }
-        int tempG = g.get(current) + manhattanDistance(connectedNode, current);
+        int tempG = g.get(current) + getCostEstimate(connectedNode, current); // cost estimate = real distance
         if (!openSet.contains(connectedNode)) {
           openSet.add(connectedNode);
         } else if (tempG >= g.get(connectedNode)) {
@@ -115,7 +101,7 @@ class PathFinder {
   }
 
   /**
-   * Returns a cost estimate for travelling from one node to another. Used as a heuristic for A* ('h').
+   * Returns a cost estimate (manhattan distance) for travelling from one node to another. Used as a heuristic for A* ('h').
    *
    * @param from Node to travel from
    * @param to   Node to travel to
@@ -123,21 +109,6 @@ class PathFinder {
    * @return Cost estimate to travel from the one node to the other
    */
   private int getCostEstimate(SearchNode from, SearchNode to) {
-    if (occupiedNodes.contains(from)) {
-      return manhattanDistance(from, to) + 6400;
-    }
-    return manhattanDistance(from, to);
-  }
-
-  /**
-   * Calculates manhattan distance between two points.
-   *
-   * @param from Start position
-   * @param to   End position
-   *
-   * @return Manhattan distance between two points
-   */
-  private int manhattanDistance(Position from, Position to) {
     return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
   }
 }
