@@ -27,6 +27,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -585,8 +587,10 @@ public class GameScreen extends AbstractScreen {
                 var temp = screenToIsoTiles(objPp);
 
                 X1 = X2;
-                    X2 = temp.getX();
+                X2 = temp.getX();
 
+                objects.sort(Comparator.comparing(Container::getY));
+                objects.sort(Comparator.comparing(Container::getX));
 
                 for (var c : objects) {
                     int objX = Helper.tileToScreenX(c.getX(), c.getY());
