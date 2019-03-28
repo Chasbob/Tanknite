@@ -91,14 +91,14 @@ public class GameScreen extends AbstractScreen {
             tankXY = Styles.INSTANCE.createLabel("");
             direction = Styles.INSTANCE.createLabel("");
 
-            map = new TmxMapLoader().load("maps/map.tmx");
+            map = new TmxMapLoader().load("maps/mapData/mapIsometric.tmx");
             renderer = new IsometricTiledMapRenderer(map);
             tileSet = map.getTileSets().getTileSet(0);
             tankTexture = new Texture("maps/tank1.png");
-            powerUpTexture = new Texture("maps/powerup.png");
-            shadow = new Texture("maps/shadow.png");
-            shadowUltraLight = new Texture("maps/shadow2.png");
-            bulletTexture = new Texture("maps/bullet.png");
+            powerUpTexture = new Texture("maps/mapData/powerup.png");
+            shadow = new Texture("maps/shadow/shadow.png");
+            shadowUltraLight = new Texture("maps/shadow/shadow2.png");
+            bulletTexture = new Texture("maps/mapData/bullet.png");
             projectileTexture = new Texture("img/bullet.png");
 
             for (TiledMapTile tiledMapTile : tileSet) {
@@ -122,7 +122,7 @@ public class GameScreen extends AbstractScreen {
                     int x = (int) (j + 0.5f - i);
                     int y = (int) (j - 0.5f + i);
                     try {
-                        var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(x, y).getTile();
+                        var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(60-y, x).getTile();//new Position(60-p.getY()-1,p.getX()+1);
                         if (tile != null) {
                             rows.get(j).add(new TileHolder(new Position(x, y), tile.getTextureRegion().hashCode()));
                         }
@@ -135,7 +135,7 @@ public class GameScreen extends AbstractScreen {
                     int x = j - i;
                     int y = j + i;
                     try {
-                        var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(x, y).getTile();
+                        var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(60-y, x).getTile();
                         if (tile != null) {
                             rows.get(j).add(new TileHolder(new Position(x, y), tile.getTextureRegion().hashCode()));
                         }
@@ -593,8 +593,10 @@ public class GameScreen extends AbstractScreen {
         for (ArrayList<TileHolder> ps : rows) {
 
             for (TileHolder tileHolder : ps) {
-                var pp = tileHolder.getPosition();
+                var p = tileHolder.getPosition();
+                var pp = p;
                 var tile = tileTextures.get(tileHolder.getTexture());
+                //(60-y-1) * 32, (x+1) * 32
                 var objPp = new Position((pp.getX()) * 32, (pp.getY()) * 32);
 
                 var temp = screenToIsoTiles(objPp);
@@ -623,8 +625,8 @@ public class GameScreen extends AbstractScreen {
                                 //sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
                                 var img = rotations.get(t);
                                 sb.draw(img,
-                                        Helper.tileToScreenX((float) c.getX() + 64f + 1.5f, (float) c.getY() - 64f - 1.5f),
-                                        Helper.tileToScreenY((float) c.getX() + 64f + 1.5f, (float) c.getY() - 64f - 1.5f),
+                                        Helper.tileToScreenX((float) c.getX()+32f, (float) c.getY()-32f)-16f,
+                                        Helper.tileToScreenY((float) c.getX()+32f, (float) c.getY()-32f)-16f,
                                         0,
                                         0,
                                         img.getWidth(),
