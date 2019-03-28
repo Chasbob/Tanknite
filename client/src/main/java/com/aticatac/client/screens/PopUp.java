@@ -7,6 +7,7 @@ import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.DBResponse;
 import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Updates.Response;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class PopUp {
+class PopUp {
 
   static void createPopUp(boolean startUp, boolean endGame, boolean multiplayer) {
     Table popUpRootTable = new Table();
@@ -235,16 +236,23 @@ public class PopUp {
     //create listener
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //TODO catch exception if cant connect to server
-      try {
-        Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false, ipField.getText());
-        ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
-        ipField.setText("");
-      } catch (UnknownHostException e) {
-        if (bodyGroup.getChildren().size == 2) {
-          //create error label
-          Label errorLabel = Styles.INSTANCE.createCustomLabel("CAN'T CONNECT TO SERVER", Color.RED);
-          bodyGroup.addActorAt(0, errorLabel);
-        }
+      Response response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false, ipField.getText());
+      switch (response) {
+        case ACCEPTED:
+          ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
+          ipField.setText("");
+          break;
+        case TAKEN:
+        case NO_SERVER:
+        case INVALID_NAME:
+        case INVALID_RESPONSE:
+        case FULL:
+          if (bodyGroup.getChildren().size == 2) {
+            //create error label
+            Label errorLabel = Styles.INSTANCE.createCustomLabel("CAN'T CONNECT TO SERVER", Color.RED);
+            bodyGroup.addActorAt(0, errorLabel);
+          }
+          break;
       }
       return false;
     }));
@@ -376,13 +384,13 @@ public class PopUp {
     //create result of game
     Table resultTable = new Table();
     rootGroup.addActor(resultTable);
-    Label resultlabel;
+    Label resultLabel;
     if (Data.INSTANCE.isWon()) {
-      resultlabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "VICTORY", Color.GREEN);
+      resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "VICTORY", Color.GREEN);
     } else {
-      resultlabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "DEFEAT", Color.RED);
+      resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "DEFEAT", Color.RED);
     }
-    resultTable.add(resultlabel);
+    resultTable.add(resultLabel);
     //create quit button
     rootGroup.addActor(createBackButton(true, rootGroup));
     multiplayerChildren.addActor(rootGroup);
