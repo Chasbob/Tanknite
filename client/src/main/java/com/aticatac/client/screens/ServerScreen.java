@@ -68,6 +68,7 @@ public class ServerScreen extends AbstractScreen {
           case TAKEN:
           case NO_SERVER:
           case INVALID_NAME:
+          case UNKNOWN_HOST:
           case INVALID_RESPONSE:
           case FULL:
             errorLabel.setText("CAN'T CONNECT TO SERVER");

@@ -246,6 +246,7 @@ class PopUp {
         case NO_SERVER:
         case INVALID_NAME:
         case INVALID_RESPONSE:
+        case UNKNOWN_HOST:
         case FULL:
           if (bodyGroup.getChildren().size == 2) {
             //create error label
