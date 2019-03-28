@@ -45,7 +45,11 @@ public class PopUp {
       if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
         manualJoin(multiplayerChildren);
       } else if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
-        createMultiplayerChildren(multiplayerChildren);
+        if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpSingleplayer) {
+          createSingleplayerChildren(multiplayerChildren);
+        } else {
+          createMultiplayerChildren(multiplayerChildren);
+        }
       } else if (endGame) {
         endGame(multiplayerChildren);
       } else {
@@ -76,13 +80,16 @@ public class PopUp {
       multiplayerChildren.clear();
       Settings.createSettings();
       //create back button
+      Table backTable = Styles.INSTANCE.createPopUpTable();
       TextButton backButton = Styles.INSTANCE.createButton("BACK");
       backButton.addListener(ListenerFactory.newListenerEvent(() -> {
         multiplayerChildren.clear();
         createGameSettings(multiplayerChildren);
         return false;
       }));
-      multiplayerChildren.addActor(backButton);
+      backTable.add(backButton);
+      ListenerFactory.addHoverListener(backButton, backTable);
+      multiplayerChildren.addActor(backTable);
       return false;
     }));
     settingsTable.add(settingsButton);
@@ -92,6 +99,7 @@ public class PopUp {
     Table quitTable = Styles.INSTANCE.createPopUpTable();
     TextButton quitButton = Styles.INSTANCE.createButton("QUIT");
     quitButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
       Screens.INSTANCE.showScreen(MainMenuScreen.class);
       Data.INSTANCE.quit();
       Screens.INSTANCE.getScreen(GameScreen.class).refresh();
@@ -100,7 +108,37 @@ public class PopUp {
     quitTable.add(quitButton);
     ListenerFactory.addHoverListener(quitButton, quitTable);
     multiplayerChildren.addActor(quitTable);
+    multiplayerChildren.pack();
     Screens.INSTANCE.getScreen(GameScreen.class).verticalGroup = multiplayerChildren;
+  }
+
+  private static void createSingleplayerChildren(VerticalGroup multiplayerChildren) {
+    //2D
+    Table twoDTable = Styles.INSTANCE.createPopUpTable();
+    //create button for playing game in 2d
+    TextButton twoDButton = Styles.INSTANCE.createButton("2D");
+    twoDButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Data.INSTANCE.setSingleplayer(true);
+      GDXGame.createServer(true, "Single-Player");
+      Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
+      //join single player server
+      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
+      Screens.INSTANCE.showScreen(GameScreen.class);
+      return false;
+    }));
+    twoDTable.add(twoDButton);
+    ListenerFactory.addHoverListener(twoDButton, twoDTable);
+    //ISO
+    Table isoTable = Styles.INSTANCE.createPopUpTable();
+    //create button for playing game in isometric
+    TextButton isoButton = Styles.INSTANCE.createButton("ISOMETRIC");
+    isoTable.add(isoButton);
+    ListenerFactory.addHoverListener(isoButton, isoTable);
+    multiplayerChildren.addActor(twoDTable);
+    multiplayerChildren.addActor(isoTable);
+    multiplayerChildren.addActor(createBackButton(true, multiplayerChildren));
+    multiplayerChildren.pack();
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = multiplayerChildren;
   }
 
   private static void createMultiplayerChildren(VerticalGroup multiplayerChildren) {
