@@ -40,7 +40,6 @@ public enum Data {
    */
   INSTANCE;
   private final Logger logger;
-  ModelReader modelReader;
   private Update update;
   private ArrayList<String> clients;
   private HashMap<String, Container> players;
@@ -56,9 +55,11 @@ public enum Data {
   private boolean serverSelected;
   private boolean manualConfigForServer;
   private boolean isHosting;
+  private boolean isIso;
   private Socket dbSocket;
   private BufferedReader reader;
   private PrintStream printer;
+  ModelReader modelReader;
   private boolean connected;
 
   Data() {
@@ -198,7 +199,6 @@ public enum Data {
    * Gets player.
    *
    * @param i the
-   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -276,7 +276,6 @@ public enum Data {
    * @return the Response
    */
   public Response connect(String id, boolean singlePlayer) {
-    this.logger.info(id + ", " + singlePlayer);
     if (singlePlayer) {
       return this.client.connect(this.localhost, id);
     } else {
@@ -385,6 +384,7 @@ public enum Data {
   }
 
   public void initialise() {
+
   }
 
   public boolean isConnected() {
@@ -398,4 +398,11 @@ public enum Data {
   public void setWon(boolean won) {
     this.won = won;
   }
-}
+
+  public boolean isIso() {
+    return isIso;
+  }
+
+  public void setIso(boolean iso) {
+    isIso = iso;
+  }}
