@@ -1,6 +1,11 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.*;
+import com.aticatac.client.util.AudioEnum;
+import com.aticatac.client.util.Camera;
+import com.aticatac.client.util.Data;
+import com.aticatac.client.util.HudUpdate;
+import com.aticatac.client.util.MinimapViewport;
+import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.EntityType;
@@ -31,9 +36,10 @@ public class GameScreen extends AbstractScreen {
   private final SpriteBatch minimapBackGround;
   private final int maxX;
   private final int maxY;
-  private Update update;
   Table popUpTable;
   VerticalGroup verticalGroup;
+  boolean tractionPopUp;
+  private Update update;
   private Table alertTable;
   private Table killLogTable;
   private Label ammoValue;
@@ -53,7 +59,6 @@ public class GameScreen extends AbstractScreen {
   private Container player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
-  boolean tractionPopUp;
 
   /**
    * Instantiates a new Game screen.
@@ -83,19 +88,11 @@ public class GameScreen extends AbstractScreen {
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();
-
     }
     healthBarBatch = new SpriteBatch();
     tanks = new SpriteBatch();
     tanksMiniMap = new SpriteBatch();
     minimapBackGround = new SpriteBatch();
-  }
-
-  @Override
-  public void resize(int width, int height) {
-    super.resize(width, height);
-    this.camera.getViewport().update(width, height);
-    this.minimapViewport.update(width, height, true);
   }
 
   @Override
@@ -119,11 +116,21 @@ public class GameScreen extends AbstractScreen {
   }
 
   @Override
-  public void render(float delta) {
+  public void refresh() {
+    ammoValue = Styles.INSTANCE.createLabel("");
+    killCount = Styles.INSTANCE.createLabel("");
+    playerCount = Styles.INSTANCE.createLabel("");
+    tankXY = Styles.INSTANCE.createLabel("");
+    direction = Styles.INSTANCE.createLabel("");
+    popUpTable.setVisible(false);
+    alertTable.setVisible(false);
+    tractionHealth = true;
+  }
 
+  @Override
+  public void render(float delta) {
     AudioEnum.INSTANCE.stopMain();
     AudioEnum.INSTANCE.getTheme();
-
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     backgroundInput();
@@ -132,6 +139,7 @@ public class GameScreen extends AbstractScreen {
     if (newUpdate != null) {
       update = newUpdate;
       player = update.getMe(Data.INSTANCE.getID());
+
     }
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
@@ -182,18 +190,12 @@ public class GameScreen extends AbstractScreen {
         renderContainer(c, tanksMiniMap);
         //Audio: plays sound when tank shoots in range
         if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
-
-          float dx = c.getX() - (1920-player.getX());
-          float dy = c.getY() - (1920-player.getY());
-
+          float dx = c.getX() - (1920 - player.getX());
+          float dy = c.getY() - (1920 - player.getY());
           int max = 320;
-
-          double distance = Math.sqrt(dx*dx + dy*dy);
-
-          double volumeScalar = (max-distance)/max;
-
-          AudioEnum.INSTANCE.getOtherTankShoot((float)volumeScalar);
-
+          double distance = Math.sqrt(dx * dx + dy * dy);
+          double volumeScalar = (max - distance) / max;
+          AudioEnum.INSTANCE.getOtherTankShoot((float) volumeScalar);
         }
       }
     }
@@ -207,30 +209,29 @@ public class GameScreen extends AbstractScreen {
     draw();
   }
 
-  private void louderSound(Container c){
+  @Override
+  public void resize(int width, int height) {
+    super.resize(width, height);
+    this.camera.getViewport().update(width, height);
+    this.minimapViewport.update(width, height, true);
+  }
+
+  private void louderSound(Container c) {
     if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
-
-      float dx = c.getX() - (1920-player.getX());
-      float dy = c.getY() - (1920-player.getY());
-
-      double distance = Math.sqrt(dx*dx + dy*dy);
-
-      if(distance < 160) {
-
+      float dx = c.getX() - (1920 - player.getX());
+      float dy = c.getY() - (1920 - player.getY());
+      double distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < 160) {
         int max = 160;
-
         double volumeScalar = (max - distance) / max;
-
         float musicVolume = AudioEnum.INSTANCE.getMusicVolume();
-        float musicScaled = (float)(musicVolume+volumeScalar);
-        if(musicScaled<=1.0f) {
+        float musicScaled = (float) (musicVolume + volumeScalar);
+        if (musicScaled <= 1.0f) {
           AudioEnum.INSTANCE.getTheme().setVolume(musicScaled);
-        }
-        else{
+        } else {
           AudioEnum.INSTANCE.getTheme().setVolume(1.0f);
         }
         this.logger.info(musicVolume + volumeScalar);
-
       }
     }
   }
@@ -240,7 +241,6 @@ public class GameScreen extends AbstractScreen {
       for (Container c : update.getPlayers().values()) {
         renderContainer(c, tanks);
         tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
-
       }
     }
     renderProjectiles(tanks);
@@ -346,9 +346,7 @@ public class GameScreen extends AbstractScreen {
     return Math.round(mouseRel.angle());
   }
 
-
   private void backgroundInput() {
-
     if (tractionPopUp) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
         PopUp.createPopUp(false, false, false);
@@ -407,17 +405,5 @@ public class GameScreen extends AbstractScreen {
     tanks.dispose();
     tanksMiniMap.dispose();
     healthBarBatch.dispose();
-  }
-
-  @Override
-  public void refresh() {
-    ammoValue = Styles.INSTANCE.createLabel("");
-    killCount = Styles.INSTANCE.createLabel("");
-    playerCount = Styles.INSTANCE.createLabel("");
-    tankXY = Styles.INSTANCE.createLabel("");
-    direction = Styles.INSTANCE.createLabel("");
-    popUpTable.setVisible(false);
-    alertTable.setVisible(false);
-    tractionHealth = true;
   }
 }

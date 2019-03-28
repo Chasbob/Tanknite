@@ -1,6 +1,8 @@
 package com.aticatac.client.util;
 
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.containers.KillLogEvent;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import org.apache.log4j.Logger;
@@ -40,13 +42,19 @@ public class HudUpdate {
   }
 
   private void updateAmmoLabel() {
-    this.ammoLabel.setText(" "+update.getMe(Data.INSTANCE.getID()).getAmmo()+" ");
+    this.ammoLabel.setText(" " + update.getMe(Data.INSTANCE.getID()).getAmmo() + " ");
   }
 
   private void updatePlayerCount() {
   }
 
   private void updateKillCount() {
+    killLog.clear();
+    for (KillLogEvent event : update.getKillLogEvents()) {
+      Label killLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.smallFont, event.getKiller() + " killed: " + event.getKiller(), Color.GOLD);
+      killLog.add(killLabel);
+      killLog.row();
+    }
   }
 
   private void updateHealth() {

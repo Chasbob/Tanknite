@@ -9,11 +9,13 @@ import com.aticatac.client.server.objectsystem.entities.Tank;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.containers.Container;
+import com.aticatac.common.objectsystem.containers.KillLogEvent;
 import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import org.apache.log4j.Logger;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
@@ -35,6 +37,7 @@ public class Updater implements Runnable {
   private final ConcurrentHashMap<String, Container> projectiles;
   private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
+  private final CopyOnWriteArraySet<KillLogEvent> killLogEvents;
   private boolean shutdown;
 
   /**
@@ -51,6 +54,7 @@ public class Updater implements Runnable {
     newShots = update.getNewShots();
     eventBus.register(this);
     updatePlayers();
+    killLogEvents = update.getKillLogEvents();
   }
 
   /**
@@ -132,6 +136,22 @@ public class Updater implements Runnable {
       default:
         break;
     }
+  }
+
+  @Subscribe
+  private void killLogEvent(KillLogEvent event) {
+    new Thread(() -> {
+      killLogEvents.add(event);
+      double nanoTime = System.nanoTime();
+      while (System.nanoTime() - nanoTime < 5000000000d) {
+        try {
+          Thread.sleep(0);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+      killLogEvents.remove(event);
+    }).start();
   }
 
   @Subscribe

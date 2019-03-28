@@ -6,7 +6,6 @@ import com.aticatac.client.server.bus.event.BulletsChangedEvent;
 import com.aticatac.client.server.bus.event.PlayersChangedEvent;
 import com.aticatac.client.server.bus.event.ShootEvent;
 import com.aticatac.client.server.bus.event.TankCollisionEvent;
-import com.aticatac.client.server.networking.Server;
 import com.aticatac.client.server.objectsystem.DataServer;
 import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.interfaces.Collidable;
@@ -259,7 +258,8 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     if (getHealth() <= 10 && getHealth() > 0) {
       deathCountdown = 1200;
     } else if (getHealth() <= 0) {
-      Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
+      eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, getPlayerContainer()));
+//      Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
     }
     setHealth(clamp(getHealth() - damage));
     return getHealth();

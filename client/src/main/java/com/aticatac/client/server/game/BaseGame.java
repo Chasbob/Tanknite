@@ -20,6 +20,7 @@ import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.common.objectsystem.containers.KillLogEvent;
 import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
 import java.security.SecureRandom;
@@ -279,7 +280,10 @@ public class BaseGame implements Runnable, Callable<GameResult> {
   @Subscribe
   public void bulletCollision(BulletCollisionEvent event) {
     if (event.getHit().getType() == EntityType.TANK) {
-      playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage(), event.getBullet().getFreezeBullet());
+      int result = playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage(), event.getBullet().getFreezeBullet());
+      if (result <= 0) {
+        eventBus.post(new KillLogEvent(event.getBullet().getShooter().getName(), event.getHit().getName()));
+      }
     }
     bullets.remove(event.getBullet());
     eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.REMOVE, event.getBullet().getContainer()));
