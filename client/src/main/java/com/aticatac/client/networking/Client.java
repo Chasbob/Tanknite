@@ -184,6 +184,7 @@ public class Client {
    * @param command the command
    */
   public void addCommand(Command command) {
+    this.logger.info(command);
     if (command.isMovement()) {
       currentCommands.add(command);
       commandModel.setCommand(Command.MOVE);

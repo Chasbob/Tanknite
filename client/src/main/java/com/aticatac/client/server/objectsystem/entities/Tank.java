@@ -534,6 +534,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   }
 
   public void reset(Position position) {
+
     setPosition(position);
     frames.clear();
     setInput(new CommandModel("", Command.DEFAULT));

@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.networking.Servers;
 import com.aticatac.client.util.AudioEnum;
 import com.aticatac.client.util.Camera;
 import com.aticatac.client.util.Data;
@@ -26,7 +27,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -102,6 +102,7 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void buildStage() {
+    Servers.INSTANCE.clearServers();
     //create root table
     rootTable = new Table();
     rootTable.setFillParent(true);
@@ -217,7 +218,7 @@ public class GameScreen extends AbstractScreen {
       }
       tanksMiniMap.setColor(Color.RED);
       for (Container c :
-        update.getNewShots().values()) {
+          update.getNewShots().values()) {
         renderContainer(c, tanksMiniMap);
         //Audio: plays sound when tank shoots in range
         if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
@@ -284,7 +285,7 @@ public class GameScreen extends AbstractScreen {
   private void renderProjectiles(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-        update.getProjectiles().values()) {
+          update.getProjectiles().values()) {
         renderProjectiles(c, tanks);
       }
     }
@@ -293,7 +294,7 @@ public class GameScreen extends AbstractScreen {
   private void renderPowerups(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-        update.getPowerups().values()) {
+          update.getPowerups().values()) {
         switch (c.getObjectType()) {
           case NONE:
             break;
@@ -434,7 +435,7 @@ public class GameScreen extends AbstractScreen {
     //go through all players count how many are alive
     int count = 0;
     for (String key :
-      players.keySet()) {
+        players.keySet()) {
       if (players.get(key).isAlive()) {
         count++;
       }

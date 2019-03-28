@@ -66,8 +66,8 @@ public class BaseGame implements Runnable, Callable<GameResult> {
   protected final Logger logger;
   private final int min = 0;
   private final int max = 1920;
-  private final AIUpdateService aiUpdateService;
   protected int powerUpCount;
+  private AIUpdateService aiUpdateService;
   private volatile boolean run;
   private int counter;
   private int playerCount;
@@ -110,6 +110,7 @@ public class BaseGame implements Runnable, Callable<GameResult> {
 
   public void reset() {
     for (Tank tank : playerMap.values()) {
+      DataServer.INSTANCE.removeBoxFromData(tank.getCollisionBox());
       tank.reset(getClearPosition(EntityType.TANK.radius));
     }
     playerCount = playerMap.size();

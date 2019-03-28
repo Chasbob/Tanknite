@@ -176,12 +176,10 @@ public class Server extends Thread {
     private final ConcurrentLinkedQueue<CommandModel> requests;
     private final ConcurrentHashMap<String, Client> clients;
     private final Logger logger;
-    private final ModelReader modelReader;
     private ServerSocket serverSocket;
     private MulticastSocket multicastSocket;
     private DatagramSocket broadcastSocket;
     private String id;
-    private boolean singlePlayer;
     private InetAddress server;
     private InetAddress multicast;
     private int port;
@@ -193,7 +191,6 @@ public class Server extends Thread {
 
     ServerData() {
       this.port = 5000;
-      this.modelReader = new ModelReader();
       this.requests = new ConcurrentLinkedQueue<>();
       this.clients = new ConcurrentHashMap<>();
       this.logger = Logger.getLogger(ServerData.class);
