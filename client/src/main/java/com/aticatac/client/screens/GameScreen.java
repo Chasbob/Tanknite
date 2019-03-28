@@ -119,7 +119,10 @@ public class GameScreen extends AbstractScreen {
           int x = (int) (j + 0.5f - i);
           int y = (int) (j - 0.5f + i);
           try {
-            rows.get(j).add(new Position(x, y));
+            var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(x, y).getTile();
+            if(tile!=null) {
+              rows.get(j).add(new Position(x, y));
+            }
           } catch (Exception ignored) {
           }
 
@@ -129,7 +132,10 @@ public class GameScreen extends AbstractScreen {
           int x = j - i;
           int y = j + i;
           try {
-            rows.get(j).add(new Position(x, y));
+            var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(x, y).getTile();
+            if(tile!=null) {
+              rows.get(j).add(new Position(x, y));
+            }
           } catch (Exception ignored) {
           }
 
@@ -299,67 +305,67 @@ public class GameScreen extends AbstractScreen {
   public void render(float delta) {
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    backgroundInput();
-    this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
-    Update newUpdate = Data.INSTANCE.nextUpdate();
-    if (newUpdate != null) {
-      update = newUpdate;
-      player = update.getMe(Data.INSTANCE.getID());
-    }
-    if (player != null) {
-      this.camera.setPosititon(Helper.tileToScreenX(player.getX(), player.getY()), Helper.tileToScreenY(player.getX(), player.getY()));
-      this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
-      if (player.getR() == 0) {
-        this.direction.setText("UP");
-      } else if (player.getR() == 90) {
-        this.direction.setText("RIGHT");
-      } else if (player.getR() == 180) {
-        this.direction.setText("DOWN");
-      } else if (player.getR() == 270) {
-        this.direction.setText("LEFT");
-      }
-    }
-    //main viewport
-    camera.getViewport().apply();
-
-    renderer.setView(this.camera.getCamera());
-    renderer.getBatch().begin();
-    renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(0));
-    renderer.getBatch().end();
-
-    //game
-    game.setProjectionMatrix(this.camera.getCamera().combined);
-    game.begin();
-
-    var collection = new ArrayList<Container>();
-    collection.addAll(returnTanks());
-    collection.addAll(returnProjectiles());
-    collection.addAll(returnPowerups());
-
-    renderGame(game,collection);
-
-    game.end();
-
-    //health bar
-    healthBar();
-
-    //mini viewport
-    minimapViewport.apply();
-    minimap();
-    tanksMiniMap.begin();
-    tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
-    tanksMiniMap.setColor(Color.CYAN);
-    if (newUpdate != null) {
-      renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
-    }
-    tanksMiniMap.end();
-    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
-      hudUpdate.update(update);
-    }
-    //hud viewport
-    act(delta);
-    getViewport().apply();
-    draw();
+//    backgroundInput();
+//    this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
+//    Update newUpdate = Data.INSTANCE.nextUpdate();
+//    if (newUpdate != null) {
+//      update = newUpdate;
+//      player = update.getMe(Data.INSTANCE.getID());
+//    }
+//    if (player != null) {
+//      this.camera.setPosititon(Helper.tileToScreenX(player.getX(), player.getY()), Helper.tileToScreenY(player.getX(), player.getY()));
+//      this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
+//      if (player.getR() == 0) {
+//        this.direction.setText("UP");
+//      } else if (player.getR() == 90) {
+//        this.direction.setText("RIGHT");
+//      } else if (player.getR() == 180) {
+//        this.direction.setText("DOWN");
+//      } else if (player.getR() == 270) {
+//        this.direction.setText("LEFT");
+//      }
+//    }
+//    //main viewport
+//    camera.getViewport().apply();
+//
+//    renderer.setView(this.camera.getCamera());
+//    renderer.getBatch().begin();
+//    renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(0));
+//    renderer.getBatch().end();
+//
+//    //game
+//    game.setProjectionMatrix(this.camera.getCamera().combined);
+//    game.begin();
+//
+//    var collection = new ArrayList<Container>();
+//    collection.addAll(returnTanks());
+//    collection.addAll(returnProjectiles());
+//    collection.addAll(returnPowerups());
+//
+//    renderGame(game,collection);
+//
+//    game.end();
+//
+//    //health bar
+//    healthBar();
+//
+//    //mini viewport
+//    minimapViewport.apply();
+//    minimap();
+//    tanksMiniMap.begin();
+//    tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
+//    tanksMiniMap.setColor(Color.CYAN);
+//    if (newUpdate != null) {
+//      renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
+//    }
+//    tanksMiniMap.end();
+//    if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
+//      hudUpdate.update(update);
+//    }
+//    //hud viewport
+//    act(delta);
+//    getViewport().apply();
+//    draw();
   }
 
   private void renderTanks(SpriteBatch tanks) {
@@ -534,7 +540,7 @@ public class GameScreen extends AbstractScreen {
         Data.INSTANCE.sendCommand(Command.FREEZE_BULLET);
       }
     }
-    Data.INSTANCE.submit(getBearing());
+    Data.INSTANCE.submit(changeAngle(getBearing(),180));
   }
 
   @Override
@@ -564,14 +570,13 @@ public class GameScreen extends AbstractScreen {
   public void renderGame(SpriteBatch sb, ArrayList<Container> objects) {
     int index = 0;
     for (ArrayList<Position> ps : rows) {
+
       for (Position pp : ps) {
-        try {
           var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(pp.getX(), pp.getY()).getTile();
           drawTiles(sb, pp.getX(), pp.getY(), tile);
           drawShadow(sb,pp.getX(), pp.getY(), shadow);
-        } catch (Exception ignored) {
-        }
       }
+
       for (var c : objects) {
         if((int)((Math.ceil(c.getX()/32f)+Math.ceil(60-(c.getY()/32f)))/2f)==index) {
           if(c.getObjectType() == EntityType.BULLET) {
@@ -588,7 +593,9 @@ public class GameScreen extends AbstractScreen {
           }
         }
       }
+
       index++;
+
     }
   }
 
