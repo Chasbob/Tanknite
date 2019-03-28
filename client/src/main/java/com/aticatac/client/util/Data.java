@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -66,7 +67,10 @@ public enum Data {
     client = new Client();
     modelReader = new ModelReader();
     try {
-      dbSocket = new Socket("chasbob.co.uk", 6000);
+      dbSocket = new Socket();
+      dbSocket.setSoTimeout(3000);
+      dbSocket.bind(new InetSocketAddress("chasbob.co.uk", 6000));
+//      dbSocket = new Socket("chasbob.co.uk", 6000);
       connected = true;
     } catch (IOException e) {
       connected = false;

@@ -177,10 +177,6 @@ public class Client {
     updateListener.quit();
     printer.close();
   }
-//  public void addCommand(Command command, int bearing) {
-//    currentCommands.add(command);
-//    commandModel.setBearing(bearing);
-//  }
 
   /**
    * Add command.
@@ -194,6 +190,8 @@ public class Client {
     } else if (!command.isShoot()) {
       commandModel.setCommand(command);
       submit(0);
+    } else {
+      commandModel.setCommand(command);
     }
   }
 

@@ -324,17 +324,6 @@ public class BaseGame implements Runnable, Callable<GameResult> {
   @Override
   public GameResult call() throws Exception {
     reset();
-    new Thread(() -> {
-      double nanoTime = System.nanoTime();
-      while (System.nanoTime() - nanoTime < 5000000000d) {
-        try {
-          Thread.sleep(0);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
-      run = false;
-    }).start();
     counter = 0;
     run = true;
     this.logger.trace("Running...");
