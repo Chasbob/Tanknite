@@ -143,12 +143,13 @@ public class GameScreen extends AbstractScreen {
     if (newUpdate != null) {
       if (player.isAlive()) {
         update = newUpdate;
+        player = update.getMe(Data.INSTANCE.getID());
         int playerAlive = checkAlive(update.getPlayers());
         if (playerAlive != Integer.valueOf(playerCount.getText().toString())) {
           playerCount.setText(Integer.toString(playerAlive));
         }
         playerCount.setText(playerAlive);
-        if (playerAlive == 1) {
+        if (playerAlive == 1 && player.isAlive()) {
           Data.INSTANCE.setWon(true);
           if (!endGame) {
             PopUp.createPopUp(false, true, false);
@@ -231,7 +232,7 @@ public class GameScreen extends AbstractScreen {
     }
     tanksMiniMap.end();
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
-      hudUpdate.update(update,player);
+      hudUpdate.update(update, player);
     }
     //hud viewport
     act(delta);
