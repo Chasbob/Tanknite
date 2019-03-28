@@ -16,6 +16,18 @@ public class Helper {
         return (x - y) / 4;
     }
 
+    public static float tileToScreenX(float x, float y) {
+        x = 1920 - x;
+        y = 1920 - y;
+        return (x + y) / 2;
+    }
+
+    public static float tileToScreenY(float x, float y) {
+        x = 1920 - x;
+        y = 1920 - y;
+        return (x - y) / 4;
+    }
+
     public static Position tileToScreen(Position p){
         int x = 1920 - p.getX();
         int y = 1920 - p.getY();
