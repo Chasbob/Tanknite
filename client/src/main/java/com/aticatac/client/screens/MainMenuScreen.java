@@ -28,7 +28,6 @@ public class MainMenuScreen extends AbstractScreen {
   Table musicTable;
   private int tabIndex;
   private int dropDownIndex;
-  private int popUpIndex;
   private Table dropDownTable;
   private MenuTable playTable;
   MenuTable settingsTable;
@@ -70,22 +69,6 @@ public class MainMenuScreen extends AbstractScreen {
         switchDropDown(true);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
         switchDropDown(false);
-      }
-    } else {
-      if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-        rootTable.removeActor(popUpRootTable);
-        popUpMultiplayer = false;
-        toggleButtonDeactivation(false);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-        keySwitcher(popUpGroup, popUpIndex, false);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-        keySwitcher(popUpGroup, popUpIndex, true);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-        enterPressed();
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-        keySwitcher(popUpGroup, popUpIndex, true);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-        keySwitcher(popUpGroup, popUpIndex, false);
       }
     }
     //setting colour dynamic for title label
@@ -494,34 +477,23 @@ public class MainMenuScreen extends AbstractScreen {
   private void enterPressed() {
     InputEvent inputEvent = new InputEvent();
     inputEvent.setType(InputEvent.Type.touchDown);
-    if (popUpMultiplayer) {
-      //get current menu table and fire button
-      MenuTable menuTable = (MenuTable) popUpGroup.getChildren().get(popUpIndex);
-      menuTable.getButton().fire(inputEvent);
-    } else if (popUpLogin) {
-      //get horizontal group
-      HorizontalGroup horizontalGroup = (HorizontalGroup) popUpGroup.getChildren().get(0);
-      MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(popUpIndex);
-      menuTable.getButton().fire(inputEvent);
-    } else {
-      //get current highlighted menu table
-      for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
-        MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
-        TextButton currentButton = (TextButton) menuTable.getButton();
-        if (menuTable.isShowGroup() && !currentButton.getText().toString().equals("QUIT")) {
-          //get the vertical group belonging to the drop down
-          Group group = menuTable.getGroup();
-          //get current highlighted menu table from drop down
-          for (int i = 0; i < group.getChildren().size; i++) {
-            MenuTable menuTable1 = (MenuTable) group.getChildren().get(i);
-            if (menuTable1.isShowGroup()) {
-              menuTable1.getButton().fire(inputEvent);
-              break;
-            }
+    //get current highlighted menu table
+    for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
+      MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
+      TextButton currentButton = (TextButton) menuTable.getButton();
+      if (menuTable.isShowGroup() && !currentButton.getText().toString().equals("QUIT")) {
+        //get the vertical group belonging to the drop down
+        Group group = menuTable.getGroup();
+        //get current highlighted menu table from drop down
+        for (int i = 0; i < group.getChildren().size; i++) {
+          MenuTable menuTable1 = (MenuTable) group.getChildren().get(i);
+          if (menuTable1.isShowGroup()) {
+            menuTable1.getButton().fire(inputEvent);
+            break;
           }
-        } else if (menuTable.isShowGroup() && currentButton.getText().toString().equals("QUIT")) {
-          menuTable.getButton().fire(inputEvent);
         }
+      } else if (menuTable.isShowGroup() && currentButton.getText().toString().equals("QUIT")) {
+        menuTable.getButton().fire(inputEvent);
       }
     }
   }
@@ -558,7 +530,7 @@ public class MainMenuScreen extends AbstractScreen {
     menuTable.setShowGroup(false);
     index = super.applyIndex(group, index, downOrRight);
     if (popUpMultiplayer || popUpLogin) {
-      popUpIndex = index;
+      //popUpIndex = index;
     } else {
       dropDownIndex = index;
     }
@@ -607,7 +579,6 @@ public class MainMenuScreen extends AbstractScreen {
     //set variables back to normal
     popUpMultiplayer = false;
     toggleButtonDeactivation(false);
-    popUpIndex = 0;
     dropDownIndex = 0;
     tabIndex = 0;
     rootTable.removeActor(popUpRootTable);

@@ -6,13 +6,14 @@ import com.aticatac.client.util.MenuTable;
 import com.aticatac.client.util.Styles;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import org.w3c.dom.Text;
 
 class Settings {
 
   static void createSettings() {
     //create table to store setting toggles
-    MenuTable soundTable = createToggle("TOGGLE SOUND: ");
-    MenuTable musicTable = createToggle("TOGGLE MUSIC: ");
+    Table soundTable = createToggle("TOGGLE SOUND: ");
+    Table musicTable = createToggle("TOGGLE MUSIC: ");
     if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
       VerticalGroup verticalGroup = Styles.INSTANCE.createVerticalGroup();
       Screens.INSTANCE.getScreen(MainMenuScreen.class).soundTable = soundTable;
@@ -29,31 +30,48 @@ class Settings {
     }
   }
 
-  private static MenuTable createToggle(String labelString) {
-    MenuTable table;
-    if (labelString.equals("TOGGLE SOUND: ")) {
-      table = Styles.INSTANCE.createMenuTable(true, false);
-    } else {
-      table = Styles.INSTANCE.createMenuTable(false, false);
-    }
-    TextButton button = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createItalicButton(labelString) : Styles.INSTANCE.createButton(labelString);
+  private static Table createToggle(String labelString) {
+    TextButton button;
     Label label;
-    if ((labelString.equals("TOGGLE SOUND: ") && AudioEnum.INSTANCE.isSound()) || (labelString.equals("TOGGLE MUSIC: ") && AudioEnum.INSTANCE.isMusic())) {
-      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSmallLabel("ON") : Styles.INSTANCE.createLabel("ON");
+    if (Screens.INSTANCE.getCurrentScreen() == GameScreen.class) {
+      Table table = Styles.INSTANCE.createPopUpTable();
+      button = Styles.INSTANCE.createButton(labelString);
+      if ((labelString.equals("TOGGLE SOUND: ") && AudioEnum.INSTANCE.isSound()) || (labelString.equals("TOGGLE MUSIC: ") && AudioEnum.INSTANCE.isMusic())) {
+        label = Styles.INSTANCE.createLabel("ON");
+      } else {
+        label = Styles.INSTANCE.createLabel("OFF");
+      }
+      table.add(button);
+      table.add(label);
+      button.addListener(buttonToChangeBool(button, label, table));
+      ListenerFactory.addHoverListener(button, table);
+      return table;
     } else {
-      label = Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class ? Styles.INSTANCE.createSmallLabel("OFF") : Styles.INSTANCE.createLabel("OFF");
+      MenuTable table;
+      if (labelString.equals("TOGGLE SOUND: ")) {
+        table = Styles.INSTANCE.createMenuTable(true, false);
+      } else {
+        table = Styles.INSTANCE.createMenuTable(false, false);
+      }
+      button = Styles.INSTANCE.createItalicButton(labelString);
+      if ((labelString.equals("TOGGLE SOUND: ") && AudioEnum.INSTANCE.isSound()) || (labelString.equals("TOGGLE MUSIC: ") && AudioEnum.INSTANCE.isMusic())) {
+        label = Styles.INSTANCE.createSmallLabel("ON");
+      } else {
+        label = Styles.INSTANCE.createSmallLabel("OFF");
+      }
+      table.setButton(button);
+      table.add(label);
+      button.addListener(buttonToChangeBool(button, label, table));
+      ListenerFactory.addHoverListener(button, table);
+      return table;
     }
-    button.addListener(buttonToChangeBool(button, label, table));
-    ListenerFactory.addHoverListener(button, table);
-    table.setButton(button);
-    table.add(label);
-    return table;
   }
 
-  private static InputListener buttonToChangeBool(TextButton button, Label label, MenuTable table) {
+  private static InputListener buttonToChangeBool(TextButton button, Label label, Table table) {
     return ListenerFactory.newListenerEvent(() -> {
       if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
-        Screens.INSTANCE.getScreen(MainMenuScreen.class).switchDropDownMouse(table);
+        MenuTable table1 = (MenuTable) table;
+        Screens.INSTANCE.getScreen(MainMenuScreen.class).switchDropDownMouse(table1);
       }
       if (button.getText().toString().equals("TOGGLE SOUND: ")) {
         if (AudioEnum.INSTANCE.isSound()) {

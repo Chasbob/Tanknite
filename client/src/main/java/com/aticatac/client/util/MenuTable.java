@@ -44,12 +44,7 @@ public class MenuTable extends Table {
       if (tab) {
         Styles.INSTANCE.addTableColour(this, Color.BLACK);
       } else {
-        if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpMultiplayer || Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin) {
-          //from pop up menu
-          Styles.INSTANCE.addTableColour(this, new Color(1, 1, 1, 0.25f));
-        } else {
-          Styles.INSTANCE.addTableColour(this, new Color(0.973f, 0.514f, 0.475f, 0.25f));
-        }
+        Styles.INSTANCE.addTableColour(this, new Color(0.973f, 0.514f, 0.475f, 0.25f));
       }
     } else {
       Styles.INSTANCE.addTableColour(this, Styles.INSTANCE.getTransparentColour());
