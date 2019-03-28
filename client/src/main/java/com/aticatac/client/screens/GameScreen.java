@@ -60,6 +60,7 @@ public class GameScreen extends AbstractScreen {
   private PlayerContainer player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
+  private boolean endGame;
 
   /**
    * Instantiates a new Game screen.
@@ -82,6 +83,7 @@ public class GameScreen extends AbstractScreen {
       stick = new Texture("img/top.png");
       tractionHealth = true;
       tractionPopUp = true;
+      endGame = false;
       renderer = new OrthogonalTiledMapRenderer(map);
       minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
       minimapViewport.setWorldSize(maxX, maxY);
@@ -142,11 +144,16 @@ public class GameScreen extends AbstractScreen {
         update = newUpdate;
         player = newUpdate.getMe(Data.INSTANCE.getID());
       } else {
+        Data.INSTANCE.setWon(false);
+        if (!endGame) {
+          PopUp.createPopUp(false, true, false);
+          popUpTable.setVisible(true);
+          endGame = true;
+        }
         PlayerContainer temp = newUpdate.getMe(Data.INSTANCE.getID());
         player.setR(temp.getR());
         update = newUpdate;
       }
-
     }
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());

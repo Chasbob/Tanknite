@@ -172,7 +172,7 @@ class PopUp {
   private static void popUpHelper(Table firstTable, Table secondTable, VerticalGroup multiplayerChildren) {
     multiplayerChildren.addActor(firstTable);
     multiplayerChildren.addActor(secondTable);
-    multiplayerChildren.addActor(createBackButton(true, multiplayerChildren));
+    multiplayerChildren.addActor(createBackButton(true, multiplayerChildren, false));
     multiplayerChildren.pack();
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = multiplayerChildren;
   }
@@ -195,7 +195,7 @@ class PopUp {
     buttonGroup.align(Align.left);
     buttonGroup.space(10).padTop(10);
     multiplayerChildren.addActor(buttonGroup);
-    buttonGroup.addActor(createBackButton(false, multiplayerChildren));
+    buttonGroup.addActor(createBackButton(false, multiplayerChildren, false));
     Table hostTable = Styles.INSTANCE.createPopUpTable();
     TextButton hostButton = Styles.INSTANCE.createButton("HOST");
     hostTable.add(hostButton);
@@ -266,7 +266,7 @@ class PopUp {
     //create horizontal groups to store buttons
     HorizontalGroup buttonGroup = new HorizontalGroup();
     buttonGroup.space(10).padTop(10);
-    buttonGroup.addActor(createBackButton(false, multiplayerChildren));
+    buttonGroup.addActor(createBackButton(false, multiplayerChildren, false));
     buttonGroup.addActor(joinTable);
     multiplayerChildren.addActor(buttonGroup);
   }
@@ -395,7 +395,7 @@ class PopUp {
     }
     resultTable.add(resultLabel);
     //create quit button
-    rootGroup.addActor(createBackButton(true, rootGroup));
+    rootGroup.addActor(createBackButton(true, rootGroup, true));
     multiplayerChildren.addActor(rootGroup);
   }
 
@@ -408,15 +408,23 @@ class PopUp {
     return false;
   }
 
-  private static Table createBackButton(boolean mainPopUp, VerticalGroup parentGroup) {
+  private static Table createBackButton(boolean mainPopUp, VerticalGroup parentGroup, boolean gameover) {
     Table backTable = Styles.INSTANCE.createPopUpTable();
-    TextButton backButton = Styles.INSTANCE.createButton("BACK");
+    TextButton backButton;
+    if (gameover) {
+      backButton = Styles.INSTANCE.createButton("QUIT");
+    } else {
+      backButton = Styles.INSTANCE.createButton("BACK");
+    }
     backButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (mainPopUp) {
         Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
         Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpMultiplayer = false;
         Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpChoice = false;
         Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
+        if (gameover) {
+          Screens.INSTANCE.showScreen(MainMenuScreen.class);
+        }
       } else if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
         //we want to remove pop up
         Screens.INSTANCE.getScreen(ServerScreen.class).removePopUp();
