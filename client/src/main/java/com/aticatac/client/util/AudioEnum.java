@@ -48,7 +48,8 @@ public enum AudioEnum {
    *
    */
   AudioEnum() {
-
+    music = false;
+    sound = false;
     this.logger = Logger.getLogger(getClass());
     this.logger.trace("boo");
     loadSound();

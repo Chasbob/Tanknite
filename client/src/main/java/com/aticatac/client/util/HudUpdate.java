@@ -51,7 +51,7 @@ public class HudUpdate {
   private void updateKillCount() {
     killLog.clear();
     for (KillLogEvent event : update.getKillLogEvents()) {
-      Label killLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.smallFont, event.getKiller() + " killed: " + event.getKiller(), Color.GOLD);
+      Label killLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, event.getKiller() + " killed: " + event.getKiller(), Color.GOLD);
       killLog.add(killLabel);
       killLog.row();
     }
