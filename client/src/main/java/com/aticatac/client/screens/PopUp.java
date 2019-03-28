@@ -19,8 +19,7 @@ import java.net.UnknownHostException;
 
 public class PopUp {
 
-
-  static void createPopUp(boolean startUp, boolean endGame) {
+  static void createPopUp(boolean startUp, boolean endGame, boolean multiplayer) {
     Table popUpRootTable = new Table();
     Styles.INSTANCE.addTableColour(popUpRootTable, new Color(new Color(0f, 0f, 0f, 0.5f)));
     if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
@@ -45,10 +44,8 @@ public class PopUp {
       if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
         manualJoin(multiplayerChildren);
       } else if (Screens.INSTANCE.getCurrentScreen() == MainMenuScreen.class) {
-        if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpSingleplayer) {
-          createSingleplayerChildren(multiplayerChildren);
-        } else {
-          createMultiplayerChildren(multiplayerChildren);
+        if (Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpChoice) {
+          createGameChoice(multiplayerChildren, multiplayer);
         }
       } else if (endGame) {
         endGame(multiplayerChildren);
@@ -112,18 +109,26 @@ public class PopUp {
     Screens.INSTANCE.getScreen(GameScreen.class).verticalGroup = multiplayerChildren;
   }
 
-  private static void createSingleplayerChildren(VerticalGroup multiplayerChildren) {
+  private static void createGameChoice(VerticalGroup multiplayerChildren, boolean multiplayer) {
     //2D
     Table twoDTable = Styles.INSTANCE.createPopUpTable();
     //create button for playing game in 2d
     TextButton twoDButton = Styles.INSTANCE.createButton("2D");
     twoDButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Data.INSTANCE.setSingleplayer(true);
-      GDXGame.createServer(true, "Single-Player");
-      Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
-      //join single player server
-      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
-      Screens.INSTANCE.showScreen(GameScreen.class);
+      Data.INSTANCE.setIso(false);
+      if (multiplayer) {
+        //load multiplayer pop up
+        multiplayerChildren.clear();
+        createMultiplayerChildren(multiplayerChildren);
+      } else {
+        //go single player
+        Data.INSTANCE.setSingleplayer(true);
+        GDXGame.createServer(true, "Single-Player");
+        Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
+        //join single player server
+        Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
+        Screens.INSTANCE.showScreen(GameScreen.class);
+      }
       return false;
     }));
     twoDTable.add(twoDButton);
@@ -134,11 +139,7 @@ public class PopUp {
     TextButton isoButton = Styles.INSTANCE.createButton("ISOMETRIC");
     isoTable.add(isoButton);
     ListenerFactory.addHoverListener(isoButton, isoTable);
-    multiplayerChildren.addActor(twoDTable);
-    multiplayerChildren.addActor(isoTable);
-    multiplayerChildren.addActor(createBackButton(true, multiplayerChildren));
-    multiplayerChildren.pack();
-    Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = multiplayerChildren;
+    popUpHelper(twoDTable, isoTable, multiplayerChildren);
   }
 
   private static void createMultiplayerChildren(VerticalGroup multiplayerChildren) {
@@ -151,7 +152,6 @@ public class PopUp {
     }));
     hostTable.add(hostButton);
     ListenerFactory.addHoverListener(hostButton, hostTable);
-    multiplayerChildren.addActor(hostTable);
     //create button for joining
     Table joinTable = Styles.INSTANCE.createPopUpTable();
     TextButton joinButton = Styles.INSTANCE.createButton("JOIN");
@@ -163,8 +163,12 @@ public class PopUp {
     }));
     joinTable.add(joinButton);
     ListenerFactory.addHoverListener(joinButton, joinTable);
-    multiplayerChildren.addActor(joinTable);
-    //create button for going back
+    popUpHelper(hostTable, joinTable, multiplayerChildren);
+  }
+
+  private static void popUpHelper(Table firstTable, Table secondTable, VerticalGroup multiplayerChildren) {
+    multiplayerChildren.addActor(firstTable);
+    multiplayerChildren.addActor(secondTable);
     multiplayerChildren.addActor(createBackButton(true, multiplayerChildren));
     multiplayerChildren.pack();
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpGroup = multiplayerChildren;
@@ -350,6 +354,7 @@ public class PopUp {
   private static void playOffline(VerticalGroup rootGroup) {
     //clear the group
     rootGroup.clear();
+    rootGroup.columnCenter();
     Table okButtonTable = Styles.INSTANCE.createPopUpTable();
     TextButton okButton = Styles.INSTANCE.createButton("PLAY");
     okButton.addListener(ListenerFactory.newListenerEvent(() -> {
@@ -358,12 +363,12 @@ public class PopUp {
     }));
     okButtonTable.add(okButton);
     ListenerFactory.addHoverListener(okButton, okButtonTable);
-    rootGroup.addActor(okButtonTable);
     //create actors
     Table labelTable = new Table();
-    Label label = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "NO DATABASE CONNECTION - OFFLINE MODE", Color.WHITE);
+    Label label = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.baseFont, "NO DATABASE CONNECTION - OFFLINE MODE", Color.GRAY);
     labelTable.add(label);
     rootGroup.addActor(labelTable);
+    rootGroup.addActor(okButtonTable);
   }
 
   private static void endGame(VerticalGroup multiplayerChildren) {
@@ -384,7 +389,7 @@ public class PopUp {
   }
 
   @NotNull
-  public static Boolean resetMainMenu() {
+  private static Boolean resetMainMenu() {
     Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
     Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu(Data.INSTANCE.isConnected());
@@ -399,6 +404,7 @@ public class PopUp {
       if (mainPopUp) {
         Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
         Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpMultiplayer = false;
+        Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpChoice = false;
         Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
       } else if (Screens.INSTANCE.getCurrentScreen() == ServerScreen.class) {
         //we want to remove pop up

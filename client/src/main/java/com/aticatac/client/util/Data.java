@@ -45,6 +45,7 @@ public enum Data {
   private boolean serverSelected;
   private boolean manualConfigForServer;
   private boolean isHosting;
+  private boolean isIso;
   private Socket dbSocket;
   private BufferedReader reader;
   private PrintStream printer;
@@ -376,4 +377,11 @@ public enum Data {
   public void setWon(boolean won) {
     this.won = won;
   }
-}
+
+  public boolean isIso() {
+    return isIso;
+  }
+
+  public void setIso(boolean iso) {
+    isIso = iso;
+  }}

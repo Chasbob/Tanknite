@@ -331,9 +331,6 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderContainer(Container c, SpriteBatch batch) {
-//    if (c.getId().equals("")) {
-//      this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
-//    }
     batch.draw(tankTexture, maxX - c.getX() - tankTexture.getWidth() / 2f, maxY - c.getY() - tankTexture.getHeight() / 2f);
   }
 
@@ -350,7 +347,7 @@ public class GameScreen extends AbstractScreen {
 
     if (tractionPopUp) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-        PopUp.createPopUp(false, false);
+        PopUp.createPopUp(false, false, false);
         //show the pop up table
         popUpTable.setVisible(true);
         tractionPopUp = false;

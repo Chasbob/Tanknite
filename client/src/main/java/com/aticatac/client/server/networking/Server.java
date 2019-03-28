@@ -210,7 +210,7 @@ public class Server extends Thread {
       this.port = port;
       this.maxPlayers = 10;
       this.id = name;
-      this.game = new ThreeRoundGame();
+      this.game = new BaseGame();
       try {
         this.server = InetAddress.getLocalHost();
         this.multicastSocket = new MulticastSocket();

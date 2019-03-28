@@ -331,7 +331,6 @@ public class BaseGame implements Runnable, Callable<GameResult> {
           e.printStackTrace();
         }
       }
-      run = false;
     }
     GameResult result = new GameResult();
     for (Tank tank : playerMap.values()) {

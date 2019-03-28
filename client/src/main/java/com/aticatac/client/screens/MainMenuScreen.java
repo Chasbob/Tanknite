@@ -1,6 +1,5 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.game.GDXGame;
 import com.aticatac.client.util.Data;
 import com.aticatac.client.util.ListenerFactory;
 import com.aticatac.client.util.MenuTable;
@@ -33,7 +32,7 @@ public class MainMenuScreen extends AbstractScreen {
   MenuTable settingsTable;
   VerticalGroup popUpGroup;
   Table popUpRootTable;
-  boolean popUpSingleplayer;
+  boolean popUpChoice;
   boolean popUpMultiplayer;
   boolean popUpLogin;
   private Table containerTable;
@@ -59,7 +58,7 @@ public class MainMenuScreen extends AbstractScreen {
     //TODO batch is not being drawn under aid label
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    if (!popUpMultiplayer && !popUpLogin && !popUpSingleplayer) {
+    if (!popUpMultiplayer && !popUpLogin && !popUpChoice) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
         switchTab(true);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
@@ -114,7 +113,7 @@ public class MainMenuScreen extends AbstractScreen {
     titleTable.add(screenTitle);
     super.addToRoot(titleTable);
     popUpLogin = true;
-    PopUp.createPopUp(true, false);
+    PopUp.createPopUp(true, false, false);
   }
 
   private void createAidTable() {
@@ -338,8 +337,8 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton singlePlayerButton = Styles.INSTANCE.createItalicButton("SINGLE-PLAYER");
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(singlePlayerTable);
-      popUpSingleplayer = true;
-      PopUp.createPopUp(false, false);
+      popUpChoice = true;
+      PopUp.createPopUp(false, false, false);
       return false;
     }));
     singlePlayerTable.setButton(singlePlayerButton);
@@ -349,8 +348,8 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton multiPlayerButton = Styles.INSTANCE.createItalicButton("MULTI-PLAYER");
     multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(multiPlayerTable);
-      popUpMultiplayer = true;
-      PopUp.createPopUp(false, false);
+      popUpChoice = true;
+      PopUp.createPopUp(false, false, true);
       toggleButtonDeactivation(true);
       return false;
     }));
@@ -574,7 +573,7 @@ public class MainMenuScreen extends AbstractScreen {
     MenuTable menuTable = (MenuTable) currentDropDown.getChildren().get(dropDownIndex);
     menuTable.setShowGroup(false);
     //set variables back to normal
-    popUpSingleplayer = false;
+    popUpChoice = false;
     popUpMultiplayer = false;
     toggleButtonDeactivation(false);
     dropDownIndex = 0;
