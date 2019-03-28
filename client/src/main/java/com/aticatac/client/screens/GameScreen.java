@@ -283,14 +283,6 @@ public class GameScreen extends AbstractScreen {
       for (Container c : update.getPlayers().values()) {
         louderSound(c);
       }
-      Container corner = new Container(0, 0, 0, 0, 0, "", EntityType.NONE);
-      louderSound(corner);
-      Container corner2 = new Container(0, 1920, 0, 0, 0, "", EntityType.NONE);
-      louderSound(corner2);
-      Container corner3 = new Container(1920, 0, 0, 0, 0, "", EntityType.NONE);
-      louderSound(corner3);
-      Container corner4 = new Container(1920, 1920, 0, 0, 0, "", EntityType.NONE);
-      louderSound(corner4);
       renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
       tanksMiniMap.setColor(Color.RED);
       for (Container c :
@@ -338,9 +330,13 @@ public class GameScreen extends AbstractScreen {
         double volumeScalar = (max - distance) / max;
 
         float musicVolume = AudioEnum.INSTANCE.getMusicVolume();
-
-        this.logger.info(musicVolume + volumeScalar);
-        AudioEnum.INSTANCE.getTheme().setVolume((float) (musicVolume+volumeScalar));
+        float musicScaled = (float)(musicVolume+volumeScalar);
+        if(musicScaled<=1.0f) {
+          AudioEnum.INSTANCE.getTheme().setVolume(musicScaled);
+        }
+        else{
+          AudioEnum.INSTANCE.getTheme().setVolume(1.0f);
+        }
         this.logger.info(musicVolume + volumeScalar);
 
       }
