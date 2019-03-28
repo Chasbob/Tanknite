@@ -33,8 +33,9 @@ public class MainMenuScreen extends AbstractScreen {
   MenuTable settingsTable;
   VerticalGroup popUpGroup;
   Table popUpRootTable;
-  public boolean popUpMultiplayer;
-  public boolean popUpLogin;
+  boolean popUpSingleplayer;
+  boolean popUpMultiplayer;
+  boolean popUpLogin;
   private Table containerTable;
   private Label screenTitle;
   private float green;
@@ -58,7 +59,7 @@ public class MainMenuScreen extends AbstractScreen {
     //TODO batch is not being drawn under aid label
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    if (!popUpMultiplayer && !popUpLogin) {
+    if (!popUpMultiplayer && !popUpLogin && !popUpSingleplayer) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
         switchTab(true);
       } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
@@ -337,12 +338,8 @@ public class MainMenuScreen extends AbstractScreen {
     TextButton singlePlayerButton = Styles.INSTANCE.createItalicButton("SINGLE-PLAYER");
     singlePlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
       switchDropDownMouse(singlePlayerTable);
-      Data.INSTANCE.setSingleplayer(true);
-      GDXGame.createServer(true, "Single-Player");
-      refresh();
-      //join single player server
-      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
-      Screens.INSTANCE.showScreen(GameScreen.class);
+      popUpSingleplayer = true;
+      PopUp.createPopUp(false, false);
       return false;
     }));
     singlePlayerTable.setButton(singlePlayerButton);
@@ -577,14 +574,20 @@ public class MainMenuScreen extends AbstractScreen {
     MenuTable menuTable = (MenuTable) currentDropDown.getChildren().get(dropDownIndex);
     menuTable.setShowGroup(false);
     //set variables back to normal
+    popUpSingleplayer = false;
     popUpMultiplayer = false;
     toggleButtonDeactivation(false);
     dropDownIndex = 0;
     tabIndex = 0;
     rootTable.removeActor(popUpRootTable);
+    updateSettings();
     //highlight singleplayer as first on drop down
     MenuTable newDropDown = (MenuTable) currentDropDown.getChildren().get(dropDownIndex);
     newDropDown.setShowGroup(true);
+  }
+
+  private void updateSettings() {
+
   }
 
   @Override
