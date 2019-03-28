@@ -17,22 +17,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-
-import java.io.*;
-import com.aticatac.common.objectsystem.containers.Container;
-import com.badlogic.gdx.graphics.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.aticatac.common.objectsystem.containers.Container;
-import com.badlogic.gdx.graphics.Color;
 import org.apache.log4j.Logger;
 
 import static com.aticatac.client.bus.EventBusFactory.eventBus;
@@ -46,6 +35,10 @@ public enum Data {
    */
   INSTANCE;
   private final Logger logger;
+  /**
+   * The Model reader.
+   */
+  ModelReader modelReader;
   private Update update;
   private ArrayList<String> clients;
   private HashMap<String, Container> players;
@@ -65,7 +58,6 @@ public enum Data {
   private Socket dbSocket;
   private BufferedReader reader;
   private PrintStream printer;
-  ModelReader modelReader;
   private boolean connected;
 
   Data() {
@@ -95,6 +87,11 @@ public enum Data {
     this.clients = new ArrayList<>();
   }
 
+  /**
+   * Connected to db boolean.
+   *
+   * @return the boolean
+   */
   public boolean connectedToDB() {
     try {
       return this.dbSocket.getInetAddress().isReachable(1000);
@@ -112,6 +109,16 @@ public enum Data {
     return client.isStarted();
   }
 
+  /**
+   * Login db response.
+   *
+   * @param dBlogin the d blogin
+   *
+   * @return the db response
+   *
+   * @throws IOException  the io exception
+   * @throws InvalidBytes the invalid bytes
+   */
   public DBResponse login(DBlogin dBlogin) throws IOException, InvalidBytes {
     this.logger.info(dBlogin);
     String json = modelReader.toJson(dBlogin);
@@ -205,6 +212,7 @@ public enum Data {
    * Gets player.
    *
    * @param i the
+   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -295,19 +303,17 @@ public enum Data {
   }
 
   /**
-   * Connect Response.
+   * Connect response.
    *
-   * @param id           the id
-   * @param singleplayer the singleplayer
-   * @param host         the host
+   * @param id   the id
+   * @param host the host
    *
-   * @return the Response
-   *
-   * @throws UnknownHostException the unknown host exception
+   * @return the response
    */
-  public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
-    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
-    return connect(id, singleplayer);
+  public Response connect(String id, String host) {
+//    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
+    return this.client.connect(host, Servers.INSTANCE.getPort(), id);
+    //this is just if the user has not selected a server instead of there being no Response.
   }
 
   /**
@@ -369,46 +375,99 @@ public enum Data {
     isHosting = hosting;
   }
 
+  /**
+   * Gets username.
+   *
+   * @return the username
+   */
   public String getUsername() {
     return username;
   }
 
+  /**
+   * Sets username.
+   *
+   * @param username the username
+   */
   public void setUsername(String username) {
     this.username = username;
   }
 
+  /**
+   * Gets tank colour.
+   *
+   * @return the tank colour
+   */
   public Color getTankColour() {
     return tankColour;
   }
 
+  /**
+   * Sets tank colour.
+   *
+   * @param tankColour the tank colour
+   */
   public void setTankColour(Color tankColour) {
     this.tankColour = tankColour;
   }
 
+  /**
+   * Submit.
+   *
+   * @param bearing the bearing
+   */
   public void submit(final int bearing) {
     this.client.submit(bearing);
   }
 
+  /**
+   * Initialise.
+   */
   public void initialise() {
-
   }
 
+  /**
+   * Is connected boolean.
+   *
+   * @return the boolean
+   */
   public boolean isConnected() {
     return connected;
   }
 
+  /**
+   * Is won boolean.
+   *
+   * @return the boolean
+   */
   public boolean isWon() {
     return won;
   }
 
+  /**
+   * Sets won.
+   *
+   * @param won the won
+   */
   public void setWon(boolean won) {
     this.won = won;
   }
 
+  /**
+   * Is iso boolean.
+   *
+   * @return the boolean
+   */
   public boolean isIso() {
     return isIso;
   }
 
+  /**
+   * Sets iso.
+   *
+   * @param iso the iso
+   */
   public void setIso(boolean iso) {
     isIso = iso;
-  }}
+  }
+}

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -125,7 +126,9 @@ public class Client {
       this.logger.trace("ID: " + id);
       this.logger.trace("login: " + modelReader.toJson(login));
       this.logger.trace("Trying to conneentct to: " + server.getAddress() + ":" + server.getPort());
-      Socket socket = new Socket(server.getAddress(), server.getPort());
+      Socket socket = new Socket();
+      socket.setSoTimeout(1000);
+      socket.connect(new InetSocketAddress(server.getAddress(), server.getPort()));
       this.logger.trace("Connected to server at " + socket.getInetAddress());
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       this.printer = new PrintStream(socket.getOutputStream());
@@ -217,5 +220,13 @@ public class Client {
     this.printer.println(json);
     currentCommands.clear();
     commandModel.reset();
+  }
+
+  public Response connect(final String host, final int port, final String id) {
+    try {
+      return connect(new ServerInformation(id, InetAddress.getByName(host), port), id);
+    } catch (UnknownHostException e) {
+      return Response.UNKNOWN_HOST;
+    }
   }
 }

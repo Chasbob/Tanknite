@@ -11,15 +11,17 @@ import com.aticatac.common.model.Updates.Response;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.utils.Align;
+import java.net.InetAddress;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 class PopUp {
-
   static void createPopUp(boolean startUp, boolean endGame, boolean multiplayer) {
     Table popUpRootTable = new Table();
     Styles.INSTANCE.addTableColour(popUpRootTable, new Color(new Color(0f, 0f, 0f, 0.5f)));
@@ -236,7 +238,7 @@ class PopUp {
     //create listener
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
       //TODO catch exception if cant connect to server
-      Response response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false, ipField.getText());
+      Response response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), ipField.getText());
       switch (response) {
         case ACCEPTED:
           ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
