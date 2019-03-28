@@ -40,7 +40,7 @@ public enum Screens {
      */
     public void initialize(Game game) {
 
-        AudioEnum.INSTANCE.getMain();
+      //AudioEnum.INSTANCE.getMain();
 
         this.logger.warn("Initializing...");
         Data.INSTANCE.initialise();

@@ -7,7 +7,6 @@ import com.aticatac.common.model.*;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -16,6 +15,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.aticatac.common.objectsystem.containers.Container;
 import com.badlogic.gdx.graphics.Color;
 import org.apache.log4j.Logger;
 

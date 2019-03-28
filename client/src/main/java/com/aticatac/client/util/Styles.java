@@ -119,6 +119,15 @@ public enum Styles {
     return table;
   }
 
+  public Table createPopUpTable() {
+    Table popUpTable = new Table();
+    addTableColour(popUpTable, transparentColour);
+    popUpTable.defaults().padTop(5).padBottom(5).padLeft(10).padRight(10);
+    return popUpTable;
+  }
+
+
+
   public TextField createTextField(String text) {
     return new TextField(text, textFieldStyle);
   }

@@ -3,6 +3,7 @@ package com.aticatac.client.screens;
 import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
+import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.containers.Container;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -106,132 +107,16 @@ public class GameScreen extends AbstractScreen {
     addActor(rootTable);
     Gdx.graphics.setVSync(true);
     //create table and labels for player count and kills - TOP LEFT
-    super.addToRoot(createHudTopLeft());
+    super.addToRoot(HUD.createHudTopLeft(playerCount, killCount));
     //create table for kill feed - BOTTOM LEFT
-    super.addToRoot(createHudBottomLeft());
+    killLogTable = HUD.createHudBottomLeft();
+    super.addToRoot(killLogTable);
     //create table for ammo - BOTTOM RIGHT
-    super.addToRoot(createHudBottomRight());
+    super.addToRoot(HUD.createHudBottomRight(ammoValue));
     //create alert table - BOTTOM MIDDLE
-    super.addToRoot(createHudAlertTable());
+    alertTable = HUD.createHudAlertTable();
+    super.addToRoot(alertTable);
     hudUpdate = new HudUpdate(killLogTable, ammoValue, playerCount, killCount);
-  }
-
-  private Table createHudTopLeft() {
-    Table topLeftTable = new Table();
-    topLeftTable.top().left();
-    topLeftTable.defaults().padTop(10).padLeft(10).left();
-    Table aliveTable = new Table();
-    Table aliveLabelTable = new Table();
-    Styles.INSTANCE
-        .addTableColour(aliveLabelTable, Color.GRAY);
-    Label aliveLabel = Styles.INSTANCE.createLabel("Alive");
-    aliveLabelTable.add(aliveLabel);
-    Table playerCountTable = new Table();
-    playerCountTable.add(playerCount).center();
-    Styles.INSTANCE
-        .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
-    aliveTable.add(playerCountTable);
-    aliveTable.add(aliveLabelTable);
-    Table killTable = new Table();
-    Table killLableTable = new Table();
-    Styles.INSTANCE
-        .addTableColour(killLableTable, Color.GRAY);
-    Label killLabel = Styles.INSTANCE.createLabel("Killed");
-    killLableTable.add(killLabel);
-    Table killCountTable = new Table();
-    Styles.INSTANCE
-        .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
-    killCountTable.add(killCount);
-    killTable.add(killCountTable);
-    killTable.add(killLableTable);
-    topLeftTable.add(aliveTable);
-    topLeftTable.add(killTable);
-    return topLeftTable;
-  }
-
-  private Table createHudBottomLeft() {
-    killLogTable = new Table();
-    killLogTable.bottom().left();
-    killLogTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
-    Label tempKill = Styles.INSTANCE.createLabel("");
-    killLogTable.add(tempKill);
-    return killLogTable;
-  }
-
-  private Table createHudBottomRight() {
-    Table bottomRightTable = new Table();
-    bottomRightTable.bottom().right();
-    bottomRightTable.defaults().padRight(10).padTop(10).padBottom(20).left();
-    Table ammoTable = new Table();
-    Table ammoValueTable = new Table();
-    Styles.INSTANCE
-        .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
-    ammoValueTable.add(ammoValue);
-    Label ammoLabel = Styles.INSTANCE.createLabel("Ammo");
-    Table ammoLabelTable = new Table();
-    Styles.INSTANCE
-        .addTableColour(ammoLabelTable, Color.GRAY);
-    ammoLabelTable.add(ammoLabel);
-    ammoTable.add(ammoValueTable);
-    ammoTable.add(ammoLabelTable);
-    bottomRightTable.add(ammoTable);
-    return bottomRightTable;
-  }
-
-  private Table createHudPopUp() {
-    verticalGroup = new VerticalGroup();
-    verticalGroup.space(20);
-    popUpTable.add(verticalGroup).padLeft(50).padRight(50).padTop(20).padBottom(20);
-    //create resume button
-    TextButton resumeButton = Styles.INSTANCE.createButton("Resume");
-    resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      tractionPopUp = true;
-      popUpTable.setVisible(false);
-      return false;
-    }));
-    verticalGroup.addActor(resumeButton);
-    //create settings button
-    TextButton settingsButton = Styles.INSTANCE.createButton("Settings");
-    settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      createSettingsChildren();
-      return false;
-    }));
-    verticalGroup.addActor(settingsButton);
-    //create quit button go back to the main menu and disconnect form server
-    TextButton quitButton = Styles.INSTANCE.createBackButton("Quit");
-    quitButton.addListener(ListenerFactory.newChangeScreenEvent(MainMenuScreen.class));
-    quitButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Data.INSTANCE.quit();
-      refresh();
-      return true;
-    }));
-    verticalGroup.addActor(quitButton);
-    Styles.INSTANCE
-        .addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
-    return popUpTable;
-  }
-
-  private void createSettingsChildren() {
-    verticalGroup.clear();
-    Settings.createSettings();
-    //create back button
-    TextButton backButton = Styles.INSTANCE.createButton("Back");
-    backButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      popUpTable.reset();
-      createHudPopUp();
-      return false;
-    }));
-    verticalGroup.addActor(backButton);
-  }
-
-  private Table createHudAlertTable() {
-    alertTable = new Table();
-    alertTable.bottom();
-    alertTable.defaults().padBottom(60);
-    Label alertLabel = Styles.INSTANCE.createLabel("TRACTION DISABLED");
-    alertTable.add(alertLabel);
-    alertTable.setVisible(false);
-    return alertTable;
   }
 
   @Override
@@ -283,13 +168,13 @@ public class GameScreen extends AbstractScreen {
       for (Container c : update.getPlayers().values()) {
         louderSound(c);
       }
-      Container corner = new Container(0, 0, 0, 0, 0, "", EntityType.NONE);
+      Container corner = new Container(0, 0, 0, "", EntityType.NONE);
       louderSound(corner);
-      Container corner2 = new Container(0, 1920, 0, 0, 0, "", EntityType.NONE);
+      Container corner2 = new Container(0, 1920, 0, "", EntityType.NONE);
       louderSound(corner2);
-      Container corner3 = new Container(1920, 0, 0, 0, 0, "", EntityType.NONE);
+      Container corner3 = new Container(1920, 0, 0, "", EntityType.NONE);
       louderSound(corner3);
-      Container corner4 = new Container(1920, 1920, 0, 0, 0, "", EntityType.NONE);
+      Container corner4 = new Container(1920, 1920, 0, "", EntityType.NONE);
       louderSound(corner4);
       renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
       tanksMiniMap.setColor(Color.RED);
