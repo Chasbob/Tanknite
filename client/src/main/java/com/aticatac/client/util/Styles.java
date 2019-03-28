@@ -18,6 +18,7 @@ public enum Styles {
   public BitmapFont titleFont;
   public BitmapFont smallFont;
   public BitmapFont italicFont;
+  public BitmapFont bigMenuFont;
   public Color hiddenColour;
   public Color selectedColour;
   private Color accentColour;
@@ -74,16 +75,20 @@ public enum Styles {
     FreeTypeFontGenerator.FreeTypeFontParameter parameter10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
     FreeTypeFontGenerator.FreeTypeFontParameter parameter15 = new FreeTypeFontGenerator.FreeTypeFontParameter();
     FreeTypeFontGenerator.FreeTypeFontParameter parameter40 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    FreeTypeFontGenerator.FreeTypeFontParameter paramerer40_2 = new FreeTypeFontGenerator.FreeTypeFontParameter();
     parameter10.size = 10;
     parameter15.size = 15;
     parameter40.size = 70;
+    paramerer40_2.size = 70;
     smallFont = generator.generateFont(parameter10);
     baseFont = generator.generateFont(parameter15);
     titleFont = generator_title.generateFont(parameter40);
     italicFont = generator_italic_bold.generateFont(parameter10);
+    bigMenuFont = generator_title_2.generateFont(paramerer40_2);
     generator.dispose();
     generator_title.dispose();
     generator_italic_bold.dispose();
+    generator_title_2.dispose();
   }
 
   public TextButton.TextButtonStyle createButtonStyle(BitmapFont font, Color color) {

@@ -389,9 +389,9 @@ class PopUp {
     rootGroup.addActor(resultTable);
     Label resultLabel;
     if (Data.INSTANCE.isWon()) {
-      resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "VICTORY", Color.GREEN);
+      resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.bigMenuFont, "VICTORY", Color.GREEN);
     } else {
-      resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.titleFont, "DEFEAT", Color.RED);
+      resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.bigMenuFont, "DEFEAT", Color.RED);
     }
     resultTable.add(resultLabel);
     //create quit button
