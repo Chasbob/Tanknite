@@ -1,6 +1,8 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.isometric.DynamicShadow;
 import com.aticatac.client.isometric.Helper;
+import com.aticatac.client.isometric.IsoContainer;
 import com.aticatac.client.isometric.TileHolder;
 import com.aticatac.client.server.Position;
 import com.aticatac.client.util.*;
@@ -16,10 +18,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -27,7 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -73,6 +72,8 @@ public class GameScreen extends AbstractScreen {
 
     private ArrayList<ArrayList<TileHolder>> rows = new ArrayList<>();
     private HashMap<Integer, TextureRegion> tileTextures = new HashMap<>();
+
+    HashMap<Position, DynamicShadow> lighting;
 
     /**
      * Instantiates a new Game screen.
@@ -150,6 +151,9 @@ public class GameScreen extends AbstractScreen {
             minimapViewport.setWorldSize(maxX, maxY);
             this.camera = new Camera(maxX, maxY, 640, 640);
             Gdx.input.setInputProcessor(this);
+
+            setupLighting();
+
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -307,15 +311,18 @@ public class GameScreen extends AbstractScreen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         backgroundInput();
         this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
         Update newUpdate = Data.INSTANCE.nextUpdate();
         if (newUpdate != null) {
             update = newUpdate;
             player = update.getMe(Data.INSTANCE.getID());
+        }else {
+            return;
         }
         if (player != null) {
-            this.camera.setPosititon(Helper.tileToScreenX(player.getX(), player.getY()), Helper.tileToScreenY(player.getX(), player.getY()));
+            this.camera.setPosititon(Helper.tileToScreenX(player.getX()+32, player.getY()-32), Helper.tileToScreenY(player.getX()+32, player.getY()-32));
             this.tankXY.setText(Math.round(maxX - player.getX()) + ", " + Math.round(maxY - player.getY()));
             if (player.getR() == 0) {
                 this.direction.setText("UP");
@@ -333,18 +340,23 @@ public class GameScreen extends AbstractScreen {
         renderer.setView(this.camera.getCamera());
         renderer.getBatch().begin();
         renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(0));
+        //renderer.getBatch().setColor(0.3f, 0.3f, 0.3f, 1);
         renderer.getBatch().end();
 
         //game
         game.setProjectionMatrix(this.camera.getCamera().combined);
         game.begin();
 
-        var collection = new ArrayList<Container>();
-        collection.addAll(returnTanks());
+        //game.setColor(0.3f, 0.3f, 0.3f, 1);
+
+        var collection = new ArrayList<IsoContainer>();
+        collection.addAll(CalculateLighting(returnTanks()));
         collection.addAll(returnProjectiles());
         collection.addAll(returnPowerups());
 
         renderGame(game, collection);
+
+        //vec4 color = texture2D(TextureSampler, TexCoord) * Color.GRAY;
 
         game.end();
 
@@ -365,9 +377,9 @@ public class GameScreen extends AbstractScreen {
             hudUpdate.update(update);
         }
         //hud viewport
-        act(delta);
+        super.act(delta);
         getViewport().apply();
-        draw();
+        super.draw();
     }
 
     private void renderTanks(SpriteBatch tanks) {
@@ -571,12 +583,13 @@ public class GameScreen extends AbstractScreen {
 
     /*Isometric rendering begin*/
 
-    public void renderGame(SpriteBatch sb, ArrayList<Container> objects) {
+    public void renderGame(SpriteBatch sb, ArrayList<IsoContainer> objects) {
+
         int index = 0;
         var usedShadows = new ArrayList<Position>();
-        int X1 = 0;
+        int X1;
         int X2 = 0;
-        boolean swap = true;
+
         for (ArrayList<TileHolder> ps : rows) {
 
             for (TileHolder tileHolder : ps) {
@@ -625,6 +638,9 @@ public class GameScreen extends AbstractScreen {
                                         img.getHeight(),
                                         false,
                                         false);
+                                for (int i = 0; i < c.getDegrees().size(); i++) {
+                                    //this.logger.info(c.getDegrees().get(i));
+                                }
                             }
                         }
                     }
@@ -645,30 +661,36 @@ public class GameScreen extends AbstractScreen {
         }
     }
 
-    private ArrayList<Container> returnProjectiles() {
-        var array = new ArrayList<Container>();
+    private ArrayList<IsoContainer> returnProjectiles() {
+        var array = new ArrayList<IsoContainer>();
         if (update != null) {
-            array.addAll(update.getProjectiles().values());
-        }
-        return array;
-    }
-
-    private ArrayList<Container> returnTanks() {
-        var array = new ArrayList<Container>();
-        if (update != null) {
-
-            for (int i = 0; i < update.getPlayers().values().size(); i++) {
-                Container updater = update.getI(i);
-                array.add(updater);
+            for (int i = 0; i < update.getProjectiles().values().size(); i++) {
+                Container updater = update.getProjectiles().get(update.getProjectiles().keySet().toArray()[i]);
+                array.add(new IsoContainer(updater));
             }
         }
         return array;
     }
 
-    private ArrayList<Container> returnPowerups() {
-        var array = new ArrayList<Container>();
+    private ArrayList<IsoContainer> returnTanks() {
+        var array = new ArrayList<IsoContainer>();
         if (update != null) {
-            array.addAll(update.getPowerups().values());
+
+            for (int i = 0; i < update.getPlayers().values().size(); i++) {
+                Container updater = update.getI(i);
+                array.add(new IsoContainer(updater));
+            }
+        }
+        return array;
+    }
+
+    private ArrayList<IsoContainer> returnPowerups() {
+        var array = new ArrayList<IsoContainer>();
+        if (update != null) {
+            for (int i = 0; i < update.getPowerups().values().size(); i++) {
+                Container updater = update.getPowerups().get(update.getPowerups().keySet().toArray()[i]);
+                array.add(new IsoContainer(updater));
+            }
         }
         return array;
     }
@@ -698,6 +720,51 @@ public class GameScreen extends AbstractScreen {
         var pos3 = new Position(pos2.getX() + 960, pos2.getY() + 960);
 
         return Helper.tileToScreen(pos3);
+    }
+
+    private void setupLighting(){
+        lighting = new HashMap<>();
+    }
+
+    private ArrayList<IsoContainer> CalculateLighting(ArrayList<IsoContainer> containers){
+
+        lighting = new HashMap<>();
+
+        for (var updater: containers) {
+            for (int x = -16; x<=16;x++){
+                for (int y = -16; y<=16;y++){
+                    lighting.put(new Position(updater.getX() + x,updater.getY() + y),new DynamicShadow(updater));
+                }
+            }
+        }
+
+        for (var updater: containers) {
+            for (int w = 0; w < 360; w++){
+                for (int z = 0; z != 1920*1.5; z++) {
+                    if (lighting.get(new Position(
+                            (int)(z*Math.sin(Math.toRadians(w))) + updater.getX(),
+                            (int)(z*Math.cos(Math.toRadians(w))) + updater.getY()
+                    )) != null){
+
+                        if (!lighting.get(new Position(
+                                (int)(z*Math.sin(Math.toRadians(w))) + updater.getX(),
+                                (int)(z*Math.cos(Math.toRadians(w))) + updater.getY()
+                        )).getParent().equals(updater)) {
+
+                            this.logger.info(w);
+
+                            lighting.get(new Position(
+                                    (int) (z * Math.sin(Math.toRadians(w))) + updater.getX(),
+                                    (int) (z * Math.cos(Math.toRadians(w))) + updater.getY()
+                            )).getParent().addLight(w, 1);
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+        return containers;
     }
 
     /*Isometric rendering ends*/
