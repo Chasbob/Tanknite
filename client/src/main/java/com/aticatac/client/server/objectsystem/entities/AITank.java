@@ -29,8 +29,6 @@ public class AITank extends Tank {
   protected int maxAmmo;
   protected int ammo;
 
-  //todo add in a parameter boolean which is ai true or false
-  //TODO add in the parameter changes everywhere
   public AITank(String name, Position p, int health, int ammo) {
     super(name, p, health, ammo);
     entity = new Entity(name, EntityType.TANK);
@@ -66,34 +64,35 @@ public class AITank extends Tank {
         this.logger.error(e);
         this.logger.error("Error while moving.");
       }
-      if (decision.getShoot() /*== Decision.ShootType.NORMAL*/ != Decision.ShootType.NONE) { // swap commented with uncommented
+      if (decision.getShoot() == Decision.ShootType.NORMAL) {
         this.logger.trace("shoot");
         if (!(getAmmo() == 0 || getHealth() == 0) && getFramesToShoot() < 0 && getFrozen() < 0) {
           setAmmo(getAmmo() - 1);
           if (getDamageIncrease() > 0) {
-            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 20, false));
+            addBullet(new Bullet(this, turretCalculation(getPosition().copy(), decision.getAngle()), decision.getAngle(), 20, false));
           } else {
-            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 10, false));
+            addBullet(new Bullet(this, turretCalculation(getPosition().copy(), decision.getAngle()), decision.getAngle(), 10, false));
           }
           setFramesToShoot(30);
         }
       }
-//      if (decision.getShoot() == Decision.ShootType.FREEZE) {
-//        this.logger.trace("freeze bullet");
-//        if (getFreezeBullets() > 0 && getFrozen() < 0) {
-//          addBullet(new Bullet(this, getPosition().copy(), decision.getAngle(), 0, true));
-//          setFreezeBullets(getFreezeBullets() - 1);
-//        }
-//      }
-//      if (decision.getShoot() == Decision.ShootType.SPRAY) {
-//        this.logger.trace("bullet spray");
-//        if (getBulletSprays() > 0 && getFrozen() < 0) {
-//          for (int j = 0; j < 375; j += 15) {
-//            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle() + j, 5, false));
-//          }
-//          setBulletSprays(getBulletSprays() - 1);
-//        }
-//      }
+      if (decision.getShoot() == Decision.ShootType.FREEZE) {
+        this.logger.trace("freeze bullet");
+        if (getFreezeBullets() > 0 && getFrozen() < 0) {
+          addBullet(new Bullet(this, turretCalculation(getPosition().copy(), decision.getAngle()), decision.getAngle(), 0, true));
+          // TODO: Make tank turn blue while it is frozen
+          setFreezeBullets(getFreezeBullets() - 1);
+        }
+      }
+      if (decision.getShoot() == Decision.ShootType.SPRAY) {
+        this.logger.trace("bullet spray");
+        if (getBulletSprays() > 0 && getFrozen() < 0) {
+          for (int j = 0; j < 375; j += 15) {
+            addBullet(new Bullet(this, getPosition().copy(), decision.getAngle() + j, 5, false));
+          }
+          setBulletSprays(getBulletSprays() - 1);
+        }
+      }
     }
     if (getFramesToShoot() == 1) {
       this.logger.trace("Ready to fire!");
