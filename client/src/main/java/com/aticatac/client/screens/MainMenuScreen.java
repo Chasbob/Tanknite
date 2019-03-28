@@ -124,7 +124,7 @@ public class MainMenuScreen extends AbstractScreen {
     aidTable.bottom();
   }
 
-  private void createNavigationMenus() {
+  private void createNavigationMenus(boolean online) {
     //create table to store all buttons
     containerTable = new Table().top().left().padLeft(50).padTop(150).padRight(50);
     super.addToRoot(containerTable);
@@ -139,11 +139,13 @@ public class MainMenuScreen extends AbstractScreen {
     dropDownTable = new Table();
     dropDownTable.defaults().left();
     //play button with child buttons
-    createPlay();
-    //challenges
-    createChallenges();
-    //customize
-    createCustomize();
+    createPlay(online);
+    if (online) {
+      //challenges
+      createChallenges();
+      //customize
+      createCustomize();
+    }
     //settings with child buttons
     createSettings();
     //create button to close game
@@ -322,15 +324,15 @@ public class MainMenuScreen extends AbstractScreen {
     statsTable.row();
   }
 
-  private void createPlay() {
+  private void createPlay(boolean online) {
     playTable = Styles.INSTANCE.createMenuTable(true, true);
     TextButton playButton = Styles.INSTANCE.createButton("PLAY");
     switchTabListener(playButton, playTable, horizontalGroup);
     ListenerFactory.addHoverListener(playButton, playTable);
-    createPlayChildren();
+    createPlayChildren(online);
   }
 
-  private void createPlayChildren() {
+  private void createPlayChildren(boolean online) {
     VerticalGroup playChildren = Styles.INSTANCE.createVerticalGroup();
     //create button for single player
     MenuTable singlePlayerTable = Styles.INSTANCE.createMenuTable(true, false);
@@ -343,20 +345,22 @@ public class MainMenuScreen extends AbstractScreen {
     }));
     singlePlayerTable.setButton(singlePlayerButton);
     ListenerFactory.addHoverListener(singlePlayerButton, singlePlayerTable);
-    //create button for multi player
-    MenuTable multiPlayerTable = Styles.INSTANCE.createMenuTable(false, false);
-    TextButton multiPlayerButton = Styles.INSTANCE.createItalicButton("MULTI-PLAYER");
-    multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      switchDropDownMouse(multiPlayerTable);
-      popUpChoice = true;
-      PopUp.createPopUp(false, false, true);
-      toggleButtonDeactivation(true);
-      return false;
-    }));
-    multiPlayerTable.setButton(multiPlayerButton);
-    ListenerFactory.addHoverListener(multiPlayerButton, multiPlayerTable);
     playChildren.addActor(singlePlayerTable);
-    playChildren.addActor(multiPlayerTable);
+    //create button for multi player
+    if (online) {
+      MenuTable multiPlayerTable = Styles.INSTANCE.createMenuTable(false, false);
+      TextButton multiPlayerButton = Styles.INSTANCE.createItalicButton("MULTI-PLAYER");
+      multiPlayerButton.addListener(ListenerFactory.newListenerEvent(() -> {
+        switchDropDownMouse(multiPlayerTable);
+        popUpChoice = true;
+        PopUp.createPopUp(false, false, true);
+        toggleButtonDeactivation(true);
+        return false;
+      }));
+      multiPlayerTable.setButton(multiPlayerButton);
+      ListenerFactory.addHoverListener(multiPlayerButton, multiPlayerTable);
+      playChildren.addActor(multiPlayerTable);
+    }
     playChildren.pack();
     playTable.setGroup(playChildren);
   }
@@ -558,10 +562,12 @@ public class MainMenuScreen extends AbstractScreen {
     //create points and username table
     createAssets(online);
     //create top half of screen
-    createNavigationMenus();
+    createNavigationMenus(online);
     //create table to store lower part of screen info
     containerTable.row();
-    createLockedTable();
+    if (online) {
+      createLockedTable();
+    }
     //create label for aid at bottom of screen
     createAidTable();
   }
