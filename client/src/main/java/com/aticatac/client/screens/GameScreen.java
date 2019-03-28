@@ -228,7 +228,7 @@ public class GameScreen extends AbstractScreen {
     }
     tanksMiniMap.end();
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
-      hudUpdate.update(update);
+      hudUpdate.update(update,player);
     }
     //hud viewport
     act(delta);
