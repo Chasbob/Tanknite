@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -42,6 +43,7 @@ public class Client {
    */
   public Client() {
     this.logger = Logger.getLogger(getClass());
+    this.logger.setLevel(Level.ALL);
     this.queue = new ConcurrentLinkedQueue<>();
     this.modelReader = new ModelReader();
     this.players = new ArrayList<>();
@@ -143,12 +145,15 @@ public class Client {
       this.connected = true;
       this.commandModel.setId(this.id);
       return Response.ACCEPTED;
-    } catch (IOException e) {
-      this.logger.warn("No Server.");
-      return Response.NO_SERVER;
     } catch (InvalidBytes e) {
       this.logger.warn("Invalid Response");
       return Response.INVALID_RESPONSE;
+    } catch (UnknownHostException e) {
+      this.logger.error("unknown host");
+      return Response.UNKNOWN_HOST;
+    } catch (IOException e) {
+      this.logger.error("IO error");
+      return Response.NO_SERVER;
     }
   }
 
