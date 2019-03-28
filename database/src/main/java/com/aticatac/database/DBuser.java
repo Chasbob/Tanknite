@@ -45,7 +45,7 @@ public class DBuser extends Thread {
     }
   }
 
-  private boolean checkUser(DBlogin dBlogin) {
+  private void checkUser(DBlogin dBlogin) {
     try {
       Optional<Player> op = dBinterface.getPlayer(dBlogin.getUsername());
       this.logger.info(op.toString());
@@ -54,18 +54,16 @@ public class DBuser extends Thread {
         if (dBlogin.isRegister()) {
           this.logger.info("cant register a taken name");
           this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
-          return false;
+          return;
         }
         Player p = op.get();
         if (p.username.equals(dBlogin.getUsername()) && p.password.equals(dBlogin.getPassword())) {
           this.logger.info("name and password match");
           this.printer.println(modelReader.toJson(new DBResponse(p, DBResponse.Response.accepted)));
           this.logger.info(p);
-          return true;
         } else {
           this.logger.info("password is wrong");
           this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.wrong_password)));
-          return false;
         }
       } else {
         if (dBlogin.isRegister()) {
@@ -75,19 +73,15 @@ public class DBuser extends Thread {
             if (optnewPlayer.isPresent()) {
               this.logger.info("registered");
               this.printer.println(modelReader.toJson(new DBResponse(optnewPlayer.get(), DBResponse.Response.accepted)));
-              return true;
             } else {
               this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
-              return false;
             }
           } catch (PersistenceException e) {
             this.logger.info("name taken");
             this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
-            return false;
           }
         } else {
           this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.no_user)));
-          return false;
         }
       }
     } catch (PersistenceException e) {
@@ -96,7 +90,6 @@ public class DBuser extends Thread {
     } catch (NullPointerException e) {
       this.logger.error(e);
     }
-    return false;
   }
 
   private Optional<Player> registerUser(DBlogin dBlogin) throws PersistenceException {
@@ -110,23 +103,11 @@ public class DBuser extends Thread {
 
   @Override
   public void run() {
-    this.logger.info("Running...");
-    int counter = 0;
-    boolean authenticated = false;
     try {
-      while (!this.isInterrupted() && !authenticated) {
-        this.logger.info("login attempt: " + counter);
-        String json = reader.readLine();
-        this.logger.info(json);
-        if (json.contains("DBlogin")) {
-          DBlogin dBlogin = modelReader.fromJson(json, DBlogin.class);
-          authenticated = checkUser(dBlogin);
-        } else {
-          this.logger.info("not a login request");
-        }
-        this.logger.info("authenticated = " + authenticated);
-        counter++;
-      }
+      String json = reader.readLine();
+      this.logger.info(json);
+      DBlogin dBlogin = modelReader.fromJson(json, DBlogin.class);
+      checkUser(dBlogin);
     } catch (IOException | InvalidBytes e) {
       try {
         this.logger.info("Shit broke");
@@ -138,6 +119,7 @@ public class DBuser extends Thread {
       return;
     }
     while (!this.isInterrupted() && run) {
+      this.logger.info("run");
       try {
         String json = reader.readLine();
         this.logger.info(json);
@@ -147,6 +129,7 @@ public class DBuser extends Thread {
           lobbyPlayers.setPlayers(players);
           printer.println(modelReader.toJson(lobbyPlayers));
         } else if (json.contains("Leaderboard")) {
+          
           Leaderboard leaderboard = new Leaderboard(new ArrayList<>(dBinterface.getLeaderboard()));
           printer.println(modelReader.toJson(leaderboard));
         }
