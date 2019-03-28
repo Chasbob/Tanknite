@@ -27,7 +27,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -75,8 +74,8 @@ public class GameScreen extends AbstractScreen {
     try {
       player = new PlayerContainer();
       ammoValue = Styles.INSTANCE.createLabel("");
-      killCount = Styles.INSTANCE.createLabel(" 0 ");
-      playerCount = Styles.INSTANCE.createLabel(" 1 ");
+      killCount = Styles.INSTANCE.createLabel("0");
+      playerCount = Styles.INSTANCE.createLabel("0");
       fpsValue = Styles.INSTANCE.createLabel("");
       tankXY = Styles.INSTANCE.createLabel("");
       direction = Styles.INSTANCE.createLabel("");
@@ -135,7 +134,6 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void render(float delta) {
-    AudioEnum.INSTANCE.stopMain();
     AudioEnum.INSTANCE.getTheme();
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -145,7 +143,12 @@ public class GameScreen extends AbstractScreen {
     if (newUpdate != null) {
       if (player.isAlive()) {
         update = newUpdate;
-        if (checkAlive(update.getPlayers()) == 1) {
+        int playerAlive = checkAlive(update.getPlayers());
+        if (playerAlive != Integer.valueOf(playerCount.getText().toString())) {
+          playerCount.setText(Integer.toString(playerAlive));
+        }
+        playerCount.setText(playerAlive);
+        if (playerAlive == 1) {
           Data.INSTANCE.setWon(true);
           if (!endGame) {
             PopUp.createPopUp(false, true, false);

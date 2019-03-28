@@ -12,24 +12,26 @@ class HUD {
     topLeftTable.top().left();
     topLeftTable.defaults().padTop(10).padLeft(10).left();
     Table aliveTable = new Table();
-    Table aliveLabelTable = new Table();
+    Table aliveLabelTable = createTable();
     Styles.INSTANCE
       .addTableColour(aliveLabelTable, Color.GRAY);
     Label aliveLabel = Styles.INSTANCE.createLabel("Alive");
     aliveLabelTable.add(aliveLabel);
-    Table playerCountTable = new Table();
+    Table playerCountTable = createTable();
     playerCountTable.add(playerCount).center();
     Styles.INSTANCE
       .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
     aliveTable.add(playerCountTable);
     aliveTable.add(aliveLabelTable);
     Table killTable = new Table();
-    Table killLableTable = new Table();
+    Table killLableTable = createTable();
+    ;
     Styles.INSTANCE
       .addTableColour(killLableTable, Color.GRAY);
     Label killLabel = Styles.INSTANCE.createLabel("Killed");
     killLableTable.add(killLabel);
-    Table killCountTable = new Table();
+    Table killCountTable = createTable();
+    ;
     Styles.INSTANCE
       .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
     killCountTable.add(killCount);
@@ -54,12 +56,12 @@ class HUD {
     bottomRightTable.bottom().right();
     bottomRightTable.defaults().padRight(10).padTop(10).padBottom(20).left();
     Table ammoTable = new Table();
-    Table ammoValueTable = new Table();
+    Table ammoValueTable = createTable();
     Styles.INSTANCE
       .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
     ammoValueTable.add(ammoValue);
     Label ammoLabel = Styles.INSTANCE.createLabel("Ammo");
-    Table ammoLabelTable = new Table();
+    Table ammoLabelTable = createTable();
     Styles.INSTANCE
       .addTableColour(ammoLabelTable, Color.GRAY);
     ammoLabelTable.add(ammoLabel);
@@ -77,5 +79,11 @@ class HUD {
     alertTable.add(alertLabel);
     alertTable.setVisible(false);
     return alertTable;
+  }
+
+  private static Table createTable() {
+    Table table = new Table();
+    table.defaults().pad(2.5f);
+    return table;
   }
 }
