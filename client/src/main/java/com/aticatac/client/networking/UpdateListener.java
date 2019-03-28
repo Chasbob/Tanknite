@@ -1,5 +1,6 @@
 package com.aticatac.client.networking;
 
+import com.aticatac.common.Stoppable;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
@@ -12,13 +13,14 @@ import org.apache.log4j.Logger;
 /**
  * The type Update listener.
  */
-class UpdateListener extends Thread {
+class UpdateListener extends Thread implements Stoppable {
   //    final BlockingQueue<Update> updates;
   private final MulticastSocket multicastSocket;
   private final Logger logger;
   private final ConcurrentLinkedQueue<Update> queue;
   private final BufferedReader reader;
   private final ModelReader modelReader;
+  private boolean run;
 
   /**
    * Instantiates a new Update listener.
@@ -35,6 +37,12 @@ class UpdateListener extends Thread {
     this.reader = reader;
   }
 
+  /**
+   * Instantiates a new Update listener.
+   *
+   * @param queue  the queue
+   * @param reader the reader
+   */
   UpdateListener(ConcurrentLinkedQueue<Update> queue, BufferedReader reader) {
     this.logger = Logger.getLogger(getClass());
     try {
@@ -51,8 +59,8 @@ class UpdateListener extends Thread {
   @Override
   public void run() {
     logger.trace("Running...");
-    super.run();
-    while (!this.isInterrupted()) {
+    this.run = true;
+    while (!this.isInterrupted() && run) {
       double nanoTime = System.nanoTime();
       try {
         if (this.queue.size() > 5) {
@@ -60,15 +68,13 @@ class UpdateListener extends Thread {
         }
         tcpListen();
       } catch (IOException e) {
-        logger.error(e);
-      } catch (InvalidBytes invalidBytes) {
-        invalidBytes.printStackTrace();
+        return;
+      } catch (InvalidBytes ignored) {
       }
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
           Thread.sleep(0);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
       }
     }
@@ -81,11 +87,14 @@ class UpdateListener extends Thread {
     this.queue.add(update);
   }
 
-  /**
-   * Quit.
-   */
-  public void quit() {
+  @Override
+  public void shutdown() {
     multicastSocket.close();
-    this.interrupt();
+    this.run = false;
+    this.queue.clear();
+    try {
+      this.reader.close();
+    } catch (IOException ignored) {
+    }
   }
 }

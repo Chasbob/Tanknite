@@ -68,11 +68,11 @@ public enum Data {
     modelReader = new ModelReader();
     try {
       dbSocket = new Socket();
-      dbSocket.setSoTimeout(6000);
-      dbSocket.bind(new InetSocketAddress("chasbob.co.uk", 6000));
+      dbSocket.connect(new InetSocketAddress("chasbob.co.uk", 6000),5000);
 //      dbSocket = new Socket("chasbob.co.uk", 6000);
       connected = true;
     } catch (IOException e) {
+      this.logger.info("IO on db");
       connected = false;
     }
     serverSelected = false;

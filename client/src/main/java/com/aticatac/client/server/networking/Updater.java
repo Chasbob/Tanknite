@@ -6,6 +6,7 @@ import com.aticatac.client.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.entities.Bullet;
 import com.aticatac.client.server.objectsystem.entities.Tank;
+import com.aticatac.common.Stoppable;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.containers.Container;
@@ -18,14 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import org.apache.log4j.Logger;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 /**
  * The type EmptyUpdate.
  *
  * @author Charles de Freitas
  */
-public class Updater implements Runnable {
+public class Updater implements Runnable , Stoppable {
   /**
    * The Data.
    */
@@ -38,7 +39,7 @@ public class Updater implements Runnable {
   private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
   private final CopyOnWriteArraySet<KillLogEvent> killLogEvents;
-  private boolean shutdown;
+  private boolean run;
 
   /**
    * Instantiates a new Updater.
@@ -46,22 +47,20 @@ public class Updater implements Runnable {
   Updater() {
     this.logger = Logger.getLogger(getClass());
     this.update = new Update();
-    this.shutdown = false;
+    this.run = true;
     this.modelReader = new ModelReader();
     players = update.getPlayers();
     projectiles = update.projectileMap();
     powerups = update.getPowerups();
     newShots = update.getNewShots();
-    eventBus.register(this);
+    serverEventBus.register(this);
     updatePlayers();
     killLogEvents = update.getKillLogEvents();
   }
 
-  /**
-   * Shutdown.
-   */
-  void shutdown() {
-    this.shutdown = true;
+  @Override
+  public void shutdown() {
+    this.run = false;
   }
 
   private void updatePlayers() {
@@ -87,7 +86,7 @@ public class Updater implements Runnable {
   @Override
   public void run() {
     this.logger.trace("Running...");
-    while (!Thread.currentThread().isInterrupted() && !shutdown) {
+    while (!Thread.currentThread().isInterrupted() && run) {
       double nanoTime = System.nanoTime();
       this.update.setStart(data.isStart());
       tcpBroadcast();

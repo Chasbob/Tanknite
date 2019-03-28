@@ -10,7 +10,7 @@ import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.containers.Container;
 import java.util.Objects;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 /**
  * The type Bullet.
@@ -77,11 +77,11 @@ public class Bullet extends Entity implements Tickable {
             break;
           case WALL:
           case OUTOFBOUNDS:
-            eventBus.post(new BulletCollisionEvent(this, e));
+            serverEventBus.post(new BulletCollisionEvent(this, e));
             return;
           case TANK:
             if (!e.getName().equals(getShooter().getName())) {
-              eventBus.post(new BulletCollisionEvent(this, e));
+              serverEventBus.post(new BulletCollisionEvent(this, e));
             }
             break;
           case BULLET:
@@ -101,7 +101,7 @@ public class Bullet extends Entity implements Tickable {
         }
       }
       setPosition(response.getPosition(), false);
-      eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
+      serverEventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
       this.logger.trace(getPosition());
     }
   }
@@ -112,7 +112,7 @@ public class Bullet extends Entity implements Tickable {
    * @param e the e
    */
   public void onBulletCollision(Entity e) {
-    eventBus.post(new BulletCollisionEvent(this, e));
+    serverEventBus.post(new BulletCollisionEvent(this, e));
   }
 
   public Container getContainer() {

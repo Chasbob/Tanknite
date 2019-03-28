@@ -1,5 +1,6 @@
 package com.aticatac.client.networking;
 
+import com.aticatac.common.Stoppable;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
 /**
  * The type Client.
  */
-public class Client {
+public class Client implements Stoppable {
   private final Logger logger;
   private final ConcurrentLinkedQueue<Update> queue;
   private final ModelReader modelReader;
@@ -174,7 +175,7 @@ public class Client {
   public void quit() {
     this.logger.warn("Quitting...");
     addCommand(Command.QUIT);
-    updateListener.quit();
+    updateListener.shutdown();
     printer.close();
   }
 
@@ -184,6 +185,7 @@ public class Client {
    * @param command the command
    */
   public void addCommand(Command command) {
+    this.logger.info(command);
     if (command.isMovement()) {
       currentCommands.add(command);
       commandModel.setCommand(Command.MOVE);
@@ -227,4 +229,19 @@ public class Client {
       return Response.UNKNOWN_HOST;
     }
   }
+
+  @Override
+  public void shutdown() {
+    queue.clear();
+    players.clear();
+    currentCommands.clear();
+    printer.close();
+    try {
+      reader.close();
+    } catch (IOException ignored) {
+    }
+    updateListener.shutdown();
+
+  }
+
 }

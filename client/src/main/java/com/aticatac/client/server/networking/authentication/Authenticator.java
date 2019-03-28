@@ -103,7 +103,7 @@ public class Authenticator implements Runnable {
    * @param login login details
    */
   private void addClient(Login login) {
-    CommandListener listener = new CommandListener(this.reader);
+    CommandListener listener = new CommandListener(this.reader,login);
     ClientModel model = new ClientModel(login.getId());
     Client client = new Client(listener, model, this.printer);
     Server.ServerData.INSTANCE.getGame().addPlayer(client.getId());

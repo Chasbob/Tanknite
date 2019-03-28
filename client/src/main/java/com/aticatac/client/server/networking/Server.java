@@ -1,13 +1,16 @@
 package com.aticatac.client.server.networking;
 
+import com.aticatac.client.server.bus.event.UnexpectedDisconnect;
 import com.aticatac.client.server.game.BaseGame;
 import com.aticatac.client.server.game.ThreeRoundGame;
 import com.aticatac.client.server.networking.listen.NewClients;
 import com.aticatac.client.server.objectsystem.DataServer;
 import com.aticatac.common.GameResult;
+import com.aticatac.common.Stoppable;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
+import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -19,18 +22,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 /**
  * The type Server.
  *
  * @author Charles de Freitas
  */
-public class Server extends Thread {
+public class Server extends Thread implements Stoppable {
   private final Logger logger;
   private final String id;
   private final boolean singleplayer;
-  private volatile boolean shutdown;
+  private volatile boolean run;
   private String host;
   private Updater updater;
   private Discovery discovery;
@@ -47,11 +50,18 @@ public class Server extends Thread {
     this.logger.info("Constructing server...");
     this.singleplayer = singleplayer;
     //TODO check if additional users are allowed.
-    this.shutdown = false;
+    this.run = true;
     this.id = id;
     ServerData.INSTANCE.initialise("225.4.5.6", 5500, 5000, id);
   }
 
+  /**
+   * Instantiates a new Server.
+   *
+   * @param singleplayer the singleplayer
+   * @param id           the id
+   * @param host         the host
+   */
   public Server(boolean singleplayer, String id, String host) {
     this(singleplayer, id);
     ServerData.INSTANCE.getGame().addPlayer("admin");
@@ -89,7 +99,7 @@ public class Server extends Thread {
         this.logger.error(e);
         return;
       }
-      while (!this.shutdown && !ServerData.INSTANCE.isStart()) {
+      while (run && !ServerData.INSTANCE.isStart()) {
         CommandModel current = ServerData.INSTANCE.popCommand();
         if (current != null) {
           this.logger.info(current);
@@ -123,7 +133,7 @@ public class Server extends Thread {
     ServerData.INSTANCE.startGame();
     this.logger.info("GO GO GO!");
 //    this.ai.start();
-    while (!this.shutdown) {
+    while (run) {
       CommandModel current = ServerData.INSTANCE.popCommand();
       if (current != null) {
         this.logger.trace(current);
@@ -138,8 +148,13 @@ public class Server extends Thread {
     this.logger.info("Server ended.");
   }
 
+  /**
+   * On client input.
+   *
+   * @param model the model
+   */
   public void onClientInput(CommandModel model) {
-    eventBus.post(model);
+    serverEventBus.post(model);
   }
 
   private void disconnectClient(CommandModel model) {
@@ -152,11 +167,16 @@ public class Server extends Thread {
     }
   }
 
+  @Subscribe
+  private void unexpectedDisconnect(UnexpectedDisconnect e) {
+    ServerData.INSTANCE.game.removePlayer(e.getUsername());
+  }
+
   /**
    * Shutdown.
    */
   public void shutdown() {
-    this.shutdown = true;
+    this.run = false;
     if (!singleplayer) {
       discovery.shutdown();
       newClients.shutdown();
@@ -176,12 +196,10 @@ public class Server extends Thread {
     private final ConcurrentLinkedQueue<CommandModel> requests;
     private final ConcurrentHashMap<String, Client> clients;
     private final Logger logger;
-    private final ModelReader modelReader;
     private ServerSocket serverSocket;
     private MulticastSocket multicastSocket;
     private DatagramSocket broadcastSocket;
     private String id;
-    private boolean singlePlayer;
     private InetAddress server;
     private InetAddress multicast;
     private int port;
@@ -193,12 +211,19 @@ public class Server extends Thread {
 
     ServerData() {
       this.port = 5000;
-      this.modelReader = new ModelReader();
       this.requests = new ConcurrentLinkedQueue<>();
       this.clients = new ConcurrentHashMap<>();
       this.logger = Logger.getLogger(ServerData.class);
     }
 
+    /**
+     * Initialise.
+     *
+     * @param multicast     the multicast
+     * @param broadcastPort the broadcast port
+     * @param port          the port
+     * @param name          the name
+     */
     public void initialise(String multicast, int broadcastPort, int port, String name) {
       try {
         this.multicast = InetAddress.getByName(multicast);
@@ -223,6 +248,9 @@ public class Server extends Thread {
       this.logger.info("Done!");
     }
 
+    /**
+     * Start game.
+     */
     void startGame() {
       new Thread(() -> {
         try {
@@ -234,18 +262,36 @@ public class Server extends Thread {
       }).start();
     }
 
+    /**
+     * Player count int.
+     *
+     * @return the int
+     */
     public int playerCount() {
       return this.game.playerCount();
     }
 
+    /**
+     * Gets max players.
+     *
+     * @return the max players
+     */
     public int getMaxPlayers() {
       return maxPlayers;
     }
 
+    /**
+     * Clear requests.
+     */
     public void clearRequests() {
       this.requests.clear();
     }
 
+    /**
+     * Refresh broadcast boolean.
+     *
+     * @return the boolean
+     */
     public boolean refreshBroadcast() {
       if (broadcastCount != game.playerCount()) {
         broadcastCount = game.playerCount();
@@ -350,6 +396,11 @@ public class Server extends Thread {
         this.serverSocket.close();
         this.multicastSocket.close();
         this.broadcastSocket.close();
+        game.shutdown();
+        this.start = false;
+        requests.clear();
+        clients.clear();
+        game.shutdown();
       } catch (IOException e) {
         this.logger.error(e);
       }
@@ -454,6 +505,9 @@ public class Server extends Thread {
       return broadcastPort;
     }
 
+    /**
+     * Fill ai.
+     */
     public void fillAI() {
       game.nAddAI(maxPlayers - game.playerCount());
     }

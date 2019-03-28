@@ -130,6 +130,7 @@ class PopUp {
         Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
         //join single player server
         Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
+        Screens.INSTANCE.reloadScreen(GameScreen.class);
         Screens.INSTANCE.showScreen(GameScreen.class);
       }
       return false;

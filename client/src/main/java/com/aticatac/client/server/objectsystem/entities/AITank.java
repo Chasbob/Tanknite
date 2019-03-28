@@ -13,7 +13,7 @@ import com.aticatac.common.objectsystem.EntityType;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
@@ -37,7 +37,7 @@ public class AITank extends Tank {
     frames = new ConcurrentLinkedQueue<>();
     logger = Logger.getLogger(getClass());
     ai = new AI();
-    eventBus.register(new AIInputListener(frames));
+    serverEventBus.register(new AIInputListener(frames));
   }
 
   @Override
@@ -99,8 +99,5 @@ public class AITank extends Tank {
       this.logger.trace("Ready to fire!");
     }
     setFramesToShoot(getFramesToShoot() - 1);
-//    if (health >= 0) {
-//      hit(1, false);
-//    }
   }
 }

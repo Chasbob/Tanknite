@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 /**
  * The type Tank.
@@ -189,27 +189,27 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
             return;
           case AMMO_POWERUP:
             onPlayerHit(e);
-            eventBus.post(new TankCollisionEvent(this, e));
+            serverEventBus.post(new TankCollisionEvent(this, e));
             break;
           case SPEED_POWERUP:
             onPlayerHit(e);
-            eventBus.post(new TankCollisionEvent(this, e));
+            serverEventBus.post(new TankCollisionEvent(this, e));
             break;
           case HEALTH_POWERUP:
             onPlayerHit(e);
-            eventBus.post(new TankCollisionEvent(this, e));
+            serverEventBus.post(new TankCollisionEvent(this, e));
             break;
           case DAMAGE_POWERUP:
             onPlayerHit(e);
-            eventBus.post(new TankCollisionEvent(this, e));
+            serverEventBus.post(new TankCollisionEvent(this, e));
             break;
           case BULLETSPRAY_POWERUP:
             onPlayerHit(e);
-            eventBus.post(new TankCollisionEvent(this, e));
+            serverEventBus.post(new TankCollisionEvent(this, e));
             break;
           case FREEZEBULLET_POWERUP:
             onPlayerHit(e);
-            eventBus.post(new TankCollisionEvent(this, e));
+            serverEventBus.post(new TankCollisionEvent(this, e));
             break;
         }
       }
@@ -227,7 +227,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
       var response = getPhysics().move(vector.angle(), getPosition(), speedIncrease);
       checkCollisions(response);
     }
-    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getPlayerContainer()));
+    serverEventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getPlayerContainer()));
   }
 
   /**
@@ -263,7 +263,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     if (getHealth() <= 10 && getHealth() > 0) {
       deathCountdown = 1200;
     } else if (getHealth() <= 0) {
-      eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, getPlayerContainer()));
+      serverEventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, getPlayerContainer()));
       DataServer.INSTANCE.removeBoxFromData(getCollisionBox());
       alive = false;
 //      Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
@@ -354,9 +354,8 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    * @param bullet the bullet
    */
   public void addBullet(Bullet bullet) {
-    getBus().post(new ShootEvent(this, bullet));
-    getBus().post(new BulletsChangedEvent(BulletsChangedEvent.Action.ADD, bullet.getContainer()));
-//    output.addBullet(bullet);
+    serverEventBus.post(new ShootEvent(this, bullet));
+    serverEventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.ADD, bullet.getContainer()));
   }
 
   /**
@@ -365,8 +364,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    * @param entity the entity
    */
   public void onPlayerHit(Entity entity) {
-//    getBus().post(new PlayersChangedEvent(PlayersChangedEvent.Action.UPDATE, getPlayerContainer()));
-    getBus().post(new TankCollisionEvent(this, entity));
+    serverEventBus.post(new TankCollisionEvent(this, entity));
   }
 
   /**
@@ -387,14 +385,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     return physics;
   }
 
-  /**
-   * Gets bus.
-   *
-   * @return the bus
-   */
-  public EventBus getBus() {
-    return eventBus;
-  }
+
 
   /**
    * Gets input.
@@ -534,6 +525,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   }
 
   public void reset(Position position) {
+
     setPosition(position);
     frames.clear();
     setInput(new CommandModel("", Command.DEFAULT));
