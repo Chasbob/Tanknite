@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<mapper namespace="Challenge">
+    <resultMap id="result" type="Challenge">
+        <result column="date"/>
+        <result column="description"/>
+        <result column="reward"/>
+    </resultMap>
+    <insert id="insert" parameterType="Challenge">
+        INSERT INTO names (date, description, reward)
+        VALUES (#{date}, #{description}, #{reward})
+        ;
+    </insert>
+    <select id="getByDate" resultType="Challenge" parameterType="TIMESTAMP">
+        SELECT *
+        FROM challenges
+        WHERE date = #{date}
+        ;
+    </select>
+    <select id="getByReward" resultType="Challenge" parameterType="INT">
+        SELECT *
+        FROM challenges
+        WHERE reward = #{reward}
+        ;
+    </select>
+    <select id="getByDescription" resultType="Challenge" parameterType="TEXT">
+        SELECT *
+        FROM challenges
+        WHERE description = #{description}
+        ;
+    </select>
+    <select id ="getAll" resultType="Challenge">
+        SELECT *
+        FROM challenges
+        ;
+    </select>
+</mapper>
