@@ -83,6 +83,14 @@ public enum Data {
     this.clients = new ArrayList<>();
   }
 
+  public boolean connectedToDB() {
+    try {
+      return this.dbSocket.getInetAddress().isReachable(1000);
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
   /**
    * Is started boolean.
    *
