@@ -27,11 +27,11 @@ public class PlayerContainer extends Container {
    * @param health     the health
    * @param ammo       the ammo
    */
-  public PlayerContainer(final int x, final int y, final int r, final String id, final EntityType objectType, final int health, final int ammo) {
+  public PlayerContainer(final int x, final int y, final int r, final String id, final EntityType objectType, final int health, final int ammo, final boolean alive) {
     super(x, y, r, id, objectType);
     this.health = health;
     this.ammo = ammo;
-    this.alive = true;
+    this.alive = alive;
   }
 
   /**

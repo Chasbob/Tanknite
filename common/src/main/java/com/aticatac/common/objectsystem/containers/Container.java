@@ -10,19 +10,24 @@ public class Container {
   /**
    * The X.
    */
-  protected final int x;
+  protected int x;
   /**
    * The Y.
    */
-  protected final int y;
+  protected int y;
   /**
    * The R.
    */
-  protected final int r;
+  protected int r;
   /**
    * The Id.
    */
   protected final String id;
+
+  public void setR(int r) {
+    this.r = r;
+  }
+
   /**
    * The Object type.
    */

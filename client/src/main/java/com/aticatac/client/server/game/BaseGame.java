@@ -23,6 +23,7 @@ import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.containers.KillLogEvent;
 import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
+
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Objects;
@@ -30,6 +31,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
+
 import org.apache.log4j.Logger;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
@@ -90,7 +92,6 @@ public class BaseGame implements Runnable, Callable<GameResult> {
    * In map boolean.
    *
    * @param v the v
-   *
    * @return the boolean
    */
   public static boolean inMap(Vector v) {
@@ -148,6 +149,7 @@ public class BaseGame implements Runnable, Callable<GameResult> {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
+      addAI("ai");
     }
   }
 

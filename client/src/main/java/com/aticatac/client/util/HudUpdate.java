@@ -42,7 +42,7 @@ public class HudUpdate {
   }
 
   private void updateAmmoLabel() {
-    this.ammoLabel.setText(" " + update.getMe(Data.INSTANCE.getID()).getAmmo() + " ");
+    this.ammoLabel.setText(" " + update.getMe(Data.INSTANCE.getID()).getHealth() + " ");
   }
 
   private void updatePlayerCount() {

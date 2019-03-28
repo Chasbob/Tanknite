@@ -5,6 +5,7 @@ import com.aticatac.client.server.ai.PlayerState;
 import com.aticatac.client.server.ai.PowerUpState;
 import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.entities.Tank;
+
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -25,7 +26,10 @@ public class AIUpdateService {
   public void update(final ConcurrentHashMap<String, Tank> playerMap, final CopyOnWriteArraySet<Entity> powerups) {
     ArrayList<PlayerState> playerStates = new ArrayList<>();
     for (Tank t : playerMap.values()) {
-      playerStates.add(t.getPlayerState());
+      if (t.isAlive()) {
+
+        playerStates.add(t.getPlayerState());
+      }
     }
     for (Entity e : powerups) {
       powerUpStates.add(new PowerUpState(e.getType(), e.getPosition()));

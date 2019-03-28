@@ -68,7 +68,7 @@ public enum Data {
     modelReader = new ModelReader();
     try {
       dbSocket = new Socket();
-      dbSocket.setSoTimeout(3000);
+      dbSocket.setSoTimeout(6000);
       dbSocket.bind(new InetSocketAddress("chasbob.co.uk", 6000));
 //      dbSocket = new Socket("chasbob.co.uk", 6000);
       connected = true;

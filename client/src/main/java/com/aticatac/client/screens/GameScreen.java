@@ -10,6 +10,7 @@ import com.aticatac.common.model.Command;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.containers.Container;
+import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -56,7 +57,7 @@ public class GameScreen extends AbstractScreen {
   private Texture projectileTexture;
   private Texture stick;
   private Label direction;
-  private Container player;
+  private PlayerContainer player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
 
@@ -68,7 +69,7 @@ public class GameScreen extends AbstractScreen {
     maxX = 1920;
     maxY = 1920;
     try {
-      player = new Container();
+      player = new PlayerContainer();
       ammoValue = Styles.INSTANCE.createLabel("");
       killCount = Styles.INSTANCE.createLabel(" 0 ");
       playerCount = Styles.INSTANCE.createLabel(" 1 ");
@@ -137,8 +138,14 @@ public class GameScreen extends AbstractScreen {
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
-      update = newUpdate;
-      player = update.getMe(Data.INSTANCE.getID());
+      if (player.isAlive()) {
+        update = newUpdate;
+        player = newUpdate.getMe(Data.INSTANCE.getID());
+      } else {
+        PlayerContainer temp = newUpdate.getMe(Data.INSTANCE.getID());
+        player.setR(temp.getR());
+        update = newUpdate;
+      }
 
     }
     if (player != null) {
@@ -183,10 +190,12 @@ public class GameScreen extends AbstractScreen {
       louderSound(corner3);
       Container corner4 = new Container(1920, 1920, 0, "", EntityType.NONE);
       louderSound(corner4);
-      renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
+      if (update.getMe(Data.INSTANCE.getID()) != null) {
+        renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
+      }
       tanksMiniMap.setColor(Color.RED);
       for (Container c :
-          update.getNewShots().values()) {
+        update.getNewShots().values()) {
         renderContainer(c, tanksMiniMap);
         //Audio: plays sound when tank shoots in range
         if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
@@ -238,9 +247,11 @@ public class GameScreen extends AbstractScreen {
 
   private void renderTanks(SpriteBatch tanks) {
     if (update != null) {
-      for (Container c : update.getPlayers().values()) {
-        renderContainer(c, tanks);
-        tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
+      for (PlayerContainer c : update.getPlayers().values()) {
+        if (c.isAlive()) {
+          renderContainer(c, tanks);
+          tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
+        }
       }
     }
     renderProjectiles(tanks);
@@ -251,7 +262,7 @@ public class GameScreen extends AbstractScreen {
   private void renderProjectiles(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-          update.getProjectiles().values()) {
+        update.getProjectiles().values()) {
         renderProjectiles(c, tanks);
       }
     }
@@ -260,7 +271,7 @@ public class GameScreen extends AbstractScreen {
   private void renderPowerups(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-          update.getPowerups().values()) {
+        update.getPowerups().values()) {
         switch (c.getObjectType()) {
           case NONE:
             break;

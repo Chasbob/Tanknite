@@ -128,6 +128,7 @@ public class Updater implements Runnable {
         break;
       case REMOVE:
         this.logger.info(e);
+//        this.players.remove(e.getPlayerContainer().getId());
         this.players.get(e.getPlayerContainer().getId()).setAlive(false);
         break;
       case UPDATE:

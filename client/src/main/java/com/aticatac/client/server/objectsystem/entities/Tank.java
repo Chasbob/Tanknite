@@ -19,8 +19,10 @@ import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import com.google.common.eventbus.EventBus;
+
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.jetbrains.annotations.NotNull;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
@@ -87,6 +89,9 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
 
   @Override
   public void tick() {
+    if (!alive) {
+      return;
+    }
     logger.trace("tick");
     frozen--;
     damageIncrease--;
@@ -148,7 +153,6 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   /**
    * @param tankPosition
    * @param rotation
-   *
    * @return
    */
   private Position turretCalculation(Position tankPosition, int rotation) {
@@ -165,7 +169,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   private void checkCollisions(PhysicsResponse response) {
     if (!response.getCollisions().contains(outOfBounds)) {
       for (Entity e :
-          response.getCollisions()) {
+        response.getCollisions()) {
         if (e.getType() != EntityType.NONE && e.getType() != EntityType.WALL && !e.getName().equals(getName())) {
           this.logger.error(e);
         }
@@ -252,6 +256,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   @Override
   public int hit(final int damage, boolean freezeBullet) {
     this.logger.trace(clamp(getHealth() - damage));
+    setHealth(clamp(getHealth() - damage));
     if (freezeBullet) {
       frozen = 300;
     }
@@ -259,9 +264,10 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
       deathCountdown = 1200;
     } else if (getHealth() <= 0) {
       eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, getPlayerContainer()));
+      DataServer.INSTANCE.removeBoxFromData(getCollisionBox());
+      alive = false;
 //      Server.ServerData.INSTANCE.getGame().removePlayer(this.getName());
     }
-    setHealth(clamp(getHealth() - damage));
     return getHealth();
   }
 
@@ -300,10 +306,10 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
 
   public PlayerContainer getPlayerContainer() {
     return new PlayerContainer(this.getPosition().getX(),
-        this.getPosition().getY(),
-        this.getRotation(),
-        this.getName(),
-        EntityType.TANK, this.health, this.ammo);
+      this.getPosition().getY(),
+      this.getRotation(),
+      this.getName(),
+      EntityType.TANK, this.health, this.ammo, this.alive);
   }
 
   @Override
