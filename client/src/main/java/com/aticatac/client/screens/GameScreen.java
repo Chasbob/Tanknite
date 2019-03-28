@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.isometric.Helper;
+import com.aticatac.client.isometric.TileHolder;
 import com.aticatac.client.server.Position;
 import com.aticatac.client.util.*;
 import com.aticatac.common.model.Command;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
@@ -25,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * The type Game screen.
@@ -46,9 +49,7 @@ public class GameScreen extends AbstractScreen {
   private Label playerCount;
   private float health;
   private TiledMap map;
-  private MapLayers mapLayers;
   private TiledMapTileSet tileSet;
-  private TiledMapTileLayer wallLayer;
   private IsometricTiledMapRenderer renderer;
   private Camera camera;
   private MinimapViewport minimapViewport;
@@ -58,7 +59,6 @@ public class GameScreen extends AbstractScreen {
   private Texture powerUpTexture;
   private Texture bulletTexture;
   private Texture projectileTexture;
-  private Texture tankTexture2;
   private Texture shadow;
   private Texture shadowUltraLight;
   private ArrayList<Texture> rotations;
@@ -69,8 +69,8 @@ public class GameScreen extends AbstractScreen {
   private boolean tractionHealth;
   boolean tractionPopUp;
 
-  private ArrayList<Position> tileObjects;
-  private ArrayList<ArrayList<Position>> rows = new ArrayList<>();
+  private ArrayList<ArrayList<TileHolder>> rows = new ArrayList<>();
+  private HashMap<Integer, TextureRegion> tileTextures = new HashMap<>();
 
   /**
    * Instantiates a new Game screen.
@@ -88,19 +88,19 @@ public class GameScreen extends AbstractScreen {
       tankXY = Styles.INSTANCE.createLabel("");
       direction = Styles.INSTANCE.createLabel("");
 
-      tileObjects = new ArrayList<>();
       map = new TmxMapLoader().load("maps/map.tmx");
       renderer = new IsometricTiledMapRenderer(map);
       tileSet = map.getTileSets().getTileSet(0);
-      mapLayers = map.getLayers();
-      wallLayer = (TiledMapTileLayer) mapLayers.get(1);
       tankTexture = new Texture("maps/tank1.png");
-      tankTexture2 = new Texture("img/tank.png");
       powerUpTexture = new Texture("maps/powerup.png");
       shadow = new Texture("maps/shadow.png");
       shadowUltraLight = new Texture("maps/shadow2.png");
       bulletTexture = new Texture("maps/bullet.png");
       projectileTexture = new Texture("img/bullet.png");
+
+      for (TiledMapTile tiledMapTile : tileSet) {
+        tileTextures.put(tiledMapTile.getTextureRegion().hashCode(), tiledMapTile.getTextureRegion());
+      }
 
       rotations = new ArrayList<>();
       for (int i = 0;i<=359;i++){
@@ -108,7 +108,7 @@ public class GameScreen extends AbstractScreen {
       }
 
       for (int i = 0; i != 61; i++) {
-        ArrayList<Position> ps = new ArrayList<>();
+        ArrayList<TileHolder> ps = new ArrayList<>();
         rows.add(ps);
       }
 
@@ -121,7 +121,7 @@ public class GameScreen extends AbstractScreen {
           try {
             var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(x, y).getTile();
             if(tile!=null) {
-              rows.get(j).add(new Position(x, y));
+              rows.get(j).add(new TileHolder(new Position(x, y),tile.getTextureRegion().hashCode()));
             }
           } catch (Exception ignored) {
           }
@@ -134,7 +134,7 @@ public class GameScreen extends AbstractScreen {
           try {
             var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(x, y).getTile();
             if(tile!=null) {
-              rows.get(j).add(new Position(x, y));
+              rows.get(j).add(new TileHolder(new Position(x, y),tile.getTextureRegion().hashCode()));
             }
           } catch (Exception ignored) {
           }
@@ -569,10 +569,11 @@ public class GameScreen extends AbstractScreen {
 
   public void renderGame(SpriteBatch sb, ArrayList<Container> objects) {
     int index = 0;
-    for (ArrayList<Position> ps : rows) {
+    for (ArrayList<TileHolder> ps : rows) {
 
-      for (Position pp : ps) {
-          var tile = ((TiledMapTileLayer) map.getLayers().get(1)).getCell(pp.getX(), pp.getY()).getTile();
+      for (TileHolder tileHolder : ps) {
+        var pp = tileHolder.getPosition();
+          var tile = tileTextures.get(tileHolder.getTexture());
           drawTiles(sb, pp.getX(), pp.getY(), tile);
           drawShadow(sb,pp.getX(), pp.getY(), shadow);
       }
@@ -627,7 +628,7 @@ public class GameScreen extends AbstractScreen {
     return array;
   }
 
-  private void drawTiles(SpriteBatch sb, int i, int j, TiledMapTile tile) {
+  private void drawTiles(SpriteBatch sb, int i, int j, TextureRegion tile) {
     var pos = new Position((i) * 32, (j) * 32);
 
     var pos1 = new Position(pos.getX() - 960, pos.getY() - 960);
@@ -635,7 +636,7 @@ public class GameScreen extends AbstractScreen {
     var pos3 = new Position(pos2.getX() + 960, pos2.getY() + 960);
     var pos4 = Helper.tileToScreen(pos3);
 
-    sb.draw(tile.getTextureRegion(), pos4.getX(), pos4.getY());
+    sb.draw(tile, pos4.getX(), pos4.getY());
   }
 
   private void drawShadow(SpriteBatch sb, int i, int j, Texture shadow) {
