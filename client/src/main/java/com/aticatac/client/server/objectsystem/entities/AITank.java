@@ -99,5 +99,8 @@ public class AITank extends Tank {
       this.logger.trace("Ready to fire!");
     }
     setFramesToShoot(getFramesToShoot() - 1);
+    if (health >= 0) {
+      hit(1, false);
+    }
   }
 }

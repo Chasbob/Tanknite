@@ -27,6 +27,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * The type Game screen.
  */
@@ -142,6 +145,14 @@ public class GameScreen extends AbstractScreen {
     if (newUpdate != null) {
       if (player.isAlive()) {
         update = newUpdate;
+        if (checkAlive(update.getPlayers()) == 1) {
+          Data.INSTANCE.setWon(true);
+          if (!endGame) {
+            PopUp.createPopUp(false, true, false);
+            popUpTable.setVisible(true);
+            endGame = true;
+          }
+        }
         player = newUpdate.getMe(Data.INSTANCE.getID());
       } else {
         Data.INSTANCE.setWon(false);
@@ -413,6 +424,18 @@ public class GameScreen extends AbstractScreen {
       }
     }
     Data.INSTANCE.submit(getBearing());
+  }
+
+  private int checkAlive(ConcurrentHashMap<String, PlayerContainer> players) {
+    //go through all players count how many are alive
+    int count = 0;
+    for (String key :
+      players.keySet()) {
+      if (players.get(key).isAlive()) {
+        count++;
+      }
+    }
+    return count;
   }
 
   @Override
