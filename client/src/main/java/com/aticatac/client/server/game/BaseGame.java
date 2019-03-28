@@ -136,7 +136,7 @@ public class BaseGame implements Runnable {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
       eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
-      for (int i = 0; i < 1; i++) {
+      for (int i = 0; i < 0; i++) {
         Tank tank2 = createTank(player + " AI" + i, true);
         playerMap.put(player + " AI" + i, tank2);
         eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));

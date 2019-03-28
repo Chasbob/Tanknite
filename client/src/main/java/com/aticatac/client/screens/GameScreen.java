@@ -104,7 +104,7 @@ public class GameScreen extends AbstractScreen {
 
       rotations = new ArrayList<>();
       for (int i = 0;i<=359;i++){
-        rotations.add(new Texture("maps/turret_with_base/"+String.format("%04d", i)+ ".png"));
+        rotations.add(new Texture("maps/tank-with-shadow/"+String.format("%04d", i)+ ".png"));
       }
 
       for (int i = 0; i != 61; i++) {
@@ -588,9 +588,27 @@ public class GameScreen extends AbstractScreen {
             sb.draw(shadowUltraLight,Helper.tileToScreenX(c.getX() + 10, c.getY() - 32 - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 32 - 10));
           }else if(c.getObjectType() == EntityType.TANK) {
             //sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
-            int t = changeAngle(-getBearing(),90);
+            int t = changeAngle(-getBearing(),90);//changeAngle(-c.getR(),-90);
+            t = t % 360;
             if (t==359) t = 0;
-            sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
+            //sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
+            var img = rotations.get(t);
+            sb.draw(img,
+                    Helper.tileToScreenX(c.getX() + 1.5f, c.getY() - 1.5f),
+                    Helper.tileToScreenY(c.getX() + 1.5f, c.getY() - 1.5f),
+                    0,
+                    0,
+                    img.getWidth(),
+                    img.getHeight(),
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    img.getWidth(),
+                    img.getHeight(),
+                    false,
+                    false);
           }
         }
       }
