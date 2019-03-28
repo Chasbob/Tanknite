@@ -27,7 +27,6 @@ import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
  * @author Charles de Freitas
  */
 public class Server extends Thread {
-
   private final Logger logger;
   private final String id;
   private final boolean singleplayer;
@@ -93,6 +92,7 @@ public class Server extends Thread {
       while (!this.shutdown && !ServerData.INSTANCE.isStart()) {
         CommandModel current = ServerData.INSTANCE.popCommand();
         if (current != null) {
+          this.logger.info(current);
           if (current.getCommand() == Command.QUIT) {
             if (current.getId().equals(this.host)) {
               shutdown();
@@ -381,37 +381,6 @@ public class Server extends Thread {
     public void setId(String id) {
       this.id = id;
     }
-    /**
-     * Is single player boolean.
-     *
-     * @return the boolean
-     */
-//    public boolean isSinglePlayer() {
-//      return singlePlayer;
-//    }
-    /**
-     * Sets single player.
-     *
-     * @param singlePlayer the single player
-     */
-//    public void setSinglePlayer(boolean singlePlayer) {
-//      if (this.singlePlayer != singlePlayer) {
-//        this.singlePlayer = singlePlayer;
-//        try {
-//          if (singlePlayer) {
-//            this.serverSocket.close();
-//            this.serverSocket = new ServerSocket();
-//            this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("127.0.0.1"), this.port));
-//          } else {
-//            this.serverSocket.close();
-//            this.serverSocket = new ServerSocket();
-//            this.serverSocket.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), this.port));
-//          }
-//        } catch (IOException e) {
-//          this.logger.error(e);
-//        }
-//      }
-//    }
 
     /**
      * Put command.

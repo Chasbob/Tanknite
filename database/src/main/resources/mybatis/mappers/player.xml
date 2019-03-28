@@ -15,6 +15,7 @@
         <result column="win"/>
         <result column="loss"/>
         <result column="score"/>
+        <result column="xp"/>
     </resultMap>
     <insert id="insert" parameterType="Player">
         INSERT INTO players (username, password)
@@ -30,7 +31,8 @@
     <select id="getLeaderboard" resultType="Player">
         SELECT *
         FROM players
-        ORDER BY score
+        ORDER BY score DESC
+        ;
         ;
     </select>
     <select id="getByID" resultMap="result" parameterType="int">

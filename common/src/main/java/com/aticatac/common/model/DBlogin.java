@@ -27,20 +27,20 @@ public class DBlogin extends Model {
   @Override
   public String toString() {
     return "DBlogin{"
-      +
-      "username='"
-      +
-      username
-      +
-      '\''
-      +
-      ", password='"
-      +
-      password
-      +
-      '\''
-      +
-      '}';
+        +
+        "username='"
+        +
+        username
+        +
+        '\''
+        +
+        ", password='"
+        +
+        password
+        +
+        '\''
+        +
+        '}';
   }
 
   public String getUsername() {

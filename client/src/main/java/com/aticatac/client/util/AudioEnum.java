@@ -247,7 +247,6 @@ public enum AudioEnum {
    */
   public Music getButtonClick() {
 
-    System.out.println(sound);
     if (!buttonClick.isPlaying() && sound) {
       buttonClick.setVolume(soundVolume);
       buttonClick.play();

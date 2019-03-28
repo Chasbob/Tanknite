@@ -62,6 +62,8 @@ public class LobbyScreen extends AbstractScreen {
       ListenerFactory.addHoverListener(aiButton, aiTable);
       aiButton.addListener(ListenerFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.FILL_AI);
+
+
         return true;
       }));
       aiTable.setButton(aiButton);

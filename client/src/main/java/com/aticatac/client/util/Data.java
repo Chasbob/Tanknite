@@ -3,20 +3,25 @@ package com.aticatac.client.util;
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
 import com.aticatac.client.server.networking.Server;
-import com.aticatac.common.model.*;
+import com.aticatac.common.model.Command;
+import com.aticatac.common.model.DBResponse;
+import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.ModelReader;
+import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
-
-import java.io.*;
+import com.aticatac.common.objectsystem.containers.Container;
+import com.badlogic.gdx.graphics.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.badlogic.gdx.graphics.Color;
 import org.apache.log4j.Logger;
 
 import static com.aticatac.client.bus.EventBusFactory.eventBus;
@@ -30,6 +35,7 @@ public enum Data {
    */
   INSTANCE;
   private final Logger logger;
+  ModelReader modelReader;
   private Update update;
   private ArrayList<String> clients;
   private HashMap<String, Container> players;
@@ -48,7 +54,6 @@ public enum Data {
   private Socket dbSocket;
   private BufferedReader reader;
   private PrintStream printer;
-  ModelReader modelReader;
   private boolean connected;
 
   Data() {
@@ -180,6 +185,7 @@ public enum Data {
    * Gets player.
    *
    * @param i the
+   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -253,9 +259,11 @@ public enum Data {
    *
    * @param id           the id
    * @param singlePlayer the single player
+   *
    * @return the Response
    */
   public Response connect(String id, boolean singlePlayer) {
+    this.logger.info(id + ", " + singlePlayer);
     if (singlePlayer) {
       return this.client.connect(this.localhost, id);
     } else {
@@ -274,7 +282,9 @@ public enum Data {
    * @param id           the id
    * @param singleplayer the singleplayer
    * @param host         the host
+   *
    * @return the Response
+   *
    * @throws UnknownHostException the unknown host exception
    */
   public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
@@ -362,7 +372,6 @@ public enum Data {
   }
 
   public void initialise() {
-
   }
 
   public boolean isConnected() {

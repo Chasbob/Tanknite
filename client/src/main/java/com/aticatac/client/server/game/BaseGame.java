@@ -196,10 +196,16 @@ public class BaseGame implements Runnable, Callable<GameResult> {
     if (isAI) {
       AITank tank = new AITank(player, position, 100, 30, playerMap.size());
       DataServer.INSTANCE.setCoordinates(position, tank);
+      this.logger.info(tank);
+      eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getPlayerContainer()));
+      playerCount++;
       return tank;
     } else {
       Tank tank = new Tank(player, position, 100, 30, playerMap.size());
       DataServer.INSTANCE.setCoordinates(position, tank);
+      this.logger.info(tank);
+      eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getPlayerContainer()));
+      playerCount++;
       return tank;
     }
   }
@@ -313,7 +319,18 @@ public class BaseGame implements Runnable, Callable<GameResult> {
 
   @Override
   public GameResult call() throws Exception {
-    this.logger.setLevel(Level.ALL);
+    reset();
+    new Thread(()->{
+      double nanoTime = System.nanoTime();
+      while (System.nanoTime() - nanoTime < 5000000000d) {
+        try {
+          Thread.sleep(0);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+      run=false;
+    }).start();
     counter = 0;
     run = true;
     this.logger.trace("Running...");
@@ -331,7 +348,6 @@ public class BaseGame implements Runnable, Callable<GameResult> {
           e.printStackTrace();
         }
       }
-      run = false;
     }
     GameResult result = new GameResult();
     for (Tank tank : playerMap.values()) {

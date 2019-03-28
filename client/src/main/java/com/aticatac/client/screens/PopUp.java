@@ -159,7 +159,7 @@ public class PopUp {
       GDXGame.createServer(false, serverNameField.getText());
       Data.INSTANCE.setSingleplayer(false);
       //TODO make getter for port and ip
-      Data.INSTANCE.setCurrentInformation(new ServerInformation(Data.INSTANCE.getUsername(), InetAddress.getByName("127.0.0.1"), 5500));
+      Data.INSTANCE.setCurrentInformation(new ServerInformation(Data.INSTANCE.getUsername(), InetAddress.getByName("127.0.0.1"), 5000));
       Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
       Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
       ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);

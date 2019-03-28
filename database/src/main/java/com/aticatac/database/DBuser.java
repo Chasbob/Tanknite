@@ -4,6 +4,7 @@ import com.aticatac.common.mappers.Player;
 import com.aticatac.common.model.DBResponse;
 import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.Leaderboard;
 import com.aticatac.common.model.LobbyPlayers;
 import com.aticatac.common.model.ModelReader;
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -126,6 +128,10 @@ public class DBuser extends Thread {
           HashMap<String, Player> players = dBinterface.getLobby(lobbyPlayers.getNames());
           lobbyPlayers.setPlayers(players);
           printer.println(modelReader.toJson(lobbyPlayers));
+        } else if (json.contains("Leaderboard")) {
+          
+          Leaderboard leaderboard = new Leaderboard(new ArrayList<>(dBinterface.getLeaderboard()));
+          printer.println(modelReader.toJson(leaderboard));
         }
       } catch (IOException | InvalidBytes e) {
         e.printStackTrace();

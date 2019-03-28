@@ -20,7 +20,7 @@ public class ThreeRoundGame extends BaseGame {
         results.add(super.call());
         round++;
         double nanoTime = System.nanoTime();
-        while (System.nanoTime() - nanoTime < 1000000000/*0d*/) {
+        while (System.nanoTime() - nanoTime < 5000000000d) {
           //wait 10 seconds
           try {
             Thread.sleep(0);

@@ -63,6 +63,6 @@ public class Player {
         ", deaths=" + deaths +
         ", win=" + win +
         ", loss=" + loss +
-        '}';
+        '}' + "\n";
   }
 }

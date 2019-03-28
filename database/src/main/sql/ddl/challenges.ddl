@@ -1,10 +1,11 @@
-CREATE TABLE IF NOT EXISTS tanknite.public.challenges
+CREATE TABLE IF NOT EXISTS aticatac.public.challenges
 (
   id          SERIAL                              NOT NULL
     CONSTRAINT challenges_pk
       PRIMARY KEY,
   date        TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  description TEXT
+  description TEXT,
+  reward      INT       DEFAULT 0
 )
 ;
 
