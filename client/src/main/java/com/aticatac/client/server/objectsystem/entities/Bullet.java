@@ -6,8 +6,8 @@ import com.aticatac.client.server.bus.event.BulletsChangedEvent;
 import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.interfaces.Tickable;
 import com.aticatac.client.server.objectsystem.physics.Physics;
-import com.aticatac.common.objectsystem.containers.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.common.objectsystem.containers.Container;
 import java.util.Objects;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
@@ -44,11 +44,9 @@ public class Bullet extends Entity implements Tickable {
     this.setBearing(bearing);
     this.freezeBullet = freezeBullet;
     // TODO: Make freeze bulet a different colour to regular bullet
-    physics = new Physics(this.getPosition().copy(), getType(), getName());
+    physics = new Physics(getType(), getName());
   }
-  /**
-   * The Output.
-   */
+
   /**
    * Gets damage.
    *

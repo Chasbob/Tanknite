@@ -1,6 +1,5 @@
 package com.aticatac.client.server.bus.event;
 
-import com.aticatac.common.objectsystem.containers.Container;
 import com.aticatac.common.objectsystem.containers.PlayerContainer;
 
 public class PlayersChangedEvent {

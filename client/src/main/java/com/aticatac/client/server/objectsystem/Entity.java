@@ -25,11 +25,11 @@ public class Entity {
    */
   public static final Entity outOfBounds = new Entity(EntityType.OUTOFBOUNDS);
   protected final Logger logger;
-  private final String name;
-  private final EntityType type;
-  private Position position;
-  private CollisionBox collisionBox;
-  private int rotation;
+  protected final String name;
+  protected final EntityType type;
+  protected Position position;
+  protected CollisionBox collisionBox;
+  protected int rotation;
 
   /**
    * Instantiates a new Entity.

@@ -1,8 +1,10 @@
 package com.aticatac.client.server.networking;
 
 import com.aticatac.client.server.game.BaseGame;
+import com.aticatac.client.server.game.ThreeRoundGame;
 import com.aticatac.client.server.networking.listen.NewClients;
 import com.aticatac.client.server.objectsystem.DataServer;
+import com.aticatac.common.GameResult;
 import com.aticatac.common.model.Command;
 import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.ModelReader;
@@ -208,7 +210,7 @@ public class Server extends Thread {
       this.port = port;
       this.maxPlayers = 10;
       this.id = name;
-      this.game = new BaseGame();
+      this.game = new ThreeRoundGame();
       try {
         this.server = InetAddress.getLocalHost();
         this.multicastSocket = new MulticastSocket();
@@ -222,7 +224,14 @@ public class Server extends Thread {
     }
 
     void startGame() {
-      new Thread(game).start();
+      new Thread(() -> {
+        try {
+          GameResult result = game.call();
+          this.logger.info(result);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }).start();
     }
 
     public int playerCount() {

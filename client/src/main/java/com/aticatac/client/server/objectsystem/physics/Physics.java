@@ -36,8 +36,8 @@ public class Physics {
    * @param type the entity type that the physics object is created in
    * @param name the name of the entity that the physics object is created in
    */
-  public Physics(final Position position, final EntityType type, final String name) {
-    this.position = position;
+  public Physics(final EntityType type, final String name) {
+    this.position = Position.zero.copy();
     this.entity = new Entity(name, type);
     d = DataServer.INSTANCE;
   }

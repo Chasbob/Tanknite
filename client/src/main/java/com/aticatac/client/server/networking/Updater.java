@@ -24,6 +24,9 @@ import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
  * @author Charles de Freitas
  */
 public class Updater implements Runnable {
+  /**
+   * The Data.
+   */
   final Server.ServerData data = Server.ServerData.INSTANCE;
   private final Logger logger;
   private final ModelReader modelReader;
@@ -50,6 +53,9 @@ public class Updater implements Runnable {
     updatePlayers();
   }
 
+  /**
+   * Shutdown.
+   */
   void shutdown() {
     this.shutdown = true;
   }
@@ -118,7 +124,7 @@ public class Updater implements Runnable {
         break;
       case REMOVE:
         this.logger.info(e);
-        this.players.remove(e.getPlayerContainer().getId());
+        this.players.get(e.getPlayerContainer().getId()).setAlive(false);
         break;
       case UPDATE:
         this.players.put(e.getPlayerContainer().getId(), e.getPlayerContainer());

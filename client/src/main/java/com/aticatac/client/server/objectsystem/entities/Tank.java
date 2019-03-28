@@ -37,13 +37,15 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   private int maxHealth;
   private int maxAmmo;
   private int ammo;
-  private int damageIncrease = -1;
-  private int speedIncrease = -1;
-  private int deathCountdown = -1;
-  private int bulletSprays = 0;
-  private int freezeBullets = 0;
-  private int frozen = -1;
+  private int damageIncrease;
+  private int speedIncrease;
+  private int deathCountdown;
+  private int bulletSprays;
+  private int freezeBullets;
+  private int frozen;
   private int framesToShoot;
+  private int killCount;
+  private boolean alive;
   private int playerNo;
 
   /**
@@ -56,6 +58,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    */
   public Tank(String name, Position p, int health, int ammo, int playerNo) {
     super(name, EntityType.TANK, p);
+    rotation = (int) (Math.random() * 360);
     this.playerNo = playerNo;
     frames = new ConcurrentLinkedQueue<>();
     setInput(new CommandModel("", Command.DEFAULT));
@@ -63,8 +66,24 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     this.setHealth(health);
     this.setAmmo(ammo);
     this.setMaxAmmo(30);
-    physics = new Physics(getPosition(), getType(), name);
+    physics = new Physics(getType(), name);
     setFramesToShoot(120);
+    killCount = 0;
+    alive = true;
+    damageIncrease = -1;
+    speedIncrease = -1;
+    deathCountdown = -1;
+    bulletSprays = 0;
+    freezeBullets = 0;
+    frozen = -1;
+  }
+
+  public int getPlayerNo() {
+    return playerNo;
+  }
+
+  public boolean isAlive() {
+    return alive;
   }
 
   @Override
@@ -494,5 +513,36 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   @Override
   public int compareTo(@NotNull final Tank o) {
     return this.playerNo - o.playerNo;
+  }
+
+  public void addKill() {
+    killCount++;
+  }
+
+  public int getKillCount() {
+    return killCount;
+  }
+
+  public void deactivate() {
+    alive = false;
+  }
+
+  public void reset(Position position) {
+    setPosition(position);
+    frames.clear();
+    setInput(new CommandModel("", Command.DEFAULT));
+    this.setMaxHealth(100);
+    this.setHealth(health);
+    this.setAmmo(ammo);
+    this.setMaxAmmo(30);
+    setFramesToShoot(120);
+    killCount = 0;
+    alive = true;
+    damageIncrease = -1;
+    speedIncrease = -1;
+    deathCountdown = -1;
+    bulletSprays = 0;
+    freezeBullets = 0;
+    frozen = -1;
   }
 }

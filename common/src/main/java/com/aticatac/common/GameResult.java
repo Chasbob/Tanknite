@@ -14,8 +14,16 @@ public class GameResult {
   }
 
   public GameResult() {
-    winners=new ArrayList<>();
+    winners = new ArrayList<>();
     kd = new HashMap<>();
+  }
+
+  public void addWinner(String name) {
+    this.winners.add(name);
+  }
+
+  public void addKD(final String name, final int kills, final int deaths) {
+    this.kd.put(name, new KillDeath(kills, deaths));
   }
 
   public ArrayList<String> getWinners() {
@@ -35,5 +43,13 @@ public class GameResult {
         kd.put(player, newResults.kd.get(player));
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    return "GameResult{" +
+        "winners=" + winners +
+        ", kd=" + kd +
+        '}';
   }
 }
