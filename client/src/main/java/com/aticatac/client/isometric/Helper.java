@@ -4,6 +4,8 @@ package com.aticatac.client.isometric;
 import com.aticatac.client.server.Position;
 
 public class Helper {
+    //(60-y-1) * 32, (x+1) * 32
+
     public static int tileToScreenX(int x, int y) {
         x = 1920 - x;
         y = 1920 - y;
