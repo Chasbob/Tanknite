@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.*;
+import com.aticatac.common.model.Updates.Response;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -59,10 +60,20 @@ public class ServerScreen extends AbstractScreen {
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
       if (serverSelected) {
         //join the server selected
-        Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
-        ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
+        Response response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
+        switch (response) {
+          case ACCEPTED:
+            ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
+            break;
+          case TAKEN:
+          case NO_SERVER:
+          case INVALID_NAME:
+          case INVALID_RESPONSE:
+          case FULL:
+            errorLabel.setText("CAN'T CONNECT TO SERVER");
+            break;
+        }
       }
-      //TODO catch exception to display error message
       return false;
       }
     ));
