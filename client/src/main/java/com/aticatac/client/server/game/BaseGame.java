@@ -1,7 +1,12 @@
 package com.aticatac.client.server.game;
 
 import com.aticatac.client.server.Position;
-import com.aticatac.client.server.bus.event.*;
+import com.aticatac.client.server.bus.event.BulletCollisionEvent;
+import com.aticatac.client.server.bus.event.BulletsChangedEvent;
+import com.aticatac.client.server.bus.event.PlayersChangedEvent;
+import com.aticatac.client.server.bus.event.PowerupsChangedEvent;
+import com.aticatac.client.server.bus.event.ShootEvent;
+import com.aticatac.client.server.bus.event.TankCollisionEvent;
 import com.aticatac.client.server.bus.service.AIUpdateService;
 import com.aticatac.client.server.objectsystem.DataServer;
 import com.aticatac.client.server.objectsystem.Entity;
@@ -24,7 +29,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
@@ -143,10 +147,6 @@ public class BaseGame implements Runnable, Callable<GameResult> {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
-      for (int i = 0; i < 1; i++) {
-        Tank tank2 = createTank(player + " AI" + i, true);
-        playerMap.put(player + " AI" + i, tank2);
-      }
     }
   }
 
@@ -320,7 +320,7 @@ public class BaseGame implements Runnable, Callable<GameResult> {
   @Override
   public GameResult call() throws Exception {
     reset();
-    new Thread(()->{
+    new Thread(() -> {
       double nanoTime = System.nanoTime();
       while (System.nanoTime() - nanoTime < 5000000000d) {
         try {
@@ -329,7 +329,7 @@ public class BaseGame implements Runnable, Callable<GameResult> {
           e.printStackTrace();
         }
       }
-      run=false;
+      run = false;
     }).start();
     counter = 0;
     run = true;

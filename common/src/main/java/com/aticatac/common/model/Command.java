@@ -35,6 +35,7 @@ public enum Command {
     }
   }
 
+
   public boolean isShoot() {
     switch (this) {
       case DEFAULT:

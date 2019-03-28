@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -46,6 +47,7 @@ public class Client {
     this.players = new ArrayList<>();
     this.currentCommands = new HashSet<>();
     this.commandModel = new CommandModel("");
+    this.logger.setLevel(Level.ALL);
   }
 
   /**
@@ -114,6 +116,7 @@ public class Client {
    * @throws InvalidBytes the invalid bytes
    */
   public Response connect(ServerInformation server, String id) {
+    this.logger.trace("Connecting to: " + server);
     try {
       this.connected = false;
       Login login = new Login(id);
