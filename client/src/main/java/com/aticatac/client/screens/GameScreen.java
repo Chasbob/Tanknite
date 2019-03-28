@@ -104,7 +104,7 @@ public class GameScreen extends AbstractScreen {
 
       rotations = new ArrayList<>();
       for (int i = 0;i<=359;i++){
-        rotations.add(new Texture("maps/tank-with-shadow/"+String.format("%04d", i)+ ".png"));
+        rotations.add(new Texture("maps/tank-with-shadow2/"+String.format("%04d", i)+ ".png"));
       }
 
       for (int i = 0; i != 61; i++) {
@@ -594,8 +594,8 @@ public class GameScreen extends AbstractScreen {
             //sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
             var img = rotations.get(t);
             sb.draw(img,
-                    Helper.tileToScreenX(c.getX() + 1.5f, c.getY() - 1.5f),
-                    Helper.tileToScreenY(c.getX() + 1.5f, c.getY() - 1.5f),
+                    Helper.tileToScreenX((float)c.getX() + 64f + 1.5f, (float)c.getY() - 64f - 1.5f),
+                    Helper.tileToScreenY((float)c.getX() + 64f + 1.5f, (float)c.getY() - 64f - 1.5f),
                     0,
                     0,
                     img.getWidth(),
