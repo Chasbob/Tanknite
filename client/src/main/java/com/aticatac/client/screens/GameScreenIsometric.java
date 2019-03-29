@@ -30,6 +30,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type Game screen.
@@ -70,6 +71,7 @@ public class GameScreenIsometric extends AbstractScreen {
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
   boolean tractionPopUp;
+  private boolean endGame;
 
   private ArrayList<ArrayList<TileHolder>> rows = new ArrayList<>();
   private HashMap<Integer, TextureRegion> tileTextures = new HashMap<>();
@@ -85,12 +87,12 @@ public class GameScreenIsometric extends AbstractScreen {
     maxY = 1920;
     try {
       player = new PlayerContainer();
-      ammoValue = Styles.INSTANCE.createLabel("");
-      killCount = Styles.INSTANCE.createLabel(" 0 ");
-      playerCount = Styles.INSTANCE.createLabel(" 1 ");
-      fpsValue = Styles.INSTANCE.createLabel("");
-      tankXY = Styles.INSTANCE.createLabel("");
-      direction = Styles.INSTANCE.createLabel("");
+      ammoValue = Styles.INSTANCE.createLabel("0");
+      killCount = Styles.INSTANCE.createLabel("0");
+      playerCount = Styles.INSTANCE.createLabel("0");
+      fpsValue = Styles.INSTANCE.createLabel("0");
+      tankXY = Styles.INSTANCE.createLabel("0");
+      direction = Styles.INSTANCE.createLabel("0");
 
       map = new TmxMapLoader().load("maps/mapData/mapIsometric.tmx");
       renderer = new IsometricTiledMapRenderer(map);
@@ -101,6 +103,9 @@ public class GameScreenIsometric extends AbstractScreen {
       shadowUltraLight = new Texture("maps/shadow/shadow2.png");
       bulletTexture = new Texture("maps/mapData/bullet.png");
       projectileTexture = new Texture("img/bullet.png");
+      tractionHealth = true;
+      tractionPopUp = true;
+      endGame = false;
 
       for (TiledMapTile tiledMapTile : tileSet) {
         tileTextures.put(tiledMapTile.getTextureRegion().hashCode(), tiledMapTile.getTextureRegion());
@@ -202,8 +207,34 @@ public class GameScreenIsometric extends AbstractScreen {
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
-      update = newUpdate;
-      player = update.getMe(Data.INSTANCE.getID());
+      if (player.isAlive()) {
+        update = newUpdate;
+        player = update.getMe(Data.INSTANCE.getID());
+        int playerAlive = checkAlive(update.getPlayers());
+        if (playerAlive != Integer.valueOf(playerCount.getText().toString())) {
+          playerCount.setText(Integer.toString(playerAlive));
+        }
+        playerCount.setText(playerAlive);
+        if (playerAlive == 1 && player.isAlive()) {
+          Data.INSTANCE.setWon(true);
+          if (!endGame) {
+            PopUp.createPopUp(false, true, false);
+            popUpTable.setVisible(true);
+            endGame = true;
+          }
+        }
+        player = newUpdate.getMe(Data.INSTANCE.getID());
+      } else {
+        Data.INSTANCE.setWon(false);
+        if (!endGame) {
+          PopUp.createPopUp(false, true, false);
+          popUpTable.setVisible(true);
+          endGame = true;
+        }
+        PlayerContainer temp = newUpdate.getMe(Data.INSTANCE.getID());
+        player.setR(temp.getR());
+        update = newUpdate;
+      }
     }
     if (player != null) {
       this.camera.setPosititon(Helper.tileToScreenX(player.getX() + 32, player.getY() - 32), Helper.tileToScreenY(player.getX() + 32, player.getY() - 32));
@@ -234,7 +265,7 @@ public class GameScreenIsometric extends AbstractScreen {
     //game.setColor(0.3f, 0.3f, 0.3f, 1);
 
     var collection = new ArrayList<IsoContainer>();
-    collection.addAll(CalculateLighting(returnTanks()));
+    collection.addAll(returnTanks());
     collection.addAll(returnProjectiles());
     collection.addAll(returnPowerups());
 
@@ -401,15 +432,14 @@ public class GameScreenIsometric extends AbstractScreen {
 
 
   private void backgroundInput() {
-
-    if (true) {
+    if (tractionPopUp) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
         PopUp.createPopUp(false, false, false);
         //show the pop up table
         popUpTable.setVisible(true);
         tractionPopUp = false;
       }
-      if (true) {
+      if (tractionHealth) {
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
             AudioEnum.INSTANCE.getTankMove();
@@ -424,12 +454,12 @@ public class GameScreenIsometric extends AbstractScreen {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
             AudioEnum.INSTANCE.getTankMove();
           }
-          Data.INSTANCE.sendCommand(Command.DOWN);
+          Data.INSTANCE.sendCommand(Command.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
             AudioEnum.INSTANCE.getTankMove();
           }
-          Data.INSTANCE.sendCommand(Command.UP);
+          Data.INSTANCE.sendCommand(Command.DOWN);
         } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
           this.camera.getCamera().zoom -= 0.1f;
         } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
@@ -464,11 +494,11 @@ public class GameScreenIsometric extends AbstractScreen {
 
   @Override
   public void refresh() {
-    ammoValue = Styles.INSTANCE.createLabel("");
-    killCount = Styles.INSTANCE.createLabel("");
-    playerCount = Styles.INSTANCE.createLabel("");
-    tankXY = Styles.INSTANCE.createLabel("");
-    direction = Styles.INSTANCE.createLabel("");
+    ammoValue = Styles.INSTANCE.createLabel("0");
+    killCount = Styles.INSTANCE.createLabel("0");
+    playerCount = Styles.INSTANCE.createLabel("0");
+    tankXY = Styles.INSTANCE.createLabel("0");
+    direction = Styles.INSTANCE.createLabel("0");
     popUpTable.setVisible(false);
     alertTable.setVisible(false);
     tractionHealth = true;
@@ -487,9 +517,10 @@ public class GameScreenIsometric extends AbstractScreen {
 
       for (TileHolder tileHolder : ps) {
         var p = tileHolder.getPosition();
+        var pp = p;
         var tile = tileTextures.get(tileHolder.getTexture());
         //(60-y-1) * 32, (x+1) * 32
-        var objPp = new Position((p.getX()) * 32, (p.getY()) * 32);
+        var objPp = new Position((pp.getX()) * 32, (pp.getY()) * 32);
 
         var temp = screenToIsoTiles(objPp);
 
@@ -511,7 +542,7 @@ public class GameScreenIsometric extends AbstractScreen {
                 sb.draw(shadowUltraLight, Helper.tileToScreenX(c.getX() + 10, c.getY() - 32 - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 32 - 10));
               } else if (c.getObjectType() == EntityType.TANK) {
                 //sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
-                int t = changeAngle(c.getR(), 90);//changeAngle(-c.getR(),-90);
+                int t = update.getMe(Data.INSTANCE.getID()).getId().equals(c.getId()) ? changeAngle(-getBearing(), 90) : changeAngle(-c.getR(), 270);//changeAngle(-c.getR(),-90);
                 t = t % 360;
                 if (t == 359) t = 0;
                 //sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
@@ -542,10 +573,10 @@ public class GameScreenIsometric extends AbstractScreen {
 
 
         drawTiles(sb, objPp.getX(), objPp.getY(), tile);
-        var shadowPp = new Position((p.getX() + 1) * 32, (p.getY()) * 32);
-        if (!usedShadows.contains(p)) {
+        var shadowPp = new Position((pp.getX() + 1) * 32, (pp.getY()) * 32);
+        if (!usedShadows.contains(pp)) {
           drawShadow(sb, shadowPp.getX(), shadowPp.getY(), shadow);
-          usedShadows.add(p);
+          usedShadows.add(pp);
         }
       }
 
@@ -645,7 +676,7 @@ public class GameScreenIsometric extends AbstractScreen {
               (int) (z * Math.cos(Math.toRadians(w))) + updater.getY()
             )).getParent().equals(updater)) {
 
-              this.logger.info(w);
+              //this.logger.info(w);
 
               lighting.get(new Position(
                 (int) (z * Math.sin(Math.toRadians(w))) + updater.getX(),
@@ -661,5 +692,16 @@ public class GameScreenIsometric extends AbstractScreen {
     return containers;
   }
 
-  /*Isometric rendering ends*/
+  private int checkAlive(ConcurrentHashMap<String, PlayerContainer> players) {
+    //go through all players count how many are alive
+    int count = 0;
+    for (String key :
+      players.keySet()) {
+      if (players.get(key).isAlive()) {
+        count++;
+      }
+    }
+    return count;
+  }
+
 }
