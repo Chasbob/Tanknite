@@ -58,7 +58,7 @@ public class GameScreen extends AbstractScreen {
   /**
    * Instantiates a new Game screen.
    */
-  GameScreen() {
+  public GameScreen() {
     super();
     maxX = 1920;
     maxY = 1920;
