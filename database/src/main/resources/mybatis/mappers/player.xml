@@ -33,7 +33,6 @@
         FROM players
         ORDER BY score DESC
         ;
-        ;
     </select>
     <select id="getByID" resultMap="result" parameterType="int">
         SELECT *
