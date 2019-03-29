@@ -234,7 +234,7 @@ public class GameScreenIsometric extends AbstractScreen {
     //game.setColor(0.3f, 0.3f, 0.3f, 1);
 
     var collection = new ArrayList<IsoContainer>();
-    collection.addAll(CalculateLighting(returnTanks()));
+    collection.addAll(returnTanks());
     collection.addAll(returnProjectiles());
     collection.addAll(returnPowerups());
 
@@ -512,7 +512,7 @@ public class GameScreenIsometric extends AbstractScreen {
                 sb.draw(shadowUltraLight, Helper.tileToScreenX(c.getX() + 10, c.getY() - 32 - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 32 - 10));
               } else if (c.getObjectType() == EntityType.TANK) {
                 //sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
-                int t = changeAngle(-getBearing(), 90);//changeAngle(-c.getR(),-90);
+                int t = update.getMe(Data.INSTANCE.getID()).getId().equals(c.getId()) ? changeAngle(-getBearing(), 90) : changeAngle(-c.getR(), 270);//changeAngle(-c.getR(),-90);
                 t = t % 360;
                 if (t == 359) t = 0;
                 //sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
@@ -646,7 +646,7 @@ public class GameScreenIsometric extends AbstractScreen {
               (int) (z * Math.cos(Math.toRadians(w))) + updater.getY()
             )).getParent().equals(updater)) {
 
-              this.logger.info(w);
+              //this.logger.info(w);
 
               lighting.get(new Position(
                 (int) (z * Math.sin(Math.toRadians(w))) + updater.getX(),
