@@ -589,12 +589,12 @@ public class AI {
    */
   private Decision.ShootType canShoot() {
     if (!(tankAmmo <= 0 || enemiesInRange.isEmpty())) {
-      if (getEnemiesInSight().size() > 1 && Math.random() > 0.5 && currentInput.getSprayAmmo() > 0) {
-        return Decision.ShootType.SPRAY;
-      }
       Position target = getTargetedEnemy().getPosition();
       if (target != null) {
         aimAngle = getNewAimAngle(target);
+        if (getEnemiesInSight().size() > 1 && Math.random() > 0.5 && currentInput.getSprayAmmo() > 0) {
+          return Decision.ShootType.SPRAY;
+        }
         if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 5) {
           if (currentInput.getFreezeAmmo() > 0 && Math.random() > 0.75) {
             return Decision.ShootType.FREEZE;
@@ -604,7 +604,7 @@ public class AI {
       }
     }
     // Do "random" aiming if not shooting
-    if (!searchPath.isEmpty() && state == State.WANDERING) {
+    if (!searchPath.isEmpty() && state != State.CHASING) {
       aimAngle = getNewAimAngle(searchPath.peekLast());
     }
     return Decision.ShootType.NONE;
