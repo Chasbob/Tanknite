@@ -1,4 +1,4 @@
-package com.aticatac.client.server.objectsystem.ai;
+package com.aticatac.client.server.ai;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

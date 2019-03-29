@@ -17,6 +17,7 @@ class BaseGameTest {
   }
 
   @Test
-  public void test
+  public void test() {
 
+  }
 }
