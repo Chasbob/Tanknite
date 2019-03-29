@@ -112,7 +112,7 @@ class Graph {
         if (map[x][y].equals("0")) {
           for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
+              if (i >= 0 && i < map.length && j >= 0 && j < map.length && (!map[i][j].equals("0") && map[i][j].equals("1"))) {
                 map[x][y] = "1";
               }
             }
