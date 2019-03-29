@@ -2,7 +2,7 @@ package com.aticatac.client.server.objectsystem;
 
 import com.aticatac.client.server.Position;
 import com.aticatac.client.server.objectsystem.physics.CollisionBox;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
 import com.aticatac.common.objectsystem.EntityType;
 import java.security.SecureRandom;
 import java.util.Objects;
@@ -25,11 +25,11 @@ public class Entity {
    */
   public static final Entity outOfBounds = new Entity(EntityType.OUTOFBOUNDS);
   protected final Logger logger;
-  private final String name;
-  private final EntityType type;
-  private Position position;
-  private CollisionBox collisionBox;
-  private int rotation;
+  protected final String name;
+  protected final EntityType type;
+  protected Position position;
+  protected CollisionBox collisionBox;
+  protected int rotation;
 
   /**
    * Instantiates a new Entity.
@@ -134,7 +134,7 @@ public class Entity {
    * @return the container
    */
   public Container getContainer() {
-    return new Container(getPosition().getX(), getPosition().getY(), 0, 0, 0, getName(), getType());
+    return new Container(getPosition().getX(), getPosition().getY(), 0, getName(), getType());
   }
 
   /**

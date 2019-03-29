@@ -1,26 +1,33 @@
 package com.aticatac.client.networking;
 
-import com.aticatac.common.model.*;
+import com.aticatac.common.Stoppable;
+import com.aticatac.common.model.Command;
+import com.aticatac.common.model.CommandModel;
 import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.Login;
+import com.aticatac.common.model.ModelReader;
+import com.aticatac.common.model.ServerInformation;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
+import com.aticatac.common.model.Vector;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * The type Client.
  */
-public class Client {
+public class Client implements Stoppable {
   private final Logger logger;
   private final ConcurrentLinkedQueue<Update> queue;
   private final ModelReader modelReader;
@@ -38,11 +45,13 @@ public class Client {
    */
   public Client() {
     this.logger = Logger.getLogger(getClass());
+    this.logger.setLevel(Level.ALL);
     this.queue = new ConcurrentLinkedQueue<>();
     this.modelReader = new ModelReader();
     this.players = new ArrayList<>();
     this.currentCommands = new HashSet<>();
     this.commandModel = new CommandModel("");
+    this.logger.setLevel(Level.ALL);
   }
 
   /**
@@ -111,14 +120,16 @@ public class Client {
    * @throws InvalidBytes the invalid bytes
    */
   public Response connect(ServerInformation server, String id) {
-    this.logger.setLevel(Level.ALL);
+    this.logger.trace("Connecting to: " + server);
     try {
       this.connected = false;
       Login login = new Login(id);
       this.logger.trace("ID: " + id);
       this.logger.trace("login: " + modelReader.toJson(login));
       this.logger.trace("Trying to conneentct to: " + server.getAddress() + ":" + server.getPort());
-      Socket socket = new Socket(server.getAddress(), server.getPort());
+      Socket socket = new Socket();
+      socket.setSoTimeout(1000);
+      socket.connect(new InetSocketAddress(server.getAddress(), server.getPort()));
       this.logger.trace("Connected to server at " + socket.getInetAddress());
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
       this.printer = new PrintStream(socket.getOutputStream());
@@ -138,12 +149,15 @@ public class Client {
       this.connected = true;
       this.commandModel.setId(this.id);
       return Response.ACCEPTED;
-    } catch (IOException e) {
-      this.logger.warn("No Server.");
-      return Response.NO_SERVER;
     } catch (InvalidBytes e) {
       this.logger.warn("Invalid Response");
       return Response.INVALID_RESPONSE;
+    } catch (UnknownHostException e) {
+      this.logger.error("unknown host");
+      return Response.UNKNOWN_HOST;
+    } catch (IOException e) {
+      this.logger.error("IO error");
+      return Response.NO_SERVER;
     }
   }
 
@@ -161,13 +175,9 @@ public class Client {
   public void quit() {
     this.logger.warn("Quitting...");
     addCommand(Command.QUIT);
-    updateListener.quit();
+    updateListener.shutdown();
     printer.close();
   }
-//  public void addCommand(Command command, int bearing) {
-//    currentCommands.add(command);
-//    commandModel.setBearing(bearing);
-//  }
 
   /**
    * Add command.
@@ -175,15 +185,15 @@ public class Client {
    * @param command the command
    */
   public void addCommand(Command command) {
+    this.logger.info(command);
     if (command.isMovement()) {
       currentCommands.add(command);
       commandModel.setCommand(Command.MOVE);
-    } else if (command == Command.SHOOT) {
-      commandModel.setCommand(Command.SHOOT);
-    } else if (command == Command.BULLET_SPRAY){
-      commandModel.setCommand(Command.BULLET_SPRAY);
-    } else if (command == Command.FREEZE_BULLET){
-      commandModel.setCommand(Command.FREEZE_BULLET);
+    } else if (!command.isShoot()) {
+      commandModel.setCommand(command);
+      submit(0);
+    } else {
+      commandModel.setCommand(command);
     }
   }
 
@@ -208,8 +218,30 @@ public class Client {
     }
     String json = modelReader.toJson(commandModel);
     this.printer.println(json);
-    this.logger.trace("Sent command: " + commandModel);
     currentCommands.clear();
     commandModel.reset();
   }
+
+  public Response connect(final String host, final int port, final String id) {
+    try {
+      return connect(new ServerInformation(id, InetAddress.getByName(host), port), id);
+    } catch (UnknownHostException e) {
+      return Response.UNKNOWN_HOST;
+    }
+  }
+
+  @Override
+  public void shutdown() {
+    queue.clear();
+    players.clear();
+    currentCommands.clear();
+    printer.close();
+    try {
+      reader.close();
+    } catch (IOException ignored) {
+    }
+    updateListener.shutdown();
+
+  }
+
 }

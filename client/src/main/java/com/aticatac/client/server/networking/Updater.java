@@ -6,32 +6,40 @@ import com.aticatac.client.server.bus.event.PowerupsChangedEvent;
 import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.entities.Bullet;
 import com.aticatac.client.server.objectsystem.entities.Tank;
+import com.aticatac.common.Stoppable;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
+import com.aticatac.common.objectsystem.containers.KillLogEvent;
+import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import com.google.common.eventbus.Subscribe;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import org.apache.log4j.Logger;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 /**
  * The type EmptyUpdate.
  *
  * @author Charles de Freitas
  */
-public class Updater implements Runnable {
+public class Updater implements Runnable , Stoppable {
+  /**
+   * The Data.
+   */
   final Server.ServerData data = Server.ServerData.INSTANCE;
   private final Logger logger;
   private final ModelReader modelReader;
   private final Update update;
-  private final ConcurrentHashMap<String, Container> players;
+  private final ConcurrentHashMap<String, PlayerContainer> players;
   private final ConcurrentHashMap<String, Container> projectiles;
   private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
-  private boolean shutdown;
+  private final CopyOnWriteArraySet<KillLogEvent> killLogEvents;
+  private boolean run;
 
   /**
    * Instantiates a new Updater.
@@ -39,18 +47,20 @@ public class Updater implements Runnable {
   Updater() {
     this.logger = Logger.getLogger(getClass());
     this.update = new Update();
-    this.shutdown = false;
+    this.run = true;
     this.modelReader = new ModelReader();
     players = update.getPlayers();
     projectiles = update.projectileMap();
     powerups = update.getPowerups();
     newShots = update.getNewShots();
-    eventBus.register(this);
+    serverEventBus.register(this);
     updatePlayers();
+    killLogEvents = update.getKillLogEvents();
   }
 
-  void shutdown() {
-    this.shutdown = true;
+  @Override
+  public void shutdown() {
+    this.run = false;
   }
 
   private void updatePlayers() {
@@ -63,21 +73,20 @@ public class Updater implements Runnable {
       this.update.addProjectile(b.getContainer());
       this.logger.trace(b.getContainer());
     }
-    for (Entity e :
-        data.getGame().getPowerups()) {
+    for (Entity e : data.getGame().getPowerups()) {
       this.update.addPowerup(e.getContainer());
       this.logger.trace(e.getContainer());
     }
     for (Tank c : data.getGame().getPlayerMap().values()) {
       this.logger.trace("Adding tank: " + c.getName());
-      this.update.addPlayer(c.getContainer());
+      this.update.addPlayer(c.getPlayerContainer());
     }
   }
 
   @Override
   public void run() {
     this.logger.trace("Running...");
-    while (!Thread.currentThread().isInterrupted() && !shutdown) {
+    while (!Thread.currentThread().isInterrupted() && run) {
       double nanoTime = System.nanoTime();
       this.update.setStart(data.isStart());
       tcpBroadcast();
@@ -100,14 +109,6 @@ public class Updater implements Runnable {
     }
   }
 
-  void tcpBroadcast(Update update) {
-    this.logger.trace("Broadcasting...");
-    final Server.ServerData s = Server.ServerData.INSTANCE;
-    for (Client c : s.getClients().values()) {
-      c.sendUpdate(update);
-    }
-  }
-
   private void broadcast() throws IOException {
     this.logger.trace("Broadcasting...");
     byte[] bytes = modelReader.toBytes(this.update);
@@ -121,17 +122,36 @@ public class Updater implements Runnable {
   private void playersChanged(PlayersChangedEvent e) {
     switch (e.action) {
       case ADD:
-        this.players.put(e.getContainer().getId(), e.getContainer());
+        this.logger.info(e);
+        this.players.put(e.getPlayerContainer().getId(), e.getPlayerContainer());
         break;
       case REMOVE:
-        this.players.remove(e.getContainer().getId());
+        this.logger.info(e);
+//        this.players.remove(e.getPlayerContainer().getId());
+        this.players.get(e.getPlayerContainer().getId()).setAlive(false);
         break;
       case UPDATE:
-        this.players.put(e.getContainer().getId(), e.getContainer());
+        this.players.put(e.getPlayerContainer().getId(), e.getPlayerContainer());
         break;
       default:
         break;
     }
+  }
+
+  @Subscribe
+  private void killLogEvent(KillLogEvent event) {
+    new Thread(() -> {
+      killLogEvents.add(event);
+      double nanoTime = System.nanoTime();
+      while (System.nanoTime() - nanoTime < 5000000000d) {
+        try {
+          Thread.sleep(0);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+      killLogEvents.remove(event);
+    }).start();
   }
 
   @Subscribe

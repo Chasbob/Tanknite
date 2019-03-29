@@ -38,13 +38,18 @@ public enum AudioEnum {
   /***/
   private float soundVolume = 0.6f;
   /***/
+  private float moveVolume = 0.4f;
+  /***/
   private float musicVolume = 0.4f;
+  /***/
+  private float mainVolume = 0.1f;
 
   /**
    *
    */
   AudioEnum() {
-
+    //music = false;
+    //sound = false;
     this.logger = Logger.getLogger(getClass());
     this.logger.trace("boo");
     loadSound();
@@ -95,6 +100,27 @@ public enum AudioEnum {
   }
 
   /**
+   * @param volume
+   */
+  public void setMusicVolume(float volume) {
+
+    musicVolume = volume;
+
+  }
+
+  public float getSoundVolume() {
+    return soundVolume;
+  }
+
+  public float getMusicVolume() {
+    return musicVolume;
+  }
+
+  public float getMainVolume() {
+    return mainVolume;
+  }
+
+  /**
    *
    */
   public void loadSound() {
@@ -134,8 +160,8 @@ public enum AudioEnum {
   public Music getMain() {
 
     if (music) {
-      main.setVolume(musicVolume);
-      main.play();
+      theme.setVolume(mainVolume);
+      theme.play();
     }
     return theme;
 
@@ -146,7 +172,7 @@ public enum AudioEnum {
    */
   public void stopMain() {
 
-    main.stop();
+    theme.stop();
 
   }
 
@@ -186,7 +212,7 @@ public enum AudioEnum {
   public Music getTankMove() {
 
     if (!tankMove.isPlaying() && sound) {
-      tankMove.setVolume(soundVolume);
+      tankMove.setVolume(moveVolume);
       tankMove.play();
     }
     return tankMove;
@@ -222,14 +248,11 @@ public enum AudioEnum {
    */
   public Music getButtonClick() {
 
-    System.out.println(sound);
     if (!buttonClick.isPlaying() && sound) {
       buttonClick.setVolume(soundVolume);
       buttonClick.play();
     }
     return buttonClick;
   }
-
-
 }
 

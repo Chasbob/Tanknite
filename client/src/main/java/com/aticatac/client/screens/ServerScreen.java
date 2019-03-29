@@ -1,6 +1,7 @@
 package com.aticatac.client.screens;
 
 import com.aticatac.client.util.*;
+import com.aticatac.common.model.Updates.Response;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -20,10 +21,8 @@ public class ServerScreen extends AbstractScreen {
   private Boolean serverSelected;
   Boolean popUpPresent;
   private PopulateServers populateServers;
-  private int tabIndex;
-  public int dropDownIndex;
   private HorizontalGroup tabGroup;
-  public VerticalGroup dropDownGroup;
+  private VerticalGroup dropDownGroup;
   Table popUp;
 
   /**
@@ -34,13 +33,7 @@ public class ServerScreen extends AbstractScreen {
     serverSelected = false;
     popUpPresent = false;
     Data.INSTANCE.setManualConfigForServer(false);
-    tabIndex = 0;
-    dropDownIndex = 0;
     Gdx.input.setInputProcessor(this);
-  }
-
-  private void setServerSelected() {
-    this.serverSelected = true;
   }
 
   @Override
@@ -49,42 +42,52 @@ public class ServerScreen extends AbstractScreen {
     //create data table
     Table dataTable = new Table();
     super.addToRoot(dataTable);
+    //add error label
+    Label errorLabel = Styles.INSTANCE.createCustomLabel("", Color.RED);
+    dataTable.add(errorLabel).pad(10);
+    dataTable.row();
     //add horizontal group to store both buttons
     tabGroup = new HorizontalGroup();
-    dataTable.add(tabGroup).padBottom(10);
+    dataTable.add(tabGroup);
     tabGroup.space(5);
     dataTable.addActor(tabGroup);
     //create table to store join button in
-    MenuTable joinTable = Styles.INSTANCE.createMenuTable(true, true);
+    Table joinTable = Styles.INSTANCE.createPopUpTable();
     //create join button
     TextButton joinButton = Styles.INSTANCE.createButton("JOIN");
-    joinTable.setButton(joinButton);
+    joinTable.add(joinButton);
     tabGroup.addActor(joinTable);
     joinButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      if (!serverSelected) {
-        MenuTable currentDrop = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
-        ServerButton currentButton = (ServerButton) currentDrop.getButton();
-        if (!currentButton.getLabel().getText().toString().equals("<EMPTY>")) {
-          setServerSelected();
-          Data.INSTANCE.setCurrentInformation(currentButton.getServerInformation());
+      if (serverSelected) {
+        //join the server selected
+        Response response = Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
+        switch (response) {
+          case ACCEPTED:
+            ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
+            break;
+          case TAKEN:
+          case NO_SERVER:
+          case INVALID_NAME:
+          case UNKNOWN_HOST:
+          case INVALID_RESPONSE:
+          case FULL:
+            errorLabel.setText("CAN'T CONNECT TO SERVER");
+            break;
         }
       }
-      //join the server selected
-      Data.INSTANCE.connect(Data.INSTANCE.getUsername(), false);
-      ListenerFactory.newChangeScreenAndReloadEvent(LobbyScreen.class);
-        return false;
+      return false;
       }
     ));
     ListenerFactory.addHoverListener(joinButton, joinTable);
     //creat table to store manual button in
-    MenuTable manualTable = Styles.INSTANCE.createMenuTable(false, true);
+    Table manualTable = Styles.INSTANCE.createPopUpTable();
     TextButton manualButton = Styles.INSTANCE.createButton("MANUAL");
-    manualTable.setButton(manualButton);
+    manualTable.add(manualButton);
     manualButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Data.INSTANCE.setManualConfigForServer(true);
       popUpPresent = true;
       toggleButtons(true);
-      PopUp.createPopUp(false);
+      PopUp.createPopUp(false, false, false);
       return false;
     }));
     ListenerFactory.addHoverListener(manualButton, manualTable);
@@ -121,81 +124,14 @@ public class ServerScreen extends AbstractScreen {
     serverSelected = false;
     Data.INSTANCE.setManualConfigForServer(false);
     unHighlight();
-    tabIndex = 0;
-    dropDownIndex = 0;
-    //rehighlight first server
-    MenuTable menuTable = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
-    menuTable.setShowGroup(true);
-  }
-
-  @Override
-  public void render(float delta) {
-    super.render(delta);
-    //need to poll for input
-    if (!popUpPresent) {
-      if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-        tabIndex = switcher(true, tabGroup, tabIndex, false);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-        tabIndex = switcher(false, tabGroup, tabIndex, false);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-        dropDownIndex = switcher(true, dropDownGroup, dropDownIndex, true);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-        dropDownIndex = switcher(false, dropDownGroup, dropDownIndex, true);
-      } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-        enterPressed();
-      }
-    }
-  }
-
-  private int switcher(boolean rightOrDown, Group group, int index, boolean dropDown) {
-    //deselect current table
-    MenuTable currentTable = (MenuTable) group.getChildren().get(index);
-    if (dropDown) {
-      unHighlight();
-    } else {
-      currentTable.setShowGroup(false);
-    }
-    index = super.applyIndex(group, index, rightOrDown);
-    //get new table and select
-    MenuTable newTable = (MenuTable) group.getChildren().get(index);
-    newTable.setShowGroup(true);
-    if (dropDown) {
-      ServerButton currentButton = (ServerButton) currentTable.getButton();
-      if (!currentButton.getLabel().getText().toString().equals("<EMPTY>")) {
-        //make old button and label text grey
-        unHighlight();
-      }
-      ServerButton newButton = (ServerButton) newTable.getButton();
-      if (!newButton.getLabel().getText().toString().equals("<EMPTY>")) {
-        //if we are moving drop down make button text white
-        newTable.getButton().setStyle(Styles.INSTANCE.createButtonStyle(Styles.INSTANCE.baseFont, Color.WHITE));
-        newTable.getLabel().setStyle(Styles.INSTANCE.createLabelStyle(Styles.INSTANCE.italicFont, Color.LIME));
-      }
-    }
-    return index;
-  }
-
-  private void enterPressed() {
-    //set up input event
-    InputEvent inputEvent = new InputEvent();
-    inputEvent.setType(InputEvent.Type.touchDown);
-    //get current tab
-    MenuTable currentTab = (MenuTable) tabGroup.getChildren().get(tabIndex);
-    //get current drop down element
-    MenuTable currentDrop = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
-    ServerButton currentButton = (ServerButton) currentDrop.getButton();
-    if (currentButton.getText().toString().equals("JOIN") && !currentButton.getLabel().getText().toString().equals("<EMPTY>")) {
-      setServerSelected();
-      Data.INSTANCE.setCurrentInformation(currentButton.getServerInformation());
-    }
-    //fire the current tab
-    currentTab.getButton().fire(inputEvent);
   }
 
   public void unHighlight() {
-    //get current menu table from drop down
-    MenuTable currentTable = (MenuTable) dropDownGroup.getChildren().get(dropDownIndex);
-    currentTable.setShowGroup(false);
+    //unhighlight previous server
+    for (int i = 0; i < dropDownGroup.getChildren().size; i++) {
+      Table table = (Table) dropDownGroup.getChildren().get(i);
+      Styles.INSTANCE.addTableColour(table, Styles.INSTANCE.getTransparentColour());
+    }
   }
 
   void removePopUp() {
@@ -216,13 +152,17 @@ public class ServerScreen extends AbstractScreen {
 
   private void toggleButtonsHelper(boolean disable, SnapshotArray<Actor> children) {
     for (int i = 0; i < children.size; i++) {
-      //get the current table
-      MenuTable currentTable = (MenuTable) children.get(i);
-      if (disable) {
-        currentTable.getButton().setTouchable(Touchable.disabled);
-      } else {
-        currentTable.getButton().setTouchable(Touchable.enabled);
-      }
+//      //get the current table
+//      Table currentTable =  children.get(i);
+//      if (disable) {
+//        currentTable.getButton().setTouchable(Touchable.disabled);
+//      } else {
+//        currentTable.getButton().setTouchable(Touchable.enabled);
+//      }
     }
+  }
+
+  public void setServerSelected(Boolean serverSelected) {
+    this.serverSelected = serverSelected;
   }
 }

@@ -4,7 +4,6 @@ import com.aticatac.client.server.networking.listen.CommandListener;
 import com.aticatac.common.model.ClientModel;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.Updates.Update;
-import java.io.IOException;
 import java.io.PrintStream;
 import org.apache.log4j.Logger;
 
@@ -22,7 +21,7 @@ public class Client {
     this.model = model;
     this.id = this.model.getId();
     this.printer = printer;
-    this.modelReader=new ModelReader();
+    this.modelReader = new ModelReader();
     (new Thread(commandListener)).start();
   }
 
@@ -36,11 +35,7 @@ public class Client {
   }
 
   void shutdown() {
-    try {
-      this.commandListener.getReader().close();
-    } catch (IOException e) {
-      this.logger.error(e);
-    }
+    this.commandListener.shutdown();
   }
   //TODO add access to threads along with information about client.
 }

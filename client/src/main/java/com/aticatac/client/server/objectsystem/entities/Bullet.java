@@ -6,11 +6,11 @@ import com.aticatac.client.server.bus.event.BulletsChangedEvent;
 import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.interfaces.Tickable;
 import com.aticatac.client.server.objectsystem.physics.Physics;
-import com.aticatac.common.objectsystem.Container;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.common.objectsystem.containers.Container;
 import java.util.Objects;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 /**
  * The type Bullet.
@@ -44,11 +44,9 @@ public class Bullet extends Entity implements Tickable {
     this.setBearing(bearing);
     this.freezeBullet = freezeBullet;
     // TODO: Make freeze bulet a different colour to regular bullet
-    physics = new Physics(this.getPosition().copy(), getType(), getName());
+    physics = new Physics(getType(), getName());
   }
-  /**
-   * The Output.
-   */
+
   /**
    * Gets damage.
    *
@@ -73,18 +71,17 @@ public class Bullet extends Entity implements Tickable {
       for (Entity e :
           response.getCollisions()) {
         if (e.getType() != EntityType.NONE) {
-          this.logger.info("Hit: " + e);
         }
         switch (e.getType()) {
           case NONE:
             break;
           case WALL:
           case OUTOFBOUNDS:
-            eventBus.post(new BulletCollisionEvent(this, e));
+            serverEventBus.post(new BulletCollisionEvent(this, e));
             return;
           case TANK:
             if (!e.getName().equals(getShooter().getName())) {
-              eventBus.post(new BulletCollisionEvent(this, e));
+              serverEventBus.post(new BulletCollisionEvent(this, e));
             }
             break;
           case BULLET:
@@ -104,7 +101,7 @@ public class Bullet extends Entity implements Tickable {
         }
       }
       setPosition(response.getPosition(), false);
-      eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
+      serverEventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.UPDATE, getContainer()));
       this.logger.trace(getPosition());
     }
   }
@@ -115,11 +112,11 @@ public class Bullet extends Entity implements Tickable {
    * @param e the e
    */
   public void onBulletCollision(Entity e) {
-    eventBus.post(new BulletCollisionEvent(this, e));
+    serverEventBus.post(new BulletCollisionEvent(this, e));
   }
 
   public Container getContainer() {
-    return new Container(getPosition().getX(), getPosition().getY(), getBearing(), 0, 0, getName(), EntityType.BULLET);
+    return new Container(getPosition().getX(), getPosition().getY(), getBearing(), getName(), EntityType.BULLET);
   }
 
   @Override

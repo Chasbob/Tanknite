@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -67,6 +68,17 @@ public class ListenerFactory {
     }));
     button.addListener(newListenerEventExit(() -> {
       parentTable.setShowGroup(parentTable.isShowGroup());
+      return false;
+    }));
+  }
+
+  public static void addHoverListener(TextButton button, Table parentTable) {
+    button.addListener(newListenerEventEnter(() -> {
+      Styles.INSTANCE.addTableColour(parentTable, Color.CORAL);
+      return false;
+    }));
+    button.addListener(newListenerEventExit(() -> {
+      Styles.INSTANCE.addTableColour(parentTable, Styles.INSTANCE.getTransparentColour());
       return false;
     }));
   }

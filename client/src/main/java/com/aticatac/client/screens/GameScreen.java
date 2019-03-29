@@ -1,9 +1,19 @@
 package com.aticatac.client.screens;
 
-import com.aticatac.client.util.*;
+import com.aticatac.client.bus.EventBusFactory;
+import com.aticatac.client.networking.Servers;
+import com.aticatac.client.util.AudioEnum;
+import com.aticatac.client.util.Camera;
+import com.aticatac.client.util.Data;
+import com.aticatac.client.util.HudUpdate;
+import com.aticatac.client.util.MinimapViewport;
+import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.Command;
+import com.aticatac.common.model.Shutdown;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.common.objectsystem.containers.Container;
+import com.aticatac.common.objectsystem.containers.PlayerContainer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -18,8 +28,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The type Game screen.
@@ -31,9 +41,10 @@ public class GameScreen extends AbstractScreen {
   private final SpriteBatch minimapBackGround;
   private final int maxX;
   private final int maxY;
-  private Update update;
   Table popUpTable;
   VerticalGroup verticalGroup;
+  boolean tractionPopUp;
+  private Update update;
   private Table alertTable;
   private Table killLogTable;
   private Label ammoValue;
@@ -50,10 +61,10 @@ public class GameScreen extends AbstractScreen {
   private Texture projectileTexture;
   private Texture stick;
   private Label direction;
-  private Container player;
+  private PlayerContainer player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
-  boolean tractionPopUp;
+  private boolean endGame;
 
   /**
    * Instantiates a new Game screen.
@@ -63,10 +74,10 @@ public class GameScreen extends AbstractScreen {
     maxX = 1920;
     maxY = 1920;
     try {
-      player = new Container();
-      ammoValue = Styles.INSTANCE.createLabel("");
-      killCount = Styles.INSTANCE.createLabel(" 0 ");
-      playerCount = Styles.INSTANCE.createLabel(" 1 ");
+      player = new PlayerContainer();
+      ammoValue = Styles.INSTANCE.createLabel("0");
+      killCount = Styles.INSTANCE.createLabel("0");
+      playerCount = Styles.INSTANCE.createLabel("0");
       fpsValue = Styles.INSTANCE.createLabel("");
       tankXY = Styles.INSTANCE.createLabel("");
       direction = Styles.INSTANCE.createLabel("");
@@ -76,6 +87,7 @@ public class GameScreen extends AbstractScreen {
       stick = new Texture("img/top.png");
       tractionHealth = true;
       tractionPopUp = true;
+      endGame = false;
       renderer = new OrthogonalTiledMapRenderer(map);
       minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
       minimapViewport.setWorldSize(maxX, maxY);
@@ -83,7 +95,6 @@ public class GameScreen extends AbstractScreen {
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();
-
     }
     healthBarBatch = new SpriteBatch();
     tanks = new SpriteBatch();
@@ -92,158 +103,83 @@ public class GameScreen extends AbstractScreen {
   }
 
   @Override
-  public void resize(int width, int height) {
-    super.resize(width, height);
-    this.camera.getViewport().update(width, height);
-    this.minimapViewport.update(width, height, true);
-  }
-
-  @Override
   public void buildStage() {
+    Servers.INSTANCE.clearServers();
     //create root table
     rootTable = new Table();
     rootTable.setFillParent(true);
     addActor(rootTable);
     Gdx.graphics.setVSync(true);
     //create table and labels for player count and kills - TOP LEFT
-    super.addToRoot(createHudTopLeft());
+    super.addToRoot(HUD.createHudTopLeft(playerCount, killCount));
     //create table for kill feed - BOTTOM LEFT
-    super.addToRoot(createHudBottomLeft());
+    killLogTable = HUD.createHudBottomLeft();
+    super.addToRoot(killLogTable);
     //create table for ammo - BOTTOM RIGHT
-    super.addToRoot(createHudBottomRight());
+    super.addToRoot(HUD.createHudBottomRight(ammoValue));
     //create alert table - BOTTOM MIDDLE
-    super.addToRoot(createHudAlertTable());
+    alertTable = HUD.createHudAlertTable();
+    super.addToRoot(alertTable);
     hudUpdate = new HudUpdate(killLogTable, ammoValue, playerCount, killCount);
   }
 
-  private Table createHudTopLeft() {
-    Table topLeftTable = new Table();
-    topLeftTable.top().left();
-    topLeftTable.defaults().padTop(10).padLeft(10).left();
-    Table aliveTable = new Table();
-    Table aliveLabelTable = new Table();
-    Styles.INSTANCE
-      .addTableColour(aliveLabelTable, Color.GRAY);
-    Label aliveLabel = Styles.INSTANCE.createLabel("Alive");
-    aliveLabelTable.add(aliveLabel);
-    Table playerCountTable = new Table();
-    playerCountTable.add(playerCount).center();
-    Styles.INSTANCE
-      .addTableColour(playerCountTable, new Color(0f, 0f, 0f, 0.5f));
-    aliveTable.add(playerCountTable);
-    aliveTable.add(aliveLabelTable);
-    Table killTable = new Table();
-    Table killLableTable = new Table();
-    Styles.INSTANCE
-      .addTableColour(killLableTable, Color.GRAY);
-    Label killLabel = Styles.INSTANCE.createLabel("Killed");
-    killLableTable.add(killLabel);
-    Table killCountTable = new Table();
-    Styles.INSTANCE
-      .addTableColour(killCountTable, new Color(0f, 0f, 0f, 0.5f));
-    killCountTable.add(killCount);
-    killTable.add(killCountTable);
-    killTable.add(killLableTable);
-    topLeftTable.add(aliveTable);
-    topLeftTable.add(killTable);
-    return topLeftTable;
-  }
-
-  private Table createHudBottomLeft() {
-    killLogTable = new Table();
-    killLogTable.bottom().left();
-    killLogTable.defaults().padTop(10).padLeft(10).padBottom(20).left();
-    Label tempKill = Styles.INSTANCE.createLabel("");
-    killLogTable.add(tempKill);
-    return killLogTable;
-  }
-
-  private Table createHudBottomRight() {
-    Table bottomRightTable = new Table();
-    bottomRightTable.bottom().right();
-    bottomRightTable.defaults().padRight(10).padTop(10).padBottom(20).left();
-    Table ammoTable = new Table();
-    Table ammoValueTable = new Table();
-    Styles.INSTANCE
-      .addTableColour(ammoValueTable, new Color(0f, 0f, 0f, 0.5f));
-    ammoValueTable.add(ammoValue);
-    Label ammoLabel = Styles.INSTANCE.createLabel("Ammo");
-    Table ammoLabelTable = new Table();
-    Styles.INSTANCE
-      .addTableColour(ammoLabelTable, Color.GRAY);
-    ammoLabelTable.add(ammoLabel);
-    ammoTable.add(ammoValueTable);
-    ammoTable.add(ammoLabelTable);
-    bottomRightTable.add(ammoTable);
-    return bottomRightTable;
-  }
-
-  private Table createHudPopUp() {
-    verticalGroup = new VerticalGroup();
-    verticalGroup.space(20);
-    popUpTable.add(verticalGroup).padLeft(50).padRight(50).padTop(20).padBottom(20);
-    //create resume button
-    TextButton resumeButton = Styles.INSTANCE.createButton("Resume");
-    resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      tractionPopUp = true;
-      popUpTable.setVisible(false);
-      return false;
-    }));
-    verticalGroup.addActor(resumeButton);
-    //create settings button
-    TextButton settingsButton = Styles.INSTANCE.createButton("Settings");
-    settingsButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      createSettingsChildren();
-      return false;
-    }));
-    verticalGroup.addActor(settingsButton);
-    //create quit button go back to the main menu and disconnect form server
-    TextButton quitButton = Styles.INSTANCE.createBackButton("Quit");
-    quitButton.addListener(ListenerFactory.newChangeScreenEvent(MainMenuScreen.class));
-    quitButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Data.INSTANCE.quit();
-      refresh();
-      return true;
-    }));
-    verticalGroup.addActor(quitButton);
-    Styles.INSTANCE
-      .addTableColour(popUpTable, new Color(0f, 0f, 0f, 0.5f));
-    return popUpTable;
-  }
-
-  private void createSettingsChildren() {
-    verticalGroup.clear();
-    Settings.createSettings();
-    //create back button
-    TextButton backButton = Styles.INSTANCE.createButton("Back");
-    backButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      popUpTable.reset();
-      createHudPopUp();
-      return false;
-    }));
-    verticalGroup.addActor(backButton);
-  }
-
-  private Table createHudAlertTable() {
-    alertTable = new Table();
-    alertTable.bottom();
-    alertTable.defaults().padBottom(60);
-    Label alertLabel = Styles.INSTANCE.createLabel("TRACTION DISABLED");
-    alertTable.add(alertLabel);
+  @Override
+  public void refresh() {
+    ammoValue = Styles.INSTANCE.createLabel("0");
+    killCount = Styles.INSTANCE.createLabel("0");
+    playerCount = Styles.INSTANCE.createLabel("0");
+    tankXY = Styles.INSTANCE.createLabel("");
+    direction = Styles.INSTANCE.createLabel("");
+    popUpTable.setVisible(false);
     alertTable.setVisible(false);
-    return alertTable;
+    tractionHealth = true;
   }
 
   @Override
   public void render(float delta) {
+    AudioEnum.INSTANCE.getTheme();
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     backgroundInput();
     this.fpsValue.setText(Gdx.graphics.getFramesPerSecond());
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
-      update = newUpdate;
-      player = update.getMe(Data.INSTANCE.getID());
+      if (player.isAlive()) {
+        if (Data.INSTANCE.isConnectedToGame()) {
+          update = newUpdate;
+          player = update.getMe(Data.INSTANCE.getID());
+        } else {
+          if (!endGame) {
+            PopUp.createPopUp(false, true, false);
+            popUpTable.setVisible(true);
+            endGame = true;
+          }
+        }
+        int playerAlive = checkAlive(update.getPlayers());
+        if (playerAlive != Integer.valueOf(playerCount.getText().toString())) {
+          playerCount.setText(Integer.toString(playerAlive));
+        }
+        playerCount.setText(playerAlive);
+        if (playerAlive == 1 && player.isAlive()) {
+          Data.INSTANCE.setWon(true);
+          if (!endGame) {
+            PopUp.createPopUp(false, true, false);
+            popUpTable.setVisible(true);
+            endGame = true;
+          }
+        }
+        player = newUpdate.getMe(Data.INSTANCE.getID());
+      } else {
+        Data.INSTANCE.setWon(false);
+        if (!endGame) {
+          PopUp.createPopUp(false, true, false);
+          popUpTable.setVisible(true);
+          endGame = true;
+        }
+        PlayerContainer temp = newUpdate.getMe(Data.INSTANCE.getID());
+        player.setR(temp.getR());
+        update = newUpdate;
+      }
     }
     if (player != null) {
       this.camera.setPosititon(maxX - player.getX(), maxY - player.getY());
@@ -275,12 +211,39 @@ public class GameScreen extends AbstractScreen {
     tanksMiniMap.begin();
     tanksMiniMap.setProjectionMatrix(minimapViewport.getCamera().combined);
     tanksMiniMap.setColor(Color.CYAN);
-    if (newUpdate != null) {
-      renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
+    if (update != null) {
+      for (Container c : update.getPlayers().values()) {
+        louderSound(c);
+      }
+      Container corner = new Container(0, 0, 0, "", EntityType.NONE);
+      louderSound(corner);
+      Container corner2 = new Container(0, 1920, 0, "", EntityType.NONE);
+      louderSound(corner2);
+      Container corner3 = new Container(1920, 0, 0, "", EntityType.NONE);
+      louderSound(corner3);
+      Container corner4 = new Container(1920, 1920, 0, "", EntityType.NONE);
+      louderSound(corner4);
+      if (update.getMe(Data.INSTANCE.getID()) != null) {
+        renderContainer(update.getMe(Data.INSTANCE.getID()), tanksMiniMap);
+      }
+      tanksMiniMap.setColor(Color.RED);
+      for (Container c :
+          update.getNewShots().values()) {
+        renderContainer(c, tanksMiniMap);
+        //Audio: plays sound when tank shoots in range
+        if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
+          float dx = c.getX() - (1920 - player.getX());
+          float dy = c.getY() - (1920 - player.getY());
+          int max = 320;
+          double distance = Math.sqrt(dx * dx + dy * dy);
+          double volumeScalar = (max - distance) / max;
+          AudioEnum.INSTANCE.getOtherTankShoot((float) volumeScalar);
+        }
+      }
     }
     tanksMiniMap.end();
     if (update != null && update.getMe(Data.INSTANCE.getID()) != null) {
-      hudUpdate.update(update);
+      hudUpdate.update(update, player);
     }
     //hud viewport
     act(delta);
@@ -288,11 +251,40 @@ public class GameScreen extends AbstractScreen {
     draw();
   }
 
+  @Override
+  public void resize(int width, int height) {
+    super.resize(width, height);
+    this.camera.getViewport().update(width, height);
+    this.minimapViewport.update(width, height, true);
+  }
+
+  private void louderSound(Container c) {
+    if (camera.getCamera().frustum.pointInFrustum(c.getX(), c.getY(), 0)) {
+      float dx = c.getX() - (1920 - player.getX());
+      float dy = c.getY() - (1920 - player.getY());
+      double distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < 160) {
+        int max = 160;
+        double volumeScalar = (max - distance) / max;
+        float musicVolume = AudioEnum.INSTANCE.getMusicVolume();
+        float musicScaled = (float) (musicVolume + volumeScalar);
+        if (musicScaled <= 1.0f) {
+          AudioEnum.INSTANCE.getTheme().setVolume(musicScaled);
+        } else {
+          AudioEnum.INSTANCE.getTheme().setVolume(1.0f);
+        }
+        this.logger.info(musicVolume + volumeScalar);
+      }
+    }
+  }
+
   private void renderTanks(SpriteBatch tanks) {
     if (update != null) {
-      for (Container c : update.getPlayers().values()) {
-        renderContainer(c, tanks);
-        tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
+      for (PlayerContainer c : update.getPlayers().values()) {
+        if (c.isAlive()) {
+          renderContainer(c, tanks);
+          tanks.draw(stick, maxX - c.getX(), maxY - c.getY(), stick.getWidth() / 2f, 0, stick.getWidth(), stick.getHeight(), 1, 0.7f, c.getR() - 90f, 0, 0, stick.getWidth(), stick.getHeight(), false, false);
+        }
       }
     }
     renderProjectiles(tanks);
@@ -303,7 +295,7 @@ public class GameScreen extends AbstractScreen {
   private void renderProjectiles(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-        update.getProjectiles().values()) {
+          update.getProjectiles().values()) {
         renderProjectiles(c, tanks);
       }
     }
@@ -312,7 +304,7 @@ public class GameScreen extends AbstractScreen {
   private void renderPowerups(SpriteBatch tanks) {
     if (update != null) {
       for (Container c :
-        update.getPowerups().values()) {
+          update.getPowerups().values()) {
         switch (c.getObjectType()) {
           case NONE:
             break;
@@ -343,7 +335,6 @@ public class GameScreen extends AbstractScreen {
             tanks.setColor(Color.FOREST);
             break;
         }
-        tanks.setColor(Color.WHITE);
         renderContainer(c, tanks);
       }
     }
@@ -366,7 +357,7 @@ public class GameScreen extends AbstractScreen {
     healthBarBatch.begin();
     health = hudUpdate.getHealth();
     healthBarBatch.setColor(new Color(0f, 0f, 0f, 0.25f));
-    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f, 15);
+    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 30, Gdx.graphics.getWidth() / 4f, 15);
     if (health > 0.6f) {
       healthBarBatch.setColor(Color.GREEN);
     } else if (health <= 0.6f && health > 0.2f) {
@@ -374,7 +365,7 @@ public class GameScreen extends AbstractScreen {
     } else {
       healthBarBatch.setColor(Color.RED);
     }
-    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 20, Gdx.graphics.getWidth() / 4f * health, 15);
+    healthBarBatch.draw(Styles.INSTANCE.getBlank(), Gdx.graphics.getWidth() / 2f - (0.5f * (Gdx.graphics.getWidth() / 4f)), 30, Gdx.graphics.getWidth() / 4f * health, 15);
     if (health <= 0.1f) {
       tractionHealth = false;
       alertTable.setVisible(true);
@@ -387,9 +378,6 @@ public class GameScreen extends AbstractScreen {
   }
 
   private void renderContainer(Container c, SpriteBatch batch) {
-    if (c.getId().equals("")) {
-      this.logger.trace(c.getId() + ": " + c.getX() + ", " + c.getY());
-    }
     batch.draw(tankTexture, maxX - c.getX() - tankTexture.getWidth() / 2f, maxY - c.getY() - tankTexture.getHeight() / 2f);
   }
 
@@ -401,12 +389,10 @@ public class GameScreen extends AbstractScreen {
     return Math.round(mouseRel.angle());
   }
 
-
   private void backgroundInput() {
-
     if (tractionPopUp) {
       if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-        PopUp.createPopUp(false);
+        PopUp.createPopUp(false, false, false);
         //show the pop up table
         popUpTable.setVisible(true);
         tractionPopUp = false;
@@ -454,6 +440,18 @@ public class GameScreen extends AbstractScreen {
     Data.INSTANCE.submit(getBearing());
   }
 
+  private int checkAlive(ConcurrentHashMap<String, PlayerContainer> players) {
+    //go through all players count how many are alive
+    int count = 0;
+    for (String key :
+        players.keySet()) {
+      if (players.get(key).isAlive()) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   @Override
   public void dispose() {
     super.dispose();
@@ -462,17 +460,5 @@ public class GameScreen extends AbstractScreen {
     tanks.dispose();
     tanksMiniMap.dispose();
     healthBarBatch.dispose();
-  }
-
-  @Override
-  public void refresh() {
-    ammoValue = Styles.INSTANCE.createLabel("");
-    killCount = Styles.INSTANCE.createLabel("");
-    playerCount = Styles.INSTANCE.createLabel("");
-    tankXY = Styles.INSTANCE.createLabel("");
-    direction = Styles.INSTANCE.createLabel("");
-    popUpTable.setVisible(false);
-    alertTable.setVisible(false);
-    tractionHealth = true;
   }
 }

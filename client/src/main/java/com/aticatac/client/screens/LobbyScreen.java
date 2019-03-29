@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
  */
 public class LobbyScreen extends AbstractScreen {
 
-  private int tabIndex;
   private HorizontalGroup buttonGroup;
 
   /**
@@ -48,26 +47,28 @@ public class LobbyScreen extends AbstractScreen {
     dataTable.row();
     //create button group actors
     if (Data.INSTANCE.isHosting()) {
-      MenuTable startTable = Styles.INSTANCE.createMenuTable(true, true);
+      Table startTable = Styles.INSTANCE.createPopUpTable();
       TextButton startButton = Styles.INSTANCE.createButton("START");
       ListenerFactory.addHoverListener(startButton, startTable);
-      startTable.setButton(startButton);
+      startTable.add(startButton);
       startButton.addListener(ListenerFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.START);
         return true;
       }));
       buttonGroup.addActor(startTable);
-      MenuTable aiTable = Styles.INSTANCE.createMenuTable(false, true);
+      Table aiTable = Styles.INSTANCE.createPopUpTable();
       TextButton aiButton = Styles.INSTANCE.createButton("FILL AI");
       ListenerFactory.addHoverListener(aiButton, aiTable);
       aiButton.addListener(ListenerFactory.newListenerEvent(() -> {
         Data.INSTANCE.sendCommand(Command.FILL_AI);
+
+
         return true;
       }));
-      aiTable.setButton(aiButton);
+      aiTable.add(aiButton);
       buttonGroup.addActor(aiTable);
     } else {
-      MenuTable waitingTable = Styles.INSTANCE.createMenuTable(false, false);
+      Table waitingTable = Styles.INSTANCE.createPopUpTable();
       Label waitingLabel = Styles.INSTANCE.createLabel("WAITING FOR HOST");
       waitingTable.add(waitingLabel);
       buttonGroup.addActor(waitingTable);
@@ -95,42 +96,9 @@ public class LobbyScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
     if (Data.INSTANCE.isStarted()) {
+      Screens.INSTANCE.reloadScreen(GameScreen.class);
       Screens.INSTANCE.showScreen(GameScreen.class);
       refresh();
     }
-    keyPressed();
-  }
-
-  private void keyPressed() {
-    if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-      switchTab(true);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-      switchTab(false);
-    } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-      enterPressed();
-    }
-  }
-
-  private void enterPressed() {
-    if (Data.INSTANCE.isHosting()) {
-      //get current tab
-      MenuTable currentTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
-      //create an input event to fire the button
-      InputEvent inputEvent = new InputEvent();
-      inputEvent.setType(InputEvent.Type.touchDown);
-      currentTab.getButton().fire(inputEvent);
-    }
-  }
-
-  private void switchTab(boolean right) {
-    //get current tab and unselect
-    MenuTable currentTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
-    currentTab.setShowGroup(false);
-    MenuTable menuTable = (MenuTable) buttonGroup.getChildren().get(tabIndex);
-    menuTable.setShowGroup(false);
-    tabIndex = super.applyIndex(buttonGroup, tabIndex, right);
-    //get new tab
-    MenuTable newTab = (MenuTable) buttonGroup.getChildren().get(tabIndex);
-    newTab.setShowGroup(true);
   }
 }

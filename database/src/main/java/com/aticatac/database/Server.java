@@ -20,7 +20,7 @@ public class Server implements Runnable {
       listener = new Listener();
       runnables.add(listener);
     } catch (IOException e) {
-      e.printStackTrace();
+      System.exit(420);
     }
   }
 

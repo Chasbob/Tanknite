@@ -14,6 +14,7 @@ public class Player {
   public int win;
   public int loss;
   public int score;
+  public int xp;
 
   /**
    * Instantiates a new Player.
@@ -28,7 +29,7 @@ public class Player {
    * @param deaths          the deaths
    * @param top_kill_streak the top kill streak
    */
-  public Player(final int id, final String username, final String password, final int tank_colour, final int win, final int loss, final int kills, final int deaths, final int top_kill_streak, final int score) {
+  public Player(final int id, final String username, final String password, final int tank_colour, final int win, final int loss, final int kills, final int deaths, final int top_kill_streak, final int score, final int xp) {
     this.id = id;
     this.username = username;
     this.password = password;
@@ -39,6 +40,7 @@ public class Player {
     this.deaths = deaths;
     this.top_kill_streak = top_kill_streak;
     this.score = score;
+    this.xp = xp;
   }
 
   public Player() {
@@ -61,6 +63,6 @@ public class Player {
         ", deaths=" + deaths +
         ", win=" + win +
         ", loss=" + loss +
-        '}';
+        '}' + "\n";
   }
 }

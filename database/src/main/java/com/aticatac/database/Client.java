@@ -1,6 +1,7 @@
 package com.aticatac.database;
 
 import com.aticatac.common.model.DBlogin;
+import com.aticatac.common.model.Leaderboard;
 import com.aticatac.common.model.LobbyPlayers;
 import com.aticatac.common.model.ModelReader;
 import java.io.BufferedReader;
@@ -29,6 +30,9 @@ public class Client {
       names.add("charlie");
       LobbyPlayers lobbyPlayers = new LobbyPlayers(names);
       printer.println(modelReader.toJson(lobbyPlayers));
+      json = reader.readLine();
+      logger.info(json);
+      printer.println(modelReader.toJson(new Leaderboard()));
       json = reader.readLine();
       logger.info(json);
     } catch (Exception e) {
