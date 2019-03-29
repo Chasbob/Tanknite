@@ -1,4 +1,4 @@
-package com.aticatac.client.server.objectsystem.gametest;
+package com.aticatac.client.server.game;
 
 import com.aticatac.client.server.Position;
 import com.aticatac.client.server.game.BaseGame;

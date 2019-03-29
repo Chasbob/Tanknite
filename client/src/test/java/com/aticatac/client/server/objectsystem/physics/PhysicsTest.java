@@ -16,7 +16,7 @@ class PhysicsTest {
 
   //test a wall position 0,0
   Position p = new Position(0,0);
-  Physics testPhysics = new Physics(p, EntityType.TANK, "test");
+  Physics testPhysics = new Physics(EntityType.TANK, "test");
   Position newPosition = new Position(5,0);
   HashSet<Entity> collisions = new HashSet<>();
   PhysicsResponse response = new PhysicsResponse(collisions, newPosition);
