@@ -182,7 +182,7 @@ public class BaseGame implements Runnable {
     return position;
   }
 
-  private Tank createTank(String player, boolean isAI, int x, int y) {
+  public Tank createTank(String player, boolean isAI, int x, int y) {
     Position position = new Position(x, y);
     if (isAI) {
       AITank tank = new AITank(player, position, 100, 30);
