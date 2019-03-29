@@ -1,4 +1,4 @@
-package com.aticatac.client.server.objectsystem.LogicTest;
+package com.aticatac.client.server.objectsystem.logictest;
 
 import com.aticatac.client.server.Position;
 import com.aticatac.client.server.objectsystem.entities.Tank;
