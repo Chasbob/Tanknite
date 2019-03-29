@@ -33,7 +33,7 @@ import java.util.HashMap;
 /**
  * The type Game screen.
  */
-public class GameScreen extends AbstractScreen {
+public class GameScreenIsometric extends AbstractScreen {
     private final SpriteBatch healthBarBatch;
     private final SpriteBatch game;
     private final SpriteBatch tanksMiniMap;
@@ -78,7 +78,7 @@ public class GameScreen extends AbstractScreen {
     /**
      * Instantiates a new Game screen.
      */
-    GameScreen() {
+    GameScreenIsometric() {
         super();
         maxX = 1920;
         maxY = 1920;
@@ -525,22 +525,22 @@ public class GameScreen extends AbstractScreen {
             }
             if (true) {
                 if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
                         AudioEnum.INSTANCE.getTankMove();
                     }
                     Data.INSTANCE.sendCommand(Command.LEFT);
                 } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
                         AudioEnum.INSTANCE.getTankMove();
                     }
                     Data.INSTANCE.sendCommand(Command.RIGHT);
                 } else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
                         AudioEnum.INSTANCE.getTankMove();
                     }
                     Data.INSTANCE.sendCommand(Command.UP);
                 } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreen.class)) {
+                    if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
                         AudioEnum.INSTANCE.getTankMove();
                     }
                     Data.INSTANCE.sendCommand(Command.DOWN);

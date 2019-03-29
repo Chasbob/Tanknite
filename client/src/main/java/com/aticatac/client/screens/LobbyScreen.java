@@ -95,7 +95,7 @@ public class LobbyScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
     if (Data.INSTANCE.isStarted()) {
-      Screens.INSTANCE.showScreen(GameScreen.class);
+      Screens.INSTANCE.showScreen(GameScreenIsometric.class);
       refresh();
     }
     keyPressed();

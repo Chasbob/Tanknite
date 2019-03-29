@@ -30,9 +30,9 @@ public class PopUp {
       Screens.INSTANCE.getScreen(ServerScreen.class).popUp = popUpRootTable;
       Screens.INSTANCE.getScreen(ServerScreen.class).rootTable.addActor(popUpRootTable);
     } else {
-      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable = popUpRootTable;
-      Screens.INSTANCE.getScreen(GameScreen.class).rootTable.addActor(popUpRootTable);
-      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
+      Screens.INSTANCE.getScreen(GameScreenIsometric.class).popUpTable = popUpRootTable;
+      Screens.INSTANCE.getScreen(GameScreenIsometric.class).rootTable.addActor(popUpRootTable);
+      Screens.INSTANCE.getScreen(GameScreenIsometric.class).popUpTable.setVisible(false);
     }
     popUpRootTable.setFillParent(true);
     Table popUpTable = new Table();
@@ -62,8 +62,8 @@ public class PopUp {
     MenuTable resumeTable = Styles.INSTANCE.createMenuTable(true, false);
     TextButton resumeButton = Styles.INSTANCE.createButton("RESUME");
     resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Screens.INSTANCE.getScreen(GameScreen.class).tractionPopUp = true;
-      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
+      Screens.INSTANCE.getScreen(GameScreenIsometric.class).tractionPopUp = true;
+      Screens.INSTANCE.getScreen(GameScreenIsometric.class).popUpTable.setVisible(false);
       return false;
     }));
     resumeTable.setButton(resumeButton);
@@ -94,7 +94,7 @@ public class PopUp {
     quitButton.addListener(ListenerFactory.newListenerEvent(() -> {
       Screens.INSTANCE.showScreen(MainMenuScreen.class);
       Data.INSTANCE.quit();
-      Screens.INSTANCE.getScreen(GameScreen.class).refresh();
+      Screens.INSTANCE.getScreen(GameScreenIsometric.class).refresh();
       return false;
     }));
     quitTable.setButton(quitButton);

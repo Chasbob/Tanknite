@@ -345,7 +345,7 @@ public class MainMenuScreen extends AbstractScreen {
       //ListenerFactory.newChangeScreenAndReloadEvent(UsernameScreen.class);
       //join single player server
       Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
-      Screens.INSTANCE.showScreen(GameScreen.class);
+      Screens.INSTANCE.showScreen(GameScreenIsometric.class);
       return false;
     }));
     singlePlayerTable.setButton(singlePlayerButton);

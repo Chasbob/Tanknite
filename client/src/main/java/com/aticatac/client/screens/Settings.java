@@ -22,7 +22,7 @@ class Settings {
       verticalGroup.pack();
       Screens.INSTANCE.getScreen(MainMenuScreen.class).settingsTable.setGroup(verticalGroup);
     } else {
-      VerticalGroup verticalGroup = Screens.INSTANCE.getScreen(GameScreen.class).verticalGroup;
+      VerticalGroup verticalGroup = Screens.INSTANCE.getScreen(GameScreenIsometric.class).verticalGroup;
       verticalGroup.addActor(soundTable);
       verticalGroup.addActor(musicTable);
       verticalGroup.pack();
