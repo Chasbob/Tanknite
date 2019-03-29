@@ -15,27 +15,30 @@ import com.aticatac.client.server.objectsystem.entities.Bullet;
 import com.aticatac.client.server.objectsystem.entities.Tank;
 import com.aticatac.client.server.objectsystem.interfaces.Tickable;
 import com.aticatac.client.server.objectsystem.physics.CollisionBox;
+import com.aticatac.common.GameResult;
+import com.aticatac.common.Stoppable;
 import com.aticatac.common.model.CommandModel;
-import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.model.Vector;
 import com.aticatac.common.objectsystem.EntityType;
+import com.aticatac.common.objectsystem.containers.KillLogEvent;
 import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.log4j.Logger;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 /**
  * The type Game mode.
  */
 @SuppressWarnings("ALL")
-public class BaseGame implements Runnable {
+public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
   /**
    * The constant maxXY.
    */
@@ -57,14 +60,14 @@ public class BaseGame implements Runnable {
   /**
    * The Frame.
    */
-  protected final Update frame;
   protected final Logger logger;
   private final int min = 0;
   private final int max = 1920;
-  private final AIUpdateService aiUpdateService;
   protected int powerUpCount;
+  private AIUpdateService aiUpdateService;
   private volatile boolean run;
   private int counter;
+  private int playerCount;
 
   /**
    * Instantiates a new Game mode.
@@ -74,9 +77,8 @@ public class BaseGame implements Runnable {
    */
   public BaseGame() {
     this.logger = Logger.getLogger(getClass());
-    eventBus.register(this);
+    serverEventBus.register(this);
     this.playerMap = new ConcurrentHashMap<>();
-    frame = new Update();
     bullets = new CopyOnWriteArraySet<>();
     powerups = new CopyOnWriteArraySet<>();
     aiUpdateService = new AIUpdateService(playerMap, powerups);
@@ -101,6 +103,16 @@ public class BaseGame implements Runnable {
       entityType = (EntityType.class).getEnumConstants()[x];
     }
     return entityType;
+  }
+
+  public void reset() {
+    for (Tank tank : playerMap.values()) {
+      DataServer.INSTANCE.removeBoxFromData(tank.getCollisionBox());
+      tank.reset(getClearPosition(EntityType.TANK.radius));
+    }
+    playerCount = playerMap.size();
+    bullets.clear();
+    powerups.clear();
   }
 
   @Subscribe
@@ -135,25 +147,23 @@ public class BaseGame implements Runnable {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
       playerMap.put(player, tank);
-      eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getContainer()));
-      for (int i = 0; i < 1; i++) {
-        Tank tank2 = createTank(player + " AI" + i, true);
-        playerMap.put(player + " AI" + i, tank2);
-        eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank2.getContainer()));
-      }
+      addAI("ai");
     }
   }
 
   public void removePlayer(String player) {
-    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
     Position position = playerMap.get(player).getPosition();
-    eventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getContainer()));
+    serverEventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getPlayerContainer()));
     DataServer.INSTANCE.removeBoxFromData(playerMap.get(player).getCollisionBox());
-    playerMap.remove(player);
+    playerMap.get(player).deactivate();
+    playerCount--;
+    if (playerCount <= 1) {
+      run = false;
+    }
     Entity newPowerup = new Entity(String.valueOf(Objects.hash(EntityType.AMMO_POWERUP, position)), EntityType.AMMO_POWERUP, position);
     DataServer.INSTANCE.addEntity(newPowerup);
     powerups.add(newPowerup);
-    eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
+    serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
   }
 
   private Tank createTank(String player, boolean isAI) {
@@ -185,12 +195,18 @@ public class BaseGame implements Runnable {
   public Tank createTank(String player, boolean isAI, int x, int y) {
     Position position = new Position(x, y);
     if (isAI) {
-      AITank tank = new AITank(player, position, 100, 30);
+      AITank tank = new AITank(player, position, 100, 30, playerMap.size());
       DataServer.INSTANCE.setCoordinates(position, tank);
+      this.logger.info(tank);
+      serverEventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getPlayerContainer()));
+      playerCount++;
       return tank;
     } else {
-      Tank tank = new Tank(player, position, 100, 30);
+      Tank tank = new Tank(player, position, 100, 30, playerMap.size());
       DataServer.INSTANCE.setCoordinates(position, tank);
+      this.logger.info(tank);
+      serverEventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.ADD, tank.getPlayerContainer()));
+      playerCount++;
       return tank;
     }
   }
@@ -203,7 +219,7 @@ public class BaseGame implements Runnable {
       DataServer.INSTANCE.addEntity(newPowerup);
       powerups.add(newPowerup);
       powerUpCount = 600;
-      eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
+      serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.ADD, newPowerup.getContainer()));
     }
   }
 
@@ -221,46 +237,40 @@ public class BaseGame implements Runnable {
       case OUTOFBOUNDS:
         break;
       case AMMO_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).ammoIncrease(10);
         break;
       case SPEED_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setSpeedIncrease(1200);
         break;
       case HEALTH_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).heal(10);
         break;
       case DAMAGE_POWERUP:
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setDamageIncrease(1200);
         break;
       case BULLETSPRAY_POWERUP:
         // TODO: Tell player they can press shift to unleash a bullet spray
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setBulletSprays(playerMap.get(e.getEntity().getName()).getBulletSprays() + 1);
         break;
       case FREEZEBULLET_POWERUP:
         // TODO: Tell player they can press control to shoot a freeze bullet
-        this.logger.info(e);
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        eventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setFreezeBullets(playerMap.get(e.getEntity().getName()).getFreezeBullets() + 1);
         break;
@@ -269,13 +279,14 @@ public class BaseGame implements Runnable {
 
   @Subscribe
   public void bulletCollision(BulletCollisionEvent event) {
-    this.logger.info(event);
     if (event.getHit().getType() == EntityType.TANK) {
-      playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage(), event.getBullet().getFreezeBullet());
-      this.logger.info(event);
+      int result = playerMap.get(event.getHit().getName()).hit(event.getBullet().getDamage(), event.getBullet().getFreezeBullet());
+      if (result <= 0) {
+        serverEventBus.post(new KillLogEvent(event.getBullet().getShooter().getName(), event.getHit().getName()));
+      }
     }
     bullets.remove(event.getBullet());
-    eventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.REMOVE, event.getBullet().getContainer()));
+    serverEventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.REMOVE, event.getBullet().getContainer()));
   }
 
   @Subscribe
@@ -303,6 +314,16 @@ public class BaseGame implements Runnable {
 
   @Override
   public void run() {
+    try {
+      call();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public GameResult call() throws Exception {
+    reset();
     counter = 0;
     run = true;
     this.logger.trace("Running...");
@@ -321,5 +342,20 @@ public class BaseGame implements Runnable {
         }
       }
     }
+    GameResult result = new GameResult();
+    for (Tank tank : playerMap.values()) {
+      if (tank.isAlive()) {
+        result.addWinner(tank.getName());
+        result.addKD(tank.getName(), tank.getKillCount(), 0);
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public void shutdown() {
+    run = false;
+    reset();
+    aiUpdateService = new AIUpdateService(playerMap, powerups);
   }
 }

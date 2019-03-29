@@ -1,6 +1,6 @@
 package com.aticatac.common.model;
 
-public enum   Command {
+public enum Command {
   DEFAULT(new Vector(0, 0)),
   UP(new Vector(0, 1)),
   DOWN(new Vector(0, -1)),
@@ -14,7 +14,6 @@ public enum   Command {
   FREEZE_BULLET(new Vector(0, 0)),
   BULLET_SPRAY(new Vector(0, 0)),
   PAUSE(new Vector(0, 0));
-
   public final Vector vector;
 
   Command(final Vector v) {
@@ -33,6 +32,29 @@ public enum   Command {
         return 0;
       default:
         return 0;
+    }
+  }
+
+
+  public boolean isShoot() {
+    switch (this) {
+      case DEFAULT:
+      case UP:
+      case DOWN:
+      case LEFT:
+      case RIGHT:
+      case MOVE:
+      case QUIT:
+      case START:
+      case FILL_AI:
+      case PAUSE:
+        return false;
+      case SHOOT:
+      case FREEZE_BULLET:
+      case BULLET_SPRAY:
+        return true;
+      default:
+        return false;
     }
   }
 

@@ -8,6 +8,16 @@ public class DBlogin extends Model {
   public DBlogin(final String username, final String password) {
     this.username = username;
     this.password = password;
+    this.register = false;
+  }
+
+  public DBlogin(final String username, final String password, final boolean register) {
+    this(username, password);
+    this.register = register;
+  }
+
+  public boolean isRegister() {
+    return register;
   }
 
   public DBlogin(final String username, final String password, final boolean register) {

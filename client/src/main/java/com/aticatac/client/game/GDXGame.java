@@ -1,14 +1,9 @@
 package com.aticatac.client.game;
 
-import com.aticatac.client.screens.PopUp;
 import com.aticatac.client.screens.Screens;
 import com.aticatac.client.server.networking.Server;
-import com.aticatac.common.mappers.Player;
 import com.aticatac.common.model.Updates.Update;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Cursor;
-import com.google.common.eventbus.Subscribe;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

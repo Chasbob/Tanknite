@@ -13,7 +13,7 @@ import com.aticatac.common.objectsystem.EntityType;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
-import static com.aticatac.client.server.bus.EventBusFactory.eventBus;
+import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
@@ -29,13 +29,15 @@ public class AITank extends Tank {
   protected int maxAmmo;
   protected int ammo;
 
-  public AITank(String name, Position p, int health, int ammo) {
-    super(name, p, health, ammo);
+  //todo add in a parameter boolean which is ai true or false
+  //TODO add in the parameter changes everywhere
+  public AITank(String name, Position p, int health, int ammo, int playerNo) {
+    super(name, p, health, ammo, playerNo);
     entity = new Entity(name, EntityType.TANK);
     frames = new ConcurrentLinkedQueue<>();
     logger = Logger.getLogger(getClass());
     ai = new AI();
-    eventBus.register(new AIInputListener(frames));
+    serverEventBus.register(new AIInputListener(frames));
   }
 
   @Override

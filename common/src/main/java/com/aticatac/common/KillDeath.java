@@ -29,6 +29,14 @@ public class KillDeath {
     addStats(newKD.kill, newKD.death);
   }
 
+  @Override
+  public String toString() {
+    return "KillDeath{" +
+        "kill=" + kill +
+        ", death=" + death +
+        '}';
+  }
+
   public void addStats(final int kills, final int deaths) {
     addDeaths(deaths);
     addKills(kills);

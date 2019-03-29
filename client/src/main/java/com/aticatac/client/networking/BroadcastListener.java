@@ -7,15 +7,18 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.concurrent.Callable;
+import org.apache.log4j.Logger;
 
 /**
  * The type Broadcast listener.
  */
 class BroadcastListener implements Callable<ServerInformation> {
   private final ModelReader modelReader;
+  private final Logger logger;
   private DatagramSocket socket;
 
   public BroadcastListener(DatagramSocket socket) {
+    logger = Logger.getLogger(getClass());
     this.socket = socket;
     modelReader = new ModelReader();
   }
@@ -29,6 +32,8 @@ class BroadcastListener implements Callable<ServerInformation> {
     byte[] bytes = new byte[1000];
     DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
     socket.receive(packet);
-    return modelReader.toModel(bytes, ServerInformation.class);
+    ServerInformation info = modelReader.toModel(bytes, ServerInformation.class);
+    this.logger.trace(info);
+    return info;
   }
 }

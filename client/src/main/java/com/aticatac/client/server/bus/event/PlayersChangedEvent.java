@@ -1,12 +1,12 @@
 package com.aticatac.client.server.bus.event;
 
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.PlayerContainer;
 
 public class PlayersChangedEvent {
   public final Action action;
-  private final Container container;
+  private final PlayerContainer container;
 
-  public PlayersChangedEvent(final Action action, final Container container) {
+  public PlayersChangedEvent(final Action action, final PlayerContainer container) {
     this.action = action;
     this.container = container;
   }
@@ -21,7 +21,7 @@ public class PlayersChangedEvent {
         + '}';
   }
 
-  public Container getContainer() {
+  public PlayerContainer getPlayerContainer() {
     return container;
   }
 

@@ -4,6 +4,7 @@ import com.aticatac.common.mappers.Player;
 import com.aticatac.common.model.DBResponse;
 import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.Leaderboard;
 import com.aticatac.common.model.LobbyPlayers;
 import com.aticatac.common.model.ModelReader;
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -23,6 +25,7 @@ public class DBuser extends Thread {
   private final DBinterface dBinterface;
   private final ModelReader modelReader;
   private boolean run;
+  private boolean loggedin;
 
   public DBuser(final Socket socket) throws IOException {
     logger = Logger.getLogger(getClass());
@@ -31,6 +34,7 @@ public class DBuser extends Thread {
     this.run = true;
     modelReader = new ModelReader();
     dBinterface = new DBinterface();
+    this.loggedin = false;
   }
 
   public void shutdown() {
@@ -52,24 +56,30 @@ public class DBuser extends Thread {
         if (dBlogin.isRegister()) {
           this.logger.info("cant register a taken name");
           this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
-          return;
-        }
-        Player p = op.get();
-        if (p.username.equals(dBlogin.getUsername()) && p.password.equals(dBlogin.getPassword())) {
-          this.logger.info("name and password match");
-          this.printer.println(modelReader.toJson(new DBResponse(p, DBResponse.Response.accepted)));
-          this.logger.info(p);
         } else {
-          this.logger.info("password is wrong");
-          this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.wrong_password)));
+          Player p = op.get();
+          if (p.username.equals(dBlogin.getUsername()) && p.password.equals(dBlogin.getPassword())) {
+            this.logger.info("name and password match");
+            this.printer.println(modelReader.toJson(new DBResponse(p, DBResponse.Response.accepted)));
+            this.logger.info(p);
+            this.loggedin = true;
+          } else {
+            this.logger.info("password is wrong");
+            this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.wrong_password)));
+          }
         }
       } else {
         if (dBlogin.isRegister()) {
           this.logger.info("registering");
           try {
-            Player newPlayer = registerUser(dBlogin);
-            this.logger.info("registered");
-            this.printer.println(modelReader.toJson(new DBResponse(newPlayer, DBResponse.Response.accepted)));
+            Optional<Player> optnewPlayer = registerUser(dBlogin);
+            if (optnewPlayer.isPresent()) {
+              this.logger.info("registered");
+              this.printer.println(modelReader.toJson(new DBResponse(optnewPlayer.get(), DBResponse.Response.accepted)));
+              this.loggedin = true;
+            } else {
+              this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
+            }
           } catch (PersistenceException e) {
             this.logger.info("name taken");
             this.printer.println(modelReader.toJson(new DBResponse(DBResponse.Response.username_taken)));
@@ -86,40 +96,57 @@ public class DBuser extends Thread {
     }
   }
 
-  private Player registerUser(DBlogin dBlogin) throws PersistenceException {
+  private Optional<Player> registerUser(DBlogin dBlogin) throws PersistenceException {
     this.logger.info("registering player...");
     this.logger.info(dBlogin.toString());
     Player player = new Player(dBlogin.getUsername(), dBlogin.getPassword());
-    return dBinterface.addPlayer(player);
+    dBinterface.addPlayer(player);
+    Optional<Player> out = dBinterface.getPlayer(dBlogin.getUsername());
+    return out;
   }
 
   @Override
   public void run() {
-    try {
-      String json = reader.readLine();
-      this.logger.info(json);
-      DBlogin dBlogin = modelReader.fromJson(json, DBlogin.class);
-      checkUser(dBlogin);
-    } catch (IOException | InvalidBytes e) {
-      try {
-        printer.close();
-        reader.close();
-      } catch (IOException e1) {
-        return;
-      }
-      return;
-    }
+//    try {
+//      String json = reader.readLine();
+//      this.logger.info(json);
+//
+//    } catch (IOException | InvalidBytes e) {
+//      try {
+//        this.logger.info("Shit broke");
+//        printer.close();
+//        reader.close();
+//      } catch (IOException e1) {
+//        return;
+//      }
+//      return;
+//    }
     while (!this.isInterrupted() && run) {
+      this.logger.info("run");
       try {
         String json = reader.readLine();
+        this.logger.info(json);
+        if(!loggedin){
+          DBlogin dBlogin = modelReader.fromJson(json, DBlogin.class);
+          checkUser(dBlogin);
+        }
         if (json.contains("LobbyPlayers")) {
           LobbyPlayers lobbyPlayers = modelReader.fromJson(json, LobbyPlayers.class);
           HashMap<String, Player> players = dBinterface.getLobby(lobbyPlayers.getNames());
           lobbyPlayers.setPlayers(players);
           printer.println(modelReader.toJson(lobbyPlayers));
+        } else if (json.contains("Leaderboard")) {
+          Leaderboard leaderboard = new Leaderboard(new ArrayList<>(dBinterface.getLeaderboard()));
+          printer.println(modelReader.toJson(leaderboard));
         }
-      } catch (IOException | InvalidBytes e) {
+      } catch (IOException e) {
         e.printStackTrace();
+      }catch (InvalidBytes e){
+        try {
+          reader.close();
+        } catch (IOException ignored) {
+        }
+        printer.close();
       }
     }
   }

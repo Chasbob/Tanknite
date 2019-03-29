@@ -2,25 +2,29 @@ package com.aticatac.client.util;
 
 import com.aticatac.client.networking.Client;
 import com.aticatac.client.networking.Servers;
-import com.aticatac.client.screens.PopUp;
-import com.aticatac.client.screens.Screens;
 import com.aticatac.client.server.networking.Server;
-import com.aticatac.common.mappers.Player;
-import com.aticatac.common.model.*;
+import com.aticatac.common.model.Command;
+import com.aticatac.common.model.DBResponse;
+import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
+import com.aticatac.common.model.ModelReader;
+import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Shutdown;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
-import com.aticatac.common.objectsystem.Container;
-
-import java.io.*;
+import com.aticatac.common.objectsystem.containers.Container;
+import com.badlogic.gdx.graphics.Color;
+import com.google.common.eventbus.Subscribe;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.badlogic.gdx.graphics.Color;
-import com.google.common.eventbus.Subscribe;
 import org.apache.log4j.Logger;
 
 import static com.aticatac.client.bus.EventBusFactory.eventBus;
@@ -34,6 +38,10 @@ public enum Data {
    */
   INSTANCE;
   private final Logger logger;
+  /**
+   * The Model reader.
+   */
+  ModelReader modelReader;
   private Update update;
   private ArrayList<String> clients;
   private HashMap<String, Container> players;
@@ -43,22 +51,32 @@ public enum Data {
   private Client client;
   private String username;
   private Color tankColour;
+  private boolean won;
   private Container playerPos;
   private ArrayList<Container> playerList;
   private boolean serverSelected;
   private boolean manualConfigForServer;
   private boolean isHosting;
+  private boolean isIso;
   private Socket dbSocket;
   private BufferedReader reader;
   private PrintStream printer;
-  ModelReader modelReader;
+  private boolean dbConnected;
+  private boolean connectedToGame;
 
   Data() {
     eventBus.register(this);
     this.logger = Logger.getLogger(getClass());
     client = new Client();
     modelReader = new ModelReader();
-
+    try {
+      dbSocket = new Socket();
+      dbSocket.connect(new InetSocketAddress("192.168.1.2", 6000), 5000);
+      dbConnected = true;
+    } catch (IOException e) {
+      this.logger.info("IO on db");
+      dbConnected = false;
+    }
     serverSelected = false;
     manualConfigForServer = false;
     isHosting = false;
@@ -75,6 +93,23 @@ public enum Data {
     this.clients = new ArrayList<>();
   }
 
+  public boolean isConnectedToGame() {
+    return connectedToGame;
+  }
+
+  /**
+   * Connected to db boolean.
+   *
+   * @return the boolean
+   */
+  public boolean connectedToDB() {
+    try {
+      return this.dbSocket.getInetAddress().isReachable(1000);
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
   /**
    * Is started boolean.
    *
@@ -84,29 +119,37 @@ public enum Data {
     return client.isStarted();
   }
 
-  public DBResponse login(DBlogin dBlogin) {
+  @Subscribe
+  private void shutdownEvent(Shutdown e) {
+    connectedToGame = false;
+  }
+
+  /**
+   * Login db response.
+   *
+   * @param dBlogin the d blogin
+   *
+   * @return the db response
+   *
+   * @throws IOException  the io exception
+   * @throws InvalidBytes the invalid bytes
+   */
+  public DBResponse login(DBlogin dBlogin) throws IOException, InvalidBytes {
     this.logger.info(dBlogin);
-    try {
-      dbSocket = new Socket("chasbob.co.uk", 6000);
-//    DBlogin dBlogin = new DBlogin("charlie", "charlie");
-      String json = modelReader.toJson(dBlogin);
-      logger.info(json);
-      reader = new BufferedReader(new InputStreamReader(dbSocket.getInputStream()));
-      printer = new PrintStream(dbSocket.getOutputStream());
-      printer.println(json);
-      logger.info("wrote to stream");
-      String json2 = reader.readLine();
-      logger.info(json2);
-      DBResponse output = modelReader.fromJson(json2, DBResponse.class);
-      if (output.getResponse() == DBResponse.Response.accepted) {
-
-        eventBus.post(output.getPlayer());
-      }
-      return output;
-    } catch (IOException | InvalidBytes e) {
-      return null;
+    String json = modelReader.toJson(dBlogin);
+    logger.info(json);
+    reader = new BufferedReader(new InputStreamReader(dbSocket.getInputStream()));
+    printer = new PrintStream(dbSocket.getOutputStream());
+    printer.println(json);
+    logger.info("wrote to stream");
+    String json2 = reader.readLine();
+    logger.info(json2);
+    DBResponse output = modelReader.fromJson(json2, DBResponse.class);
+    if (output.getResponse() == DBResponse.Response.accepted) {
+      connectedToGame = true;
+      eventBus.post(output.getPlayer());
     }
-
+    return output;
   }
 
   /**
@@ -185,6 +228,7 @@ public enum Data {
    * Gets player.
    *
    * @param i the
+   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -258,6 +302,7 @@ public enum Data {
    *
    * @param id           the id
    * @param singlePlayer the single player
+   *
    * @return the Response
    */
   public Response connect(String id, boolean singlePlayer) {
@@ -274,17 +319,17 @@ public enum Data {
   }
 
   /**
-   * Connect Response.
+   * Connect response.
    *
-   * @param id           the id
-   * @param singleplayer the singleplayer
-   * @param host         the host
-   * @return the Response
-   * @throws UnknownHostException the unknown host exception
+   * @param id   the id
+   * @param host the host
+   *
+   * @return the response
    */
-  public Response connect(String id, boolean singleplayer, String host) throws UnknownHostException {
-    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
-    return connect(id, singleplayer);
+  public Response connect(String id, String host) {
+//    this.currentInformation = new ServerInformation(host, InetAddress.getByName(host), Servers.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
+    return this.client.connect(host, Servers.INSTANCE.getPort(), id);
+    //this is just if the user has not selected a server instead of there being no Response.
   }
 
   /**
@@ -346,26 +391,99 @@ public enum Data {
     isHosting = hosting;
   }
 
+  /**
+   * Gets username.
+   *
+   * @return the username
+   */
   public String getUsername() {
     return username;
   }
 
+  /**
+   * Sets username.
+   *
+   * @param username the username
+   */
   public void setUsername(String username) {
     this.username = username;
   }
 
+  /**
+   * Gets tank colour.
+   *
+   * @return the tank colour
+   */
   public Color getTankColour() {
     return tankColour;
   }
 
+  /**
+   * Sets tank colour.
+   *
+   * @param tankColour the tank colour
+   */
   public void setTankColour(Color tankColour) {
     this.tankColour = tankColour;
   }
 
+  /**
+   * Submit.
+   *
+   * @param bearing the bearing
+   */
   public void submit(final int bearing) {
     this.client.submit(bearing);
   }
 
+  /**
+   * Initialise.
+   */
   public void initialise() {
+  }
 
-  }}
+  /**
+   * Is dbConnected boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isDbConnected() {
+    return dbConnected;
+  }
+
+  /**
+   * Is won boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isWon() {
+    return won;
+  }
+
+  /**
+   * Sets won.
+   *
+   * @param won the won
+   */
+  public void setWon(boolean won) {
+    this.won = won;
+  }
+
+  /**
+   * Is iso boolean.
+   *
+   * @return the boolean
+   */
+  public boolean isIso() {
+    return isIso;
+  }
+
+  /**
+   * Sets iso.
+   *
+   * @param iso the iso
+   */
+  public void setIso(boolean iso) {
+    isIso = iso;
+  }
+}
