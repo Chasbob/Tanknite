@@ -318,8 +318,6 @@ public class GameScreen extends AbstractScreen {
         if (newUpdate != null) {
             update = newUpdate;
             player = update.getMe(Data.INSTANCE.getID());
-        }else {
-            return;
         }
         if (player != null) {
             this.camera.setPosititon(Helper.tileToScreenX(player.getX()+32, player.getY()-32), Helper.tileToScreenY(player.getX()+32, player.getY()-32));
@@ -359,6 +357,15 @@ public class GameScreen extends AbstractScreen {
         //vec4 color = texture2D(TextureSampler, TexCoord) * Color.GRAY;
 
         game.end();
+
+        renderer.getBatch().begin();
+        renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(2));
+        renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(3));
+        renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(4));
+        renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(5));
+        renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get(6));
+        //renderer.getBatch().setColor(0.3f, 0.3f, 0.3f, 1);
+        renderer.getBatch().end();
 
         //health bar
         healthBar();
