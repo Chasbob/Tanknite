@@ -79,7 +79,7 @@ public enum DataServer {
    */
   private String[][] convertTMXFileToArray() {
     String[][] map = new String[60][60];
-    TiledMap tiledMap = new TmxMapLoader().load("maps/mapData/mapIsometric.tmx");
+    TiledMap tiledMap = new TmxMapLoader().load("maps/mapData/map.tmx");
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
     for (int x = 0; x < layer.getWidth(); x++) {
       for (int y = 0; y < layer.getHeight(); y++) {

@@ -20,14 +20,7 @@ public class DBlogin extends Model {
     return register;
   }
 
-  public DBlogin(final String username, final String password, final boolean register) {
-    this(username, password);
-    this.register = register;
-  }
 
-  public boolean isRegister() {
-    return register;
-  }
 
   public String getPassword() {
     return password;

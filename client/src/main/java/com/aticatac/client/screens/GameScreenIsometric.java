@@ -424,12 +424,12 @@ public class GameScreenIsometric extends AbstractScreen {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
             AudioEnum.INSTANCE.getTankMove();
           }
-          Data.INSTANCE.sendCommand(Command.UP);
+          Data.INSTANCE.sendCommand(Command.DOWN);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
             AudioEnum.INSTANCE.getTankMove();
           }
-          Data.INSTANCE.sendCommand(Command.DOWN);
+          Data.INSTANCE.sendCommand(Command.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
           this.camera.getCamera().zoom -= 0.1f;
         } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {
@@ -487,10 +487,9 @@ public class GameScreenIsometric extends AbstractScreen {
 
       for (TileHolder tileHolder : ps) {
         var p = tileHolder.getPosition();
-        var pp = p;
         var tile = tileTextures.get(tileHolder.getTexture());
         //(60-y-1) * 32, (x+1) * 32
-        var objPp = new Position((pp.getX()) * 32, (pp.getY()) * 32);
+        var objPp = new Position((p.getX()) * 32, (p.getY()) * 32);
 
         var temp = screenToIsoTiles(objPp);
 
@@ -512,7 +511,7 @@ public class GameScreenIsometric extends AbstractScreen {
                 sb.draw(shadowUltraLight, Helper.tileToScreenX(c.getX() + 10, c.getY() - 32 - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 32 - 10));
               } else if (c.getObjectType() == EntityType.TANK) {
                 //sb.draw(tankTexture, Helper.tileToScreenX(c.getX() + 10, c.getY() - 10), Helper.tileToScreenY(c.getX() + 10, c.getY() - 10));
-                int t = changeAngle(-getBearing(), 90);//changeAngle(-c.getR(),-90);
+                int t = changeAngle(c.getR(), 90);//changeAngle(-c.getR(),-90);
                 t = t % 360;
                 if (t == 359) t = 0;
                 //sb.draw(rotations.get(t),Helper.tileToScreenX(c.getX() + 1, c.getY() - 1), Helper.tileToScreenY(c.getX() + 1, c.getY() - 1));
@@ -543,10 +542,10 @@ public class GameScreenIsometric extends AbstractScreen {
 
 
         drawTiles(sb, objPp.getX(), objPp.getY(), tile);
-        var shadowPp = new Position((pp.getX() + 1) * 32, (pp.getY()) * 32);
-        if (!usedShadows.contains(pp)) {
+        var shadowPp = new Position((p.getX() + 1) * 32, (p.getY()) * 32);
+        if (!usedShadows.contains(p)) {
           drawShadow(sb, shadowPp.getX(), shadowPp.getY(), shadow);
-          usedShadows.add(pp);
+          usedShadows.add(p);
         }
       }
 

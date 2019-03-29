@@ -155,7 +155,7 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
    * @param rotation
    * @return
    */
-  private Position turretCalculation(Position tankPosition, int rotation) {
+  Position turretCalculation(Position tankPosition, int rotation) {
     double distance = 50;
     double dX = Math.cos(Math.toRadians(rotation));
     double distanceX = distance * -dX;
