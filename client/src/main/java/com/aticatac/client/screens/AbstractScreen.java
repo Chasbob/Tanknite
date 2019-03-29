@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -54,6 +55,8 @@ public class AbstractScreen extends Stage implements Screen {
    * Build stage.
    */
   public void buildStage() {
+    Cursor customCursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("img/gun-pointer.png")), 0, 0);
+    Gdx.graphics.setCursor(customCursor);
     //create root table
     rootTable.setFillParent(true);
     Styles.INSTANCE.addTableColour(rootTable, Color.valueOf("363636"));
