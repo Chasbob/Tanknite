@@ -55,7 +55,7 @@ public class AbstractScreen extends Stage implements Screen {
    * Build stage.
    */
   public void buildStage() {
-    Cursor customCursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("img/gun-pointer.png")), 0, 0);
+    Cursor customCursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("img/gun-pointer.png")), 16, 16);
     Gdx.graphics.setCursor(customCursor);
     //create root table
     rootTable.setFillParent(true);
