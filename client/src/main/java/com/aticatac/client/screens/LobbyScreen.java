@@ -96,6 +96,7 @@ public class LobbyScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
     if (Data.INSTANCE.isStarted()) {
+      Screens.INSTANCE.reloadScreen(GameScreen.class);
       Screens.INSTANCE.showScreen(GameScreen.class);
       refresh();
     }

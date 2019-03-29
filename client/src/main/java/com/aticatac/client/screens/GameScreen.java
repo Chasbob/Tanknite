@@ -73,7 +73,7 @@ public class GameScreen extends AbstractScreen {
     maxY = 1920;
     try {
       player = new PlayerContainer();
-      ammoValue = Styles.INSTANCE.createLabel("");
+      ammoValue = Styles.INSTANCE.createLabel("0");
       killCount = Styles.INSTANCE.createLabel("0");
       playerCount = Styles.INSTANCE.createLabel("0");
       fpsValue = Styles.INSTANCE.createLabel("");
@@ -123,9 +123,9 @@ public class GameScreen extends AbstractScreen {
 
   @Override
   public void refresh() {
-    ammoValue = Styles.INSTANCE.createLabel("");
-    killCount = Styles.INSTANCE.createLabel("");
-    playerCount = Styles.INSTANCE.createLabel("");
+    ammoValue = Styles.INSTANCE.createLabel("0");
+    killCount = Styles.INSTANCE.createLabel("0");
+    playerCount = Styles.INSTANCE.createLabel("0");
     tankXY = Styles.INSTANCE.createLabel("");
     direction = Styles.INSTANCE.createLabel("");
     popUpTable.setVisible(false);
@@ -325,7 +325,6 @@ public class GameScreen extends AbstractScreen {
             tanks.setColor(Color.FOREST);
             break;
         }
-        tanks.setColor(Color.WHITE);
         renderContainer(c, tanks);
       }
     }

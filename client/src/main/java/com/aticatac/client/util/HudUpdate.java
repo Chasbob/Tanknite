@@ -45,11 +45,7 @@ public class HudUpdate {
   }
 
   private void updateAmmoLabel() {
-    if (playerContainer.isAlive()) {
-      this.ammoLabel.setText(" " + update.getMe(Data.INSTANCE.getID()).getAmmo() + " ");
-    } else {
-      this.ammoLabel.setText(" ");
-    }
+    this.ammoLabel.setText(" " + update.getMe(Data.INSTANCE.getID()).getAmmo() + " ");
   }
 
   private void updatePlayerCount() {

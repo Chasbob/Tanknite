@@ -102,7 +102,6 @@ class PopUp {
       Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
       Screens.INSTANCE.showScreen(MainMenuScreen.class);
       Data.INSTANCE.quit();
-      Screens.INSTANCE.getScreen(GameScreen.class).refresh();
       return false;
     }));
     quitTable.add(quitButton);
