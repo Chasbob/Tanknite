@@ -343,7 +343,7 @@ public class GameScreen extends AbstractScreen {
             tanks.setColor(Color.FOREST);
             break;
         }
-        tanks.setColor(Color.WHITE);
+        //tanks.setColor(Color.WHITE);
         renderContainer(c, tanks);
       }
     }
