@@ -28,6 +28,12 @@ class Graph {
     nodes = new HashMap<>();
     String[][] map = DataServer.INSTANCE.getMap();
     removePositionsNextToWalls(map);
+    for (int i = 0; i < 60; i++) {
+      for (int j = 0; j < 60; j++) {
+        System.out.print(map[i][j]);
+      }
+      System.out.println();
+    }
     // Add nodes
     int x, y;
     x = 0;
@@ -66,8 +72,9 @@ class Graph {
    * @return The nearest node to the given position
    */
   SearchNode getNearestNode(Position position) {
-    if (nodes.containsKey(32*Math.round((float)position.getX()/32)+"-"+32*Math.round((float)position.getY()/32)))
-      return nodes.get(32*Math.round((float)position.getX()/32)+"-"+32*Math.round((float)position.getY()/32));
+    if (nodes.containsKey(32 * Math.round((float) position.getX() / 32) + "-" + 32 * Math.round((float) position.getY() / 32))) {
+      return nodes.get(32 * Math.round((float) position.getX() / 32) + "-" + 32 * Math.round((float) position.getY() / 32));
+    }
     SearchNode closestNode = null;
     double distanceToClosestNode = Double.MAX_VALUE;
     for (SearchNode node : nodes.values()) {
@@ -112,7 +119,7 @@ class Graph {
         if (map[x][y].equals("0")) {
           for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-              if (i >= 0 && i < map.length && j >= 0 && j < map.length && (!map[i][j].equals("0") && map[i][j].equals("1"))) {
+              if (i >= 0 && i < map.length && j >= 0 && j < map.length && map[i][j].equals("2")) {
                 map[x][y] = "1";
               }
             }

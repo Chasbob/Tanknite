@@ -20,6 +20,7 @@ public class Update extends Model {
   private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
   private final CopyOnWriteArraySet<KillLogEvent> killLogEvents;
+  private final CopyOnWriteArraySet<KillLogEvent> powerupEvent;
   private boolean start;
   private boolean playersChanged;
 
@@ -35,6 +36,16 @@ public class Update extends Model {
     powerups = new ConcurrentHashMap<>();
     newShots = new ConcurrentHashMap<>();
     killLogEvents = new CopyOnWriteArraySet<>();
+    powerupEvent = new CopyOnWriteArraySet<>();
+  }
+
+  /**
+   * Gets powerup event.
+   *
+   * @return the powerup event
+   */
+  public CopyOnWriteArraySet<KillLogEvent> getPowerupEvent() {
+    return powerupEvent;
   }
 
   /**

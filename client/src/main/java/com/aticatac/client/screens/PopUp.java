@@ -417,7 +417,9 @@ class PopUp {
     Table resultTable = new Table();
     rootGroup.addActor(resultTable);
     Label resultLabel;
-    if (Data.INSTANCE.isWon()) {
+    if (!Data.INSTANCE.isConnectedToGame()) {
+      resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.bigMenuFont, "LOST CONNECTION", Color.GREEN);
+    } else if (Data.INSTANCE.isWon()) {
       resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.bigMenuFont, "VICTORY", Color.GREEN);
     } else {
       resultLabel = Styles.INSTANCE.createCustomLabelWithFont(Styles.INSTANCE.bigMenuFont, "DEFEAT", Color.RED);

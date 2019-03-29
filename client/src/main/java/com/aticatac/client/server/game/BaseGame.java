@@ -238,39 +238,39 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
         break;
       case AMMO_POWERUP:
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer(), e.getEntity().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).ammoIncrease(10);
         break;
       case SPEED_POWERUP:
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer(), e.getEntity().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setSpeedIncrease(1200);
         break;
       case HEALTH_POWERUP:
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer(), e.getEntity().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).heal(10);
         break;
       case DAMAGE_POWERUP:
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer(), e.getEntity().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setDamageIncrease(1200);
         break;
       case BULLETSPRAY_POWERUP:
         // TODO: Tell player they can press shift to unleash a bullet spray
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer(), e.getEntity().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setBulletSprays(playerMap.get(e.getEntity().getName()).getBulletSprays() + 1);
         break;
       case FREEZEBULLET_POWERUP:
         // TODO: Tell player they can press control to shoot a freeze bullet
         DataServer.INSTANCE.removeBoxFromData(e.getHit().getCollisionBox());
-        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer()));
+        serverEventBus.post(new PowerupsChangedEvent(PowerupsChangedEvent.Action.REMOVE, e.getHit().getContainer(), e.getEntity().getContainer()));
         powerups.remove(e.getHit());
         playerMap.get(e.getEntity().getName()).setFreezeBullets(playerMap.get(e.getEntity().getName()).getFreezeBullets() + 1);
         break;

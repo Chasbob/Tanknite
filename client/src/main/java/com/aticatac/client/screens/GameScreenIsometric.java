@@ -454,12 +454,12 @@ public class GameScreenIsometric extends AbstractScreen {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
             AudioEnum.INSTANCE.getTankMove();
           }
-          Data.INSTANCE.sendCommand(Command.UP);
+          Data.INSTANCE.sendCommand(Command.DOWN);
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
           if (Screens.INSTANCE.getCurrentScreen().equals(GameScreenIsometric.class)) {
             AudioEnum.INSTANCE.getTankMove();
           }
-          Data.INSTANCE.sendCommand(Command.DOWN);
+          Data.INSTANCE.sendCommand(Command.UP);
         } else if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
           this.camera.getCamera().zoom -= 0.1f;
         } else if (Gdx.input.isKeyPressed(Input.Keys.E)) {

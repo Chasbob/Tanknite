@@ -26,7 +26,7 @@ import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
  *
  * @author Charles de Freitas
  */
-public class Updater implements Runnable , Stoppable {
+public class Updater implements Runnable, Stoppable {
   /**
    * The Data.
    */
@@ -39,6 +39,7 @@ public class Updater implements Runnable , Stoppable {
   private final ConcurrentHashMap<Integer, Container> powerups;
   private final ConcurrentHashMap<String, Container> newShots;
   private final CopyOnWriteArraySet<KillLogEvent> killLogEvents;
+  private final CopyOnWriteArraySet<KillLogEvent> powerupEvent;
   private boolean run;
 
   /**
@@ -56,6 +57,7 @@ public class Updater implements Runnable , Stoppable {
     serverEventBus.register(this);
     updatePlayers();
     killLogEvents = update.getKillLogEvents();
+    powerupEvent = update.getPowerupEvent();
   }
 
   @Override
