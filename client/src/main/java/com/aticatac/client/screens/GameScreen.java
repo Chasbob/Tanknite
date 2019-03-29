@@ -70,7 +70,7 @@ public class GameScreen extends AbstractScreen {
       fpsValue = Styles.INSTANCE.createLabel("");
       tankXY = Styles.INSTANCE.createLabel("");
       direction = Styles.INSTANCE.createLabel("");
-      map = new TmxMapLoader().load("maps/map.tmx");
+      map = new TmxMapLoader().load("maps/mapData/map.tmx");
       tankTexture = new Texture("img/tank.png");
       projectileTexture = new Texture("img/bullet.png");
       stick = new Texture("img/top.png");
@@ -79,7 +79,7 @@ public class GameScreen extends AbstractScreen {
       renderer = new OrthogonalTiledMapRenderer(map);
       minimapViewport = new MinimapViewport(0.2f, 0.025f, new OrthographicCamera());
       minimapViewport.setWorldSize(maxX, maxY);
-      this.camera = new Camera(maxX, maxY, 640, 640);
+      this.camera = new Camera(maxX, maxY, 640, 640, false);
       Gdx.input.setInputProcessor(this);
     } catch (Exception e) {
       e.printStackTrace();

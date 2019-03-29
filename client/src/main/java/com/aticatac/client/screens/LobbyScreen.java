@@ -96,8 +96,13 @@ public class LobbyScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
     if (Data.INSTANCE.isStarted()) {
-      Screens.INSTANCE.reloadScreen(GameScreen.class);
-      Screens.INSTANCE.showScreen(GameScreen.class);
+      if (Data.INSTANCE.isIso()) {
+        Screens.INSTANCE.reloadScreen(GameScreenIsometric.class);
+        Screens.INSTANCE.showScreen(GameScreenIsometric.class);
+      } else {
+        Screens.INSTANCE.reloadScreen(GameScreen.class);
+        Screens.INSTANCE.showScreen(GameScreen.class);
+      }
       refresh();
     }
   }
