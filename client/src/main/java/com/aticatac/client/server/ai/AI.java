@@ -23,7 +23,7 @@ public class AI {
   private final static Graph graph = new Graph();
   private final PathFinder pathFinder;
   private final double aggression; // (0.8 to 1.2), higher = more likely to chase less likely to flee
-  private final double collectiveness; // (0.8 to 1.2), higher = more likely to collect a powerup
+  private final double collective; // (0.8 to 1.2), higher = more likely to collect a powerup
   private State state;
   private State prevState;
   private LinkedList<SearchNode> searchPath;
@@ -47,7 +47,7 @@ public class AI {
     this.commandHistory = new ArrayList<>();
     Random rand = new Random();
     this.aggression = (double)(rand.nextInt(4) + 8) / 10;
-    this.collectiveness = (double)(rand.nextInt(4) + 8) / 10;
+    this.collective = (double)(rand.nextInt(4) + 8) / 10;
     this.aimAngle = 0;
   }
 
@@ -190,17 +190,17 @@ public class AI {
   private int getObtainingUtility() {
     if (powerupsInRange.stream().map(PowerUpState::getType).anyMatch(EntityType.AMMO_POWERUP::equals)) {
       idealPowerup = EntityType.AMMO_POWERUP;
-      return (int) Math.round((100 - tankAmmo) * collectiveness);
+      return (int) Math.round((100 - tankAmmo) * collective);
     }
     if (powerupsInRange.stream().map(PowerUpState::getType).anyMatch(EntityType.HEALTH_POWERUP::equals)) {
       idealPowerup = EntityType.HEALTH_POWERUP;
-      return (int) Math.round((100 - tankHealth) * collectiveness);
+      return (int) Math.round((100 - tankHealth) * collective);
     }
     if (powerupsInRange.stream().map(PowerUpState::getType).anyMatch(EntityType.DAMAGE_POWERUP::equals)) {
-      return (int) Math.round(80 * collectiveness);
+      return (int) Math.round(80 * collective);
     }
     if (!powerupsInRange.isEmpty()) {
-      return (int) Math.round(50 * collectiveness);
+      return (int) Math.round(50 * collective);
     }
     return 0;
   }
