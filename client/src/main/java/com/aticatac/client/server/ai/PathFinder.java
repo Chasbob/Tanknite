@@ -88,7 +88,7 @@ class PathFinder {
    *
    * @return The node with the lowest f score from the set of open nodes
    */
-  SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Integer> f) {
+  private SearchNode getLowestFScoreNode(LinkedList<SearchNode> openSet, HashMap<SearchNode, Integer> f) {
     int lowestScore = Integer.MAX_VALUE;
     SearchNode lowestScoreNode = openSet.get(0);
     for (SearchNode node : openSet) {

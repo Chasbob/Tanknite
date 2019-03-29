@@ -12,18 +12,18 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * The AI component. Where would life be without the AI component?
+ * The AI.
  *
  * @author Dylan
  */
-@SuppressWarnings("ALL")
+//@SuppressWarnings("ALL")
 public class AI {
   private final static int VIEW_RANGE = 32*12; // some value equivalent to the actual view range that a player would have
   private final static Set<SearchNode> occupiedNodes = new HashSet<>();
   private final static Graph graph = new Graph();
   private final PathFinder pathFinder;
   private final double aggression; // (0.8 to 1.2), higher = more likely to chase less likely to flee
-  private final double collectiveness; // (0.8 to 1.2), higher = more likely to collect a powerup
+  private final double collective; // (0.8 to 1.2), higher = more likely to collect a powerup
   private State state;
   private State prevState;
   private LinkedList<SearchNode> searchPath;
@@ -47,7 +47,7 @@ public class AI {
     this.commandHistory = new ArrayList<>();
     Random rand = new Random();
     this.aggression = (double)(rand.nextInt(4) + 8) / 10;
-    this.collectiveness = (double)(rand.nextInt(4) + 8) / 10;
+    this.collective = (double)(rand.nextInt(4) + 8) / 10;
     this.aimAngle = 0;
   }
 
@@ -80,7 +80,7 @@ public class AI {
     tankPos = currentInput.getMe().getPosition();
     tankHealth = currentInput.getMe().getHealth();
     tankAmmo = currentInput.getAmmo();
-    enemiesInRange = getEnemiesInRange(tankPos, VIEW_RANGE);
+    enemiesInRange = getEnemiesInRange(tankPos);
     powerupsInRange = getPowerUpsInRange(tankPos, currentInput.getPowerups());
     // Poll search path if close enough to node
     double threshold = 8;
@@ -188,23 +188,19 @@ public class AI {
    * @return The utility score for the OBTAINING state
    */
   private int getObtainingUtility() {
-    if (tankHealth <= 10) {
-      // can't move -> can't obtain
-      return 0;
-    }
-    if (tankAmmo <= 5 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.AMMO_POWERUP::equals).findFirst().isPresent()) {
+    if (powerupsInRange.stream().map(PowerUpState::getType).anyMatch(EntityType.AMMO_POWERUP::equals)) {
       idealPowerup = EntityType.AMMO_POWERUP;
-      return (int) Math.round(100 * collectiveness);
+      return (int) Math.round((100 - tankAmmo) * collective);
     }
-    if (tankHealth <= 30 && powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.HEALTH_POWERUP::equals).findFirst().isPresent()) {
+    if (powerupsInRange.stream().map(PowerUpState::getType).anyMatch(EntityType.HEALTH_POWERUP::equals)) {
       idealPowerup = EntityType.HEALTH_POWERUP;
-      return (int) Math.round(100 * collectiveness);
+      return (int) Math.round((100 - tankHealth) * collective);
     }
-    if (powerupsInRange.stream().map(PowerUpState::getType).filter(EntityType.DAMAGE_POWERUP::equals).findFirst().isPresent()) {
-      return (int) Math.round(80 * collectiveness);
+    if (powerupsInRange.stream().map(PowerUpState::getType).anyMatch(EntityType.DAMAGE_POWERUP::equals)) {
+      return (int) Math.round(80 * collective);
     }
     if (!powerupsInRange.isEmpty()) {
-      return (int) Math.round(50 * collectiveness);
+      return (int) Math.round(50 * collective);
     }
     return 0;
   }
@@ -217,8 +213,7 @@ public class AI {
    */
   private Command performStateAction() {
     // Do searching action if stuck
-    PlayerState closestEnemy = getClosestEnemy(enemiesInRange);
-    if (commandHistory.size() > 20) {
+    if (commandHistory.size() > 30) {
       return performWanderingAction();
     }
     // Keep going along same path if state has not changed
@@ -268,7 +263,7 @@ public class AI {
     }
     searchPath = getPath(tankPos, target.getPosition());
     while (searchPath.size() > 4) {
-      ((LinkedList<SearchNode>) searchPath).removeLast();
+      searchPath.removeLast();
     }
     return commandToPerform(searchPath.peek());
   }
@@ -284,7 +279,7 @@ public class AI {
     Position goal = getClearPosition();
     searchPath = getPath(tankPos, goal);
     while (searchPath.size() > 5) {
-      ((LinkedList<SearchNode>) searchPath).removeLast();
+      searchPath.removeLast();
     }
     return commandToPerform(searchPath.peek());
   }
@@ -458,17 +453,15 @@ public class AI {
    * Gets a list of enemies that are in a given range from a given position.
    *
    * @param position The center position to check from
-   * @param range    The range
-   *
    * @return A list of enemies in range of the position
    */
-  private ArrayList<PlayerState> getEnemiesInRange(Position position, int range) {
+  private ArrayList<PlayerState> getEnemiesInRange(Position position) {
     ArrayList<PlayerState> inRange = new ArrayList<>(currentInput.getPlayers());
     inRange.remove(getClosestEnemy(currentInput.getPlayers())); // remove self...
     for (PlayerState enemy : currentInput.getPlayers()) {
       int dX = Math.abs(position.getX() - enemy.getPosition().getX());
       int dY = Math.abs(position.getY() - enemy.getPosition().getY());
-      if (dX > range || dY > range && enemy.getHealth() > 0) {
+      if (dX > VIEW_RANGE || dY > VIEW_RANGE && enemy.getHealth() > 0) {
         inRange.remove(enemy);
       }
     }
@@ -596,12 +589,12 @@ public class AI {
    */
   private Decision.ShootType canShoot() {
     if (!(tankAmmo <= 0 || enemiesInRange.isEmpty())) {
-      if (getEnemiesInSight().size() > 1 && Math.random() > 0.5 && currentInput.getSprayAmmo() > 0) {
-        return Decision.ShootType.SPRAY;
-      }
       Position target = getTargetedEnemy().getPosition();
       if (target != null) {
         aimAngle = getNewAimAngle(target);
+        if (getEnemiesInSight().size() > 1 && Math.random() > 0.5 && currentInput.getSprayAmmo() > 0) {
+          return Decision.ShootType.SPRAY;
+        }
         if (checkLineOfSightToPosition(tankPos, target) && Math.abs(aimAngle - getAngleToPosition(target)) < 5) {
           if (currentInput.getFreezeAmmo() > 0 && Math.random() > 0.75) {
             return Decision.ShootType.FREEZE;
@@ -611,7 +604,7 @@ public class AI {
       }
     }
     // Do "random" aiming if not shooting
-    if (!searchPath.isEmpty() && state == State.WANDERING) {
+    if (!searchPath.isEmpty() && state != State.CHASING) {
       aimAngle = getNewAimAngle(searchPath.peekLast());
     }
     return Decision.ShootType.NONE;
@@ -663,9 +656,7 @@ public class AI {
    * @return Resultant angle
    */
   private double changeAngle(double angle, double change) {
-    if (angle + change >= 0)
-      return (angle + change) % 360;
-    return (angle + change + 360) % 360;
+    return (angle + (change % 360) + 360) % 360;
   }
 
   /**
