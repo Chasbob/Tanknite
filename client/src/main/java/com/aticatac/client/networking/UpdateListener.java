@@ -3,12 +3,15 @@ package com.aticatac.client.networking;
 import com.aticatac.common.Stoppable;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
+import com.aticatac.common.model.Shutdown;
 import com.aticatac.common.model.Updates.Update;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.MulticastSocket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
+
+import static com.aticatac.client.bus.EventBusFactory.eventBus;
 
 /**
  * The type Update listener.
@@ -68,6 +71,7 @@ class UpdateListener extends Thread implements Stoppable {
         }
         tcpListen();
       } catch (IOException e) {
+        eventBus.post(new Shutdown());
         return;
       } catch (InvalidBytes ignored) {
       }

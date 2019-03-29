@@ -9,10 +9,12 @@ import com.aticatac.common.model.DBlogin;
 import com.aticatac.common.model.Exception.InvalidBytes;
 import com.aticatac.common.model.ModelReader;
 import com.aticatac.common.model.ServerInformation;
+import com.aticatac.common.model.Shutdown;
 import com.aticatac.common.model.Updates.Response;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.containers.Container;
 import com.badlogic.gdx.graphics.Color;
+import com.google.common.eventbus.Subscribe;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -59,7 +61,8 @@ public enum Data {
   private Socket dbSocket;
   private BufferedReader reader;
   private PrintStream printer;
-  private boolean connected;
+  private boolean dbConnected;
+  private boolean connectedToGame;
 
   Data() {
     eventBus.register(this);
@@ -68,12 +71,11 @@ public enum Data {
     modelReader = new ModelReader();
     try {
       dbSocket = new Socket();
-      dbSocket.connect(new InetSocketAddress("chasbob.co.uk", 6000),5000);
-//      dbSocket = new Socket("chasbob.co.uk", 6000);
-      connected = true;
+      dbSocket.connect(new InetSocketAddress("127.0.0.1", 6000), 5000);
+      dbConnected = true;
     } catch (IOException e) {
       this.logger.info("IO on db");
-      connected = false;
+      dbConnected = false;
     }
     serverSelected = false;
     manualConfigForServer = false;
@@ -89,6 +91,10 @@ public enum Data {
     players = new HashMap<>();
     this.update = new Update();
     this.clients = new ArrayList<>();
+  }
+
+  public boolean isConnectedToGame() {
+    return connectedToGame;
   }
 
   /**
@@ -113,6 +119,11 @@ public enum Data {
     return client.isStarted();
   }
 
+  @Subscribe
+  private void shutdownEvent(Shutdown e) {
+    connectedToGame = false;
+  }
+
   /**
    * Login db response.
    *
@@ -135,6 +146,7 @@ public enum Data {
     logger.info(json2);
     DBResponse output = modelReader.fromJson(json2, DBResponse.class);
     if (output.getResponse() == DBResponse.Response.accepted) {
+      connectedToGame = true;
       eventBus.post(output.getPlayer());
     }
     return output;
@@ -431,12 +443,12 @@ public enum Data {
   }
 
   /**
-   * Is connected boolean.
+   * Is dbConnected boolean.
    *
    * @return the boolean
    */
-  public boolean isConnected() {
-    return connected;
+  public boolean isDbConnected() {
+    return dbConnected;
   }
 
   /**

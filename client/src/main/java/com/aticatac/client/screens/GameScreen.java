@@ -1,5 +1,6 @@
 package com.aticatac.client.screens;
 
+import com.aticatac.client.bus.EventBusFactory;
 import com.aticatac.client.networking.Servers;
 import com.aticatac.client.util.AudioEnum;
 import com.aticatac.client.util.Camera;
@@ -8,6 +9,7 @@ import com.aticatac.client.util.HudUpdate;
 import com.aticatac.client.util.MinimapViewport;
 import com.aticatac.client.util.Styles;
 import com.aticatac.common.model.Command;
+import com.aticatac.common.model.Shutdown;
 import com.aticatac.common.model.Updates.Update;
 import com.aticatac.common.objectsystem.EntityType;
 import com.aticatac.common.objectsystem.containers.Container;
@@ -143,8 +145,16 @@ public class GameScreen extends AbstractScreen {
     Update newUpdate = Data.INSTANCE.nextUpdate();
     if (newUpdate != null) {
       if (player.isAlive()) {
-        update = newUpdate;
-        player = update.getMe(Data.INSTANCE.getID());
+        if (Data.INSTANCE.isConnectedToGame()) {
+          update = newUpdate;
+          player = update.getMe(Data.INSTANCE.getID());
+        } else {
+          if (!endGame) {
+            PopUp.createPopUp(false, true, false);
+            popUpTable.setVisible(true);
+            endGame = true;
+          }
+        }
         int playerAlive = checkAlive(update.getPlayers());
         if (playerAlive != Integer.valueOf(playerCount.getText().toString())) {
           playerCount.setText(Integer.toString(playerAlive));

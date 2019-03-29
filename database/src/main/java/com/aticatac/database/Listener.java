@@ -51,6 +51,7 @@ public class Listener implements Runnable {
 //          }
 //        }
       } catch (IOException io) {
+        System.exit(123);
       }
     }
 //        if (object instanceof DBlogin) {

@@ -274,7 +274,7 @@ class PopUp {
   private static Group createLogin() {
     VerticalGroup rootGroup = new VerticalGroup();
     rootGroup.pad(10).columnLeft().space(10);
-    if (Data.INSTANCE.isConnected()) {
+    if (Data.INSTANCE.isDbConnected()) {
       //create actors for table
       Label usernameLabel = Styles.INSTANCE.createLabel("USERNAME");
       Label passwordLabel = Styles.INSTANCE.createLabel("PASSWORD");
@@ -403,7 +403,7 @@ class PopUp {
   private static Boolean resetMainMenu() {
     Screens.INSTANCE.getScreen(MainMenuScreen.class).rootTable.removeActor(Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpRootTable);
     Screens.INSTANCE.getScreen(MainMenuScreen.class).popUpLogin = false;
-    Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu(Data.INSTANCE.isConnected());
+    Screens.INSTANCE.getScreen(MainMenuScreen.class).loadInMainMenu(Data.INSTANCE.isDbConnected());
     Screens.INSTANCE.getScreen(MainMenuScreen.class).toggleButtonDeactivation(false);
     return false;
   }
