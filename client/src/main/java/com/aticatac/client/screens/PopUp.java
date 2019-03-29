@@ -32,9 +32,15 @@ class PopUp {
       Screens.INSTANCE.getScreen(ServerScreen.class).popUp = popUpRootTable;
       Screens.INSTANCE.getScreen(ServerScreen.class).rootTable.addActor(popUpRootTable);
     } else {
-      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable = popUpRootTable;
-      Screens.INSTANCE.getScreen(GameScreen.class).rootTable.addActor(popUpRootTable);
-      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
+      if (Data.INSTANCE.isIso()) {
+        Screens.INSTANCE.getScreen(GameScreenIsometric.class).popUpTable = popUpRootTable;
+        Screens.INSTANCE.getScreen(GameScreenIsometric.class).rootTable.addActor(popUpRootTable);
+        Screens.INSTANCE.getScreen(GameScreenIsometric.class).popUpTable.setVisible(false);
+      } else {
+        Screens.INSTANCE.getScreen(GameScreen.class).popUpTable = popUpRootTable;
+        Screens.INSTANCE.getScreen(GameScreen.class).rootTable.addActor(popUpRootTable);
+        Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
+      }
     }
     popUpRootTable.setFillParent(true);
     Table popUpTable = new Table();
@@ -66,8 +72,13 @@ class PopUp {
     Table resumeTable = Styles.INSTANCE.createPopUpTable();
     TextButton resumeButton = Styles.INSTANCE.createButton("RESUME");
     resumeButton.addListener(ListenerFactory.newListenerEvent(() -> {
-      Screens.INSTANCE.getScreen(GameScreen.class).tractionPopUp = true;
-      Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
+      if (Data.INSTANCE.isIso()) {
+        Screens.INSTANCE.getScreen(GameScreenIsometric.class).tractionPopUp = true;
+        Screens.INSTANCE.getScreen(GameScreenIsometric.class).popUpTable.setVisible(false);
+      } else {
+        Screens.INSTANCE.getScreen(GameScreen.class).tractionPopUp = true;
+        Screens.INSTANCE.getScreen(GameScreen.class).popUpTable.setVisible(false);
+      }
       return false;
     }));
     resumeTable.add(resumeButton);
@@ -140,6 +151,24 @@ class PopUp {
     Table isoTable = Styles.INSTANCE.createPopUpTable();
     //create button for playing game in isometric
     TextButton isoButton = Styles.INSTANCE.createButton("ISOMETRIC");
+    isoButton.addListener(ListenerFactory.newListenerEvent(() -> {
+      Data.INSTANCE.setIso(true);
+      if (multiplayer) {
+        //load multiplayer pop up
+        multiplayerChildren.clear();
+        createMultiplayerChildren(multiplayerChildren);
+      } else {
+        //go single player
+        Data.INSTANCE.setSingleplayer(true);
+        GDXGame.createServer(true, "Single-Player");
+        Screens.INSTANCE.getScreen(MainMenuScreen.class).refresh();
+        //join single player server
+        Data.INSTANCE.connect(Data.INSTANCE.getUsername(), true);
+        Screens.INSTANCE.reloadScreen(GameScreenIsometric.class);
+        Screens.INSTANCE.showScreen(GameScreenIsometric.class);
+      }
+      return false;
+    }));
     isoTable.add(isoButton);
     ListenerFactory.addHoverListener(isoButton, isoTable);
     popUpHelper(twoDTable, isoTable, multiplayerChildren);

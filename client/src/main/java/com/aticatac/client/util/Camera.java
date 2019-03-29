@@ -17,6 +17,7 @@ public class Camera {
   private final Logger logger;
   private OrthographicCamera camera;
   private Viewport viewport;
+  private boolean iso;
 
   /**
    * Instantiates a new Camera.
@@ -26,7 +27,7 @@ public class Camera {
    * @param width  the width
    * @param height the height
    */
-  public Camera(float maxX, float maxY, float width, float height) {
+  public Camera(float maxX, float maxY, float width, float height, boolean iso) {
     this.maxX = maxX;
     this.maxY = maxY;
     this.width = width;
@@ -36,6 +37,10 @@ public class Camera {
     this.viewport.apply(true);
     logger = Logger.getLogger(getClass());
     this.camera.setToOrtho(false);
+    this.iso = iso;
+    if (iso) {
+      this.camera.zoom = 0.5f;
+    }
   }
 
   public Viewport getViewport() {
@@ -83,8 +88,13 @@ public class Camera {
    * @param y the y
    */
   public void setPosititon(float x, float y) {
-    camera.position.x = MathUtils.clamp(x, camera.viewportWidth / 2f, 1920f - camera.viewportWidth / 2f);
-    camera.position.y = MathUtils.clamp(y, camera.viewportHeight / 2f, 1920f - camera.viewportHeight / 2f);
+    if (this.iso) {
+      camera.position.x = x;
+      camera.position.y = y;
+    } else {
+      camera.position.x = MathUtils.clamp(x, camera.viewportWidth / 2f, 1920f - camera.viewportWidth / 2f);
+      camera.position.y = MathUtils.clamp(y, camera.viewportHeight / 2f, 1920f - camera.viewportHeight / 2f);
+    }
     camera.update();
   }
 }

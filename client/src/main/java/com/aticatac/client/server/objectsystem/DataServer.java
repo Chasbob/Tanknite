@@ -46,7 +46,7 @@ public enum DataServer {
     for (int x = 0; x < 60; x++) {
       for (int y = 0; y < 60; y++) {
         //Walls are 2 in the map file
-        if ((map[x][y]).equals("2")) {
+        if (!(map[x][y]).equals("0")) {
           //sets collision box within the entity
           wall.setPosition(x * 32 + 16, y * 32 + 16);
           addEntity(wall);
@@ -79,7 +79,7 @@ public enum DataServer {
    */
   private String[][] convertTMXFileToArray() {
     String[][] map = new String[60][60];
-    TiledMap tiledMap = new TmxMapLoader().load("maps/map.tmx");
+    TiledMap tiledMap = new TmxMapLoader().load("maps/mapData/mapIsometric.tmx");
     TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(1);
     for (int x = 0; x < layer.getWidth(); x++) {
       for (int y = 0; y < layer.getHeight(); y++) {

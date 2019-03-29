@@ -337,6 +337,7 @@ public enum Data {
    * @param command the command
    */
   public void sendCommand(Command command) {
+    //this.logger.info(command);
     this.client.addCommand(command);
   }
 //  public void sendCommand(Command command, int bearing) {
