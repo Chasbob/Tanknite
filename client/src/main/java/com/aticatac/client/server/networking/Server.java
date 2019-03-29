@@ -366,7 +366,6 @@ public class Server extends Thread implements Stoppable {
      * Broadcast packet.
      *
      * @param packet the packet
-     *
      * @throws IOException the io exception
      */
     public void broadcastPacket(DatagramPacket packet) throws IOException {
@@ -377,7 +376,6 @@ public class Server extends Thread implements Stoppable {
      * Multicast packet.
      *
      * @param packet the packet
-     *
      * @throws IOException the io exception
      */
     public void multicastPacket(DatagramPacket packet) throws IOException {

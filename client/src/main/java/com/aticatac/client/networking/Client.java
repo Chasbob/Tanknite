@@ -113,9 +113,7 @@ public class Client implements Stoppable {
    *
    * @param server the server
    * @param id     the id
-   *
    * @return the boolean
-   *
    * @throws IOException  the io exception
    * @throws InvalidBytes the invalid bytes
    */
@@ -222,6 +220,14 @@ public class Client implements Stoppable {
     commandModel.reset();
   }
 
+  /**
+   * Connect response.
+   *
+   * @param host the host
+   * @param port the port
+   * @param id   the id
+   * @return the response
+   */
   public Response connect(final String host, final int port, final String id) {
     try {
       return connect(new ServerInformation(id, InetAddress.getByName(host), port), id);

@@ -24,6 +24,12 @@ public class Authenticator implements Runnable {
   private final BufferedReader reader;
   private final ModelReader modelReader;
 
+  /**
+   * Instantiates a new Authenticator.
+   *
+   * @param client the client
+   * @throws IOException the io exception
+   */
   public Authenticator(Socket client) throws IOException {
     this.logger = Logger.getLogger(getClass());
     this.printer = new PrintStream(client.getOutputStream());

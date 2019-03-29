@@ -8,6 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import org.apache.log4j.Logger;
 
+/**
+ * The type Hud update.
+ */
 public class HudUpdate {
   private Update update;
   private Table killLog;
@@ -18,6 +21,14 @@ public class HudUpdate {
   private Logger logger;
   private PlayerContainer playerContainer;
 
+  /**
+   * Instantiates a new Hud update.
+   *
+   * @param killLog          the kill log
+   * @param ammoLabel        the ammo label
+   * @param playerCountLabel the player count label
+   * @param killCountLabel   the kill count label
+   */
   public HudUpdate(Table killLog, Label ammoLabel, Label playerCountLabel, Label killCountLabel) {
     this.health = 1;
     this.logger = Logger.getLogger(getClass());
@@ -27,10 +38,21 @@ public class HudUpdate {
     this.killCountLabel = killCountLabel;
   }
 
+  /**
+   * Gets health.
+   *
+   * @return the health
+   */
   public float getHealth() {
     return health;
   }
 
+  /**
+   * Update.
+   *
+   * @param update          the update
+   * @param playerContainer the player container
+   */
   public void update(Update update, PlayerContainer playerContainer) {
     this.update = update;
     this.playerContainer = playerContainer;

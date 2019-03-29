@@ -24,11 +24,29 @@ public class Entity {
    * The constant outOfBounds.
    */
   public static final Entity outOfBounds = new Entity(EntityType.OUTOFBOUNDS);
+  /**
+   * The Logger.
+   */
   protected final Logger logger;
+  /**
+   * The Name.
+   */
   protected final String name;
+  /**
+   * The Type.
+   */
   protected final EntityType type;
+  /**
+   * The Position.
+   */
   protected Position position;
+  /**
+   * The Collision box.
+   */
   protected CollisionBox collisionBox;
+  /**
+   * The Rotation.
+   */
   protected int rotation;
 
   /**
@@ -223,6 +241,12 @@ public class Entity {
     this.position.set(position);
   }
 
+  /**
+   * Sets position.
+   *
+   * @param x the x
+   * @param y the y
+   */
   public void setPosition(final int x, final int y) {
     if (this.position != null) {
       this.position.set(x, y);

@@ -5,8 +5,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+/**
+ * The type Hud.
+ */
 class HUD {
 
+  /**
+   * Create hud top left table.
+   *
+   * @param playerCount the player count
+   * @param killCount   the kill count
+   * @return the table
+   */
   static Table createHudTopLeft(Label playerCount, Label killCount) {
     Table topLeftTable = new Table();
     topLeftTable.top().left();
@@ -42,6 +52,11 @@ class HUD {
     return topLeftTable;
   }
 
+  /**
+   * Create hud bottom left table.
+   *
+   * @return the table
+   */
   static Table createHudBottomLeft() {
     Table killLogTable = new Table();
     killLogTable.bottom().left();
@@ -51,6 +66,12 @@ class HUD {
     return killLogTable;
   }
 
+  /**
+   * Create hud bottom right table.
+   *
+   * @param ammoValue the ammo value
+   * @return the table
+   */
   static Table createHudBottomRight(Label ammoValue) {
     Table bottomRightTable = new Table();
     bottomRightTable.bottom().right();
@@ -71,6 +92,11 @@ class HUD {
     return bottomRightTable;
   }
 
+  /**
+   * Create hud alert table table.
+   *
+   * @return the table
+   */
   static Table createHudAlertTable() {
     Table alertTable = new Table();
     alertTable.bottom();

@@ -25,7 +25,6 @@ public class Discovery implements Runnable {
    * Instantiates a new Discovery.
    *
    * @param name the name
-   *
    * @throws IOException the io exception
    */
   Discovery(String name) throws IOException {
@@ -73,6 +72,9 @@ public class Discovery implements Runnable {
     this.logger.warn("Finished!");
   }
 
+  /**
+   * Shutdown.
+   */
   public void shutdown() {
     this.run = false;
   }

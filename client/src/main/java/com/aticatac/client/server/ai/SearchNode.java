@@ -41,7 +41,6 @@ class SearchNode extends Position {
    * Gets the nodes of a sub graph of specified depth.
    *
    * @param depth the sub graph depth
-   *
    * @return The nodes of a sub graph
    */
   Set<SearchNode> getSubGraph(int depth) {

@@ -7,6 +7,9 @@ import com.aticatac.common.model.Updates.Update;
 import java.io.PrintStream;
 import org.apache.log4j.Logger;
 
+/**
+ * The type Client.
+ */
 public class Client {
   private final CommandListener commandListener;
   private final ClientModel model;
@@ -15,6 +18,13 @@ public class Client {
   private final PrintStream printer;
   private final ModelReader modelReader;
 
+  /**
+   * Instantiates a new Client.
+   *
+   * @param commandListener the command listener
+   * @param model           the model
+   * @param printer         the printer
+   */
   public Client(CommandListener commandListener, ClientModel model, PrintStream printer) {
     this.logger = Logger.getLogger(getClass());
     this.commandListener = commandListener;
@@ -25,15 +35,28 @@ public class Client {
     (new Thread(commandListener)).start();
   }
 
+  /**
+   * Send update.
+   *
+   * @param update the update
+   */
   public void sendUpdate(Update update) {
     String json = modelReader.toJson(update);
     this.printer.println(json);
   }
 
+  /**
+   * Gets id.
+   *
+   * @return the id
+   */
   public String getId() {
     return id;
   }
 
+  /**
+   * Shutdown.
+   */
   void shutdown() {
     this.commandListener.shutdown();
   }

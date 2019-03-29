@@ -21,7 +21,17 @@ import com.badlogic.gdx.utils.Align;
 import java.net.InetAddress;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The type Pop up.
+ */
 class PopUp {
+  /**
+   * Create pop up.
+   *
+   * @param startUp     the start up
+   * @param endGame     the end game
+   * @param multiplayer the multiplayer
+   */
   static void createPopUp(boolean startUp, boolean endGame, boolean multiplayer) {
     Table popUpRootTable = new Table();
     Styles.INSTANCE.addTableColour(popUpRootTable, new Color(new Color(0f, 0f, 0f, 0.5f)));

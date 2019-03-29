@@ -58,6 +58,7 @@ public enum DataServer {
 
   /**
    * Gets the size of the occupied Coordinates map
+   *
    * @return size of occupied coordinates map
    */
   public int size() {
@@ -66,6 +67,7 @@ public enum DataServer {
 
   /**
    * Gets the map
+   *
    * @return the map as a 2d array of strings
    */
   public String[][] getMap() {
@@ -157,7 +159,6 @@ public enum DataServer {
    * Occupied boolean.
    *
    * @param p the p
-   *
    * @return the boolean
    */
   public boolean occupied(Position p) {
@@ -168,7 +169,6 @@ public enum DataServer {
    * Gets entity.
    *
    * @param p the p
-   *
    * @return the entity
    */
   public Entity getEntity(Position p) {
@@ -208,6 +208,7 @@ public enum DataServer {
 
   /**
    * Add the entity to the occupied coordinates map
+   *
    * @param entity the entity that is being added
    */
   public void addEntity(Entity entity) {
@@ -217,6 +218,7 @@ public enum DataServer {
 
   /**
    * Checks if something contains the given box
+   *
    * @param box the box to be compared
    * @return true if box does exist, false if not.
    */

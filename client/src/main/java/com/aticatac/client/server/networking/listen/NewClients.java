@@ -39,6 +39,9 @@ public class NewClients implements Runnable {
     this.logger.warn("Finished!");
   }
 
+  /**
+   * Shutdown.
+   */
   public void shutdown() {
     this.run = false;
   }

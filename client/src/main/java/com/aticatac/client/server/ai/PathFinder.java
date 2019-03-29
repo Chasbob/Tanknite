@@ -19,12 +19,12 @@ class PathFinder {
     g score = the cost of the path from the start node to the current node
     f score = g + an estimate of the cost from the current node to the goal node
   */
+
   /**
    * Uses A* search to find a path from one node to another.
    *
    * @param start The node to start from
    * @param goal  The node to end at
-   *
    * @return A queue of commands that define a path from the start node to the goal node
    */
   LinkedList<SearchNode> getPathToLocation(SearchNode start, SearchNode goal) {

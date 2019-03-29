@@ -29,10 +29,11 @@ public class Bullet extends Entity implements Tickable {
   /**
    * Instantiates a new Bullet.
    *
-   * @param shooter  the shooter
-   * @param position the position
-   * @param bearing  the bearing
-   * @param damage   the damage
+   * @param shooter      the shooter
+   * @param position     the position
+   * @param bearing      the bearing
+   * @param damage       the damage
+   * @param freezeBullet the freeze bullet
    */
   public Bullet(final Entity shooter, final Position position, final int bearing, final int damage, boolean freezeBullet) {
     super(Integer.toString(Objects.hash(shooter, position, bearing, damage)), EntityType.BULLET, position);
@@ -181,6 +182,11 @@ public class Bullet extends Entity implements Tickable {
     this.prevPosistion = prevPosistion;
   }
 
+  /**
+   * Gets freeze bullet.
+   *
+   * @return the freeze bullet
+   */
   public boolean getFreezeBullet() {
     return freezeBullet;
   }

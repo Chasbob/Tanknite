@@ -55,7 +55,13 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
    * The Player map.
    */
   protected final ConcurrentHashMap<String, Tank> playerMap;
+  /**
+   * The Bullets.
+   */
   protected final CopyOnWriteArraySet<Bullet> bullets;
+  /**
+   * The Powerups.
+   */
   protected final CopyOnWriteArraySet<Entity> powerups;
   /**
    * The Frame.
@@ -63,6 +69,9 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
   protected final Logger logger;
   private final int min = 0;
   private final int max = 1920;
+  /**
+   * The Power up count.
+   */
   protected int powerUpCount;
   private AIUpdateService aiUpdateService;
   private volatile boolean run;
@@ -88,7 +97,6 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
    * In map boolean.
    *
    * @param v the v
-   *
    * @return the boolean
    */
   public static boolean inMap(Vector v) {
@@ -105,6 +113,9 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     return entityType;
   }
 
+  /**
+   * Reset.
+   */
   public void reset() {
     for (Tank tank : playerMap.values()) {
       DataServer.INSTANCE.removeBoxFromData(tank.getCollisionBox());
@@ -115,6 +126,11 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     powerups.clear();
   }
 
+  /**
+   * Process player input.
+   *
+   * @param event the event
+   */
   @Subscribe
   public void processPlayerInput(CommandModel event) {
     if (playerMap.containsKey(event.getId())) {
@@ -122,14 +138,29 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     }
   }
 
+  /**
+   * Gets powerups.
+   *
+   * @return the powerups
+   */
   public CopyOnWriteArraySet<Entity> getPowerups() {
     return powerups;
   }
 
+  /**
+   * Gets bullets.
+   *
+   * @return the bullets
+   */
   public CopyOnWriteArraySet<Bullet> getBullets() {
     return bullets;
   }
 
+  /**
+   * Gets player map.
+   *
+   * @return the player map
+   */
   public ConcurrentHashMap<String, Tank> getPlayerMap() {
     return playerMap;
   }
@@ -143,6 +174,11 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     return this.playerMap.size();
   }
 
+  /**
+   * Add player.
+   *
+   * @param player the player
+   */
   public void addPlayer(String player) {
     if (!playerMap.containsKey(player)) {
       Tank tank = createTank(player, false);
@@ -151,6 +187,11 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     }
   }
 
+  /**
+   * Remove player.
+   *
+   * @param player the player
+   */
   public void removePlayer(String player) {
     Position position = playerMap.get(player).getPosition();
     serverEventBus.post(new PlayersChangedEvent(PlayersChangedEvent.Action.REMOVE, playerMap.get(player).getPlayerContainer()));
@@ -192,6 +233,15 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     return position;
   }
 
+  /**
+   * Create tank tank.
+   *
+   * @param player the player
+   * @param isAI   the is ai
+   * @param x      the x
+   * @param y      the y
+   * @return the tank
+   */
   public Tank createTank(String player, boolean isAI, int x, int y) {
     Position position = new Position(x, y);
     if (isAI) {
@@ -211,6 +261,9 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     }
   }
 
+  /**
+   * Create power ups.
+   */
   protected void createPowerUps() {
     if (powerUpCount <= 0) {
       EntityType type = Entity.randomPowerUP();
@@ -223,6 +276,11 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     }
   }
 
+  /**
+   * Process player collision.
+   *
+   * @param e the e
+   */
   @Subscribe
   public void processPlayerCollision(TankCollisionEvent e) {
     switch (e.getHit().getType()) {
@@ -277,6 +335,11 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     }
   }
 
+  /**
+   * Bullet collision.
+   *
+   * @param event the event
+   */
   @Subscribe
   public void bulletCollision(BulletCollisionEvent event) {
     if (event.getHit().getType() == EntityType.TANK) {
@@ -289,6 +352,11 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     serverEventBus.post(new BulletsChangedEvent(BulletsChangedEvent.Action.REMOVE, event.getBullet().getContainer()));
   }
 
+  /**
+   * Process player output.
+   *
+   * @param output the output
+   */
   @Subscribe
   public void processPlayerOutput(ShootEvent output) {
     bullets.add(output.getBullet());

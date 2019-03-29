@@ -20,6 +20,7 @@ class PopulateServers implements Runnable {
    * Instantiates a new Populate servers.
    *
    * @param servers the servers
+   * @throws SocketException the socket exception
    */
   public PopulateServers(ConcurrentHashMap<String, ServerInformation> servers) throws SocketException {
     this.servers = servers;

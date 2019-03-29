@@ -19,10 +19,16 @@ import com.badlogic.gdx.utils.SnapshotArray;
 public class ServerScreen extends AbstractScreen {
 
   private Boolean serverSelected;
+  /**
+   * The Pop up present.
+   */
   Boolean popUpPresent;
   private PopulateServers populateServers;
   private HorizontalGroup tabGroup;
   private VerticalGroup dropDownGroup;
+  /**
+   * The Pop up.
+   */
   Table popUp;
 
   /**
@@ -126,6 +132,9 @@ public class ServerScreen extends AbstractScreen {
     unHighlight();
   }
 
+  /**
+   * Un highlight.
+   */
   public void unHighlight() {
     //unhighlight previous server
     for (int i = 0; i < dropDownGroup.getChildren().size; i++) {
@@ -134,11 +143,19 @@ public class ServerScreen extends AbstractScreen {
     }
   }
 
+  /**
+   * Remove pop up.
+   */
   void removePopUp() {
     rootTable.removeActor(popUp);
     popUp.clear();
   }
 
+  /**
+   * Toggle buttons.
+   *
+   * @param disable the disable
+   */
   void toggleButtons(boolean disable) {
     //deactivate tabs
     toggleButtonsHelper(disable, tabGroup.getChildren());
@@ -162,6 +179,11 @@ public class ServerScreen extends AbstractScreen {
     }
   }
 
+  /**
+   * Sets server selected.
+   *
+   * @param serverSelected the server selected
+   */
   public void setServerSelected(Boolean serverSelected) {
     this.serverSelected = serverSelected;
   }

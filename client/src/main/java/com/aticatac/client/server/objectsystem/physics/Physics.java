@@ -9,6 +9,9 @@ import com.aticatac.common.model.VectorF;
 import com.aticatac.common.objectsystem.EntityType;
 import java.util.HashSet;
 
+/**
+ * The type Physics.
+ */
 @SuppressWarnings("ALL")
 public class Physics {
   /*** The gravity acting for all objects*/
@@ -32,7 +35,7 @@ public class Physics {
 
   /**
    * Constructor.
-   * @param position the position of the entity that the physics object is created in
+   *
    * @param type the entity type that the physics object is created in
    * @param name the name of the entity that the physics object is created in
    */
@@ -43,9 +46,10 @@ public class Physics {
   }
 
   /**
-   *Move method to move the entity.
-   * @param rotation The rotation of the entity
-   * @param position The position of the entity when move was called
+   * Move method to move the entity.
+   *
+   * @param rotation     The rotation of the entity
+   * @param position     The position of the entity when move was called
    * @param speedPowerUp An integer representing whether a speedpowerup is currently active for the entity
    * @return A physics Response containing the new position and any collisions that happened when attempting to move
    */

@@ -5,6 +5,9 @@ package com.aticatac.client.server;
  * The type Position.
  */
 public class Position {
+  /**
+   * The constant zero.
+   */
   public static final Position zero = new Position(0, 0);
   /**
    * The x and y coordinates for the position
@@ -29,11 +32,22 @@ public class Position {
     y = ys;
   }
 
+  /**
+   * Set.
+   *
+   * @param p the p
+   */
   public void set(Position p) {
     x = p.x;
     y = p.y;
   }
 
+  /**
+   * Set.
+   *
+   * @param x the x
+   * @param y the y
+   */
   public void set(final int x, final int y) {
     this.x = x;
     this.y = y;
@@ -75,6 +89,11 @@ public class Position {
     this.y = y;
   }
 
+  /**
+   * Copy position.
+   *
+   * @return the position
+   */
   public Position copy() {
     return new Position(x, y);
   }

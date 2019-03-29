@@ -43,7 +43,13 @@ public class GameScreenIsometric extends AbstractScreen {
   private final int maxX;
   private final int maxY;
   private Update update;
+  /**
+   * The Pop up table.
+   */
   Table popUpTable;
+  /**
+   * The Vertical group.
+   */
   VerticalGroup verticalGroup;
   private Table alertTable;
   private Table killLogTable;
@@ -70,12 +76,18 @@ public class GameScreenIsometric extends AbstractScreen {
   private PlayerContainer player;
   private HudUpdate hudUpdate;
   private boolean tractionHealth;
+  /**
+   * The Traction pop up.
+   */
   boolean tractionPopUp;
   private boolean endGame;
 
   private ArrayList<ArrayList<TileHolder>> rows = new ArrayList<>();
   private HashMap<Integer, TextureRegion> tileTextures = new HashMap<>();
 
+  /**
+   * The Lighting.
+   */
   HashMap<Position, DynamicShadow> lighting;
 
   /**
@@ -506,6 +518,12 @@ public class GameScreenIsometric extends AbstractScreen {
 
   /*Isometric rendering begin*/
 
+  /**
+   * Render game.
+   *
+   * @param sb      the sb
+   * @param objects the objects
+   */
   public void renderGame(SpriteBatch sb, ArrayList<IsoContainer> objects) {
 
     int index = 0;

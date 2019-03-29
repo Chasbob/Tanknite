@@ -20,7 +20,8 @@ public class PopulatePlayers extends Thread {
    * Instantiates a new Populate players.
    *
    * @param playersGroup the server table
-   * @param playerCount the player count
+   * @param playerCount  the player count
+   * @param header       the header
    */
   public PopulatePlayers(VerticalGroup playersGroup, Label playerCount, Label header) {
     this.playerCount = playerCount;

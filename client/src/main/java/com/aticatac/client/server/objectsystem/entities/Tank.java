@@ -52,10 +52,11 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   /**
    * Instantiates a new Tank.
    *
-   * @param name   the name
-   * @param p      the p
-   * @param health the health
-   * @param ammo   the ammo
+   * @param name     the name
+   * @param p        the p
+   * @param health   the health
+   * @param ammo     the ammo
+   * @param playerNo the player no
    */
   public Tank(String name, Position p, int health, int ammo, int playerNo) {
     super(name, EntityType.TANK, p);
@@ -79,10 +80,20 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     frozen = -1;
   }
 
+  /**
+   * Gets player no.
+   *
+   * @return the player no
+   */
   public int getPlayerNo() {
     return playerNo;
   }
 
+  /**
+   * Is alive boolean.
+   *
+   * @return the boolean
+   */
   public boolean isAlive() {
     return alive;
   }
@@ -151,9 +162,11 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   }
 
   /**
-   * @param tankPosition
-   * @param rotation
-   * @return
+   * Turret calculation position.
+   *
+   * @param tankPosition the tank position
+   * @param rotation     the rotation
+   * @return position
    */
   Position turretCalculation(Position tankPosition, int rotation) {
     double distance = 50;
@@ -286,6 +299,11 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     this.health = health;
   }
 
+  /**
+   * Ammo increase.
+   *
+   * @param amount the amount
+   */
   public void ammoIncrease(final int amount) {
     if (getAmmo() + amount >= maxAmmo) {
       setAmmo(getMaxAmmo());
@@ -304,6 +322,11 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     return value;
   }
 
+  /**
+   * Gets player container.
+   *
+   * @return the player container
+   */
   public PlayerContainer getPlayerContainer() {
     return new PlayerContainer(this.getPosition().getX(),
       this.getPosition().getY(),
@@ -386,7 +409,6 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
   }
 
 
-
   /**
    * Gets input.
    *
@@ -459,50 +481,110 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     this.framesToShoot = framesToShoot;
   }
 
+  /**
+   * Gets speed increase.
+   *
+   * @return the speed increase
+   */
   public int getSpeedIncrease() {
     return speedIncrease;
   }
 
+  /**
+   * Sets speed increase.
+   *
+   * @param value the value
+   */
   public void setSpeedIncrease(int value) {
     speedIncrease = value;
   }
 
+  /**
+   * Gets damage increase.
+   *
+   * @return the damage increase
+   */
   public int getDamageIncrease() {
     return damageIncrease;
   }
 
+  /**
+   * Sets damage increase.
+   *
+   * @param value the value
+   */
   public void setDamageIncrease(int value) {
     damageIncrease = value;
   }
 
+  /**
+   * Gets bullet sprays.
+   *
+   * @return the bullet sprays
+   */
   public int getBulletSprays() {
     return bulletSprays;
   }
 
+  /**
+   * Sets bullet sprays.
+   *
+   * @param value the value
+   */
   public void setBulletSprays(int value) {
     bulletSprays = value;
   }
 
+  /**
+   * Gets frozen.
+   *
+   * @return the frozen
+   */
   public int getFrozen() {
     return frozen;
   }
 
+  /**
+   * Sets frozen.
+   *
+   * @param value the value
+   */
   public void setFrozen(int value) {
     frozen = value;
   }
 
+  /**
+   * Gets freeze bullets.
+   *
+   * @return the freeze bullets
+   */
   public int getFreezeBullets() {
     return freezeBullets;
   }
 
+  /**
+   * Sets freeze bullets.
+   *
+   * @param value the value
+   */
   public void setFreezeBullets(int value) {
     freezeBullets = value;
   }
 
+  /**
+   * Gets death countdown.
+   *
+   * @return the death countdown
+   */
   public int getDeathCountdown() {
     return deathCountdown;
   }
 
+  /**
+   * Sets death countdown.
+   *
+   * @param value the value
+   */
   public void setDeathCountdown(int value) {
     deathCountdown = value;
   }
@@ -512,18 +594,34 @@ public class Tank extends Entity implements DependantTickable<CommandModel>, Hur
     return this.playerNo - o.playerNo;
   }
 
+  /**
+   * Add kill.
+   */
   public void addKill() {
     killCount++;
   }
 
+  /**
+   * Gets kill count.
+   *
+   * @return the kill count
+   */
   public int getKillCount() {
     return killCount;
   }
 
+  /**
+   * Deactivate.
+   */
   public void deactivate() {
     alive = false;
   }
 
+  /**
+   * Reset.
+   *
+   * @param position the position
+   */
   public void reset(Position position) {
 
     setPosition(position);

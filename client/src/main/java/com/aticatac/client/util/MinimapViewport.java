@@ -3,6 +3,9 @@ package com.aticatac.client.util;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+/**
+ * The type Minimap viewport.
+ */
 public class MinimapViewport extends Viewport {
 
   private float mapScreenHeightFraction;
@@ -10,6 +13,13 @@ public class MinimapViewport extends Viewport {
   private int minimapHeight;
   private int minimapWidth;
 
+  /**
+   * Instantiates a new Minimap viewport.
+   *
+   * @param mapScreenHeightFraction     the map screen height fraction
+   * @param paddingScreenHeightFraction the padding screen height fraction
+   * @param camera                      the camera
+   */
   public MinimapViewport(float mapScreenHeightFraction, float paddingScreenHeightFraction, OrthographicCamera camera) {
     this.mapScreenHeightFraction = mapScreenHeightFraction;
     this.paddingScreenHeightFraction = paddingScreenHeightFraction;

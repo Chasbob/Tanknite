@@ -41,11 +41,34 @@ public class Decision {
     return angle;
   }
 
+  /**
+   * Gets shoot.
+   *
+   * @return the shoot
+   */
   public ShootType getShoot() {
     return shoot;
   }
 
+  /**
+   * The enum Shoot type.
+   */
   public enum ShootType {
-    NONE, NORMAL, FREEZE, SPRAY
+    /**
+     * None shoot type.
+     */
+    NONE,
+    /**
+     * Normal shoot type.
+     */
+    NORMAL,
+    /**
+     * Freeze shoot type.
+     */
+    FREEZE,
+    /**
+     * Spray shoot type.
+     */
+    SPRAY
   }
 }

@@ -2,10 +2,16 @@ package com.aticatac.client.server.game;
 
 import com.aticatac.common.GameResult;
 
+/**
+ * The type Three round game.
+ */
 public class ThreeRoundGame extends BaseGame {
   private int round;
   private GameResult results;
 
+  /**
+   * Instantiates a new Three round game.
+   */
   public ThreeRoundGame() {
     super();
     round = 1;

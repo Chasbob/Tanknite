@@ -11,8 +11,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.concurrent.Callable;
 
+/**
+ * The type Listener factory.
+ */
 public class ListenerFactory {
 
+  /**
+   * New change screen event input listener.
+   *
+   * @param dstScreen the dst screen
+   * @return the input listener
+   */
   public static InputListener newChangeScreenEvent(Class dstScreen) {
     return new InputListener() {
       @Override
@@ -27,6 +36,12 @@ public class ListenerFactory {
     };
   }
 
+  /**
+   * New listener event input listener.
+   *
+   * @param func the func
+   * @return the input listener
+   */
   public static InputListener newListenerEvent(Callable<Boolean> func) {
     return new InputListener() {
       @Override
@@ -61,6 +76,12 @@ public class ListenerFactory {
     };
   }
 
+  /**
+   * Add hover listener.
+   *
+   * @param button      the button
+   * @param parentTable the parent table
+   */
   public static void addHoverListener(TextButton button, MenuTable parentTable) {
     button.addListener(newListenerEventEnter(() -> {
       Styles.INSTANCE.addTableColour(parentTable, Color.CORAL);
@@ -72,6 +93,12 @@ public class ListenerFactory {
     }));
   }
 
+  /**
+   * Add hover listener.
+   *
+   * @param button      the button
+   * @param parentTable the parent table
+   */
   public static void addHoverListener(TextButton button, Table parentTable) {
     button.addListener(newListenerEventEnter(() -> {
       Styles.INSTANCE.addTableColour(parentTable, Color.CORAL);
@@ -91,6 +118,11 @@ public class ListenerFactory {
     }
   }
 
+  /**
+   * New change screen and reload event.
+   *
+   * @param dstScreen the dst screen
+   */
   public static void newChangeScreenAndReloadEvent(Class dstScreen) {
     Screens.INSTANCE.reloadScreen(dstScreen);
     Screens.INSTANCE.showScreen(dstScreen);

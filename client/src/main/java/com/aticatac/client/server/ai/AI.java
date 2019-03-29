@@ -39,6 +39,9 @@ public class AI {
   private Decision.ShootType shooting;
   private AIInput currentInput;
 
+  /**
+   * Instantiates a new Ai.
+   */
   public AI() {
     this.pathFinder = new PathFinder();
     this.state = State.WANDERING;
@@ -54,6 +57,7 @@ public class AI {
   /**
    * Returns a decision to control the tank.
    *
+   * @param input the input
    * @return A decision
    */
   public Decision getDecision(AIInput input) {

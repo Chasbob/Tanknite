@@ -93,6 +93,11 @@ public enum Data {
     this.clients = new ArrayList<>();
   }
 
+  /**
+   * Is connected to game boolean.
+   *
+   * @return the boolean
+   */
   public boolean isConnectedToGame() {
     return connectedToGame;
   }
@@ -128,9 +133,7 @@ public enum Data {
    * Login db response.
    *
    * @param dBlogin the d blogin
-   *
    * @return the db response
-   *
    * @throws IOException  the io exception
    * @throws InvalidBytes the invalid bytes
    */
@@ -228,7 +231,6 @@ public enum Data {
    * Gets player.
    *
    * @param i the
-   *
    * @return the player
    */
   public Container getPlayer(int i) {
@@ -302,7 +304,6 @@ public enum Data {
    *
    * @param id           the id
    * @param singlePlayer the single player
-   *
    * @return the Response
    */
   public Response connect(String id, boolean singlePlayer) {
@@ -323,7 +324,6 @@ public enum Data {
    *
    * @param id   the id
    * @param host the host
-   *
    * @return the response
    */
   public Response connect(String id, String host) {

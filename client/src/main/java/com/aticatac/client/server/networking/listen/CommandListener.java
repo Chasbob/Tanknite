@@ -27,7 +27,7 @@ public class CommandListener implements Runnable {
    * Instantiates a new Command listener.
    *
    * @param reader the reader
-   * @param login
+   * @param login  the login
    */
   public CommandListener(BufferedReader reader, final Login login) {
     this.reader = reader;
@@ -62,6 +62,9 @@ public class CommandListener implements Runnable {
     }
   }
 
+  /**
+   * Shutdown.
+   */
   public void shutdown() {
     this.run = false;
   }

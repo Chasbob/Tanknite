@@ -9,6 +9,9 @@ import org.apache.log4j.Logger;
  */
 public enum AudioEnum {
 
+  /**
+   * Instance audio enum.
+   */
   INSTANCE;
 
   /***/
@@ -57,23 +60,27 @@ public enum AudioEnum {
   }
 
   /**
+   * Is sound boolean.
    *
-   * @return
+   * @return boolean
    */
   public boolean isSound() {
     return sound;
   }
 
   /**
+   * Is music boolean.
    *
-   * @return
+   * @return boolean
    */
   public boolean isMusic() {
     return music;
   }
 
   /**
-   * @param sound
+   * Sets sound.
+   *
+   * @param sound the sound
    */
   public void setSound(boolean sound) {
 
@@ -82,7 +89,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @param music
+   * Sets music.
+   *
+   * @param music the music
    */
   public void setMusic(boolean music) {
 
@@ -91,7 +100,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @param volume
+   * Sets sound volume.
+   *
+   * @param volume the volume
    */
   public void setSoundVolume(float volume) {
 
@@ -100,7 +111,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @param volume
+   * Sets music volume.
+   *
+   * @param volume the volume
    */
   public void setMusicVolume(float volume) {
 
@@ -108,20 +121,35 @@ public enum AudioEnum {
 
   }
 
+  /**
+   * Gets sound volume.
+   *
+   * @return the sound volume
+   */
   public float getSoundVolume() {
     return soundVolume;
   }
 
+  /**
+   * Gets music volume.
+   *
+   * @return the music volume
+   */
   public float getMusicVolume() {
     return musicVolume;
   }
 
+  /**
+   * Gets main volume.
+   *
+   * @return the main volume
+   */
   public float getMainVolume() {
     return mainVolume;
   }
 
   /**
-   *
+   * Load sound.
    */
   public void loadSound() {
 
@@ -142,7 +170,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @return
+   * Gets theme.
+   *
+   * @return theme
    */
   public Music getTheme() {
 
@@ -155,7 +185,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @return
+   * Gets main.
+   *
+   * @return main
    */
   public Music getMain() {
 
@@ -168,6 +200,8 @@ public enum AudioEnum {
   }
 
   /**
+   * Stop main.
+   *
    * @return
    */
   public void stopMain() {
@@ -177,7 +211,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @return
+   * Gets shoot.
+   *
+   * @return shoot
    */
   public Music getShoot() {
 
@@ -189,9 +225,12 @@ public enum AudioEnum {
   }
 
   /**
-   * @return
+   * Gets other tank shoot.
+   *
+   * @param volume the volume
+   * @return other tank shoot
    */
-  //can play this even if it is being played elsewhere
+//can play this even if it is being played elsewhere
   public Music getOtherTankShoot(float volume) {
 
     try {
@@ -207,7 +246,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @return
+   * Gets tank move.
+   *
+   * @return tank move
    */
   public Music getTankMove() {
 
@@ -219,7 +260,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @return
+   * Gets power up.
+   *
+   * @return power up
    */
   public Music getPowerUp() {
 
@@ -231,7 +274,9 @@ public enum AudioEnum {
   }
 
   /**
-   * @return
+   * Gets tank death.
+   *
+   * @return tank death
    */
   public Music getTankDeath() {
 
@@ -244,7 +289,9 @@ public enum AudioEnum {
 
 
   /**
+   * Gets button click.
    *
+   * @return the button click
    */
   public Music getButtonClick() {
 

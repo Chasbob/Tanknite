@@ -23,17 +23,41 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 public class MainMenuScreen extends AbstractScreen {
 
   private HorizontalGroup horizontalGroup;
+  /**
+   * The Sound table.
+   */
   Table soundTable;
+  /**
+   * The Music table.
+   */
   Table musicTable;
   private int tabIndex;
   private int dropDownIndex;
   private Table dropDownTable;
   private MenuTable playTable;
+  /**
+   * The Settings table.
+   */
   MenuTable settingsTable;
+  /**
+   * The Pop up group.
+   */
   VerticalGroup popUpGroup;
+  /**
+   * The Pop up root table.
+   */
   Table popUpRootTable;
+  /**
+   * The Pop up choice.
+   */
   boolean popUpChoice;
+  /**
+   * The Pop up multiplayer.
+   */
   boolean popUpMultiplayer;
+  /**
+   * The Pop up login.
+   */
   boolean popUpLogin;
   private Table containerTable;
   private Label screenTitle;
@@ -459,6 +483,11 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
+  /**
+   * Switch drop down mouse.
+   *
+   * @param newTable the new table
+   */
   void switchDropDownMouse(MenuTable newTable) {
     //get current vertical group for tab
     MenuTable currentTab = (MenuTable) horizontalGroup.getChildren().get(tabIndex);
@@ -498,6 +527,11 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
+  /**
+   * Toggle button deactivation.
+   *
+   * @param toggle the toggle
+   */
   void toggleButtonDeactivation(boolean toggle) {
     for (int j = 0; j < horizontalGroup.getChildren().size; j++) {
       MenuTable menuTable = (MenuTable) horizontalGroup.getChildren().get(j);
@@ -549,6 +583,11 @@ public class MainMenuScreen extends AbstractScreen {
     }
   }
 
+  /**
+   * Load in main menu.
+   *
+   * @param online the online
+   */
   void loadInMainMenu(boolean online) {
     if (online) {
       while (player == null) {

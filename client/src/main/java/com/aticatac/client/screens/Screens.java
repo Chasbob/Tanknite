@@ -30,6 +30,11 @@ public enum Screens {
     logger = Logger.getLogger(getClass());
   }
 
+  /**
+   * Gets current screen.
+   *
+   * @return the current screen
+   */
   public Class getCurrentScreen() {
     return currentScreen;
   }
@@ -57,7 +62,6 @@ public enum Screens {
    *
    * @param <T>  the type parameter
    * @param type the type
-   *
    * @return the screen
    */
   public <T extends AbstractScreen> T getScreen(Class<T> type) {
@@ -75,6 +79,12 @@ public enum Screens {
     this.currentScreen = type;
   }
 
+  /**
+   * Reload screen.
+   *
+   * @param <T>  the type parameter
+   * @param type the type
+   */
   public <T extends AbstractScreen> void reloadScreen(Class<T> type) {
     this.logger.info("reloading " + type + ".");
     getScreen(type).dispose();

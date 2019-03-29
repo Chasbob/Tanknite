@@ -17,6 +17,12 @@ public class GDXGame extends Game {
   private static Server server;
   private BlockingQueue<Update> updates;
 
+  /**
+   * Create server.
+   *
+   * @param singleplayer the singleplayer
+   * @param id           the id
+   */
   public static void createServer(boolean singleplayer, String id) {
     if (server != null) {
       server.shutdown();
@@ -25,10 +31,16 @@ public class GDXGame extends Game {
     server.start();
   }
 
+  /**
+   * Instantiates a new Gdx game.
+   */
   public GDXGame() {
     eventBus.register(this);
   }
 
+  /**
+   * Stop server.
+   */
   public static void stopServer() {
     if (server != null) {
       server.shutdown();

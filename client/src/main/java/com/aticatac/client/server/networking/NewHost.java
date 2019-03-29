@@ -5,9 +5,15 @@ import java.io.IOException;
 import java.net.Socket;
 import org.apache.log4j.Logger;
 
+/**
+ * The type New host.
+ */
 public class NewHost implements Runnable {
   private final Logger logger;
 
+  /**
+   * Instantiates a new New host.
+   */
   NewHost() {
     this.logger = Logger.getLogger(getClass());
   }

@@ -31,8 +31,17 @@ public class AbstractScreen extends Stage implements Screen {
    * The Logger.
    */
   protected final Logger logger;
+  /**
+   * The Root table.
+   */
   Table rootTable;
+  /**
+   * The Back button.
+   */
   TextButton backButton;
+  /**
+   * The Player.
+   */
   protected Player player;
 
   /**
@@ -76,11 +85,19 @@ public class AbstractScreen extends Stage implements Screen {
     }));
   }
 
+  /**
+   * Add to root.
+   *
+   * @param table the table
+   */
   void addToRoot(Table table) {
     table.setFillParent(true);
     rootTable.addActor(table);
   }
 
+  /**
+   * Refresh.
+   */
   public void refresh() {
 
   }
@@ -115,6 +132,14 @@ public class AbstractScreen extends Stage implements Screen {
   public void hide() {
   }
 
+  /**
+   * Apply index int.
+   *
+   * @param group       the group
+   * @param index       the index
+   * @param downOrRight the down or right
+   * @return the int
+   */
   int applyIndex(Group group, int index, boolean downOrRight) {
     if (downOrRight) {
       if (index == group.getChildren().size - 1) {

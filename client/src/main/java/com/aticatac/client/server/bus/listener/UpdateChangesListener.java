@@ -3,10 +3,18 @@ package com.aticatac.client.server.bus.listener;
 import com.aticatac.common.model.Updates.Update;
 import org.apache.log4j.Logger;
 
+/**
+ * The type Update changes listener.
+ */
 public class UpdateChangesListener {
   private final Update update;
   private final Logger logger;
 
+  /**
+   * Instantiates a new Update changes listener.
+   *
+   * @param update the update
+   */
   public UpdateChangesListener(final Update update) {
     this.update = update;
     this.logger = Logger.getLogger(getClass());

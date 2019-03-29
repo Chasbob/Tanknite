@@ -68,7 +68,6 @@ class Graph {
    * Gets the node in the graph that has the nearest position to a given position.
    *
    * @param position The position to get nearest node from
-   *
    * @return The nearest node to the given position
    */
   SearchNode getNearestNode(Position position) {
@@ -92,7 +91,6 @@ class Graph {
    *
    * @param position Center position to check from
    * @param range    Range of consideration
-   *
    * @return All the SearchNodes in range
    */
   ArrayList<SearchNode> getNodesInRange(Position position, int range) {

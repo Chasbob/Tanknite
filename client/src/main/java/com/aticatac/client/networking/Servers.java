@@ -39,6 +39,11 @@ public enum Servers {
     return INSTANCE;
   }
 
+  /**
+   * Gets port.
+   *
+   * @return the port
+   */
   public int getPort() {
     return port;
   }
@@ -52,6 +57,9 @@ public enum Servers {
     return servers;
   }
 
+  /**
+   * Clear servers.
+   */
   public void clearServers() {
     servers.clear();
   }

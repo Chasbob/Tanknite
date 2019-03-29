@@ -26,6 +26,7 @@ public class Camera {
    * @param maxY   the max y
    * @param width  the width
    * @param height the height
+   * @param iso    the iso
    */
   public Camera(float maxX, float maxY, float width, float height, boolean iso) {
     this.maxX = maxX;
@@ -43,6 +44,11 @@ public class Camera {
     }
   }
 
+  /**
+   * Gets viewport.
+   *
+   * @return the viewport
+   */
   public Viewport getViewport() {
     return viewport;
   }

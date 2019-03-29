@@ -17,6 +17,11 @@ class BroadcastListener implements Callable<ServerInformation> {
   private final Logger logger;
   private DatagramSocket socket;
 
+  /**
+   * Instantiates a new Broadcast listener.
+   *
+   * @param socket the socket
+   */
   public BroadcastListener(DatagramSocket socket) {
     logger = Logger.getLogger(getClass());
     this.socket = socket;

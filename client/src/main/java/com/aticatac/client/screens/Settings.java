@@ -8,8 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import org.w3c.dom.Text;
 
+/**
+ * The type Settings.
+ */
 class Settings {
 
+  /**
+   * Create settings.
+   */
   static void createSettings() {
     //create table to store setting toggles
     Table soundTable = createToggle("TOGGLE SOUND: ");

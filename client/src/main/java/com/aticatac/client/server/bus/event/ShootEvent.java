@@ -4,10 +4,19 @@ import com.aticatac.client.server.objectsystem.Entity;
 import com.aticatac.client.server.objectsystem.entities.Bullet;
 import java.util.Objects;
 
+/**
+ * The type Shoot event.
+ */
 public class ShootEvent {
   private final Entity shooter;
   private final Bullet bullet;
 
+  /**
+   * Instantiates a new Shoot event.
+   *
+   * @param shooter the shooter
+   * @param bullet  the bullet
+   */
   public ShootEvent(final Entity shooter, final Bullet bullet) {
     this.shooter = shooter;
     this.bullet = bullet;
@@ -31,6 +40,11 @@ public class ShootEvent {
         getBullet().equals(that.getBullet());
   }
 
+  /**
+   * Gets bullet.
+   *
+   * @return the bullet
+   */
   public Bullet getBullet() {
     return bullet;
   }

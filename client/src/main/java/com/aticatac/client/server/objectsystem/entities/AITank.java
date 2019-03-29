@@ -15,21 +15,63 @@ import org.apache.log4j.Logger;
 
 import static com.aticatac.client.bus.EventBusFactory.serverEventBus;
 
+/**
+ * The type Ai tank.
+ */
 @SuppressWarnings("ALL")
 public class AITank extends Tank {
+  /**
+   * The Frames.
+   */
   protected final ConcurrentLinkedQueue<AIInput> frames;
+  /**
+   * The Entity.
+   */
   protected final Entity entity;
+  /**
+   * The Logger.
+   */
   protected final Logger logger;
   private final AI ai;
+  /**
+   * The Position.
+   */
   protected Position position;
+  /**
+   * The Input.
+   */
   protected AIInput input;
+  /**
+   * The Box.
+   */
   protected CollisionBox box;
+  /**
+   * The Health.
+   */
   protected int health;
+  /**
+   * The Max health.
+   */
   protected int maxHealth;
+  /**
+   * The Max ammo.
+   */
   protected int maxAmmo;
+  /**
+   * The Ammo.
+   */
   protected int ammo;
 
-  //todo add in a parameter boolean which is ai true or false
+  /**
+   * Instantiates a new Ai tank.
+   *
+   * @param name     the name
+   * @param p        the p
+   * @param health   the health
+   * @param ammo     the ammo
+   * @param playerNo the player no
+   */
+//todo add in a parameter boolean which is ai true or false
   //TODO add in the parameter changes everywhere
   public AITank(String name, Position p, int health, int ammo, int playerNo) {
     super(name, p, health, ammo, playerNo);

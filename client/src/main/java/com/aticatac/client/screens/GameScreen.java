@@ -39,8 +39,17 @@ public class GameScreen extends AbstractScreen {
   private final SpriteBatch minimapBackGround;
   private final int maxX;
   private final int maxY;
+  /**
+   * The Pop up table.
+   */
   Table popUpTable;
+  /**
+   * The Vertical group.
+   */
   VerticalGroup verticalGroup;
+  /**
+   * The Traction pop up.
+   */
   boolean tractionPopUp;
   private Update update;
   private Table alertTable;

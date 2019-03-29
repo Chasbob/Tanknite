@@ -64,6 +64,9 @@ public class PopulateServers {
     }
   }
 
+  /**
+   * Update.
+   */
   public void update() {
     ArrayList<ServerInformation> servers = new ArrayList<>(Servers.INSTANCE.getServers().values());
     for (int i = 0; i < buttons.size(); i++) {
