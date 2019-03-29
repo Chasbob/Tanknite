@@ -1,7 +1,6 @@
-package com.aticatac.client.server.objectsystem.logictest;
+package com.aticatac.client.server.objectsystem.entities;
 
 import com.aticatac.client.server.Position;
-import com.aticatac.client.server.objectsystem.entities.Tank;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class TankTest {
 
   Position p = new Position (0,0);
-  Tank t = new Tank ("tank", p, 100, 30);
+  Tank t = new Tank ("tank", p, 100, 30, 1);
 
 
 

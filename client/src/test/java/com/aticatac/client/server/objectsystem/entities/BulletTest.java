@@ -1,4 +1,4 @@
-package com.aticatac.client.server.objectsystem.logictest;
+package com.aticatac.client.server.objectsystem.entities;
 
 import com.aticatac.client.server.Position;
 import com.aticatac.client.server.objectsystem.entities.Bullet;
@@ -7,15 +7,15 @@ import com.aticatac.common.objectsystem.EntityType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.aticatac.common.objectsystem.Container;
+import com.aticatac.common.objectsystem.containers.Container;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BulletTest {
 
   Position p = new Position(0,0);
-  Tank t = new Tank ("tank", p, 100, 30);
+  Tank t = new Tank ("tank", p, 100, 30, 1);
   Bullet b = new Bullet(t, p, 180, 10, false);
-  Container c = new Container(0,0,180, 0, 0, "b", EntityType.BULLET);
+  Container c = new Container(0,0,180, "b", EntityType.BULLET);
 
   @BeforeEach
   void setUp() {
