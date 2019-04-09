@@ -1,5 +1,7 @@
 gradle/
 docs/
 **/build
+**/bin
+**/.settings
 .idea/
 .gradle/
