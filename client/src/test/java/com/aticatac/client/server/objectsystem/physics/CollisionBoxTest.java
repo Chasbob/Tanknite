@@ -14,6 +14,7 @@ class CollisionBoxTest {
   CollisionBox box = new CollisionBox(p, 0);
   private HashSet<Position> boxSet = new HashSet<>();
 
+
   @BeforeEach
   void setUp() {
   }
@@ -24,7 +25,7 @@ class CollisionBoxTest {
 
   @Test
   public void testGetBoxReturnsBox(){
-
+boxSet.add(new Position());
     assertEquals(boxSet, box.getBox());
 
   }
