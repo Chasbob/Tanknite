@@ -10,12 +10,9 @@ import java.util.concurrent.BlockingQueue;
  * The type Single player game.
  */
 public class SinglePlayer extends Game {
-  private BlockingQueue<Update> updates;
-
   @Override
   public void create() {
     try {
-      this.updates = new ArrayBlockingQueue<>(100);
       //TODO show splash screen whilst it loads
       Screens.INSTANCE.initialize(this);
     } catch (Exception e) {

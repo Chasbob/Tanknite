@@ -17,7 +17,6 @@ public class Discovery implements Runnable {
   private final Logger logger;
   private final ModelReader modelReader;
   private final String name;
-  private final ArrayList<ServerInformation> informations;
   private List<DatagramPacket> packets;
   private boolean run;
 
@@ -30,7 +29,6 @@ public class Discovery implements Runnable {
   Discovery(String name) throws IOException {
     this.name = name;
     this.modelReader = new ModelReader();
-    this.informations = new ArrayList<>();
     packets = new ArrayList<>();
     buildPackets(Server.ServerData.INSTANCE.getId());
     this.logger = Logger.getLogger(Discovery.class);
@@ -43,7 +41,6 @@ public class Discovery implements Runnable {
         continue;
       }
       ServerInformation information = new ServerInformation(id, current.getAddress(), Server.ServerData.INSTANCE.getPort(), Server.ServerData.INSTANCE.getMaxPlayers(), Server.ServerData.INSTANCE.playerCount());
-      informations.add(information);
       byte[] bytes = modelReader.toBytes(information);
       DatagramPacket packet = new DatagramPacket(bytes, bytes.length, current.getBroadcast(), CommonData.INSTANCE.getDiscoveryPort());
       packets.add(packet);

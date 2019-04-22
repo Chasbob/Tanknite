@@ -23,6 +23,11 @@ public class VectorF {
     set(0, 0);
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   /**
    * Constructs a VectorF with the given components
    *

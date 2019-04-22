@@ -71,7 +71,7 @@ public enum Data {
     modelReader = new ModelReader();
     try {
       dbSocket = new Socket();
-      dbSocket.connect(new InetSocketAddress("chasbob.co.uk", 6000), 5000);
+      dbSocket.connect(new InetSocketAddress("localhost", 6000), 5000);
       dbConnected = true;
     } catch (IOException e) {
       this.logger.info("IO on db");

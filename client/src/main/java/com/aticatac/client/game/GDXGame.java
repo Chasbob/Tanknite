@@ -15,7 +15,6 @@ import static com.aticatac.client.bus.EventBusFactory.eventBus;
  */
 public class GDXGame extends Game {
   private static Server server;
-  private BlockingQueue<Update> updates;
 
   /**
    * Create server.
@@ -50,7 +49,6 @@ public class GDXGame extends Game {
   @Override
   public void create() {
     try {
-      this.updates = new ArrayBlockingQueue<>(100);
       //TODO show splash screen whilst it loads
       Screens.INSTANCE.initialize(this);
     } catch (Exception e) {

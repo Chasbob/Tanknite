@@ -25,13 +25,7 @@ public class Discovery implements Runnable {
   private List<DatagramPacket> packets;
   private boolean shutdown;
 
-  /**
-   * Instantiates a new Discovery.
-   *
-   * @param name the name
-   *
-   * @throws IOException the io exception
-   */
+
   Discovery() throws IOException {
     logger = Logger.getLogger(getClass());
     this.modelReader = new ModelReader();

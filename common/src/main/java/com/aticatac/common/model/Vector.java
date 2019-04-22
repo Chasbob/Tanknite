@@ -134,6 +134,11 @@ public class Vector {
     return this;
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   /**
    * Adds the given components to this vector
    *

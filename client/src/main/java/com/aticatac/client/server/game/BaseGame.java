@@ -24,8 +24,11 @@ import com.aticatac.common.objectsystem.containers.KillLogEvent;
 import com.google.common.collect.Streams;
 import com.google.common.eventbus.Subscribe;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -59,6 +62,7 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
    * The Bullets.
    */
   protected final CopyOnWriteArraySet<Bullet> bullets;
+  protected final Spliterator<Tickable> tickableSpliterator;
   /**
    * The Powerups.
    */
@@ -91,12 +95,17 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
     bullets = new CopyOnWriteArraySet<>();
     powerups = new CopyOnWriteArraySet<>();
     aiUpdateService = new AIUpdateService(playerMap, powerups);
+    ArrayList<Tickable> ticks = new ArrayList<>();
+    ticks.addAll(playerMap.values());
+    ticks.addAll(bullets);
+    tickableSpliterator = ticks.spliterator();
   }
 
   /**
    * In map boolean.
    *
    * @param v the v
+   *
    * @return the boolean
    */
   public static boolean inMap(Vector v) {
@@ -240,6 +249,7 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
    * @param isAI   the is ai
    * @param x      the x
    * @param y      the y
+   *
    * @return the tank
    */
   public Tank createTank(String player, boolean isAI, int x, int y) {
@@ -401,6 +411,15 @@ public class BaseGame implements Runnable, Callable<GameResult>, Stoppable {
       this.logger.trace("tick");
       aiUpdateService.update(playerMap, powerups);
       Streams.concat(bullets.stream(), playerMap.values().stream()).forEach(Tickable::tick);
+//      tickableSpliterator.forEachRemaining(Tickable::tick);
+//      for (Tickable t :
+//          playerMap.values()) {
+//        t.tick();
+//      }
+//      for (Tickable t :
+//          bullets) {
+//        t.tick();
+//      }
       double nanoTime = System.nanoTime();
       while (System.nanoTime() - nanoTime < 1000000000 / 60) {
         try {
